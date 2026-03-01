@@ -18,7 +18,7 @@ function isPublicRoute(pathname: string): boolean {
   return false;
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { response: supabaseResponse, user } = await updateSession(request);
 
   const pathname = request.nextUrl.pathname;

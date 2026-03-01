@@ -6,71 +6,130 @@ export default function CompanyLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen">
-      <header className="sticky top-0 z-50 border-b border-zinc-200 bg-white/95 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
+    <div className="min-h-screen bg-white dark:bg-slate-950">
+      <header className="sticky top-0 z-50 border-b border-slate-200/60 bg-white/95 backdrop-blur-sm dark:border-slate-800/60 dark:bg-slate-950/95">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Link href="/" className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
-            AMS
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white shadow-sm">
+              A
+            </div>
+            <span className="text-lg font-bold text-slate-900 dark:text-white">AMS</span>
           </Link>
-          <nav className="flex items-center gap-6">
+
+          {/* Nav */}
+          <nav className="hidden items-center gap-6 md:flex">
             <Link
               href="/"
-              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+              className="text-sm font-medium text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Home
             </Link>
             <Link
               href="/features"
-              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+              className="text-sm font-medium text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Features
             </Link>
             <Link
               href="/get-access"
-              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+              className="text-sm font-medium text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Get Access
             </Link>
             <Link
               href="/schools"
-              className="text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+              className="text-sm font-medium text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Find a School
             </Link>
+          </nav>
+
+          {/* CTA */}
+          <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+              className="text-sm font-medium text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Login
             </Link>
-          </nav>
+            <Link
+              href="/get-access"
+              className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700"
+            >
+              Get Started
+            </Link>
+          </div>
         </div>
       </header>
+
       <main>{children}</main>
-      <footer className="border-t border-zinc-200 bg-zinc-50 py-12 dark:border-zinc-800 dark:bg-zinc-950">
+
+      <footer className="border-t border-slate-200 bg-slate-50 py-14 dark:border-slate-800 dark:bg-slate-900">
         <div className="mx-auto max-w-6xl px-4">
-          <div className="flex flex-col gap-6 md:flex-row md:justify-between">
+          <div className="flex flex-col gap-8 md:flex-row md:justify-between">
             <div>
-              <p className="font-semibold text-zinc-900 dark:text-zinc-100">AMS</p>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                Academic Management System – One platform for your school
+              <Link href="/" className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-600 text-xs font-bold text-white">
+                  A
+                </div>
+                <span className="font-bold text-slate-900 dark:text-white">AMS</span>
+              </Link>
+              <p className="mt-2 max-w-xs text-sm text-slate-500 dark:text-slate-400">
+                The operating system for schools — manage, track, and automate
+                everything in one place.
               </p>
             </div>
-            <div className="flex gap-8">
-              <Link href="/features" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                Features
-              </Link>
-              <Link href="/get-access" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                Get Access
-              </Link>
-              <Link href="/login" className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100">
-                Login
-              </Link>
+            <div className="flex gap-12">
+              <div>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  Platform
+                </p>
+                <ul className="space-y-2">
+                  {[
+                    { label: "Features", href: "/features" },
+                    { label: "Get Access", href: "/get-access" },
+                    { label: "Find a School", href: "/schools" },
+                  ].map((l) => (
+                    <li key={l.href}>
+                      <Link
+                        href={l.href}
+                        className="text-sm text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  Account
+                </p>
+                <ul className="space-y-2">
+                  {[
+                    { label: "Login", href: "/login" },
+                    { label: "Register", href: "/register" },
+                    { label: "Forgot Password", href: "/forgot-password" },
+                  ].map((l) => (
+                    <li key={l.href}>
+                      <Link
+                        href={l.href}
+                        className="text-sm text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                      >
+                        {l.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
-          <p className="mt-8 text-xs text-zinc-500">
-            © {new Date().getFullYear()} AMS. All rights reserved.
-          </p>
+          <div className="mt-10 border-t border-slate-200 pt-6 dark:border-slate-800">
+            <p className="text-xs text-slate-400">
+              © {new Date().getFullYear()} AMS. All rights reserved.
+            </p>
+          </div>
         </div>
       </footer>
     </div>

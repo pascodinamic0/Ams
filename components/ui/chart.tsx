@@ -22,10 +22,14 @@ interface ChartProps {
   data: Record<string, unknown>[];
   type: "bar" | "line" | "pie";
   xKey?: string;
+  /** Single bar/line key (legacy) */
   yKey?: string;
+  /** Multiple bar/line keys for grouped charts */
+  yKeys?: string[];
   dataKey?: string;
   nameKey?: string;
   title?: string;
+  height?: number;
 }
 
 export function Chart({
@@ -33,12 +37,16 @@ export function Chart({
   type,
   xKey = "name",
   yKey = "value",
+  yKeys,
   dataKey = "value",
   nameKey = "name",
   title,
+  height = 300,
 }: ChartProps) {
+  const barKeys = yKeys ?? [yKey];
+
   const chart = (
-    <ResponsiveContainer width="100%" height={300}>
+    <ResponsiveContainer width="100%" height={height}>
       {type === "bar" && (
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -46,7 +54,9 @@ export function Chart({
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey={yKey} fill={COLORS[0]} />
+          {barKeys.map((key, i) => (
+            <Bar key={key} dataKey={key} fill={COLORS[i % COLORS.length]} />
+          ))}
         </BarChart>
       )}
       {type === "line" && (
@@ -56,7 +66,9 @@ export function Chart({
           <YAxis />
           <Tooltip />
           <Legend />
-          <Line type="monotone" dataKey={yKey} stroke={COLORS[0]} strokeWidth={2} />
+          {barKeys.map((key, i) => (
+            <Line key={key} type="monotone" dataKey={key} stroke={COLORS[i % COLORS.length]} strokeWidth={2} />
+          ))}
         </LineChart>
       )}
       {type === "pie" && (

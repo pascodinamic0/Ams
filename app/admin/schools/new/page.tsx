@@ -7,6 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { toast } from "@/lib/toast";
+import { createSchool } from "@/lib/actions/schools";
+
+const THEME_COLORS: Record<string, { primary: string; secondary: string }> = {
+  blue: { primary: "#3b82f6", secondary: "#1d4ed8" },
+  green: { primary: "#22c55e", secondary: "#15803d" },
+  navy: { primary: "#1e3a8a", secondary: "#172554" },
+  burgundy: { primary: "#881337", secondary: "#4c0519" },
+};
 
 const STEPS = [
   { id: "1", title: "School details" },
@@ -26,8 +34,22 @@ export default function NewSchoolPage() {
     template: "modern",
   });
 
-  function onComplete() {
-    toast.success("School created. Their site is ready at /schools/" + form.name.toLowerCase().replace(/\s/g, "-"));
+  async function onComplete() {
+    const colors = THEME_COLORS[form.theme] ?? THEME_COLORS.blue;
+    const result = await createSchool({
+      name: form.name,
+      adminEmail: form.admin_email || undefined,
+      customDomain: form.domain || undefined,
+      themePrimaryColor: colors.primary,
+      themeSecondaryColor: colors.secondary,
+      websiteTemplate: form.template as "modern" | "classic" | "minimal",
+    });
+    if (result.error) {
+      toast.error(result.error);
+      return;
+    }
+    const slug = result.data?.slug ?? form.name.toLowerCase().replace(/\s/g, "-");
+    toast.success("School created. Their site is ready at /schools/" + slug);
     router.push("/admin/schools");
   }
 

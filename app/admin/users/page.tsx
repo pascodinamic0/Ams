@@ -1,8 +1,9 @@
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getUsers } from "@/lib/db";
 
 export default async function UsersPage() {
-  const users: { id: string; email: string; role: string }[] = [];
+  const users = await getUsers();
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Users</h1>
@@ -12,8 +13,9 @@ export default async function UsersPage() {
         <DataTable
           data={users}
           columns={[
-            { id: "email", header: "Email", accessorKey: "email", sortable: true },
+            { id: "name", header: "Name", accessorKey: "name", sortable: true },
             { id: "role", header: "Role", accessorKey: "role" },
+            { id: "school_name", header: "School", accessorKey: "school_name" },
           ]}
           keyExtractor={(r) => (r as { id: string }).id}
         />

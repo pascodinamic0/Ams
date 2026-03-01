@@ -8,7 +8,7 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className = "", ...props }, ref) => (
     <div
       ref={ref}
-      className={`rounded-xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950 ${className}`}
+      className={`rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900 ${className}`}
       {...props}
     />
   )
@@ -22,7 +22,7 @@ const CardHeader = React.forwardRef<
 >(({ className = "", ...props }, ref) => (
   <div
     ref={ref}
-    className={`border-b border-zinc-200 px-6 py-4 dark:border-zinc-800 ${className}`}
+    className={`border-b border-slate-200 px-6 py-4 dark:border-slate-800 ${className}`}
     {...props}
   />
 ));
@@ -35,7 +35,7 @@ const CardTitle = React.forwardRef<
 >(({ className = "", ...props }, ref) => (
   <h3
     ref={ref}
-    className={`text-lg font-semibold text-zinc-900 dark:text-zinc-100 ${className}`}
+    className={`text-base font-semibold text-slate-900 dark:text-slate-100 ${className}`}
     {...props}
   />
 ));
@@ -57,7 +57,7 @@ const CardFooter = React.forwardRef<
 >(({ className = "", ...props }, ref) => (
   <div
     ref={ref}
-    className={`flex items-center gap-2 border-t border-zinc-200 px-6 py-4 dark:border-zinc-800 ${className}`}
+    className={`flex items-center gap-2 border-t border-slate-200 px-6 py-4 dark:border-slate-800 ${className}`}
     {...props}
   />
 ));

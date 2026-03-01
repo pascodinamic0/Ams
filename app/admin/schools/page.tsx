@@ -2,10 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
-
-async function getSchools() {
-  return [];
-}
+import { getSchools } from "@/lib/db";
 
 export default async function SchoolsPage() {
   const schools = await getSchools();
