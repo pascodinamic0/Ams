@@ -40,14 +40,7 @@ export default function RegisterPage() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">
       {/* Brand panel */}
-      <div className="hidden flex-col justify-between bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-800 p-12 lg:flex lg:w-[45%]">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-sm font-bold text-white">
-            A
-          </div>
-          <span className="text-lg font-bold text-white">AMS</span>
-        </Link>
-
+      <div className="hidden flex-col justify-center bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-800 p-12 lg:flex lg:w-[45%]">
         <div>
           <h2 className="text-3xl font-bold leading-tight text-white">
             Get your school up and running in minutes
@@ -72,10 +65,6 @@ export default function RegisterPage() {
             ))}
           </div>
         </div>
-
-        <p className="text-xs text-indigo-400">
-          © {new Date().getFullYear()} AMS. All rights reserved.
-        </p>
       </div>
 
       {/* Form panel */}

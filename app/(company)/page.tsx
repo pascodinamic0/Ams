@@ -79,16 +79,16 @@ const modules = [
     span: "md:col-span-2"
   },
   {
-    icon: <MessageSquare className="h-6 w-6 text-purple-500" />,
-    title: "Messaging",
-    desc: "Real-time communication for everyone",
-    span: "md:col-span-1"
-  },
-  {
     icon: <Globe className="h-6 w-6 text-amber-500" />,
     title: "School Websites",
     desc: "Branded sites with online admissions",
     span: "md:col-span-2"
+  },
+  {
+    icon: <MessageSquare className="h-6 w-6 text-purple-500" />,
+    title: "Messaging",
+    desc: "Real-time communication for everyone",
+    span: "md:col-span-1"
   },
 ];
 
@@ -348,19 +348,14 @@ export default function Home() {
               >
                 Get Started Today
               </Link>
-              <Link
-                href="/schools"
-                className="rounded-2xl border-2 border-indigo-400 px-10 py-5 text-lg font-bold text-white transition-all hover:bg-indigo-900/50"
-              >
-                Find a School
-              </Link>
             </div>
 
-            <div className="mt-16 flex items-center justify-center gap-8 grayscale opacity-50">
-              {/* Simple placeholder logos to signify trust */}
-              <div className="h-12 w-24 bg-white/10 rounded flex items-center justify-center font-bold text-white/20 text-xs">MINISTRY</div>
-              <div className="h-12 w-24 bg-white/10 rounded flex items-center justify-center font-bold text-white/20 text-xs">EDUCATE</div>
-              <div className="h-12 w-24 bg-white/10 rounded flex items-center justify-center font-bold text-white/20 text-xs">FUTURE</div>
+            <div className="mt-16 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 border-t border-white/10 pt-12 text-sm font-semibold uppercase tracking-widest text-indigo-300/70">
+              <span>Academic management</span>
+              <span className="hidden sm:inline text-indigo-500/40">|</span>
+              <span>Fee &amp; finance tracking</span>
+              <span className="hidden sm:inline text-indigo-500/40">|</span>
+              <span>Parent &amp; student portals</span>
             </div>
           </motion.div>
         </div>

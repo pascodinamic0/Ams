@@ -110,7 +110,10 @@ export default function GetAccessPage() {
                 transition={{ delay: idx * 0.1 }}
                 className="relative group"
               >
-                <div className="absolute -top-6 -left-6 text-8xl font-black text-slate-100 dark:text-slate-800/50 group-hover:text-indigo-100 dark:group-hover:text-indigo-950 transition-colors">
+                <div
+                  aria-hidden
+                  className="pointer-events-none absolute -top-4 -left-2 select-none text-7xl font-black leading-none text-indigo-600/35 dark:text-indigo-400/40 group-hover:text-indigo-600/50 dark:group-hover:text-indigo-400/55 transition-colors sm:text-8xl sm:-top-6 sm:-left-4"
+                >
                   {s.number}
                 </div>
                 <div className="relative z-10 pt-10">
