@@ -35,7 +35,6 @@ export default async function GuardiansPage() {
             { id: "relation", header: "Relation", accessorKey: "relation" },
             { id: "student_names", header: "Students", accessorKey: "student_names" },
           ]}
-          keyExtractor={(row) => (row as { id: string }).id}
         />
       )}
     </div>

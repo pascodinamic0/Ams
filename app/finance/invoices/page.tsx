@@ -24,7 +24,6 @@ export default async function InvoicesPage() {
             { id: "due_date", header: "Due Date", accessorKey: "due_date", sortable: true },
             { id: "status", header: "Status", accessorKey: "status" },
           ]}
-          keyExtractor={(row) => (row as { id: string }).id}
         />
       )}
     </div>

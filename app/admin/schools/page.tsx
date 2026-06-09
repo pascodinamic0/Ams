@@ -33,7 +33,6 @@ export default async function SchoolsPage() {
             { id: "region", header: "Region", accessorKey: "region" },
             { id: "status", header: "Status", accessorKey: "status" },
           ]}
-          keyExtractor={(row) => (row as { id: string }).id}
         />
       )}
     </div>

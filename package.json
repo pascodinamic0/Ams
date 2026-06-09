@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "seed:super-admin": "node scripts/seed-super-admin.mjs",
+    "seed:demo-users": "node scripts/seed-demo-users.mjs",
     "reset:super-admin": "node scripts/reset-super-admin-password.mjs",
     "db:migrate": "node scripts/migrate.mjs"
   },

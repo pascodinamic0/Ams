@@ -54,7 +54,18 @@ export async function createSchool(input: CreateSchoolInput) {
     slug = `${baseSlug}-${attempt}`;
   }
 
-  const code = generateCode(input.name);
+  let code = generateCode(input.name);
+  let codeAttempt = 0;
+  while (true) {
+    const { data: existingCode } = await supabase
+      .from("schools")
+      .select("id")
+      .eq("code", code)
+      .maybeSingle();
+    if (!existingCode) break;
+    codeAttempt++;
+    code = `${generateCode(input.name)}${codeAttempt}`;
+  }
 
   const { data, error } = await supabase
     .from("schools")

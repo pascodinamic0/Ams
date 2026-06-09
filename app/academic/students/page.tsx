@@ -35,7 +35,6 @@ export default async function StudentsPage() {
             { id: "guardian_name", header: "Guardian", accessorKey: "guardian_name" },
             { id: "status", header: "Status", accessorKey: "status" },
           ]}
-          keyExtractor={(row) => (row as { id: string }).id}
         />
       )}
     </div>

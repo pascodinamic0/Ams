@@ -35,12 +35,12 @@ export async function getSchools(): Promise<SchoolListItem[]> {
     .order("name");
 
   if (error) {
-    console.error("getSchools error:", {
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint,
-    });
+    console.error(
+      "getSchools error:",
+      error.message,
+      error.code ?? "",
+      error.hint ?? ""
+    );
     return [];
   }
 

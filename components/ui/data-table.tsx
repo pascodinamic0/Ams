@@ -11,11 +11,12 @@ export interface ColumnDef<T> {
   className?: string;
 }
 
-interface DataTableProps<T> {
+interface DataTableProps<T extends Record<string, unknown>> {
   data: T[];
   columns: ColumnDef<T>[];
   isLoading?: boolean;
-  keyExtractor: (row: T) => string;
+  /** Row field used as React key. Defaults to "id". */
+  keyField?: keyof T & string;
   onRowClick?: (row: T) => void;
   emptyMessage?: string;
 }
@@ -28,11 +29,11 @@ function getCellValue<T>(row: T, accessor: ColumnDef<T>["accessorKey"]): React.R
   return value !== null && value !== undefined ? String(value) : "—";
 }
 
-export function DataTable<T>({
+export function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
   isLoading = false,
-  keyExtractor,
+  keyField = "id" as keyof T & string,
   onRowClick,
   emptyMessage = "No data found",
 }: DataTableProps<T>) {
@@ -102,7 +103,7 @@ export function DataTable<T>({
           ) : (
             paginatedData.map((row) => (
               <tr
-                key={keyExtractor(row)}
+                key={String(row[keyField] ?? "")}
                 className={`border-b border-zinc-200 last:border-0 dark:border-zinc-800 ${
                   onRowClick
                     ? "cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900"

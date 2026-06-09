@@ -17,7 +17,6 @@ export default async function UsersPage() {
             { id: "role", header: "Role", accessorKey: "role" },
             { id: "school_name", header: "School", accessorKey: "school_name" },
           ]}
-          keyExtractor={(r) => (r as { id: string }).id}
         />
       )}
     </div>

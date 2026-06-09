@@ -14,7 +14,6 @@ export default async function BranchesPage() {
           columns={[
             { id: "name", header: "Name", accessorKey: "name", sortable: true },
           ]}
-          keyExtractor={(r) => (r as { id: string }).id}
         />
       )}
     </div>

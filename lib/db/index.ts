@@ -41,3 +41,7 @@ export {
   getInvoices,
   type InvoiceListItem,
 } from "./invoices";
+export {
+  getNotifications,
+  type NotificationItem,
+} from "./notifications";

@@ -120,7 +120,6 @@ export default async function OutreachPage() {
             { id: "sent_at", header: "Sent", accessorKey: "sent_display", sortable: true },
             { id: "created_by", header: "Created by", accessorKey: "created_by_name" },
           ]}
-          keyExtractor={(row) => (row as { id: string }).id}
         />
       )}
     </div>

@@ -30,7 +30,8 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md">
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
         Forgot password
       </h1>
@@ -64,6 +65,7 @@ export default function ForgotPasswordPage() {
       >
         Back to login
       </Link>
+      </div>
     </div>
   );
 }
