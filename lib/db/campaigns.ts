@@ -112,51 +112,84 @@ export async function getFeeReminderSettings(
   return data ?? null;
 }
 
-/** Returns all guardians with phone numbers for a campaign target. */
+export type CampaignTargetGuardian = {
+  guardian_id: string;
+  name: string;
+  phone: string | null;
+  auth_user_id: string | null;
+};
+
+type GuardianRow = {
+  id: string;
+  name: string;
+  phone: string | null;
+  auth_user_id: string | null;
+  guardian_students: Array<{
+    students?: { class_id?: string; branch_id?: string } | null;
+  }> | null;
+};
+
+function mapGuardian(g: GuardianRow): CampaignTargetGuardian {
+  return {
+    guardian_id: g.id,
+    name: g.name,
+    phone: g.phone,
+    auth_user_id: g.auth_user_id,
+  };
+}
+
+function filterByClass(guardians: GuardianRow[], classId: string): CampaignTargetGuardian[] {
+  return guardians
+    .filter((g) => {
+      const links = g.guardian_students;
+      return links?.some((l) => l.students?.class_id === classId);
+    })
+    .map(mapGuardian);
+}
+
+function filterByBranch(guardians: GuardianRow[], branchId: string): CampaignTargetGuardian[] {
+  return guardians
+    .filter((g) => {
+      const links = g.guardian_students;
+      return links?.some((l) => l.students?.branch_id === branchId);
+    })
+    .map(mapGuardian);
+}
+
+/** Returns guardians matching a campaign target (all_parents, class:, branch:). */
 export async function getCampaignTargetGuardians(
   schoolId: string,
   target: string
-): Promise<Array<{ guardian_id: string; name: string; phone: string }>> {
+): Promise<CampaignTargetGuardian[]> {
   const supabase = await createClient();
 
-  let query = supabase
+  const { data, error } = await supabase
     .from("guardians")
     .select(`
-      id, name, phone,
+      id, name, phone, auth_user_id,
       guardian_students(
-        students(school_id, class_id, classes(id, name))
+        students(school_id, class_id, branch_id, classes(id, name))
       )
     `)
-    .eq("school_id", schoolId)
-    .not("phone", "is", null);
-
-  const { data, error } = await query;
+    .eq("school_id", schoolId);
 
   if (error) {
     console.error("getCampaignTargetGuardians error:", error);
     return [];
   }
 
-  const guardians = (data ?? []).filter((g) => !!g.phone);
+  const guardians = (data ?? []) as GuardianRow[];
 
   if (target === "all_parents") {
-    return guardians.map((g) => ({
-      guardian_id: g.id,
-      name: g.name,
-      phone: g.phone!,
-    }));
+    return guardians.map(mapGuardian);
   }
 
   if (target.startsWith("class:")) {
-    const classId = target.replace("class:", "");
-    return guardians
-      .filter((g) => {
-        const links = g.guardian_students as Array<{
-          students?: { class_id?: string } | null;
-        }> | null;
-        return links?.some((l) => l.students?.class_id === classId);
-      })
-      .map((g) => ({ guardian_id: g.id, name: g.name, phone: g.phone! }));
+    return filterByClass(guardians, target.replace("class:", ""));
+  }
+
+  if (target.startsWith("branch:")) {
+    return filterByBranch(guardians, target.replace("branch:", ""));
   }
 
   return [];

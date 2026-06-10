@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getAuthEmailsByUserIds } from "@/lib/supabase/admin";
 
 export type UserListItem = {
   id: string;
@@ -35,18 +36,49 @@ export async function getUsers(options?: {
     return [];
   }
 
-  // Profiles don't have email - we need auth.users. Supabase doesn't expose auth.users to anon.
-  // We can use a join if we have a view, or we store email in profiles.
-  // The schema has profiles without email. For now, use name as display and fetch email from a custom RPC or store it in profiles.
-  // Simplest: add email to profiles via a trigger from auth.users, or use a database function.
-  // For initial implementation, we'll show name and role. Email would require server-side admin API.
-  const result: UserListItem[] = (profiles ?? []).map((p) => ({
+  const ids = (profiles ?? []).map((p) => p.id);
+  const emails = await getAuthEmailsByUserIds(ids);
+
+  return (profiles ?? []).map((p) => ({
     id: p.id,
-    email: "", // Would need auth.users join - not exposed to client
+    email: emails.get(p.id) ?? "",
     name: p.name,
     role: p.role ?? "student",
     school_name: (p.schools as { name?: string } | null)?.name ?? null,
   }));
+}
 
-  return result;
+export async function getSchoolTeamMembers(
+  schoolId: string
+): Promise<UserListItem[]> {
+  const supabase = await createClient();
+  const { data: profiles, error } = await supabase
+    .from("profiles")
+    .select(`
+      id,
+      name,
+      role,
+      school_id,
+      schools(name)
+    `)
+    .eq("school_id", schoolId)
+    .neq("role", "student")
+    .neq("role", "parent")
+    .order("name");
+
+  if (error) {
+    console.error("getSchoolTeamMembers error:", error);
+    return [];
+  }
+
+  const ids = (profiles ?? []).map((p) => p.id);
+  const emails = await getAuthEmailsByUserIds(ids);
+
+  return (profiles ?? []).map((p) => ({
+    id: p.id,
+    email: emails.get(p.id) ?? "",
+    name: p.name,
+    role: p.role ?? "student",
+    school_name: (p.schools as { name?: string } | null)?.name ?? null,
+  }));
 }

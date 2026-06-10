@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,25 +30,65 @@ const changePasswordSchema = z
 
 type ChangePasswordData = z.infer<typeof changePasswordSchema>;
 
+type ProfileInfo = {
+  email: string;
+  fullName: string;
+  role: string;
+  initial: string;
+};
+
 export default function SettingsPage() {
+  const [profile, setProfile] = useState<ProfileInfo | null>(null);
+
+  useEffect(() => {
+    async function loadProfile() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: row } = await supabase
+        .from("profiles")
+        .select("name, role")
+        .eq("id", user.id)
+        .single();
+
+      const fullName = row?.name || user.email?.split("@")[0] || "User";
+      setProfile({
+        email: user.email ?? "",
+        fullName,
+        role: row?.role ?? "user",
+        initial: fullName.charAt(0).toUpperCase(),
+      });
+    }
+    loadProfile();
+  }, []);
+
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-          Settings
-        </h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Settings</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Manage your account preferences and security
         </p>
       </div>
 
-      <AccountCard />
+      <AccountCard profile={profile} />
       <SecurityCard />
     </div>
   );
 }
 
-function AccountCard() {
+function AccountCard({ profile }: { profile: ProfileInfo | null }) {
+  if (!profile) {
+    return (
+      <Card>
+        <CardContent className="py-8">
+          <div className="h-16 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -57,17 +97,13 @@ function AccountCard() {
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xl font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-            S
+            {profile.initial}
           </div>
           <div>
-            <p className="font-medium text-slate-900 dark:text-white">
-              Super Admin
-            </p>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              pascodinamic00@gmail.com
-            </p>
+            <p className="font-medium text-slate-900 dark:text-white">{profile.fullName}</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{profile.email}</p>
             <span className="mt-1 inline-block rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-              super_admin
+              {profile.role}
             </span>
           </div>
         </div>
@@ -84,8 +120,6 @@ function SecurityCard() {
     setLoading(true);
     try {
       const supabase = createClient();
-
-      // Re-authenticate with current password first
       const { data: session } = await supabase.auth.getSession();
       const email = session?.session?.user?.email;
 
@@ -100,11 +134,7 @@ function SecurityCard() {
         }
       }
 
-      // Update to new password
-      const { error } = await supabase.auth.updateUser({
-        password: data.new_password,
-      });
-
+      const { error } = await supabase.auth.updateUser({ password: data.new_password });
       if (error) throw error;
 
       toast.success("Password updated successfully");
@@ -119,48 +149,16 @@ function SecurityCard() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle>Security</CardTitle>
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 dark:bg-indigo-950">
-            <svg
-              className="h-4 w-4 text-indigo-600 dark:text-indigo-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.75}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
-          </div>
-        </div>
+        <CardTitle>Security</CardTitle>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Change your account password. Use a strong password with at least 8
-          characters.
+          Change your account password.
         </p>
       </CardHeader>
       <CardContent>
         {done ? (
-          <div className="flex items-center gap-3 rounded-xl bg-green-50 px-4 py-4 text-green-700 dark:bg-green-950/30 dark:text-green-400">
-            <svg className="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div>
-              <p className="font-medium">Password changed successfully</p>
-              <p className="mt-0.5 text-sm opacity-80">
-                Your new password is active. You may be asked to sign in again on other devices.
-              </p>
-            </div>
-          </div>
+          <p className="text-green-600">Password changed successfully.</p>
         ) : (
-          <FormWrapper
-            schema={changePasswordSchema}
-            onSubmit={onSubmit}
-            className="space-y-5"
-          >
+          <FormWrapper schema={changePasswordSchema} onSubmit={onSubmit} className="space-y-5">
             <ChangePasswordFields loading={loading} />
           </FormWrapper>
         )}
@@ -170,88 +168,28 @@ function SecurityCard() {
 }
 
 function ChangePasswordFields({ loading }: { loading: boolean }) {
-  const {
-    register,
-    watch,
-    formState: { errors },
-  } = useFormContext<ChangePasswordData>();
+  const { register, watch, formState: { errors } } = useFormContext<ChangePasswordData>();
   const newPassword = watch("new_password");
 
   return (
     <>
       <div>
-        <Label htmlFor="current_password" required>
-          Current password
-        </Label>
-        <Input
-          id="current_password"
-          type="password"
-          placeholder="Your current password"
-          error={!!errors.current_password}
-          {...register("current_password")}
-        />
-        {errors.current_password && (
-          <p className="mt-1.5 text-sm text-red-500">
-            {errors.current_password.message}
-          </p>
-        )}
+        <Label htmlFor="current_password" required>Current password</Label>
+        <Input id="current_password" type="password" error={!!errors.current_password} {...register("current_password")} />
+        {errors.current_password && <p className="mt-1.5 text-sm text-red-500">{errors.current_password.message}</p>}
       </div>
-
       <div>
-        <Label htmlFor="new_password" required>
-          New password
-        </Label>
-        <Input
-          id="new_password"
-          type="password"
-          placeholder="At least 8 characters"
-          error={!!errors.new_password}
-          {...register("new_password")}
-        />
+        <Label htmlFor="new_password" required>New password</Label>
+        <Input id="new_password" type="password" error={!!errors.new_password} {...register("new_password")} />
         <PasswordStrength password={newPassword ?? ""} />
-        {errors.new_password && (
-          <p className="mt-1.5 text-sm text-red-500">
-            {errors.new_password.message}
-          </p>
-        )}
+        {errors.new_password && <p className="mt-1.5 text-sm text-red-500">{errors.new_password.message}</p>}
       </div>
-
       <div>
-        <Label htmlFor="confirm_password" required>
-          Confirm new password
-        </Label>
-        <Input
-          id="confirm_password"
-          type="password"
-          placeholder="Repeat new password"
-          error={!!errors.confirm_password}
-          {...register("confirm_password")}
-        />
-        {errors.confirm_password && (
-          <p className="mt-1.5 text-sm text-red-500">
-            {errors.confirm_password.message}
-          </p>
-        )}
+        <Label htmlFor="confirm_password" required>Confirm new password</Label>
+        <Input id="confirm_password" type="password" error={!!errors.confirm_password} {...register("confirm_password")} />
+        {errors.confirm_password && <p className="mt-1.5 text-sm text-red-500">{errors.confirm_password.message}</p>}
       </div>
-
-      <div className="flex items-center gap-3 pt-1">
-        <Button type="submit" disabled={loading}>
-          {loading ? (
-            <span className="flex items-center gap-2">
-              <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Updating...
-            </span>
-          ) : (
-            "Update password"
-          )}
-        </Button>
-        <p className="text-xs text-slate-400">
-          You&apos;ll stay logged in after changing your password.
-        </p>
-      </div>
+      <Button type="submit" disabled={loading}>{loading ? "Updating..." : "Update password"}</Button>
     </>
   );
 }

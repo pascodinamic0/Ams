@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getConversations, getGuardianContacts } from "@/lib/db/conversations";
+import { createClient } from "@/lib/supabase/server";
 import { format, isToday, isYesterday } from "date-fns";
 import { NewConversationButton } from "./new-conversation-button";
 
@@ -14,6 +15,18 @@ function formatTime(dateStr: string | null) {
 }
 
 export default async function MessagesPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  let schoolId = "";
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("school_id")
+      .eq("id", user.id)
+      .single();
+    schoolId = profile?.school_id ?? "";
+  }
+
   const [conversations, contacts] = await Promise.all([
     getConversations(),
     getGuardianContacts(),
@@ -25,7 +38,7 @@ export default async function MessagesPage() {
       <div className="flex w-80 shrink-0 flex-col rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
           <h2 className="font-semibold text-slate-900 dark:text-white">Conversations</h2>
-          <NewConversationButton contacts={contacts} />
+          <NewConversationButton contacts={contacts} schoolId={schoolId} />
         </div>
 
         <div className="flex-1 overflow-y-auto">

@@ -14,6 +14,7 @@ export default async function UsersPage() {
           data={users}
           columns={[
             { id: "name", header: "Name", accessorKey: "name", sortable: true },
+            { id: "email", header: "Email", accessorKey: "email", sortable: true },
             { id: "role", header: "Role", accessorKey: "role" },
             { id: "school_name", header: "School", accessorKey: "school_name" },
           ]}

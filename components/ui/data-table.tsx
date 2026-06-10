@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { isValidElement, useState, type ReactNode } from "react";
 import { TableSkeleton } from "./table-skeleton";
 
 export interface ColumnDef<T> {
   id: string;
   header: string;
-  accessorKey: keyof T | ((row: T) => React.ReactNode);
+  /** Serializable field name — define columns in a Client Component when using React nodes. */
+  accessorKey: keyof T & string;
   sortable?: boolean;
   className?: string;
 }
@@ -21,12 +22,11 @@ interface DataTableProps<T extends Record<string, unknown>> {
   emptyMessage?: string;
 }
 
-function getCellValue<T>(row: T, accessor: ColumnDef<T>["accessorKey"]): React.ReactNode {
-  if (typeof accessor === "function") {
-    return accessor(row);
-  }
+function getCellValue<T>(row: T, accessor: keyof T): ReactNode {
   const value = row[accessor];
-  return value !== null && value !== undefined ? String(value) : "—";
+  if (value === null || value === undefined) return "—";
+  if (isValidElement(value)) return value;
+  return String(value);
 }
 
 export function DataTable<T extends Record<string, unknown>>({
@@ -46,7 +46,7 @@ export function DataTable<T extends Record<string, unknown>>({
   const sortedData = [...data].sort((a, b) => {
     if (!sortKey) return 0;
     const col = columns.find((c) => c.id === sortKey);
-    if (!col || typeof col.accessorKey === "function") return 0;
+    if (!col) return 0;
     const aVal = (a as Record<string, unknown>)[col.accessorKey as string];
     const bVal = (b as Record<string, unknown>)[col.accessorKey as string];
     if (aVal === bVal) return 0;
@@ -58,7 +58,7 @@ export function DataTable<T extends Record<string, unknown>>({
 
   const handleSort = (id: string) => {
     const col = columns.find((c) => c.id === id);
-    if (!col?.sortable || typeof col.accessorKey === "function") return;
+    if (!col?.sortable) return;
     setSortKey((k) => (k === id ? id : id));
     setSortDir((d) => (sortKey === id && d === "asc" ? "desc" : "asc"));
   };
@@ -101,9 +101,16 @@ export function DataTable<T extends Record<string, unknown>>({
               </td>
             </tr>
           ) : (
-            paginatedData.map((row) => (
+            paginatedData.map((row, index) => {
+              const rawKey = row[keyField];
+              const rowKey =
+                rawKey != null && rawKey !== ""
+                  ? String(rawKey)
+                  : `row-${page * pageSize + index}`;
+
+              return (
               <tr
-                key={String(row[keyField] ?? "")}
+                key={rowKey}
                 className={`border-b border-zinc-200 last:border-0 dark:border-zinc-800 ${
                   onRowClick
                     ? "cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900"
@@ -120,7 +127,8 @@ export function DataTable<T extends Record<string, unknown>>({
                   </td>
                 ))}
               </tr>
-            ))
+              );
+            })
           )}
         </tbody>
       </table>

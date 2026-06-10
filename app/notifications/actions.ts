@@ -2,6 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getUnreadNotificationCount } from "@/lib/db/notifications";
+
+export async function fetchUnreadNotificationCount(): Promise<number> {
+  return getUnreadNotificationCount();
+}
 
 export async function markNotificationRead(id: string) {
   const supabase = await createClient();

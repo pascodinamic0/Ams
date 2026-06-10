@@ -10,9 +10,10 @@ import type { GuardianContact } from "@/lib/db/conversations";
 
 interface Props {
   contacts: GuardianContact[];
+  schoolId: string;
 }
 
-export function NewConversationButton({ contacts }: Props) {
+export function NewConversationButton({ contacts, schoolId }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -50,7 +51,7 @@ export function NewConversationButton({ contacts }: Props) {
 
     setLoading(true);
     try {
-      const result = await createConversation("", {
+      const result = await createConversation(schoolId, {
         student_id: selected.student_id,
         title: `Chat with ${selected.name} — ${selected.student_name}`,
         participant_profile_ids: [selected.profile_id],

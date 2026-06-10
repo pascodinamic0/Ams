@@ -50,3 +50,75 @@ export async function getAdminDashboardData() {
     schoolsByStatus,
   };
 }
+
+export async function getAcademicDashboardData(schoolId?: string) {
+  const supabase = await createClient();
+
+  let studentsQuery = supabase.from("students").select("id, status", { count: "exact" });
+  let admissionsQuery = supabase
+    .from("admission_applications")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+  let classesQuery = supabase.from("classes").select("id", { count: "exact", head: true });
+
+  if (schoolId) {
+    studentsQuery = studentsQuery.eq("school_id", schoolId);
+    admissionsQuery = admissionsQuery.eq("school_id", schoolId);
+  }
+
+  const [studentsResult, admissionsResult, classesResult] = await Promise.all([
+    studentsQuery,
+    admissionsQuery,
+    classesQuery,
+  ]);
+
+  const students = studentsResult.data ?? [];
+  const activeStudents = students.filter((s) => s.status === "active").length;
+
+  return {
+    totalStudents: studentsResult.count ?? students.length,
+    activeStudents,
+    pendingAdmissions: admissionsResult.count ?? 0,
+    classes: classesResult.count ?? 0,
+  };
+}
+
+export type OperationsKPIs = {
+  libraryTitles: number;
+  booksOnLoan: number;
+  overdueLoans: number;
+  staffCount: number;
+  transportRoutes: number;
+  upcomingEvents: number;
+};
+
+export async function getOperationsDashboardData(options?: {
+  schoolId?: string;
+  branchId?: string;
+}): Promise<OperationsKPIs> {
+  const { getLibraryStats } = await import("./library");
+  const { getTransportStats } = await import("./transport");
+  const { getUpcomingEventsCount } = await import("./events");
+  const { getStaffCount } = await import("./staff");
+
+  const scope = {
+    schoolId: options?.schoolId,
+    branchId: options?.branchId,
+  };
+
+  const [library, transport, upcomingEvents, staffCount] = await Promise.all([
+    getLibraryStats(scope),
+    getTransportStats(scope),
+    getUpcomingEventsCount(scope),
+    getStaffCount(scope),
+  ]);
+
+  return {
+    libraryTitles: library.titles,
+    booksOnLoan: library.activeIssues,
+    overdueLoans: library.overdueIssues,
+    staffCount,
+    transportRoutes: transport.routes,
+    upcomingEvents,
+  };
+}

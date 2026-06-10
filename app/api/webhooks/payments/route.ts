@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
   if (!invoice) {
     // Try payments.reference as fallback - some providers use custom reference
     const { data: existingPayment } = await supabase
-      .from("payments")
+      .from("fee_payments")
       .select("invoice_id")
       .eq("reference", reference)
       .maybeSingle();
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
   const invoiceAmount = Number(invoice.amount);
   const newStatus = newAmountPaid >= invoiceAmount ? "paid" : "pending";
 
-  await supabase.from("payments").insert({
+  await supabase.from("fee_payments").insert({
     invoice_id: invoice.id,
     amount,
     method: "online",

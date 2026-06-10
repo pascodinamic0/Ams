@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { PasswordStrength } from "@/components/ui/password-strength";
 import { registerSchema, type RegisterFormData } from "@/lib/validations";
+import { registerSchoolOrganization } from "@/lib/actions/school-registration";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
@@ -21,13 +22,33 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signUp({
+      const { data: authData, error } = await supabase.auth.signUp({
         email: data.admin_email,
         password: data.password,
-        options: { data: { school_name: data.school_name } },
+        options: {
+          data: {
+            school_name: data.school_name,
+            name: data.school_name,
+            role: "academic_admin",
+          },
+        },
       });
       if (error) throw error;
-      toast.success("Account created. Check your email to confirm.");
+      if (!authData.user) throw new Error("Registration failed");
+
+      const org = await registerSchoolOrganization({
+        userId: authData.user.id,
+        schoolName: data.school_name,
+        adminEmail: data.admin_email,
+      });
+
+      if (org.error) {
+        throw new Error(org.error);
+      }
+
+      toast.success(
+        "School registered! Check your email to confirm, then sign in. Your school is pending platform approval."
+      );
       router.push("/login");
       router.refresh();
     } catch (err) {

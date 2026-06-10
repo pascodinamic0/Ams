@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCampaignTargetGuardians } from "@/lib/db/campaigns";
+import { createNotifications } from "@/lib/services/notifications";
 import { sendWhatsAppBulk, interpolateTemplate } from "@/lib/services/whatsapp";
 import { z } from "zod";
 
@@ -21,6 +22,10 @@ export async function createCampaign(
 ): Promise<{ data?: { id: string }; error?: unknown }> {
   const parsed = campaignSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
+
+  if (parsed.data.channel === "sms") {
+    return { error: "SMS campaigns are not available yet. Use WhatsApp or in-app alerts." };
+  }
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -50,7 +55,7 @@ export async function createCampaign(
 }
 
 /**
- * Send a campaign: resolves recipients, dispatches WhatsApp messages in bulk,
+ * Send a campaign: resolves recipients, dispatches by channel,
  * logs delivery per-recipient, and updates campaign totals.
  */
 export async function sendCampaign(
@@ -60,7 +65,6 @@ export async function sendCampaign(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  // Fetch the campaign
   const { data: campaign, error: campErr } = await supabase
     .from("campaigns")
     .select("*")
@@ -70,74 +74,111 @@ export async function sendCampaign(
   if (campErr || !campaign) return { error: "Campaign not found" };
   if (campaign.status === "sent") return { error: "Campaign already sent" };
 
-  // Mark as sending
+  if (campaign.channel === "sms") {
+    return { error: "SMS campaigns are not available yet. Use WhatsApp or in-app alerts." };
+  }
+
   await supabase
     .from("campaigns")
     .update({ status: "sending" })
     .eq("id", campaignId);
 
-  // Resolve recipients
   const guardians = await getCampaignTargetGuardians(campaign.school_id, campaign.target);
 
-  if (guardians.length === 0) {
+  const recipients =
+    campaign.channel === "in_app"
+      ? guardians.filter((g) => g.auth_user_id)
+      : guardians.filter((g) => g.phone);
+
+  if (recipients.length === 0) {
     await supabase
       .from("campaigns")
       .update({ status: "failed", total_recipients: 0 })
       .eq("id", campaignId);
-    return { error: "No recipients found for this target" };
+    return {
+      error:
+        campaign.channel === "in_app"
+          ? "No recipients with portal accounts found for this target"
+          : "No recipients with phone numbers found for this target",
+    };
   }
 
-  // Insert recipient rows (pending)
-  const recipientRows = guardians.map((g) => ({
+  const recipientRows = recipients.map((g) => ({
     campaign_id: campaignId,
     guardian_id: g.guardian_id,
-    phone: g.phone,
+    phone: g.phone ?? "",
     name: g.name,
     status: "pending",
   }));
 
   await supabase.from("campaign_recipients").insert(recipientRows);
 
-  // Dispatch messages
-  const payloads = guardians.map((g) => ({
-    id: g.guardian_id,
-    phone: g.phone,
-    body: interpolateTemplate(campaign.body, {
-      guardian_name: g.name,
-    }),
-  }));
-
-  const results = await sendWhatsAppBulk(payloads);
-
-  // Update delivery status per recipient
   let delivered = 0;
   let failed = 0;
 
-  for (const result of results) {
-    if (result.success) {
-      delivered++;
+  if (campaign.channel === "in_app") {
+    const notifications = recipients.map((g) => ({
+      userId: g.auth_user_id!,
+      title: campaign.title,
+      body: interpolateTemplate(campaign.body, { guardian_name: g.name }),
+    }));
+
+    const { created, failed: notifyFailed } = await createNotifications(notifications);
+    delivered = created;
+    failed = notifyFailed;
+
+    const sentAt = new Date().toISOString();
+    if (notifyFailed === 0) {
       await supabase
         .from("campaign_recipients")
-        .update({ status: "delivered", sent_at: new Date().toISOString() })
-        .eq("campaign_id", campaignId)
-        .eq("guardian_id", result.id!);
+        .update({ status: "delivered", sent_at: sentAt })
+        .eq("campaign_id", campaignId);
     } else {
-      failed++;
       await supabase
         .from("campaign_recipients")
-        .update({ status: "failed", error: result.error ?? "Unknown error" })
-        .eq("campaign_id", campaignId)
-        .eq("guardian_id", result.id!);
+        .update({
+          status: created > 0 ? "delivered" : "failed",
+          sent_at: created > 0 ? sentAt : null,
+          error: created > 0 ? null : "Failed to create notifications",
+        })
+        .eq("campaign_id", campaignId);
+    }
+  } else {
+    const payloads = recipients.map((g) => ({
+      id: g.guardian_id,
+      phone: g.phone!,
+      body: interpolateTemplate(campaign.body, {
+        guardian_name: g.name,
+      }),
+    }));
+
+    const results = await sendWhatsAppBulk(payloads);
+
+    for (const result of results) {
+      if (result.success) {
+        delivered++;
+        await supabase
+          .from("campaign_recipients")
+          .update({ status: "delivered", sent_at: new Date().toISOString() })
+          .eq("campaign_id", campaignId)
+          .eq("guardian_id", result.id!);
+      } else {
+        failed++;
+        await supabase
+          .from("campaign_recipients")
+          .update({ status: "failed", error: result.error ?? "Unknown error" })
+          .eq("campaign_id", campaignId)
+          .eq("guardian_id", result.id!);
+      }
     }
   }
 
-  // Finalize campaign
   await supabase
     .from("campaigns")
     .update({
       status: "sent",
       sent_at: new Date().toISOString(),
-      total_recipients: guardians.length,
+      total_recipients: recipients.length,
       delivered_count: delivered,
       failed_count: failed,
     })
@@ -145,6 +186,7 @@ export async function sendCampaign(
 
   revalidatePath("/outreach");
   revalidatePath(`/outreach/${campaignId}`);
+  revalidatePath("/notifications");
   return { sent: delivered, failed };
 }
 

@@ -24,8 +24,11 @@ export async function createStudent(
       first_name: parsed.data.first_name,
       last_name: parsed.data.last_name,
       date_of_birth: parsed.data.date_of_birth,
+      gender: parsed.data.gender || null,
       class_id: parsed.data.class_id || null,
       status: parsed.data.status,
+      home_address: parsed.data.home_address || null,
+      notes: parsed.data.notes || null,
     })
     .select("id, student_id")
     .single();

@@ -16,14 +16,18 @@ export async function createGuardian(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
+  const phone = parsed.data.whatsapp || parsed.data.phone || null;
+
   const { data, error } = await supabase
     .from("guardians")
     .insert({
       school_id: input.school_id,
       name: parsed.data.name,
       email: parsed.data.email,
-      phone: parsed.data.phone || null,
+      phone,
       relation: parsed.data.relation,
+      address: parsed.data.address || null,
+      workplace: parsed.data.workplace || null,
     })
     .select("id")
     .single();
@@ -51,9 +55,17 @@ export async function updateGuardian(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
+  const { whatsapp, phone, ...rest } = parsed.data;
+  const row = {
+    ...rest,
+    ...(whatsapp !== undefined || phone !== undefined
+      ? { phone: whatsapp ?? phone ?? null }
+      : {}),
+  };
+
   const { error } = await supabase
     .from("guardians")
-    .update(parsed.data)
+    .update(row)
     .eq("id", id);
 
   if (error) {
@@ -62,8 +74,7 @@ export async function updateGuardian(
   }
 
   revalidatePath("/academic");
-  revalidatePath("/academic/guardians");
-  revalidatePath(`/academic/guardians/${id}`);
+  revalidatePath("/academic/students");
   return {};
 }
 

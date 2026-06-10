@@ -1,4 +1,6 @@
-import Link from "next/link";
+import { notFound } from "next/navigation";
+import { SchoolHomeTemplate } from "@/components/schools/school-home-templates";
+import { getSchoolBySlug } from "@/lib/db";
 
 export default async function SchoolHomepage({
   params,
@@ -6,16 +8,15 @@ export default async function SchoolHomepage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const school = await getSchoolBySlug(slug);
+
+  if (!school) {
+    notFound();
+  }
+
   return (
-    <div className="mx-auto max-w-4xl px-6 py-16">
-      <h1 className="text-4xl font-bold capitalize">{slug.replace(/-/g, " ")}</h1>
-      <p className="mt-4 text-zinc-600">School homepage - About, Contact, CTA</p>
-      <Link
-        href={`/schools/${slug}/admissions`}
-        className="mt-8 inline-block rounded-lg bg-zinc-900 px-6 py-3 text-white hover:bg-zinc-800"
-      >
-        Apply for Admissions
-      </Link>
+    <div className="mx-auto max-w-5xl px-6 py-12">
+      <SchoolHomeTemplate school={school} />
     </div>
   );
 }

@@ -21,6 +21,15 @@ export default async function ConversationPage({ params }: PageProps) {
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  let schoolId = "";
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("school_id")
+      .eq("id", user.id)
+      .single();
+    schoolId = profile?.school_id ?? "";
+  }
 
   const [conv, allConversations, contacts] = await Promise.all([
     getConversationById(conversationId),
@@ -36,7 +45,7 @@ export default async function ConversationPage({ params }: PageProps) {
       <div className="hidden w-72 shrink-0 flex-col rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900 lg:flex">
         <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
           <h2 className="font-semibold text-slate-900 dark:text-white">Conversations</h2>
-          <NewConversationButton contacts={contacts} />
+          <NewConversationButton contacts={contacts} schoolId={schoolId} />
         </div>
         <div className="flex-1 overflow-y-auto">
           <ul className="divide-y divide-slate-100 dark:divide-slate-800">

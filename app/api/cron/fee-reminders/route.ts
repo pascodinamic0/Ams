@@ -33,11 +33,13 @@ function serviceClient() {
 export async function POST(req: NextRequest) {
   // Auth check
   const cronSecret = process.env.CRON_SECRET;
-  if (cronSecret) {
-    const auth = req.headers.get("authorization");
-    if (auth !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!cronSecret) {
+    console.error("CRON_SECRET not configured");
+    return NextResponse.json({ error: "Cron not configured" }, { status: 500 });
+  }
+  const auth = req.headers.get("authorization");
+  if (auth !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const supabase = serviceClient();

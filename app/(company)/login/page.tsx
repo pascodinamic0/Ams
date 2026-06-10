@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { loginSchema, type LoginFormData } from "@/lib/validations";
 import { createClient } from "@/lib/supabase/client";
+import { getDashboardForRole } from "@/lib/auth/rbac";
 import { toast } from "@/lib/toast";
 
 export default function LoginPage() {
@@ -86,17 +87,43 @@ function LoginSkeleton() {
 function LoginFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") ?? "/admin";
+  const redirectParam = searchParams.get("redirect");
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(data: LoginFormData) {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithPassword(data);
+      const { data: authData, error } = await supabase.auth.signInWithPassword(data);
       if (error) throw error;
+
+      let destination = redirectParam ?? "/admin";
+      if (!redirectParam && authData.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role, school_id")
+          .eq("id", authData.user.id)
+          .single();
+
+        if (profile?.school_id) {
+          const { data: school } = await supabase
+            .from("schools")
+            .select("status")
+            .eq("id", profile.school_id)
+            .single();
+
+          if (school?.status === "pending" || school?.status === "suspended") {
+            destination = "/pending";
+          } else {
+            destination = getDashboardForRole(profile?.role);
+          }
+        } else {
+          destination = getDashboardForRole(profile?.role);
+        }
+      }
+
       toast.success("Logged in successfully");
-      router.push(redirect);
+      router.push(destination);
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Login failed");
