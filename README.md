@@ -91,13 +91,15 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Login and registration support **Sign in with Google** via Supabase Auth.
 
-1. **Google Cloud Console** — Create an OAuth 2.0 Client ID (Web application).
-   - Authorized redirect URI: `https://<your-project-ref>.supabase.co/auth/v1/callback`
-2. **Supabase Dashboard** → **Authentication** → **Providers** → **Google** — Enable and paste the Client ID and Client Secret.
-3. **Supabase Dashboard** → **Authentication** → **URL Configuration** — Add redirect URLs:
+AMS uses Supabase project **AMC** (`ooheotsnplfrpgblrnot`).
+
+1. **Google Cloud Console** — OAuth 2.0 Client ID redirect URI:
+   - `https://ooheotsnplfrpgblrnot.supabase.co/auth/v1/callback`
+2. **Supabase Dashboard** → **Authentication** → **Providers** → **Google** — Enable with Client ID and Secret.
+3. **Supabase Dashboard** → **Authentication** → **URL Configuration** — Redirect URLs:
    - `http://localhost:3000/auth/callback`
-   - `https://your-production-domain.com/auth/callback`
-4. For local Supabase CLI, set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env` (see `.env.example`).
+   - `https://ams-xi-two.vercel.app/auth/callback` (or your production domain)
+4. Set `NEXT_PUBLIC_APP_URL` in Vercel to your production origin (used for email and OAuth callbacks).
 
 ## Scripts
 

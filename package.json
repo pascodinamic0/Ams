@@ -12,7 +12,8 @@
     "seed:demo-data": "node scripts/seed-demo-data.mjs",
     "reset:super-admin": "node scripts/reset-super-admin-password.mjs",
     "db:migrate": "node scripts/migrate.mjs",
-    "db:migrate:one": "node scripts/apply-migration.mjs"
+    "db:migrate:one": "node scripts/apply-migration.mjs",
+    "db:migrate:project": "node scripts/migrate-supabase-project.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",

@@ -1,7 +1,7 @@
 # Supabase local development config
 # See https://supabase.com/docs/guides/cli/config
 
-project_id = "gajombhqonwjfbpcjclj"
+project_id = "ooheotsnplfrpgblrnot"
 
 [api]
 enabled = true

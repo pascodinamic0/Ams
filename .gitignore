@@ -34,6 +34,15 @@ yarn-error.log*
 .env
 .env.local
 .env.*.local
+.env.vercel.*
+
+# Supabase migration exports (may contain PII)
+scripts/.migration-export.json
+scripts/.migration.sql
+scripts/.migration-*.sql
+scripts/.migration-inserts.json
+scripts/.mig-stmt-*.sql
+scripts/.mig-stmt-*-query.json
 
 # Supabase
 supabase/.temp
