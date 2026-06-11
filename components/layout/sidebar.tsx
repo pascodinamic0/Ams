@@ -46,6 +46,11 @@ const icon = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
     </svg>
   ),
+  website: (
+    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+    </svg>
+  ),
   students: (
     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" />
@@ -158,6 +163,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   super_admin: [
     { href: "/admin", label: "Dashboard", icon: icon.dashboard },
     { href: "/admin/schools", label: "Schools", icon: icon.schools },
+    { href: "/admin/websites", label: "School Websites", icon: icon.website },
     { href: "/admin/users", label: "Users", icon: icon.users },
     { href: "/admin/roles", label: "Roles", icon: icon.roles },
     { href: "/admin/audit", label: "Audit Logs", icon: icon.audit },
@@ -167,6 +173,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   ],
   academic_admin: [
     { href: "/academic", label: "Dashboard", icon: icon.dashboard },
+    { href: "/academic/website", label: "Public Website", icon: icon.website },
     { href: "/academic/team", label: "Team", icon: icon.users },
     { href: "/academic/students", label: "Students", icon: icon.students },
     { href: "/academic/admissions", label: "Admissions", icon: icon.admissions },

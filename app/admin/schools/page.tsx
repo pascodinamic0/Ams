@@ -27,11 +27,16 @@ export default async function SchoolsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">Schools</h1>
-        <Link href="/admin/schools/new">
-          <Button>Add School</Button>
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/admin/websites">
+            <Button variant="outline">School Websites</Button>
+          </Link>
+          <Link href="/admin/schools/new">
+            <Button>Add School</Button>
+          </Link>
+        </div>
       </div>
       {schools.length === 0 ? (
         <EmptyState

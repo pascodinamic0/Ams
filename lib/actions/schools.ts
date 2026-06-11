@@ -8,6 +8,10 @@ import {
   resolveUniqueSchoolCode,
   resolveUniqueSchoolSlug,
 } from "@/lib/schools/identity";
+import {
+  getDefaultWebsiteContent,
+  type SchoolWebsiteContent,
+} from "@/lib/schools/website-content";
 
 export type CreateSchoolInput = {
   name: string;
@@ -53,6 +57,10 @@ export async function createSchool(input: CreateSchoolInput) {
       theme_primary_color: input.themePrimaryColor ?? "#3b82f6",
       theme_secondary_color: input.themeSecondaryColor ?? "#1d4ed8",
       website_template: input.websiteTemplate ?? "modern",
+      website_content: getDefaultWebsiteContent(input.name),
+      cover_image_url:
+        "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&q=80",
+      about: getDefaultWebsiteContent(input.name).hero_subtitle,
       status: "approved",
       public_site_enabled: true,
     })
@@ -97,6 +105,7 @@ export async function updateSchool(
     website_template: "modern" | "classic" | "minimal";
     custom_domain: string;
     public_site_enabled: boolean;
+    website_content: SchoolWebsiteContent;
   }>
 ) {
   const supabase = await createClient();
@@ -104,6 +113,20 @@ export async function updateSchool(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return { error: "Not authenticated" };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, school_id")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role === "academic_admin") {
+    if (profile.school_id !== id) {
+      return { error: "You can only edit your own school's website" };
+    }
+  } else if (profile?.role !== "super_admin") {
+    return { error: "Not authorized to update school website" };
   }
 
   if (updates.slug) {
@@ -132,7 +155,10 @@ export async function updateSchool(
 
   revalidatePath("/admin");
   revalidatePath("/admin/schools");
+  revalidatePath("/admin/websites");
+  revalidatePath(`/admin/websites/${id}`);
   revalidatePath(`/admin/schools/${id}`);
+  revalidatePath("/academic/website");
   revalidatePath("/schools");
   if (school?.slug) {
     revalidatePath(`/schools/${school.slug}`);

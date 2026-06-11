@@ -6,6 +6,10 @@ import {
   resolveUniqueSchoolCode,
   resolveUniqueSchoolSlug,
 } from "@/lib/schools/identity";
+import {
+  DEFAULT_HERO_IMAGE,
+  getDefaultWebsiteContent,
+} from "@/lib/schools/website-content";
 
 export type RegisterSchoolInput = {
   userId: string;
@@ -58,6 +62,9 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
       theme_primary_color: "#3b82f6",
       theme_secondary_color: "#1d4ed8",
       website_template: "modern",
+      website_content: getDefaultWebsiteContent(schoolName),
+      cover_image_url: DEFAULT_HERO_IMAGE,
+      about: getDefaultWebsiteContent(schoolName).hero_subtitle,
     })
     .select("id, slug")
     .single();

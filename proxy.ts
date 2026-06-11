@@ -4,6 +4,7 @@ import {
   getSchoolAccessContext,
   schoolPortalBlocked,
 } from "@/lib/auth/school-access";
+import { resolveLoginDestination } from "@/lib/auth/login-redirect";
 import { canAccessPath, getDashboardForRole } from "@/lib/auth/rbac";
 
 const PUBLIC_ROUTES = [
@@ -40,6 +41,20 @@ export async function proxy(request: NextRequest) {
   const serverAction = isServerAction(request);
 
   if (isPublicRoute(pathname)) {
+    if (pathname === "/login" && user) {
+      const access = await getSchoolAccessContext(request, user.id);
+      if (access) {
+        const redirectParam = request.nextUrl.searchParams.get("redirect");
+        const url = request.nextUrl.clone();
+        url.pathname = resolveLoginDestination({
+          role: access.role,
+          schoolStatus: access.schoolStatus,
+          redirect: redirectParam,
+        });
+        url.search = "";
+        return NextResponse.redirect(url);
+      }
+    }
     return supabaseResponse;
   }
 

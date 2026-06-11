@@ -26,6 +26,14 @@ export {
   type StudentTransport,
 } from "./transport";
 export { getEvents, getUpcomingEventsCount, type EventListItem } from "./events";
+export {
+  getPublicSchoolEvents,
+  getPublicSchoolEvent,
+  getCampusVisitSlots,
+  getEventRegistrations,
+  type PublicSchoolEvent,
+  type EventRegistrationListItem,
+} from "./public-events";
 export { getStaff, getStaffCount, type StaffListItem } from "./staff";
 export {
   getBranches,

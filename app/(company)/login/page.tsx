@@ -2,7 +2,7 @@
 
 import { Suspense, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useFormContext } from "react-hook-form";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { loginSchema, type LoginFormData } from "@/lib/validations";
 import { createClient } from "@/lib/supabase/client";
-import { getDashboardForRole } from "@/lib/auth/rbac";
+import { resolveLoginDestination } from "@/lib/auth/login-redirect";
 import { toast } from "@/lib/toast";
 
 export default function LoginPage() {
@@ -85,7 +85,6 @@ function LoginSkeleton() {
 }
 
 function LoginFormContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
   const [loading, setLoading] = useState(false);
@@ -98,33 +97,34 @@ function LoginFormContent() {
       if (error) throw error;
 
       let destination = redirectParam ?? "/admin";
-      if (!redirectParam && authData.user) {
+
+      if (authData.user) {
         const { data: profile } = await supabase
           .from("profiles")
           .select("role, school_id")
           .eq("id", authData.user.id)
           .single();
 
+        let schoolStatus: "pending" | "approved" | "suspended" | null = null;
         if (profile?.school_id) {
           const { data: school } = await supabase
             .from("schools")
             .select("status")
             .eq("id", profile.school_id)
             .single();
-
-          if (school?.status === "pending" || school?.status === "suspended") {
-            destination = "/pending";
-          } else {
-            destination = getDashboardForRole(profile?.role);
-          }
-        } else {
-          destination = getDashboardForRole(profile?.role);
+          schoolStatus = (school?.status as typeof schoolStatus) ?? null;
         }
+
+        destination = resolveLoginDestination({
+          role: profile?.role,
+          schoolStatus,
+          redirect: redirectParam,
+        });
       }
 
       toast.success("Logged in successfully");
-      router.push(destination);
-      router.refresh();
+      // Full navigation ensures auth cookies are sent on the next server request.
+      window.location.assign(destination);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Login failed");
     } finally {

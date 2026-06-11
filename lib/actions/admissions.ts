@@ -2,7 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { admissionSchema, type AdmissionFormData } from "@/lib/validations/academic";
+import {
+  admissionSchema,
+  onlineEnrollmentSchema,
+  type AdmissionFormData,
+  type OnlineEnrollmentFormData,
+} from "@/lib/validations/academic";
+import { revalidateSchoolWebsiteBySchoolId } from "@/lib/schools/revalidate-website";
 import { createNotification } from "@/lib/services/notifications";
 import { createStudentWithGuardians } from "./student-onboarding";
 
@@ -21,6 +27,7 @@ export async function createAdmission(
       ...parsed.data,
       source: input.source ?? "manual",
       status: "pending",
+      requires_campus_visit: input.source === "online",
     })
     .select("id")
     .single();
@@ -29,8 +36,19 @@ export async function createAdmission(
   revalidatePath("/academic/admissions");
   if (input.source === "online") {
     revalidatePath("/schools");
+    await revalidateSchoolWebsiteBySchoolId(schoolId);
   }
   return { data: { id: data.id } };
+}
+
+export async function submitOnlineEnrollment(schoolId: string, input: OnlineEnrollmentFormData) {
+  const parsed = onlineEnrollmentSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
+
+  return createAdmission(schoolId, {
+    ...parsed.data,
+    source: "online",
+  });
 }
 
 async function notifyAdmissionApproved(

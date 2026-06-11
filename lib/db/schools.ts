@@ -18,6 +18,7 @@ export type SchoolRow = {
   website_template: string | null;
   custom_domain: string | null;
   public_site_enabled: boolean | null;
+  website_content: unknown;
   status: SchoolStatus;
   owner_id: string | null;
   created_at: string;
@@ -27,9 +28,11 @@ export type SchoolRow = {
 export type SchoolListItem = {
   id: string;
   name: string;
+  slug: string;
   region: string;
   status: SchoolStatus;
   public_site_enabled: boolean;
+  website_template: string | null;
 };
 
 export type SchoolDirectoryItem = {
@@ -70,7 +73,7 @@ export async function getSchools(options?: {
 
   const { data, error } = await supabase
     .from("schools")
-    .select("id, name, address, public_site_enabled, status")
+    .select("id, name, slug, address, public_site_enabled, status, website_template")
     .order("name");
 
   if (error) {
@@ -86,9 +89,11 @@ export async function getSchools(options?: {
   return (data ?? []).map((s) => ({
     id: s.id,
     name: s.name,
+    slug: s.slug,
     region: s.address ?? "",
     status: (s.status as SchoolStatus) ?? "pending",
     public_site_enabled: s.public_site_enabled ?? false,
+    website_template: s.website_template ?? "modern",
   }));
 }
 

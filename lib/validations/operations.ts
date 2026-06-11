@@ -36,7 +36,28 @@ export const eventSchema = z.object({
   branch_id: z.string().uuid("Branch is required"),
   date: z.string().min(1, "Date is required"),
   type: z.enum(["event", "holiday"]).default("event"),
+  purpose: z.enum(["general", "campus_visit"]).default("general"),
   description: z.string().optional(),
+  location: z.string().optional(),
+  start_time: z.string().optional(),
+  public_on_website: z.boolean().default(true),
+  booking_enabled: z.boolean().default(false),
+  booking_procedure: z.string().optional(),
+});
+
+export const eventRegistrationSchema = z.object({
+  event_id: z.string().uuid(),
+  registrant_name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email"),
+  phone: z.string().optional(),
+  party_size: z.coerce.number().int().min(1).max(20).default(1),
+  notes: z.string().optional(),
+  admission_application_id: z.string().uuid().optional(),
+});
+
+export const campusVisitBookingSchema = eventRegistrationSchema.extend({
+  admission_application_id: z.string().uuid("Application reference is required"),
+  guardian_email: z.string().email("Invalid email"),
 });
 
 export const staffSchema = z.object({
@@ -53,4 +74,6 @@ export type TransportRouteFormData = z.infer<typeof transportRouteSchema>;
 export type TransportVehicleFormData = z.infer<typeof transportVehicleSchema>;
 export type TransportMappingFormData = z.infer<typeof transportMappingSchema>;
 export type EventFormData = z.infer<typeof eventSchema>;
+export type EventRegistrationFormData = z.infer<typeof eventRegistrationSchema>;
+export type CampusVisitBookingFormData = z.infer<typeof campusVisitBookingSchema>;
 export type StaffFormData = z.infer<typeof staffSchema>;

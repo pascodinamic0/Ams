@@ -29,8 +29,8 @@ export default async function SchoolDetailPage({
           <Link href="/admin/schools">
             <Button variant="ghost">Back</Button>
           </Link>
-          <Link href={`/admin/schools/${id}/website`}>
-            <Button variant="outline">Website config</Button>
+          <Link href={`/admin/websites/${id}`}>
+            <Button variant="outline">Customize website</Button>
           </Link>
         </div>
       </div>

@@ -5,7 +5,12 @@ export type EventListItem = {
   title: string;
   date: string;
   type: "event" | "holiday";
+  purpose: "general" | "campus_visit";
   description: string | null;
+  location: string | null;
+  start_time: string | null;
+  public_on_website: boolean;
+  booking_enabled: boolean;
 };
 
 async function resolveBranchIds(
@@ -32,7 +37,9 @@ export async function getEvents(options?: {
 
   let query = supabase
     .from("events")
-    .select("id, title, date, type, description")
+    .select(
+      "id, title, date, type, purpose, description, location, start_time, public_on_website, booking_enabled"
+    )
     .order("date", { ascending: true });
 
   if (branchIds) {
@@ -67,7 +74,12 @@ export async function getEvents(options?: {
     title: event.title,
     date: event.date,
     type: (event.type as "event" | "holiday") ?? "event",
+    purpose: (event.purpose as "general" | "campus_visit") ?? "general",
     description: event.description,
+    location: event.location,
+    start_time: event.start_time,
+    public_on_website: event.public_on_website ?? true,
+    booking_enabled: event.booking_enabled ?? false,
   }));
 }
 

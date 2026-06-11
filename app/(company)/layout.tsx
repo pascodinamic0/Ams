@@ -13,8 +13,14 @@ export default function CompanyLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const isSchoolSite =
+    pathname === "/schools" || pathname.startsWith("/schools/");
   const isHome = pathname === "/";
   const [scrolled, setScrolled] = useState(false);
+
+  if (isSchoolSite) {
+    return <>{children}</>;
+  }
 
   // Home uses a dark hero (transparent header + light text). Other pages use a light background.
   const solidHeader = scrolled || !isHome;

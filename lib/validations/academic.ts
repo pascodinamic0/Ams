@@ -33,6 +33,15 @@ export const admissionSchema = z.object({
   guardian_email: z.string().email("Invalid email"),
   guardian_phone: z.string().optional(),
   relation: z.enum(["father", "mother", "guardian", "other"]).default("guardian"),
+  address: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+export const onlineEnrollmentSchema = admissionSchema.extend({
+  dob: z.string().min(1, "Date of birth is required"),
+  class_applying: z.string().min(1, "Grade or class is required"),
+  guardian_phone: z.string().min(1, "Phone number is required"),
+  address: z.string().min(1, "Address is required"),
 });
 
 const timeStringSchema = z
@@ -84,6 +93,7 @@ export type ClassFormData = z.infer<typeof classSchema>;
 export type SubjectFormData = z.infer<typeof subjectSchema>;
 export type BranchFormData = z.infer<typeof branchSchema>;
 export type AdmissionFormData = z.infer<typeof admissionSchema>;
+export type OnlineEnrollmentFormData = z.infer<typeof onlineEnrollmentSchema>;
 export type TimetableSlotFormData = z.infer<typeof timetableSlotSchema>;
 export type TimetableCellFormData = z.infer<typeof timetableCellSchema>;
 export type TimetableSlotEntryFormData = z.infer<typeof timetableSlotEntrySchema>;
