@@ -1,6 +1,24 @@
 -- School onboarding: approval workflow, owner tracking, team management policies
+-- Depends on 00001_core.sql (schools, profiles, user_role).
+-- Helpers below mirror 00009 where missing (safe to re-run with CREATE OR REPLACE).
 
-CREATE TYPE school_status AS ENUM ('pending', 'approved', 'suspended');
+CREATE OR REPLACE FUNCTION public.get_my_school_id()
+RETURNS uuid
+LANGUAGE sql
+STABLE
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT school_id FROM public.profiles WHERE id = auth.uid();
+$$;
+
+GRANT EXECUTE ON FUNCTION public.get_my_school_id() TO authenticated;
+
+DO $$ BEGIN
+  CREATE TYPE school_status AS ENUM ('pending', 'approved', 'suspended');
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 
 ALTER TABLE schools
   ADD COLUMN IF NOT EXISTS status school_status NOT NULL DEFAULT 'pending',
@@ -43,7 +61,10 @@ STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT public.has_role(ARRAY['academic_admin']::user_role[]);
+  SELECT EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND role = 'academic_admin'
+  );
 $$;
 
 GRANT EXECUTE ON FUNCTION public.get_my_school_status() TO authenticated;

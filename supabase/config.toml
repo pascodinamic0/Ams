@@ -1,6 +1,8 @@
 # Supabase local development config
 # See https://supabase.com/docs/guides/cli/config
 
+project_id = "gajombhqonwjfbpcjclj"
+
 [api]
 enabled = true
 port = 54321
