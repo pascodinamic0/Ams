@@ -9,7 +9,9 @@ export async function revalidateSchoolWebsiteByBranch(branchId: string) {
     .eq("id", branchId)
     .single();
 
-  const slug = (data?.schools as { slug: string } | null)?.slug;
+  const schools = data?.schools as { slug: string } | { slug: string }[] | null;
+  const school = Array.isArray(schools) ? schools[0] : schools;
+  const slug = school?.slug;
   if (!slug) return;
 
   revalidatePath(`/schools/${slug}`);

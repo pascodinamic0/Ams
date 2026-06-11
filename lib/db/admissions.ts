@@ -40,11 +40,15 @@ export async function getAdmissions(schoolId?: string): Promise<AdmissionListIte
     const visits = row.campus_visit as
       | Array<{
           status: string;
-          events: { title: string; date: string; start_time: string | null } | null;
+          events:
+            | { title: string; date: string; start_time: string | null }
+            | { title: string; date: string; start_time: string | null }[]
+            | null;
         }>
       | null;
     const visit = visits?.[0];
-    const event = visit?.events;
+    const events = visit?.events;
+    const event = Array.isArray(events) ? events[0] : events;
     return {
       id: row.id,
       student_name: row.student_name,

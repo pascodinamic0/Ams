@@ -46,6 +46,9 @@ export async function bookCampusVisitSlot(input: CampusVisitBookingFormData) {
   }
 
   const admin = createAdminClient();
+  if (!admin) {
+    return { error: "Server configuration error. Contact support." };
+  }
 
   const { data: admission, error: admissionError } = await admin
     .from("admission_applications")
@@ -75,11 +78,17 @@ export async function bookCampusVisitSlot(input: CampusVisitBookingFormData) {
     return { error: "Visit slot not found." };
   }
 
-  const branch = event.branches as { school_id: string } | null;
+  const branches = event.branches as
+    | { school_id: string }
+    | { school_id: string }[]
+    | null;
+  const eventSchoolId = Array.isArray(branches)
+    ? branches[0]?.school_id
+    : branches?.school_id;
   if (
     event.purpose !== "campus_visit" ||
     !event.booking_enabled ||
-    branch?.school_id !== admission.school_id
+    eventSchoolId !== admission.school_id
   ) {
     return { error: "This slot is not available for enrollment visits." };
   }

@@ -98,7 +98,7 @@ export function EventRegistrationsPanel({
                 {row.student_name ? (
                   <p className="text-sm">{row.student_name}</p>
                 ) : (
-                  <span className="text-xs text-slate-400">—</span>
+                  <span className="text-xs text-slate-400">{"\u2014"}</span>
                 )}
               </td>
               <td className="px-4 py-3">{row.registrant_name}</td>

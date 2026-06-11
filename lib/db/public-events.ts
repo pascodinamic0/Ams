@@ -169,8 +169,16 @@ export async function getEventRegistrations(options?: {
   }
 
   return (data ?? []).map((row) => {
-    const event = row.events as { title: string; date: string; purpose: string } | null;
-    const admission = row.admission_applications as { student_name: string } | null;
+    const events = row.events as
+      | { title: string; date: string; purpose: string }
+      | { title: string; date: string; purpose: string }[]
+      | null;
+    const event = Array.isArray(events) ? events[0] : events;
+    const admissions = row.admission_applications as
+      | { student_name: string }
+      | { student_name: string }[]
+      | null;
+    const admission = Array.isArray(admissions) ? admissions[0] : admissions;
     return {
       id: row.id,
       event_id: row.event_id,

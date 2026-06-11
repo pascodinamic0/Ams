@@ -7,7 +7,7 @@ This document covers how AMS protects data and sensitive endpoints.
 All tenant-scoped tables in Supabase use **Row Level Security**. Policies are defined in `supabase/migrations/` (notably `00009_rls_auth_helpers.sql`, `00010_rls_schools_helpers.sql`, and per-domain migrations).
 
 - **Authenticated users** access data through the Supabase anon key + session JWT. RLS policies restrict rows by `school_id`, role, and relationships (e.g. guardians see only linked students).
-- **Server actions and page loaders** use `lib/supabase/server.ts`, which runs queries as the logged-in user — RLS applies automatically.
+- **Server actions and page loaders** use `lib/supabase/server.ts`, which runs queries as the logged-in user â€” RLS applies automatically.
 - **Service role bypass:** `SUPABASE_SERVICE_ROLE_KEY` bypasses RLS. It is used only in trusted server contexts:
   - Seed scripts (`scripts/seed-*.mjs`)
   - Payment webhooks (`/api/webhooks/payments`)
@@ -43,7 +43,7 @@ Configure your provider to send signatures in one of: `x-payment-signature`, `x-
 
 ## Client vs server boundaries
 
-- Do not import `lib/supabase/server.ts` or `lib/db/*` query modules from `"use client"` components — they depend on `next/headers`.
+- Do not import `lib/supabase/server.ts` or `lib/db/*` query modules from `"use client"` components â€” they depend on `next/headers`.
 - Pass data from Server Components to Client Components as props, or call server actions from the client.
 
 ## Reporting issues
