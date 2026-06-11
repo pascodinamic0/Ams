@@ -1,20 +1,20 @@
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getStaff, getBranches } from "@/lib/db";
+import { getStaff, getSchoolCampusId } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { StaffForm, EditStaffButton } from "./staff-form";
 
 export default async function StaffPage() {
   const profile = await getCurrentProfile();
   const schoolId = profile?.school_id ?? "";
+  const campusId =
+    profile?.branch_id ?? (schoolId ? await getSchoolCampusId(schoolId) : null) ?? undefined;
 
-  const [staff, branches] = await Promise.all([
-    getStaff({
-      schoolId: schoolId || undefined,
-      branchId: profile?.branch_id ?? undefined,
-    }),
-    schoolId ? getBranches(schoolId) : getBranches(),
-  ]);
+  const staff = await getStaff({
+    schoolId: schoolId || undefined,
+    branchId: campusId,
+  });
+
   const tableData = staff.map((row) => ({
     ...row,
     actions: schoolId ? (
@@ -24,24 +24,24 @@ export default async function StaffPage() {
           name: String(row.name),
           email: row.email as string | null,
           role: row.role as string | null,
-          branch_id: row.branch_id as string | null,
         }}
         schoolId={schoolId}
-        branches={branches.map((b) => ({ id: b.id, name: b.name }))}
+        campusId={campusId}
       />
     ) : null,
   }));
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Staff</h1>
+      <div>
+        <h1 className="text-2xl font-bold">Staff</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          Operations team for your school campus.
+        </p>
+      </div>
 
       {schoolId ? (
-        <StaffForm
-          schoolId={schoolId}
-          branchId={profile?.branch_id ?? undefined}
-          branches={branches.map((b) => ({ id: b.id, name: b.name }))}
-        />
+        <StaffForm schoolId={schoolId} campusId={campusId} />
       ) : (
         <p className="text-sm text-slate-500">Assign a school to your profile to manage staff.</p>
       )}
@@ -55,7 +55,6 @@ export default async function StaffPage() {
             { id: "name", header: "Name", accessorKey: "name", sortable: true },
             { id: "email", header: "Email", accessorKey: "email" },
             { id: "role", header: "Role", accessorKey: "role" },
-            { id: "branch_name", header: "Branch", accessorKey: "branch_name" },
             { id: "actions", header: "", accessorKey: "actions" },
           ]}
         />

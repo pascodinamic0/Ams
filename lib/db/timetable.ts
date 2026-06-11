@@ -1,8 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
-import type { TimetableSlot, TeacherOption } from "@/lib/timetable/shared";
+import type { TimetableCellEntry, TimetableSlot, TeacherOption } from "@/lib/timetable/shared";
 
 export type { TimetableSlot, TimetableSlotItem, TeacherOption } from "@/lib/timetable/shared";
 export { TIMETABLE_DAYS, TIMETABLE_PERIODS, DAY_LABELS } from "@/lib/timetable/shared";
+
+function normalizeTime(value: string | null | undefined): string | null {
+  if (!value) return null;
+  return value.slice(0, 5);
+}
 
 function mapSlotRows(data: unknown[]): TimetableSlot[] {
   return data.map((row) => {
@@ -13,6 +18,8 @@ function mapSlotRows(data: unknown[]): TimetableSlot[] {
       period: number;
       subject_id: string | null;
       teacher_id: string | null;
+      start_time: string | null;
+      end_time: string | null;
       subjects: { name?: string } | null;
       profiles: { name?: string } | null;
     };
@@ -25,18 +32,24 @@ function mapSlotRows(data: unknown[]): TimetableSlot[] {
       subject_name: r.subjects?.name ?? null,
       teacher_id: r.teacher_id,
       teacher_name: r.profiles?.name ?? null,
+      start_time: normalizeTime(r.start_time),
+      end_time: normalizeTime(r.end_time),
     };
   });
 }
+
+const SLOT_SELECT =
+  "id, class_id, day, period, subject_id, teacher_id, start_time, end_time, subjects(name), profiles(name)";
 
 export async function getTimetableSlots(classId: string): Promise<TimetableSlot[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timetable_slots")
-    .select("id, class_id, day, period, subject_id, teacher_id, subjects(name), profiles(name)")
+    .select(SLOT_SELECT)
     .eq("class_id", classId)
     .order("day")
-    .order("period");
+    .order("period")
+    .order("start_time", { nullsFirst: false });
 
   if (error) {
     console.error("getTimetableSlots error:", error);
@@ -64,7 +77,12 @@ export function groupTimetableByDay(slots: TimetableSlot[]): Map<number, Timetab
     byDay.set(slot.day, list);
   }
   for (const [, list] of byDay) {
-    list.sort((a, b) => a.period - b.period);
+    list.sort((a, b) => {
+      if (a.period !== b.period) return a.period - b.period;
+      const aStart = a.start_time ?? "";
+      const bStart = b.start_time ?? "";
+      return aStart.localeCompare(bStart);
+    });
   }
   return byDay;
 }
@@ -92,102 +110,68 @@ export type TimetableSlotWrite = {
   period: number;
   subject_id: string | null;
   teacher_id: string | null;
+  start_time?: string | null;
+  end_time?: string | null;
 };
 
-export async function findTimetableSlot(
-  classId: string,
-  day: number,
-  period: number
-): Promise<{ id: string } | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("timetable_slots")
-    .select("id")
-    .eq("class_id", classId)
-    .eq("day", day)
-    .eq("period", period)
-    .maybeSingle();
-
-  if (error) {
-    console.error("findTimetableSlot error:", error);
-    return null;
-  }
-
-  return data;
+function timesOverlap(
+  aStart: string | null,
+  aEnd: string | null,
+  bStart: string | null,
+  bEnd: string | null
+): boolean {
+  if (!aStart || !aEnd || !bStart || !bEnd) return false;
+  return aStart < bEnd && bStart < aEnd;
 }
 
 export async function findTeacherTimetableConflict(
   teacherId: string,
   day: number,
   period: number,
-  excludeClassId: string
+  excludeClassId: string,
+  startTime?: string | null,
+  endTime?: string | null,
+  excludeSlotId?: string
 ): Promise<{ id: string; class_name: string | null } | null> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("timetable_slots")
-    .select("id, classes(name)")
+    .select("id, period, start_time, end_time, classes(name)")
     .eq("teacher_id", teacherId)
     .eq("day", day)
-    .eq("period", period)
-    .neq("class_id", excludeClassId)
-    .maybeSingle();
+    .neq("class_id", excludeClassId);
 
   if (error) {
     console.error("findTeacherTimetableConflict error:", error);
     return null;
   }
 
-  if (!data) return null;
+  const normalizedStart = normalizeTime(startTime);
+  const normalizedEnd = normalizeTime(endTime);
 
-  return {
-    id: data.id,
-    class_name: (data.classes as { name?: string } | null)?.name ?? null,
-  };
-}
+  for (const row of data ?? []) {
+    if (excludeSlotId && row.id === excludeSlotId) continue;
 
-export async function insertTimetableSlot(
-  payload: TimetableSlotWrite
-): Promise<{ id: string } | { error: string }> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("timetable_slots")
-    .insert({
-      ...payload,
-      updated_at: new Date().toISOString(),
-    })
-    .select("id")
-    .single();
+    const rowStart = normalizeTime(row.start_time);
+    const rowEnd = normalizeTime(row.end_time);
 
-  if (error) {
-    console.error("insertTimetableSlot error:", error);
-    return { error: error.message };
+    const conflicts =
+      normalizedStart && normalizedEnd && rowStart && rowEnd
+        ? timesOverlap(normalizedStart, normalizedEnd, rowStart, rowEnd)
+        : row.period === period;
+
+    if (conflicts) {
+      return {
+        id: row.id,
+        class_name: (row.classes as { name?: string } | null)?.name ?? null,
+      };
+    }
   }
 
-  return { id: data.id };
+  return null;
 }
 
-export async function updateTimetableSlot(
-  id: string,
-  payload: TimetableSlotWrite
-): Promise<{ error?: string }> {
-  const supabase = await createClient();
-  const { error } = await supabase
-    .from("timetable_slots")
-    .update({
-      ...payload,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", id);
-
-  if (error) {
-    console.error("updateTimetableSlot error:", error);
-    return { error: error.message };
-  }
-
-  return {};
-}
-
-export async function deleteTimetableSlot(
+export async function deleteTimetableSlotsForCell(
   classId: string,
   day: number,
   period: number
@@ -201,13 +185,129 @@ export async function deleteTimetableSlot(
     .eq("period", period);
 
   if (error) {
-    console.error("deleteTimetableSlot error:", error);
+    console.error("deleteTimetableSlotsForCell error:", error);
     return { error: error.message };
   }
 
   return {};
 }
 
+export async function insertTimetableSlot(
+  payload: TimetableSlotWrite
+): Promise<{ id: string } | { error: string }> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("timetable_slots")
+    .insert({
+      class_id: payload.class_id,
+      day: payload.day,
+      period: payload.period,
+      subject_id: payload.subject_id,
+      teacher_id: payload.teacher_id,
+      start_time: normalizeTime(payload.start_time),
+      end_time: normalizeTime(payload.end_time),
+      updated_at: new Date().toISOString(),
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    console.error("insertTimetableSlot error:", error);
+    return { error: error.message };
+  }
+
+  return { id: data.id };
+}
+
+export async function replaceTimetableCell(
+  classId: string,
+  day: number,
+  period: number,
+  entries: TimetableCellEntry[]
+): Promise<{ error?: string }> {
+  const activeEntries = entries.filter((e) => e.subject_id || e.teacher_id);
+
+  const clearResult = await deleteTimetableSlotsForCell(classId, day, period);
+  if (clearResult.error) return clearResult;
+
+  for (const entry of activeEntries) {
+    const result = await insertTimetableSlot({
+      class_id: classId,
+      day,
+      period,
+      subject_id: entry.subject_id,
+      teacher_id: entry.teacher_id,
+      start_time: entry.start_time,
+      end_time: entry.end_time,
+    });
+    if ("error" in result) return { error: result.error };
+  }
+
+  return {};
+}
+
+/** @deprecated Use replaceTimetableCell for multi-subject cells */
+export async function findTimetableSlot(
+  classId: string,
+  day: number,
+  period: number
+): Promise<{ id: string } | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("timetable_slots")
+    .select("id")
+    .eq("class_id", classId)
+    .eq("day", day)
+    .eq("period", period)
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    console.error("findTimetableSlot error:", error);
+    return null;
+  }
+
+  return data;
+}
+
+/** @deprecated Use deleteTimetableSlotsForCell */
+export async function deleteTimetableSlot(
+  classId: string,
+  day: number,
+  period: number
+): Promise<{ error?: string }> {
+  return deleteTimetableSlotsForCell(classId, day, period);
+}
+
+/** @deprecated Use replaceTimetableCell */
+export async function updateTimetableSlot(
+  id: string,
+  payload: TimetableSlotWrite
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("timetable_slots")
+    .update({
+      class_id: payload.class_id,
+      day: payload.day,
+      period: payload.period,
+      subject_id: payload.subject_id,
+      teacher_id: payload.teacher_id,
+      start_time: normalizeTime(payload.start_time),
+      end_time: normalizeTime(payload.end_time),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  if (error) {
+    console.error("updateTimetableSlot error:", error);
+    return { error: error.message };
+  }
+
+  return {};
+}
+
+/** @deprecated Use replaceTimetableCell */
 export async function upsertTimetableSlot(
   payload: TimetableSlotWrite
 ): Promise<{ id: string } | { error: string }> {

@@ -14,11 +14,14 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/modal";
 import { EmptyState } from "@/components/ui/empty-state";
-import { upsertTimetableSlot, clearTimetableSlot } from "@/lib/actions/timetable";
+import { saveTimetableCell, clearTimetableSlot } from "@/lib/actions/timetable";
 import { toast } from "@/lib/toast";
 import {
   TIMETABLE_DAYS,
   TIMETABLE_PERIODS,
+  defaultTimesForPeriod,
+  formatTimeRange,
+  type TimetableCellEntry,
   type TimetableSlotItem,
   type TeacherOption,
 } from "@/lib/timetable/shared";
@@ -36,8 +39,34 @@ interface TimetableBuilderProps {
 
 type EditingCell = { day: number; period: number } | null;
 
+type EntryDraft = TimetableCellEntry & { key: string };
+
 function slotKey(day: number, period: number) {
   return `${day}-${period}`;
+}
+
+function newEntryDraft(period: number, partial?: Partial<TimetableCellEntry>): EntryDraft {
+  const defaults = defaultTimesForPeriod(period);
+  return {
+    key: crypto.randomUUID(),
+    subject_id: partial?.subject_id ?? null,
+    teacher_id: partial?.teacher_id ?? null,
+    start_time: partial?.start_time ?? defaults.start,
+    end_time: partial?.end_time ?? defaults.end,
+  };
+}
+
+function slotsToDrafts(cellSlots: TimetableSlotItem[], period: number): EntryDraft[] {
+  if (cellSlots.length === 0) return [newEntryDraft(period)];
+  return cellSlots.map((slot) =>
+    newEntryDraft(period, {
+      id: slot.id,
+      subject_id: slot.subject_id,
+      teacher_id: slot.teacher_id,
+      start_time: slot.start_time,
+      end_time: slot.end_time,
+    })
+  );
 }
 
 function DraggableSubject({ subject }: { subject: SubjectOption }) {
@@ -64,12 +93,12 @@ function DraggableSubject({ subject }: { subject: SubjectOption }) {
 function TimetableCell({
   day,
   period,
-  slot,
+  cellSlots,
   onEdit,
 }: {
   day: number;
   period: number;
-  slot: TimetableSlotItem | undefined;
+  cellSlots: TimetableSlotItem[];
   onEdit: () => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({
@@ -77,7 +106,7 @@ function TimetableCell({
     data: { day, period },
   });
 
-  const filled = Boolean(slot?.subject_name || slot?.teacher_name);
+  const filled = cellSlots.some((s) => s.subject_name || s.teacher_name);
 
   return (
     <td className="border border-slate-200 p-1 dark:border-slate-700">
@@ -85,7 +114,7 @@ function TimetableCell({
         ref={setNodeRef}
         type="button"
         onClick={onEdit}
-        className={`flex min-h-[72px] w-full min-w-[110px] flex-col items-start justify-center rounded-md px-2 py-1.5 text-left text-sm transition-colors ${
+        className={`flex min-h-[72px] w-full min-w-[110px] flex-col items-start justify-start gap-1 rounded-md px-2 py-1.5 text-left text-sm transition-colors ${
           isOver
             ? "bg-indigo-100 ring-2 ring-indigo-400 dark:bg-indigo-900/40"
             : filled
@@ -94,14 +123,21 @@ function TimetableCell({
         }`}
       >
         {filled ? (
-          <>
-            <span className="font-medium text-slate-900 dark:text-slate-100">
-              {slot?.subject_name ?? "-"}
-            </span>
-            {slot?.teacher_name && (
-              <span className="mt-0.5 text-xs text-slate-500">{slot.teacher_name}</span>
-            )}
-          </>
+          cellSlots.map((slot) => (
+            <div key={slot.id} className="w-full border-b border-slate-100 pb-1 last:border-0 last:pb-0 dark:border-slate-800">
+              {formatTimeRange(slot.start_time, slot.end_time) && (
+                <span className="text-[10px] font-medium uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
+                  {formatTimeRange(slot.start_time, slot.end_time)}
+                </span>
+              )}
+              <span className="block font-medium text-slate-900 dark:text-slate-100">
+                {slot.subject_name ?? "-"}
+              </span>
+              {slot.teacher_name && (
+                <span className="text-xs text-slate-500">{slot.teacher_name}</span>
+              )}
+            </div>
+          ))
         ) : (
           <span className="text-xs">Click or drop</span>
         )}
@@ -120,11 +156,16 @@ export function TimetableBuilder({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [editing, setEditing] = useState<EditingCell>(null);
-  const [subjectId, setSubjectId] = useState("");
-  const [teacherId, setTeacherId] = useState("");
+  const [entries, setEntries] = useState<EntryDraft[]>([]);
   const [activeSubject, setActiveSubject] = useState<SubjectOption | null>(null);
 
-  const slotMap = new Map(slots.map((s) => [slotKey(s.day, s.period), s]));
+  const slotsByCell = new Map<string, TimetableSlotItem[]>();
+  for (const slot of slots) {
+    const key = slotKey(slot.day, slot.period);
+    const list = slotsByCell.get(key) ?? [];
+    list.push(slot);
+    slotsByCell.set(key, list);
+  }
 
   function handleClassChange(classId: string) {
     const params = new URLSearchParams();
@@ -133,20 +174,22 @@ export function TimetableBuilder({
   }
 
   function openEditor(day: number, period: number) {
-    const slot = slotMap.get(slotKey(day, period));
+    const cellSlots = slotsByCell.get(slotKey(day, period)) ?? [];
     setEditing({ day, period });
-    setSubjectId(slot?.subject_id ?? "");
-    setTeacherId(slot?.teacher_id ?? "");
+    setEntries(slotsToDrafts(cellSlots, period));
   }
 
-  async function saveSlot(day: number, period: number, subjId: string | null, teachId: string | null) {
+  async function persistCell(
+    day: number,
+    period: number,
+    cellEntries: EntryDraft[]
+  ) {
     startTransition(async () => {
-      const result = await upsertTimetableSlot({
+      const result = await saveTimetableCell({
         class_id: selectedClassId,
         day,
         period,
-        subject_id: subjId,
-        teacher_id: teachId,
+        entries: cellEntries.map(({ key: _key, ...entry }) => entry),
       });
       if (result.error) {
         toast.error(result.error);
@@ -160,12 +203,7 @@ export function TimetableBuilder({
 
   async function handleSave() {
     if (!editing) return;
-    await saveSlot(
-      editing.day,
-      editing.period,
-      subjectId || null,
-      teacherId || null
-    );
+    await persistCell(editing.day, editing.period, entries);
   }
 
   async function handleClear() {
@@ -183,6 +221,22 @@ export function TimetableBuilder({
       toast.success("Slot cleared");
       setEditing(null);
       router.refresh();
+    });
+  }
+
+  function updateEntry(key: string, patch: Partial<EntryDraft>) {
+    setEntries((prev) => prev.map((e) => (e.key === key ? { ...e, ...patch } : e)));
+  }
+
+  function addEntry() {
+    if (!editing) return;
+    setEntries((prev) => [...prev, newEntryDraft(editing.period)]);
+  }
+
+  function removeEntry(key: string) {
+    setEntries((prev) => {
+      if (prev.length <= 1) return prev;
+      return prev.filter((e) => e.key !== key);
     });
   }
 
@@ -207,8 +261,14 @@ export function TimetableBuilder({
     const data = active.data.current as { subjectId?: string } | undefined;
     if (!data?.subjectId) return;
 
-    const existing = slotMap.get(slotKey(day, period));
-    void saveSlot(day, period, data.subjectId, existing?.teacher_id ?? null);
+    const cellSlots = slotsByCell.get(slotKey(day, period)) ?? [];
+    const drafts = slotsToDrafts(cellSlots, period);
+    const hasContent = drafts.some((d) => d.subject_id || d.teacher_id);
+    const nextEntries = hasContent
+      ? [...drafts, newEntryDraft(period, { subject_id: data.subjectId })]
+      : [newEntryDraft(period, { subject_id: data.subjectId })];
+
+    void persistCell(day, period, nextEntries);
   }
 
   const editingDay = editing
@@ -234,7 +294,7 @@ export function TimetableBuilder({
           <div>
             <h1 className="text-2xl font-bold">Timetable</h1>
             <p className="mt-1 text-sm text-slate-500">
-              Build weekly schedules per class. Drag subjects onto slots or click a cell to edit.
+              Build weekly schedules per class. Add multiple subjects per period with custom times.
             </p>
           </div>
           <div className="w-full sm:w-64">
@@ -269,7 +329,7 @@ export function TimetableBuilder({
 
         {subjects.length === 0 && (
           <p className="text-sm text-amber-700 dark:text-amber-400">
-            Add subjects under Academic ? Subjects before filling the timetable.
+            Add subjects under Academic → Subjects before filling the timetable.
           </p>
         )}
 
@@ -291,22 +351,30 @@ export function TimetableBuilder({
               </tr>
             </thead>
             <tbody>
-              {TIMETABLE_PERIODS.map((period) => (
-                <tr key={period}>
-                  <td className="border border-slate-200 bg-slate-50 px-3 py-2 font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-400">
-                    {period}
-                  </td>
-                  {TIMETABLE_DAYS.map((d) => (
-                    <TimetableCell
-                      key={d.value}
-                      day={d.value}
-                      period={period}
-                      slot={slotMap.get(slotKey(d.value, period))}
-                      onEdit={() => openEditor(d.value, period)}
-                    />
-                  ))}
-                </tr>
-              ))}
+              {TIMETABLE_PERIODS.map((period) => {
+                const periodTimes = defaultTimesForPeriod(period);
+                return (
+                  <tr key={period}>
+                    <td className="border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-800/50">
+                      <span className="block font-medium text-slate-600 dark:text-slate-400">
+                        {period}
+                      </span>
+                      <span className="mt-0.5 block text-[10px] text-slate-400">
+                        {formatTimeRange(periodTimes.start, periodTimes.end)}
+                      </span>
+                    </td>
+                    {TIMETABLE_DAYS.map((d) => (
+                      <TimetableCell
+                        key={d.value}
+                        day={d.value}
+                        period={period}
+                        cellSlots={slotsByCell.get(slotKey(d.value, period)) ?? []}
+                        onEdit={() => openEditor(d.value, period)}
+                      />
+                    ))}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -325,46 +393,113 @@ export function TimetableBuilder({
         onClose={() => setEditing(null)}
         title={
           editing
-            ? `Period ${editing.period} - ${editingDay?.fullLabel ?? ""}`
+            ? `Period ${editing.period} — ${editingDay?.fullLabel ?? ""}`
             : undefined
         }
       >
         <div className="space-y-4">
-          <div>
-            <Label htmlFor="slot-subject">Subject</Label>
-            <select
-              id="slot-subject"
-              value={subjectId}
-              onChange={(e) => setSubjectId(e.target.value)}
-              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
-            >
-              <option value="">None</option>
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
+          <p className="text-sm text-slate-500">
+            Add one or more subjects for this period. Set start and end times for each lesson.
+          </p>
+
+          <div className="max-h-[50vh] space-y-4 overflow-y-auto pr-1">
+            {entries.map((entry, index) => (
+              <div
+                key={entry.key}
+                className="rounded-lg border border-slate-200 p-3 dark:border-slate-700"
+              >
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Lesson {index + 1}
+                  </span>
+                  {entries.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 text-red-600 hover:text-red-700"
+                      onClick={() => removeEntry(entry.key)}
+                    >
+                      Remove
+                    </Button>
+                  )}
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor={`start-${entry.key}`}>Start time</Label>
+                    <input
+                      id={`start-${entry.key}`}
+                      type="time"
+                      value={entry.start_time ?? ""}
+                      onChange={(e) =>
+                        updateEntry(entry.key, { start_time: e.target.value || null })
+                      }
+                      className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor={`end-${entry.key}`}>End time</Label>
+                    <input
+                      id={`end-${entry.key}`}
+                      type="time"
+                      value={entry.end_time ?? ""}
+                      onChange={(e) =>
+                        updateEntry(entry.key, { end_time: e.target.value || null })
+                      }
+                      className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <Label htmlFor={`subject-${entry.key}`}>Subject</Label>
+                  <select
+                    id={`subject-${entry.key}`}
+                    value={entry.subject_id ?? ""}
+                    onChange={(e) =>
+                      updateEntry(entry.key, { subject_id: e.target.value || null })
+                    }
+                    className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                  >
+                    <option value="">None</option>
+                    {subjects.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mt-3">
+                  <Label htmlFor={`teacher-${entry.key}`}>Teacher</Label>
+                  <select
+                    id={`teacher-${entry.key}`}
+                    value={entry.teacher_id ?? ""}
+                    onChange={(e) =>
+                      updateEntry(entry.key, { teacher_id: e.target.value || null })
+                    }
+                    className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                  >
+                    <option value="">None</option>
+                    {teachers.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name ?? "Unnamed"}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            ))}
           </div>
-          <div>
-            <Label htmlFor="slot-teacher">Teacher</Label>
-            <select
-              id="slot-teacher"
-              value={teacherId}
-              onChange={(e) => setTeacherId(e.target.value)}
-              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
-            >
-              <option value="">None</option>
-              {teachers.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.name ?? "Unnamed"}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex flex-wrap gap-2 pt-2">
+
+          <Button type="button" variant="outline" size="sm" onClick={addEntry}>
+            Add another subject
+          </Button>
+
+          <div className="flex flex-wrap gap-2 border-t border-slate-200 pt-4 dark:border-slate-700">
             <Button type="button" onClick={handleSave} disabled={isPending}>
-              Save slot
+              Save period
             </Button>
             <Button
               type="button"
@@ -372,7 +507,7 @@ export function TimetableBuilder({
               onClick={handleClear}
               disabled={isPending}
             >
-              Clear slot
+              Clear period
             </Button>
           </div>
         </div>

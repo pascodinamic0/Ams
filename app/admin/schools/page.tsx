@@ -16,7 +16,13 @@ export default async function SchoolsPage() {
       </Link>
     ),
     status_badge: <SchoolStatusBadge status={row.status} />,
-    actions: <SchoolStatusActions schoolId={row.id} status={row.status} />,
+    actions: (
+      <SchoolStatusActions
+        schoolId={row.id}
+        schoolName={row.name}
+        status={row.status}
+      />
+    ),
   }));
 
   return (

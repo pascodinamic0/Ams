@@ -158,7 +158,6 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   super_admin: [
     { href: "/admin", label: "Dashboard", icon: icon.dashboard },
     { href: "/admin/schools", label: "Schools", icon: icon.schools },
-    { href: "/admin/branches", label: "Branches", icon: icon.branches },
     { href: "/admin/users", label: "Users", icon: icon.users },
     { href: "/admin/roles", label: "Roles", icon: icon.roles },
     { href: "/admin/audit", label: "Audit Logs", icon: icon.audit },
@@ -226,7 +225,6 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   ],
   analytics: [
     { href: "/analytics", label: "Dashboard", icon: icon.dashboard },
-    { href: "/analytics/branches", label: "Branches", icon: icon.branches },
     { href: "/analytics/students", label: "Students", icon: icon.students },
     { href: "/analytics/attendance", label: "Attendance", icon: icon.attendance },
     { href: "/analytics/finance", label: "Finance", icon: icon.finance },

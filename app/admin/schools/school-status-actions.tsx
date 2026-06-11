@@ -9,13 +9,18 @@ import {
 } from "@/lib/actions/school-approval";
 import { toast } from "@/lib/toast";
 import type { SchoolStatus } from "@/lib/db/schools";
+import { DeleteSchoolButton } from "./delete-school-button";
 
 export function SchoolStatusActions({
   schoolId,
+  schoolName,
   status,
+  redirectAfterDelete = false,
 }: {
   schoolId: string;
+  schoolName: string;
   status: SchoolStatus;
+  redirectAfterDelete?: boolean;
 }) {
   const router = useRouter();
 
@@ -70,6 +75,11 @@ export function SchoolStatusActions({
           Re-approve
         </Button>
       )}
+      <DeleteSchoolButton
+        schoolId={schoolId}
+        schoolName={schoolName}
+        redirectToList={redirectAfterDelete}
+      />
     </div>
   );
 }

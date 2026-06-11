@@ -18,7 +18,7 @@ export default async function ClassesPage() {
       {branchId ? (
         <ClassForm branchId={branchId} sections={sections.map((s) => ({ id: s.id, name: s.name }))} />
       ) : (
-        <p className="text-sm text-slate-500">Assign a branch to your profile to manage classes.</p>
+        <p className="text-sm text-slate-500">Link your account to a school to manage classes.</p>
       )}
       {classes.length === 0 ? (
         <EmptyState title="No classes yet" description="Create your first class above" />

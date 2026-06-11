@@ -16,7 +16,6 @@ const CHANNEL_OPTIONS = [
 const TARGET_OPTIONS = [
   { id: "all_parents", label: "All Parents", description: "Every guardian in the school" },
   { id: "class", label: "Specific Class", description: "Enter a class ID to target" },
-  { id: "branch", label: "Specific Branch", description: "Enter a branch ID to target" },
 ];
 
 const VARIABLE_HINTS = [
@@ -37,7 +36,6 @@ export function CampaignForm({ schoolId }: Props) {
   const [channel, setChannel] = useState("whatsapp");
   const [targetType, setTargetType] = useState("all_parents");
   const [classId, setClassId] = useState("");
-  const [branchId, setBranchId] = useState("");
   const [sendNow, setSendNow] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -52,12 +50,7 @@ export function CampaignForm({ schoolId }: Props) {
       return;
     }
 
-    const target =
-      targetType === "all_parents"
-        ? "all_parents"
-        : targetType === "branch"
-          ? `branch:${branchId}`
-          : `class:${classId}`;
+    const target = targetType === "all_parents" ? "all_parents" : `class:${classId}`;
 
     setLoading(true);
     try {
@@ -147,13 +140,6 @@ export function CampaignForm({ schoolId }: Props) {
             placeholder="Enter class ID"
             value={classId}
             onChange={(e) => setClassId(e.target.value)}
-          />
-        )}
-        {targetType === "branch" && (
-          <Input
-            placeholder="Enter branch ID"
-            value={branchId}
-            onChange={(e) => setBranchId(e.target.value)}
           />
         )}
       </div>

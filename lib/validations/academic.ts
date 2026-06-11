@@ -35,6 +35,27 @@ export const admissionSchema = z.object({
   relation: z.enum(["father", "mother", "guardian", "other"]).default("guardian"),
 });
 
+const timeStringSchema = z
+  .string()
+  .regex(/^\d{2}:\d{2}(:\d{2})?$/, "Invalid time")
+  .nullable();
+
+export const timetableSlotEntrySchema = z.object({
+  id: z.string().uuid().optional(),
+  subject_id: z.string().uuid().nullable(),
+  teacher_id: z.string().uuid().nullable(),
+  start_time: timeStringSchema,
+  end_time: timeStringSchema,
+});
+
+export const timetableCellSchema = z.object({
+  class_id: z.string().uuid(),
+  day: z.number().int().min(0).max(6),
+  period: z.number().int().min(1).max(12),
+  entries: z.array(timetableSlotEntrySchema),
+});
+
+/** @deprecated Use timetableCellSchema for multi-subject cells */
 export const timetableSlotSchema = z.object({
   class_id: z.string().uuid(),
   day: z.number().int().min(0).max(6),
@@ -64,5 +85,7 @@ export type SubjectFormData = z.infer<typeof subjectSchema>;
 export type BranchFormData = z.infer<typeof branchSchema>;
 export type AdmissionFormData = z.infer<typeof admissionSchema>;
 export type TimetableSlotFormData = z.infer<typeof timetableSlotSchema>;
+export type TimetableCellFormData = z.infer<typeof timetableCellSchema>;
+export type TimetableSlotEntryFormData = z.infer<typeof timetableSlotEntrySchema>;
 export type CurriculumFormData = z.infer<typeof curriculumSchema>;
 export type StudentImportRow = z.infer<typeof studentImportRowSchema>;

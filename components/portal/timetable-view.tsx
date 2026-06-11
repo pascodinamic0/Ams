@@ -1,4 +1,4 @@
-import { DAY_LABELS, type TimetableSlot } from "@/lib/timetable/shared";
+import { DAY_LABELS, formatTimeRange, type TimetableSlot } from "@/lib/timetable/shared";
 
 const WEEKDAYS = [1, 2, 3, 4, 5] as const;
 
@@ -7,17 +7,26 @@ interface TimetableViewProps {
   title?: string;
 }
 
-export function TimetableView({ slots, title }: TimetableViewProps) {
-  const byDay = new Map<number, TimetableSlot[]>();
+function groupSlotsByCell(slots: TimetableSlot[]): Map<string, TimetableSlot[]> {
+  const byCell = new Map<string, TimetableSlot[]>();
   for (const slot of slots) {
-    const list = byDay.get(slot.day) ?? [];
+    const key = `${slot.day}-${slot.period}`;
+    const list = byCell.get(key) ?? [];
     list.push(slot);
-    byDay.set(slot.day, list);
+    byCell.set(key, list);
   }
-  for (const [, list] of byDay) {
-    list.sort((a, b) => a.period - b.period);
+  for (const [, list] of byCell) {
+    list.sort((a, b) => {
+      const aStart = a.start_time ?? "";
+      const bStart = b.start_time ?? "";
+      return aStart.localeCompare(bStart);
+    });
   }
+  return byCell;
+}
 
+export function TimetableView({ slots, title }: TimetableViewProps) {
+  const byCell = groupSlotsByCell(slots);
   const maxPeriod = slots.reduce((max, s) => Math.max(max, s.period), 0);
 
   if (slots.length === 0) {
@@ -52,17 +61,26 @@ export function TimetableView({ slots, title }: TimetableViewProps) {
                   {period}
                 </td>
                 {WEEKDAYS.map((day) => {
-                  const slot = byDay.get(day)?.find((s) => s.period === period);
+                  const cellSlots = byCell.get(`${day}-${period}`) ?? [];
                   return (
                     <td key={day} className="px-3 py-2 align-top">
-                      {slot ? (
-                        <div>
-                          <p className="font-medium text-slate-900 dark:text-white">
-                            {slot.subject_name ?? "-"}
-                          </p>
-                          {slot.teacher_name && (
-                            <p className="text-xs text-slate-500">{slot.teacher_name}</p>
-                          )}
+                      {cellSlots.length > 0 ? (
+                        <div className="space-y-2">
+                          {cellSlots.map((slot) => (
+                            <div key={slot.id}>
+                              {formatTimeRange(slot.start_time, slot.end_time) && (
+                                <p className="text-[10px] font-medium uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
+                                  {formatTimeRange(slot.start_time, slot.end_time)}
+                                </p>
+                              )}
+                              <p className="font-medium text-slate-900 dark:text-white">
+                                {slot.subject_name ?? "-"}
+                              </p>
+                              {slot.teacher_name && (
+                                <p className="text-xs text-slate-500">{slot.teacher_name}</p>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       ) : (
                         <span className="text-slate-300 dark:text-slate-600">-</span>

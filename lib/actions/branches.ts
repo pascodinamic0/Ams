@@ -46,7 +46,7 @@ export async function createBranch(input: BranchFormData) {
     .single();
 
   if (error) return { error: error.message };
-  revalidatePath("/admin/branches");
+  revalidatePath("/admin/schools");
   return { data: { id: data.id } };
 }
 
@@ -54,6 +54,6 @@ export async function deleteBranch(id: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("branches").delete().eq("id", id);
   if (error) return { error: error.message };
-  revalidatePath("/admin/branches");
+  revalidatePath("/admin/schools");
   return {};
 }

@@ -84,7 +84,8 @@ export async function getTeacherTodaySchedule(teacherId: string): Promise<Schedu
     .select("id, period, class_id, classes(name), subjects(name)")
     .eq("teacher_id", teacherId)
     .eq("day", dayOfWeek)
-    .order("period");
+    .order("period")
+    .order("start_time", { nullsFirst: false });
 
   if (error) {
     console.error("getTeacherTodaySchedule error:", error);

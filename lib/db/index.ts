@@ -27,7 +27,12 @@ export {
 } from "./transport";
 export { getEvents, getUpcomingEventsCount, type EventListItem } from "./events";
 export { getStaff, getStaffCount, type StaffListItem } from "./staff";
-export { getBranches, getBranchById, type BranchListItem } from "./branches";
+export {
+  getBranches,
+  getBranchById,
+  getSchoolCampusId,
+  type BranchListItem,
+} from "./branches";
 export { getClasses, type ClassListItem } from "./classes";
 export { getSections, type SectionListItem } from "./sections";
 export { getSubjects, type SubjectListItem } from "./subjects";
@@ -86,6 +91,8 @@ export {
   insertTimetableSlot,
   updateTimetableSlot,
   deleteTimetableSlot,
+  deleteTimetableSlotsForCell,
+  replaceTimetableCell,
   upsertTimetableSlot,
   DAY_LABELS,
   TIMETABLE_DAYS,

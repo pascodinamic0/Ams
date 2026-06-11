@@ -38,3 +38,9 @@ export async function getBranchById(id: string) {
   if (error) return null;
   return data;
 }
+
+/** Each school has a single campus; returns that branch when present. */
+export async function getSchoolCampusId(schoolId: string): Promise<string | null> {
+  const branches = await getBranches(schoolId);
+  return branches[0]?.id ?? null;
+}

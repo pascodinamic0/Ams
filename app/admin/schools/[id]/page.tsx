@@ -36,7 +36,9 @@ export default async function SchoolDetailPage({
       </div>
       <SchoolStatusActions
         schoolId={school.id}
+        schoolName={school.name}
         status={school.status ?? "pending"}
+        redirectAfterDelete
       />
       <SchoolEditForm school={school} />
     </div>

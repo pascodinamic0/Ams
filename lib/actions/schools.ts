@@ -78,7 +78,6 @@ export async function createSchool(input: CreateSchoolInput) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/schools");
-  revalidatePath("/admin/branches");
   return { data: { id: data.id, slug: data.slug } };
 }
 
@@ -150,7 +149,20 @@ export async function deleteSchool(id: string) {
     return { error: "Not authenticated" };
   }
 
-  const { error } = await supabase.from("schools").delete().eq("id", id);
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  if (profile?.role !== "super_admin") {
+    return { error: "Only platform administrators can delete schools" };
+  }
+
+  const admin = createAdminClient();
+  if (!admin) return { error: "Server configuration error" };
+
+  const { error } = await admin.from("schools").delete().eq("id", id);
 
   if (error) {
     console.error("deleteSchool error:", error);
@@ -159,5 +171,6 @@ export async function deleteSchool(id: string) {
 
   revalidatePath("/admin");
   revalidatePath("/admin/schools");
+  revalidatePath("/schools");
   return {};
 }

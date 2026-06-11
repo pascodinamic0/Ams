@@ -50,7 +50,7 @@ export default async function LibraryPage({
       {branchId ? (
         <BookForm branchId={branchId} />
       ) : (
-        <p className="text-sm text-slate-500">Assign a branch to your profile to add books.</p>
+        <p className="text-sm text-slate-500">Link your account to a school to add books.</p>
       )}
 
       <div>

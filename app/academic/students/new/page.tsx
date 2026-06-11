@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { StudentForm } from "@/components/forms/student-form";
 import { Button } from "@/components/ui/button";
-import { getBranches, getClasses, getGuardians } from "@/lib/db";
+import { getSchoolCampusId, getClasses, getGuardians } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 
 export default async function NewStudentPage() {
@@ -10,8 +10,7 @@ export default async function NewStudentPage() {
   let branchId = profile?.branch_id ?? "";
 
   if (!branchId && schoolId) {
-    const branches = await getBranches(schoolId);
-    branchId = branches[0]?.id ?? "";
+    branchId = (await getSchoolCampusId(schoolId)) ?? "";
   }
 
   const [classes, guardians] = await Promise.all([
@@ -25,7 +24,7 @@ export default async function NewStudentPage() {
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Onboard student</h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Your account needs a school and branch assigned before onboarding students.
+            Your account needs a school assigned before onboarding students.
           </p>
         </div>
         <Link href="/academic/students">

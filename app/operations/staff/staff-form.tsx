@@ -10,16 +10,14 @@ import { toast } from "@/lib/toast";
 
 interface StaffFormProps {
   schoolId: string;
-  branchId?: string;
-  branches: { id: string; name: string }[];
+  campusId?: string;
 }
 
-export function StaffForm({ schoolId, branchId, branches }: StaffFormProps) {
+export function StaffForm({ schoolId, campusId }: StaffFormProps) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [selectedBranch, setSelectedBranch] = useState(branchId ?? "");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -30,7 +28,7 @@ export function StaffForm({ schoolId, branchId, branches }: StaffFormProps) {
       email: email || undefined,
       role: role || undefined,
       school_id: schoolId,
-      branch_id: selectedBranch || null,
+      branch_id: campusId ?? null,
     });
     setLoading(false);
     if (result.error) {
@@ -45,7 +43,7 @@ export function StaffForm({ schoolId, branchId, branches }: StaffFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-5">
+    <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-4">
       <div>
         <Label>Name</Label>
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
@@ -58,19 +56,6 @@ export function StaffForm({ schoolId, branchId, branches }: StaffFormProps) {
         <Label>Role</Label>
         <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="e.g. Librarian" />
       </div>
-      <div>
-        <Label>Branch</Label>
-        <select
-          value={selectedBranch}
-          onChange={(e) => setSelectedBranch(e.target.value)}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
-        >
-          <option value="">All branches</option>
-          {branches.map((b) => (
-            <option key={b.id} value={b.id}>{b.name}</option>
-          ))}
-        </select>
-      </div>
       <div className="flex items-end">
         <Button type="submit" disabled={loading} className="w-full">Add staff</Button>
       </div>
@@ -81,18 +66,17 @@ export function StaffForm({ schoolId, branchId, branches }: StaffFormProps) {
 export function EditStaffButton({
   member,
   schoolId,
-  branches,
+  campusId,
 }: {
-  member: { id: string; name: string; email: string | null; role: string | null; branch_id: string | null };
+  member: { id: string; name: string; email: string | null; role: string | null };
   schoolId: string;
-  branches: { id: string; name: string }[];
+  campusId?: string;
 }) {
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(member.name);
   const [email, setEmail] = useState(member.email ?? "");
   const [role, setRole] = useState(member.role ?? "");
-  const [selectedBranch, setSelectedBranch] = useState(member.branch_id ?? "");
   const [loading, setLoading] = useState(false);
 
   async function handleSave() {
@@ -102,7 +86,7 @@ export function EditStaffButton({
       email: email || undefined,
       role: role || undefined,
       school_id: schoolId,
-      branch_id: selectedBranch || null,
+      branch_id: campusId ?? null,
     });
     setLoading(false);
     if (result.error) {
@@ -137,20 +121,10 @@ export function EditStaffButton({
   }
 
   return (
-    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
       <Input value={name} onChange={(e) => setName(e.target.value)} />
       <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
       <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" />
-      <select
-        value={selectedBranch}
-        onChange={(e) => setSelectedBranch(e.target.value)}
-        className="rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
-      >
-        <option value="">All branches</option>
-        {branches.map((b) => (
-          <option key={b.id} value={b.id}>{b.name}</option>
-        ))}
-      </select>
       <div className="flex gap-2">
         <Button size="sm" onClick={handleSave} disabled={loading}>Save</Button>
         <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>
