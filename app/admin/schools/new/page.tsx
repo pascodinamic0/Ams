@@ -85,7 +85,7 @@ function NewSchoolForm() {
       <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Add School</h1>
         <Link
-          href="/admin/websites/templates"
+          href="/admin/websites"
           className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
         >
           Browse all templates

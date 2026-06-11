@@ -21,10 +21,10 @@ export default async function AdminWebsiteEditorPage({
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <Link
-            href="/admin/websites"
+            href={`/admin/schools/${school.id}`}
             className="text-sm text-zinc-600 hover:underline dark:text-zinc-400"
           >
-            &larr; School Websites
+            &larr; {school.name}
           </Link>
           <h1 className="mt-2 text-2xl font-bold">{school.name}</h1>
           <p className="mt-1 text-sm text-zinc-500">

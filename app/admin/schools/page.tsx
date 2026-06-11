@@ -31,7 +31,7 @@ export default async function SchoolsPage() {
         <h1 className="text-2xl font-bold">Schools</h1>
         <div className="flex flex-wrap gap-2">
           <Link href="/admin/websites">
-            <Button variant="outline">School Websites</Button>
+            <Button variant="outline">Website Templates</Button>
           </Link>
           <Link href="/admin/schools/new">
             <Button>Add School</Button>

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function LegacyTemplatesPage() {
-  redirect("/admin/websites/templates");
+  redirect("/admin/websites");
 }

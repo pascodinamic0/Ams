@@ -16,11 +16,13 @@ export function SchoolStatusActions({
   schoolName,
   status,
   redirectAfterDelete = false,
+  stacked = false,
 }: {
   schoolId: string;
   schoolName: string;
   status: SchoolStatus;
   redirectAfterDelete?: boolean;
+  stacked?: boolean;
 }) {
   const router = useRouter();
 
@@ -37,8 +39,12 @@ export function SchoolStatusActions({
     router.refresh();
   }
 
+  const layoutClass = stacked
+    ? "flex flex-col gap-2 [&_button]:w-full"
+    : "flex flex-wrap gap-2";
+
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className={layoutClass}>
       {status === "pending" && (
         <>
           <Button
