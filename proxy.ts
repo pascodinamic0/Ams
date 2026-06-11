@@ -37,6 +37,32 @@ function isServerAction(request: NextRequest): boolean {
   return request.headers.has("next-action");
 }
 
+/** Preserve Supabase session cookies when middleware issues a redirect. */
+function copyCookies(from: NextResponse, to: NextResponse) {
+  from.cookies.getAll().forEach(({ name, value, ...options }) => {
+    to.cookies.set(name, value, options);
+  });
+}
+
+function redirectWithCookies(
+  request: NextRequest,
+  sessionResponse: NextResponse,
+  pathname: string,
+  searchParams?: Record<string, string>
+): NextResponse {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+  url.search = "";
+  if (searchParams) {
+    for (const [key, value] of Object.entries(searchParams)) {
+      url.searchParams.set(key, value);
+    }
+  }
+  const redirectResponse = NextResponse.redirect(url);
+  copyCookies(sessionResponse, redirectResponse);
+  return redirectResponse;
+}
+
 export async function proxy(request: NextRequest) {
   const { response: supabaseResponse, user } = await updateSession(request);
 
@@ -46,13 +72,11 @@ export async function proxy(request: NextRequest) {
   if (isPublicRoute(pathname)) {
     if (pathname === "/login" && user) {
       const redirectParam = request.nextUrl.searchParams.get("redirect");
-      const url = request.nextUrl.clone();
-      url.pathname = await getPostAuthRedirect({
+      const destination = await getPostAuthRedirect({
         userId: user.id,
         redirect: redirectParam,
       });
-      url.search = "";
-      return NextResponse.redirect(url);
+      return redirectWithCookies(request, supabaseResponse, destination);
     }
     return supabaseResponse;
   }
@@ -69,10 +93,9 @@ export async function proxy(request: NextRequest) {
     if (serverAction) {
       return supabaseResponse;
     }
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    url.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(url);
+    return redirectWithCookies(request, supabaseResponse, "/login", {
+      redirect: pathname,
+    });
   }
 
   const access = await getSchoolAccessContext(request, user.id);
@@ -82,20 +105,18 @@ export async function proxy(request: NextRequest) {
     if (serverAction) {
       return supabaseResponse;
     }
-    const url = request.nextUrl.clone();
-    url.pathname = getDashboardForRole(role);
-    url.search = "";
-    return NextResponse.redirect(url);
+    return redirectWithCookies(
+      request,
+      supabaseResponse,
+      getDashboardForRole(role)
+    );
   }
 
   if (access && schoolPortalBlocked(access, pathname)) {
     if (serverAction) {
       return supabaseResponse;
     }
-    const url = request.nextUrl.clone();
-    url.pathname = "/pending";
-    url.search = "";
-    return NextResponse.redirect(url);
+    return redirectWithCookies(request, supabaseResponse, "/pending");
   }
 
   if (
@@ -105,10 +126,11 @@ export async function proxy(request: NextRequest) {
     if (serverAction) {
       return supabaseResponse;
     }
-    const url = request.nextUrl.clone();
-    url.pathname = getDashboardForRole(access.role);
-    url.search = "";
-    return NextResponse.redirect(url);
+    return redirectWithCookies(
+      request,
+      supabaseResponse,
+      getDashboardForRole(access.role)
+    );
   }
 
   return supabaseResponse;

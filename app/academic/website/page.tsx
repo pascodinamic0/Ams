@@ -1,24 +1,10 @@
-import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { WebsiteEditorForm } from "@/components/schools/website-editor-form";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentProfile } from "@/lib/auth/session";
 import { getSchoolById } from "@/lib/db";
 
 export default async function AcademicWebsitePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("school_id, role")
-    .eq("id", user.id)
-    .single();
+  const profile = await getCurrentProfile();
 
   if (!profile?.school_id) {
     return (
@@ -29,7 +15,7 @@ export default async function AcademicWebsitePage() {
     );
   }
 
-  const school = await getSchoolById(profile.school_id);
+  const school = await getSchoolById(profile.school_id!);
 
   if (!school) {
     return (

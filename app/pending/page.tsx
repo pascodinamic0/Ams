@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { PendingApprovalCard } from "@/components/auth/pending-approval-card";
+import { getDashboardForRole } from "@/lib/auth/rbac";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import type { SchoolStatus } from "@/lib/db/schools";
@@ -29,7 +30,7 @@ export default async function PendingPage() {
     }
 
     if (schoolStatus === "approved") {
-      redirect("/academic");
+      redirect(getDashboardForRole(profile.role));
     }
   }
 
