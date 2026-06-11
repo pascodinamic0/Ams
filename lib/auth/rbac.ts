@@ -37,6 +37,7 @@ export const SHARED_AUTH_ROUTES = [
   "/notifications",
   "/settings",
   "/outreach",
+  "/register/complete",
 ];
 
 export function normalizeRole(role: string | null | undefined): UserRole {

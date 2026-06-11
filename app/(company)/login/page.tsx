@@ -1,8 +1,10 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { AuthDivider } from "@/components/auth/auth-divider";
+import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { useFormContext } from "react-hook-form";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { Input } from "@/components/ui/input";
@@ -10,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { loginSchema, type LoginFormData } from "@/lib/validations";
 import { createClient } from "@/lib/supabase/client";
-import { resolveLoginDestination } from "@/lib/auth/login-redirect";
+import { resolvePostAuthDestination } from "@/lib/actions/post-auth-redirect";
 import { toast } from "@/lib/toast";
 
 export default function LoginPage() {
@@ -56,6 +58,8 @@ export default function LoginPage() {
           </div>
 
           <Suspense fallback={<LoginSkeleton />}>
+            <LoginOAuthSection />
+            <AuthDivider />
             <LoginFormContent />
           </Suspense>
 
@@ -72,6 +76,20 @@ export default function LoginPage() {
       </div>
     </div>
   );
+}
+
+function LoginOAuthSection() {
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams.get("redirect");
+  const errorParam = searchParams.get("error");
+
+  useEffect(() => {
+    if (errorParam) {
+      toast.error(decodeURIComponent(errorParam));
+    }
+  }, [errorParam]);
+
+  return <GoogleAuthButton intent="login" redirect={redirectParam} />;
 }
 
 function LoginSkeleton() {
@@ -99,25 +117,8 @@ function LoginFormContent() {
       let destination = redirectParam ?? "/admin";
 
       if (authData.user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role, school_id")
-          .eq("id", authData.user.id)
-          .single();
-
-        let schoolStatus: "pending" | "approved" | "suspended" | null = null;
-        if (profile?.school_id) {
-          const { data: school } = await supabase
-            .from("schools")
-            .select("status")
-            .eq("id", profile.school_id)
-            .single();
-          schoolStatus = (school?.status as typeof schoolStatus) ?? null;
-        }
-
-        destination = resolveLoginDestination({
-          role: profile?.role,
-          schoolStatus,
+        destination = await resolvePostAuthDestination({
+          userId: authData.user.id,
           redirect: redirectParam,
         });
       }

@@ -87,6 +87,18 @@ bun run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+### Google sign-in (optional)
+
+Login and registration support **Sign in with Google** via Supabase Auth.
+
+1. **Google Cloud Console** — Create an OAuth 2.0 Client ID (Web application).
+   - Authorized redirect URI: `https://<your-project-ref>.supabase.co/auth/v1/callback`
+2. **Supabase Dashboard** → **Authentication** → **Providers** → **Google** — Enable and paste the Client ID and Client Secret.
+3. **Supabase Dashboard** → **Authentication** → **URL Configuration** — Add redirect URLs:
+   - `http://localhost:3000/auth/callback`
+   - `https://your-production-domain.com/auth/callback`
+4. For local Supabase CLI, set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env` (see `.env.example`).
+
 ## Scripts
 
 | Command | Description |

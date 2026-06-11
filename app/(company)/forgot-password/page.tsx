@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { buildAuthCallbackUrl } from "@/lib/auth/app-url";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
@@ -19,7 +20,9 @@ export default function ForgotPasswordPage() {
     setLoading(true);
     try {
       const supabase = createClient();
-      await supabase.auth.resetPasswordForEmail(email);
+      await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: buildAuthCallbackUrl({ redirect: "/reset-password" }),
+      });
       setSent(true);
       toast.success("Check your email for the reset link");
     } catch (err) {

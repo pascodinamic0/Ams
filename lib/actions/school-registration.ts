@@ -26,6 +26,15 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
 
   const { userId, schoolName, adminEmail, adminName } = input;
 
+  const { data: authUser, error: authUserError } =
+    await admin.auth.admin.getUserById(userId);
+  if (authUserError || !authUser.user) {
+    return {
+      error:
+        "Account could not be verified. If you already have an account, sign in and complete school setup.",
+    };
+  }
+
   const { data: existingProfile } = await admin
     .from("profiles")
     .select("school_id, role")

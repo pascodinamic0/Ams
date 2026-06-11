@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useFormContext } from "react-hook-form";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { Input } from "@/components/ui/input";
@@ -10,12 +9,14 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { PasswordStrength } from "@/components/ui/password-strength";
 import { registerSchema, type RegisterFormData } from "@/lib/validations";
+import { AuthDivider } from "@/components/auth/auth-divider";
+import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+import { buildAuthCallbackUrl } from "@/lib/auth/app-url";
 import { registerSchoolOrganization } from "@/lib/actions/school-registration";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(data: RegisterFormData) {
@@ -26,6 +27,7 @@ export default function RegisterPage() {
         email: data.admin_email,
         password: data.password,
         options: {
+          emailRedirectTo: buildAuthCallbackUrl(),
           data: {
             school_name: data.school_name,
             name: data.school_name,
@@ -35,6 +37,15 @@ export default function RegisterPage() {
       });
       if (error) throw error;
       if (!authData.user) throw new Error("Registration failed");
+
+      // Supabase returns a placeholder user (no identities) when the email is
+      // already registered, to prevent email enumeration. That ID is not in
+      // auth.users and would violate schools.owner_id_fkey.
+      if (!authData.user.identities?.length) {
+        throw new Error(
+          "An account with this email already exists. Sign in to finish setting up your school."
+        );
+      }
 
       const org = await registerSchoolOrganization({
         userId: authData.user.id,
@@ -46,11 +57,18 @@ export default function RegisterPage() {
         throw new Error(org.error);
       }
 
-      toast.success(
-        "School registered! Check your email to confirm, then sign in. Your school is pending platform approval."
-      );
-      router.push("/login");
-      router.refresh();
+      // Full navigation (not client router) so auth cookies are applied before /pending loads.
+      if (authData.session) {
+        window.location.assign("/pending");
+        return;
+      }
+
+      const successParams = new URLSearchParams({
+        school: data.school_name,
+        email: data.admin_email,
+      });
+      window.location.assign(`/register/success?${successParams.toString()}`);
+      return;
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Registration failed");
     } finally {
@@ -99,6 +117,10 @@ export default function RegisterPage() {
               Create your school account to get started with AMS
             </p>
           </div>
+
+          <GoogleAuthButton intent="register" />
+
+          <AuthDivider label="or register with email" />
 
           <FormWrapper
             schema={registerSchema}
