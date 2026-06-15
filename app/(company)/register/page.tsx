@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useFormContext } from "react-hook-form";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { Input } from "@/components/ui/input";
@@ -118,7 +119,9 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <GoogleAuthButton intent="register" />
+          <Suspense fallback={<RegisterOAuthSkeleton />}>
+            <RegisterOAuthSection />
+          </Suspense>
 
           <AuthDivider label="or register with email" />
 
@@ -142,6 +145,25 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function RegisterOAuthSection() {
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get("error");
+
+  useEffect(() => {
+    if (errorParam) {
+      toast.error(decodeURIComponent(errorParam));
+    }
+  }, [errorParam]);
+
+  return <GoogleAuthButton intent="register" />;
+}
+
+function RegisterOAuthSkeleton() {
+  return (
+    <div className="h-10 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />
   );
 }
 

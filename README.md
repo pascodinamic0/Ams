@@ -97,8 +97,8 @@ AMS uses Supabase project **AMC** (`ooheotsnplfrpgblrnot`).
    - `https://ooheotsnplfrpgblrnot.supabase.co/auth/v1/callback`
 2. **Supabase Dashboard** → **Authentication** → **Providers** → **Google** — Enable with Client ID and Secret.
 3. **Supabase Dashboard** → **Authentication** → **URL Configuration** — Redirect URLs:
-   - `http://localhost:3000/auth/callback`
-   - `https://ams-xi-two.vercel.app/auth/callback` (or your production domain)
+   - `http://localhost:3000/auth/callback` (or `http://localhost:3000/**`)
+   - `https://ams-xi-two.vercel.app/auth/callback` (or `https://ams-xi-two.vercel.app/**` for register with `?intent=register`)
 4. Set `NEXT_PUBLIC_APP_URL` in Vercel to your production origin (used for email and OAuth callbacks).
 
 ## Scripts

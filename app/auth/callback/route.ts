@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import {
+  authErrorRedirectPath,
+  resolveCallbackErrorMessage,
+} from "@/lib/auth/callback-errors";
 import { getPostAuthRedirect } from "@/lib/auth/post-auth-redirect";
 import { createClient } from "@/lib/supabase/server";
 
@@ -26,10 +30,17 @@ export async function GET(request: Request) {
   const origin = resolveRedirectOrigin(request);
 
   if (!code) {
+    const message = resolveCallbackErrorMessage(requestUrl.searchParams, {
+      intent,
+    });
+    const path = authErrorRedirectPath(intent);
+    console.error("auth callback missing code:", {
+      intent,
+      error: requestUrl.searchParams.get("error"),
+      error_description: requestUrl.searchParams.get("error_description"),
+    });
     return NextResponse.redirect(
-      `${origin}/login?error=${encodeURIComponent(
-        "Sign-in link is invalid or expired. Request a new confirmation or sign-in link."
-      )}`
+      `${origin}${path}?error=${encodeURIComponent(message)}`
     );
   }
 
@@ -38,8 +49,9 @@ export async function GET(request: Request) {
 
   if (error) {
     console.error("auth callback exchangeCodeForSession:", error);
+    const path = authErrorRedirectPath(intent);
     return NextResponse.redirect(
-      `${origin}/login?error=${encodeURIComponent(error.message)}`
+      `${origin}${path}?error=${encodeURIComponent(error.message)}`
     );
   }
 
@@ -48,8 +60,9 @@ export async function GET(request: Request) {
   } = await supabase.auth.getUser();
 
   if (!user) {
+    const path = authErrorRedirectPath(intent);
     return NextResponse.redirect(
-      `${origin}/login?error=${encodeURIComponent("Sign-in failed. Try again.")}`
+      `${origin}${path}?error=${encodeURIComponent("Sign-in failed. Try again.")}`
     );
   }
 
