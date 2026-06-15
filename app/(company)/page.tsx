@@ -23,6 +23,11 @@ const roles = [
     title: "Run your entire school from one place",
     description:
       "Get a comprehensive overview of your school — finances, attendance, student performance, and staff — all in one dashboard. Generate reports, manage enrollments, and communicate with parents in a single click.",
+    features: [
+      "Manage students, classes, admissions, and staff from a single academic dashboard",
+      "Track fees, invoices, payments, and payroll with built-in financial reports",
+      "Launch branded school websites with online admissions and role-based access",
+    ],
     cta: "Explore admin features",
     href: "/features#admin",
     image: "/images/role_admin.png",
@@ -34,6 +39,11 @@ const roles = [
     title: "Spend less time on admin, more on teaching",
     description:
       "Take attendance, enter grades, create assignments, and generate report cards — all from your dashboard. Reuse content across classes and send targeted messages to students and parents.",
+    features: [
+      "Take daily attendance and enter grades in a class gradebook",
+      "Create assignments with file uploads, run exams, and print report cards",
+      "Message students and parents directly from your teacher dashboard",
+    ],
     cta: "Explore teacher features",
     href: "/features#teacher",
     image: "/images/role_teacher.png",
@@ -45,6 +55,11 @@ const roles = [
     title: "Stay connected to school, always",
     description:
       "Parents track grades, fees, timetables, and assignments in real time. Students submit work, view their schedule, and message teachers — from any device, anywhere.",
+    features: [
+      "View grades, attendance, timetables, and school events in real time",
+      "Pay fees instantly via smart payment links with the exact amount pre-filled",
+      "Submit assignments, browse the library, and message teachers from any device",
+    ],
     cta: "Explore parent & student features",
     href: "/features#parent",
     image: "/images/role_parent.png",
@@ -239,10 +254,10 @@ export default function Home() {
                     {role.description}
                   </p>
                   <ul className="space-y-4">
-                    {[1, 2, 3].map((_, idx) => (
-                      <li key={idx} className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
+                    {role.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
                         <CheckCircle2 className="h-5 w-5 text-indigo-500 flex-shrink-0" />
-                        <span className="font-medium">Streamlined workflow optimization for {role.badge}</span>
+                        <span className="font-medium">{feature}</span>
                       </li>
                     ))}
                   </ul>
