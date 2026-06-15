@@ -1,13 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
-import { assertServiceRoleMatchesProject } from "@/lib/supabase/env";
+import { getServiceRoleConfigError } from "@/lib/supabase/env";
 
 /** Server-only Supabase client with service role. Returns null if key is not configured. */
 export function createAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
+  const configError = getServiceRoleConfigError();
+  if (configError) {
+    console.error("createAdminClient:", configError);
+    return null;
+  }
 
-  assertServiceRoleMatchesProject();
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
   return createClient(url, key, {
     auth: { autoRefreshToken: false, persistSession: false },

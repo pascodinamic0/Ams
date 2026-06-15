@@ -26,17 +26,28 @@ export function getSupabasePublicEnv() {
   return { url, anonKey };
 }
 
-/** Ensures server-side service role key belongs to the same Supabase project as the public URL. */
-export function assertServiceRoleMatchesProject() {
-  const { url } = getSupabasePublicEnv();
+/** Returns a user-safe message when server Supabase env is missing or mismatched. */
+export function getServiceRoleConfigError(): string | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!serviceKey) return;
+
+  if (!url || !serviceKey) {
+    return "Server configuration error. Contact support.";
+  }
 
   const urlRef = getProjectRefFromUrl(url);
   const keyRef = getProjectRefFromJwt(serviceKey);
   if (urlRef && keyRef && urlRef !== keyRef) {
-    throw new Error(
-      `SUPABASE_SERVICE_ROLE_KEY is for project "${keyRef}" but NEXT_PUBLIC_SUPABASE_URL points to "${urlRef}". Copy the service_role key from the matching project in Supabase Dashboard → Settings → API.`
-    );
+    return `Supabase service role key is for project "${keyRef}" but the app is configured for "${urlRef}". Update SUPABASE_SERVICE_ROLE_KEY in Vercel to match the AMC project.`;
+  }
+
+  return null;
+}
+
+/** Ensures server-side service role key belongs to the same Supabase project as the public URL. */
+export function assertServiceRoleMatchesProject() {
+  const error = getServiceRoleConfigError();
+  if (error && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error(error);
   }
 }
