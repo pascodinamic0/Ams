@@ -52,15 +52,32 @@ async function main() {
 
   if (error) {
     if (error.message.includes("already been registered")) {
-      console.log("User already exists. Updating profile to super_admin...");
+      console.log("User already exists. Restoring profile to super_admin...");
       const { data: existing } = await supabase.auth.admin.listUsers();
-      const user = existing?.users?.find((u) => u.email === EMAIL);
+      const normalizedEmail = EMAIL.toLowerCase();
+      const user = existing?.users?.find(
+        (u) => u.email?.toLowerCase() === normalizedEmail
+      );
       if (user) {
-        await supabase.from("profiles").upsert(
-          { id: user.id, role: "super_admin", updated_at: new Date().toISOString() },
+        await supabase.auth.admin.updateUserById(user.id, {
+          user_metadata: { role: "super_admin", name: "Super Admin" },
+        });
+        const { error: profileError } = await supabase.from("profiles").upsert(
+          {
+            id: user.id,
+            role: "super_admin",
+            school_id: null,
+            branch_id: null,
+            updated_at: new Date().toISOString(),
+          },
           { onConflict: "id" }
         );
-        console.log("Profile updated. Use the forgot-password flow to set a new password.");
+        if (profileError) {
+          console.error("Profile restore failed:", profileError.message);
+          process.exit(1);
+        }
+        console.log("Super admin access restored for:", EMAIL);
+        console.log("Use the forgot-password flow if you need a new password.");
       }
     } else {
       console.error("Error:", error.message);

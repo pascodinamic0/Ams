@@ -24,12 +24,10 @@ export function TeamInviteForm() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<string>("teacher");
   const [loading, setLoading] = useState(false);
-  const [tempPassword, setTempPassword] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setTempPassword(null);
 
     const result = await inviteSchoolUser({
       name,
@@ -44,14 +42,9 @@ export function TeamInviteForm() {
       return;
     }
 
-    if (result.data?.existing) {
-      toast.success("Existing user linked to your school with the new role");
-    } else if (result.data?.tempPassword) {
-      setTempPassword(result.data.tempPassword);
-      toast.success("Team member created. Share the temporary password below.");
-    } else {
-      toast.success("Team member invited");
-    }
+    toast.success(
+      "Invitation sent. They'll receive an email with a link to set their password."
+    );
 
     setName("");
     setEmail("");
@@ -101,18 +94,6 @@ export function TeamInviteForm() {
           </Button>
         </div>
       </form>
-
-      {tempPassword && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm dark:border-amber-900 dark:bg-amber-950/40">
-          <p className="font-medium text-amber-900 dark:text-amber-200">
-            Temporary password (share securely, shown once):
-          </p>
-          <code className="mt-2 block font-mono text-base">{tempPassword}</code>
-          <p className="mt-2 text-amber-800 dark:text-amber-300">
-            They can sign in at /login and change their password in Settings.
-          </p>
-        </div>
-      )}
     </div>
   );
 }

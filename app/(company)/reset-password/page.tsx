@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { PasswordStrength } from "@/components/ui/password-strength";
 import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/validations";
+import { getDashboardForRole } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
@@ -23,8 +24,23 @@ export default function ResetPasswordPage() {
       const supabase = createClient();
       const { error } = await supabase.auth.updateUser({ password: data.password });
       if (error) throw error;
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      let destination = "/login";
+
+      if (user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", user.id)
+          .single();
+        destination = getDashboardForRole(profile?.role);
+      }
+
       toast.success("Password updated");
-      router.push("/login");
+      router.push(destination);
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to update password");

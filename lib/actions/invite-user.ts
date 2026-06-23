@@ -1,20 +1,10 @@
 "use server";
 
-import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { buildAuthCallbackUrl } from "@/lib/auth/app-url";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { inviteUserSchema, type InvitableRole } from "@/lib/validations/team";
-
-function generateTempPassword(): string {
-  const chars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const bytes = randomBytes(16);
-  let s = "";
-  for (let i = 0; i < 16; i++) {
-    s += chars[bytes[i]! % chars.length];
-  }
-  return s;
-}
 
 type InviteAuth =
   | { ok: false; error: string }
@@ -103,55 +93,59 @@ export async function inviteSchoolUser(input: {
   if (existing) {
     const { data: existingProfile } = await admin
       .from("profiles")
-      .select("school_id")
+      .select("role, school_id")
       .eq("id", existing.id)
       .single();
+
+    if (existingProfile?.role === "super_admin") {
+      return {
+        error:
+          "This email belongs to a platform administrator and cannot be added to a school",
+      };
+    }
 
     if (existingProfile?.school_id && existingProfile.school_id !== schoolId) {
       return { error: "This email is already linked to another school" };
     }
 
-    const { error: profileError } = await admin.from("profiles").upsert(
-      {
-        id: existing.id,
-        name: parsed.data.name,
-        role: parsed.data.role,
-        school_id: schoolId,
-        branch_id: branchId,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "id" }
-    );
+    if (existingProfile?.role) {
+      const sameSchool = existingProfile.school_id === schoolId;
+      const sameRole = existingProfile.role === parsed.data.role;
 
-    if (profileError) {
-      return { error: profileError.message };
+      if (sameSchool && sameRole) {
+        return {
+          error: "This email is already a member of your school with this role",
+        };
+      }
+
+      return {
+        error:
+          "This email is already registered with a different access level. Ask them to sign in with their existing account, or use a different email.",
+      };
     }
-
-    revalidatePath("/academic/team");
-    revalidatePath("/admin/users");
-    return { data: { userId: existing.id, existing: true as const } };
   }
 
-  const tempPassword = generateTempPassword();
+  const redirectTo = buildAuthCallbackUrl({ redirect: "/reset-password" });
 
-  const { data: created, error: createError } = await admin.auth.admin.createUser({
+  const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
     email,
-    password: tempPassword,
-    email_confirm: true,
-    user_metadata: {
-      name: parsed.data.name,
-      role: parsed.data.role,
-    },
-  });
+    {
+      redirectTo,
+      data: {
+        name: parsed.data.name,
+        role: parsed.data.role,
+      },
+    }
+  );
 
-  if (createError || !created.user) {
-    console.error("inviteSchoolUser create error:", createError);
-    return { error: createError?.message ?? "Failed to create user" };
+  if (inviteError || !invited.user) {
+    console.error("inviteSchoolUser invite error:", inviteError);
+    return { error: inviteError?.message ?? "Failed to send invitation email" };
   }
 
   const { error: profileError } = await admin.from("profiles").upsert(
     {
-      id: created.user.id,
+      id: invited.user.id,
       name: parsed.data.name,
       role: parsed.data.role,
       school_id: schoolId,
@@ -162,7 +156,7 @@ export async function inviteSchoolUser(input: {
   );
 
   if (profileError) {
-    await admin.auth.admin.deleteUser(created.user.id);
+    await admin.auth.admin.deleteUser(invited.user.id);
     return { error: profileError.message };
   }
 
@@ -170,9 +164,8 @@ export async function inviteSchoolUser(input: {
   revalidatePath("/admin/users");
   return {
     data: {
-      userId: created.user.id,
-      existing: false as const,
-      tempPassword,
+      userId: invited.user.id,
+      emailSent: true as const,
     },
   };
 }
