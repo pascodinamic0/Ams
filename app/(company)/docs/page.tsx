@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { companyIdentity } from "@/lib/company/identity";
 import {
   BookOpen,
   GraduationCap,
@@ -21,27 +22,27 @@ const guides = [
     title: "Academic module",
     description:
       "Set up classes, timetables, attendance, grades, and report cards.",
-    href: "/features#academic",
+    href: "/modules/academic",
   },
   {
     icon: Wallet,
     title: "Finance & fees",
     description:
       "Configure fee structures, generate invoices, and track payments.",
-    href: "/features#finance",
+    href: "/modules/finance",
   },
   {
     icon: Users,
     title: "Roles & permissions",
     description:
       "Understand admin, teacher, parent, and student access levels.",
-    href: "/features",
+    href: "/features#platform-admin",
   },
   {
     icon: Shield,
     title: "Security & privacy",
     description:
-      "Learn how AMS protects school data and meets compliance requirements.",
+      `Learn how ${companyIdentity.productName} protects school data and meets compliance requirements.`,
     href: "/privacy",
   },
 ];
@@ -54,7 +55,7 @@ export default function DocsPage() {
           Documentation
         </h1>
         <p className="mt-4 text-lg text-slate-500 dark:text-slate-400">
-          Guides and resources to help your school get the most out of AMS.
+          Guides and resources to help your school get the most out of {companyIdentity.productName}.
         </p>
 
         <div className="mt-12 grid gap-4 sm:grid-cols-2">

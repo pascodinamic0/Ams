@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { Facebook, Instagram, Linkedin, Mail, Youtube } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
+import { BrandLogo } from "@/components/company/brand-logo";
+import { companyIdentity } from "@/lib/company/identity";
 
 const platformLinks = [
   { label: "Features", href: "/features" },
@@ -23,7 +25,7 @@ const supportLinks = [
 const socialLinks = [
   {
     label: "LinkedIn",
-    href: "https://linkedin.com",
+    href: companyIdentity.social.linkedin,
     icon: Linkedin,
   },
   {
@@ -78,26 +80,37 @@ export function SiteFooter() {
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
           {/* Brand */}
           <div className="space-y-6 lg:col-span-4">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600 text-lg font-black text-white">
-                A
-              </div>
-              <span className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
-                AMS
-              </span>
+            <Link href="/">
+              <BrandLogo wordmarkClassName="text-slate-900 dark:text-white" />
             </Link>
             <p className="max-w-sm text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-              The operating system for schools - manage academics, finance,
-              staff, and parent communication from one platform built for African
-              schools.
+              {companyIdentity.tagline} — manage academics, finance, staff, and
+              parent communication from one platform. {companyIdentity.origin}.
             </p>
-            <a
-              href="mailto:hello@ams.education"
-              className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition-colors hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400"
-            >
-              <Mail className="h-4 w-4" />
-              hello@ams.education
-            </a>
+            <div className="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+              <p className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
+                <span aria-hidden>🌍</span>
+                {companyIdentity.origin}
+              </p>
+              <p className="flex items-start gap-2">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-indigo-500" />
+                <span>{companyIdentity.office.addressFormatted}</span>
+              </p>
+              <a
+                href={`mailto:${companyIdentity.contact.email}`}
+                className="inline-flex items-center gap-2 font-medium transition-colors hover:text-indigo-600 dark:hover:text-indigo-400"
+              >
+                <Mail className="h-4 w-4" />
+                {companyIdentity.contact.email}
+              </a>
+              <a
+                href={`tel:${companyIdentity.contact.phone}`}
+                className="flex items-center gap-2 font-medium transition-colors hover:text-indigo-600 dark:hover:text-indigo-400"
+              >
+                <Phone className="h-4 w-4" />
+                {companyIdentity.contact.phoneDisplay}
+              </a>
+            </div>
             <div className="flex gap-3">
               {socialLinks.map(({ label, href, icon: Icon }) => (
                 <a
@@ -125,8 +138,17 @@ export function SiteFooter() {
         {/* Bottom bar */}
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 dark:border-slate-800 md:flex-row">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            &copy; {new Date().getFullYear()} AMS Education Systems. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} {companyIdentity.legalName}. All
+            rights reserved. {companyIdentity.productName} is a product of{" "}
+            <a
+              href={companyIdentity.website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+            >
+              Digni Digital
+            </a>
+            .
           </p>
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
             <Link

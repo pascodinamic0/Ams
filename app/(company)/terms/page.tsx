@@ -1,22 +1,25 @@
 import { LegalPage } from "@/components/company/legal-page";
+import { companyIdentity } from "@/lib/company/identity";
+
+const { productName } = companyIdentity;
 
 export default function TermsOfServicePage() {
   return (
     <LegalPage
       title="Terms of Service"
-      description="The agreement between your school and AMS when using our platform."
+      description={`The agreement between your school and ${productName} when using our platform.`}
       lastUpdated="June 8, 2026"
     >
       <h2>1. Acceptance of terms</h2>
       <p>
-        By creating an account, accessing AMS, or using any part of the service,
+        By creating an account, accessing {productName}, or using any part of the service,
         you agree to these Terms of Service on behalf of yourself and your school.
         If you do not agree, do not use the platform.
       </p>
 
       <h2>2. The service</h2>
       <p>
-        AMS provides cloud-based tools for academic management, finance, staff
+        {productName} provides cloud-based tools for academic management, finance, staff
         operations, parent communication, analytics, and school websites. Features
         may change as we improve the product.
       </p>
@@ -25,13 +28,13 @@ export default function TermsOfServicePage() {
       <ul>
         <li>School administrators are responsible for user invitations and permissions.</li>
         <li>Users must keep login credentials confidential.</li>
-        <li>You are responsible for the accuracy of data entered into AMS.</li>
+        <li>You are responsible for the accuracy of data entered into {productName}.</li>
         <li>You must not misuse the platform, attempt unauthorized access, or violate applicable laws.</li>
       </ul>
 
       <h2>4. School data ownership</h2>
       <p>
-        Your school retains ownership of the data you upload. AMS processes that
+        Your school retains ownership of the data you upload. {productName} processes that
         data solely to provide the service. Upon termination, export options will
         be made available subject to your plan and applicable law.
       </p>
@@ -53,7 +56,7 @@ export default function TermsOfServicePage() {
 
       <h2>7. Limitation of liability</h2>
       <p>
-        To the maximum extent permitted by law, AMS is not liable for indirect,
+        To the maximum extent permitted by law, {productName} is not liable for indirect,
         incidental, or consequential damages arising from use of the service. Our
         total liability is limited to fees paid in the twelve months preceding
         the claim.
@@ -68,15 +71,18 @@ export default function TermsOfServicePage() {
 
       <h2>9. Governing law</h2>
       <p>
-        These terms are governed by the laws of the jurisdiction in which AMS
-        Education Systems is registered, without regard to conflict-of-law
-        principles.
+        These terms are governed by the laws of the Republic of Kenya. Any disputes
+        shall be subject to the exclusive jurisdiction of the courts of{" "}
+        {companyIdentity.office.city}.
       </p>
 
       <h2>10. Contact</h2>
       <p>
         Legal enquiries:{" "}
-        <a href="mailto:legal@ams.education">legal@ams.education</a>
+        <a href={`mailto:${companyIdentity.contact.legalEmail}`}>
+          {companyIdentity.contact.legalEmail}
+        </a>
+        . Postal address: {companyIdentity.office.addressFormatted}.
       </p>
     </LegalPage>
   );

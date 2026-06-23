@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { BrandLogo } from "@/components/company/brand-logo";
 import { LogoutButton } from "@/components/layout/logout-button";
 import { NotificationBell } from "@/components/layout/notification-bell";
 
@@ -44,13 +45,8 @@ export function AppShell({
           >
             {/* Logo area */}
             <div className="flex h-16 items-center justify-between border-b border-slate-200 px-4 dark:border-slate-800">
-              <Link href={dashboardHref} className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white shadow-sm">
-                  A
-                </div>
-                <span className="text-base font-bold text-slate-900 dark:text-white">
-                  AMS
-                </span>
+              <Link href={dashboardHref}>
+                <BrandLogo size={32} wordmarkClassName="text-base font-bold text-slate-900 dark:text-white" />
               </Link>
               <button
                 type="button"

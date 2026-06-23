@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { companyIdentity } from "@/lib/company/identity";
 import { Button } from "@/components/ui/button";
 import { SignOutButton } from "@/components/layout/sign-out-button";
 
@@ -40,12 +41,12 @@ export function PendingApprovalCard({
       <p className="mt-3 text-slate-600 dark:text-slate-400">
         {isSuspended ? (
           <>
-            <strong>{schoolName}</strong> has been suspended. Contact AMS support if
+            <strong>{schoolName}</strong> has been suspended. Contact {companyIdentity.productName} support if
             you believe this is a mistake.
           </>
         ) : (
           <>
-            <strong>{schoolName}</strong> is registered and waiting for AMS platform
+            <strong>{schoolName}</strong> is registered and waiting for {companyIdentity.productName} platform
             approval. You&apos;ll get full access to your dashboard once our team
             reviews your school.
           </>

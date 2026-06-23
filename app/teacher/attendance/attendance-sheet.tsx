@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { DatePicker } from "@/components/ui/date-picker";
 import { saveAttendance, markAllPresent } from "@/lib/actions/attendance";
+import {
+  queueAttendanceSave,
+} from "@/lib/pwa/attendance-offline";
 import { toast } from "@/lib/toast";
 import type { AttendanceRecordItem } from "@/lib/db";
 
@@ -44,16 +47,24 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
   }
 
   async function handleSave() {
-    startTransition(async () => {
-      const result = await saveAttendance({
-        class_id: classId,
+    const payload = {
+      class_id: classId,
+      date: dateStr,
+      records: records.map((r) => ({
+        student_id: r.student_id,
         date: dateStr,
-        records: records.map((r) => ({
-          student_id: r.student_id,
-          date: dateStr,
-          status: statuses[r.student_id] ?? "present",
-        })),
-      });
+        status: statuses[r.student_id] ?? "present",
+      })),
+    };
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      await queueAttendanceSave(payload);
+      toast.success("Saved offline — will sync when you're back online");
+      return;
+    }
+
+    startTransition(async () => {
+      const result = await saveAttendance(payload);
       if (result.error) {
         toast.error(typeof result.error === "string" ? result.error : "Failed to save attendance");
         return;
@@ -64,6 +75,23 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
   }
 
   async function handleMarkAllPresent() {
+    const presentRecords = records.map((r) => ({
+      student_id: r.student_id,
+      date: dateStr,
+      status: "present" as const,
+    }));
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      await queueAttendanceSave({
+        class_id: classId,
+        date: dateStr,
+        records: presentRecords,
+      });
+      setStatuses(Object.fromEntries(records.map((r) => [r.student_id, "present" as const])));
+      toast.success("Marked all present offline — will sync when you're back online");
+      return;
+    }
+
     startTransition(async () => {
       const result = await markAllPresent(classId, dateStr);
       if (result.error) {

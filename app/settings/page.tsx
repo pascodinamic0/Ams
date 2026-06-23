@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { PasswordStrength } from "@/components/ui/password-strength";
 import { FormWrapper } from "@/components/forms/form-wrapper";
+import { InstallAppButton } from "@/components/pwa/install-app-button";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
@@ -73,6 +74,7 @@ export default function SettingsPage() {
       </div>
 
       <AccountCard profile={profile} />
+      <AppInstallCard />
       <SecurityCard />
     </div>
   );
@@ -107,6 +109,23 @@ function AccountCard({ profile }: { profile: ProfileInfo | null }) {
             </span>
           </div>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AppInstallCard() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Install app</CardTitle>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Install ShuleOS on your phone, tablet, or laptop for quick access and
+          offline attendance support.
+        </p>
+      </CardHeader>
+      <CardContent>
+        <InstallAppButton />
       </CardContent>
     </Card>
   );

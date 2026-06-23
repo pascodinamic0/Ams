@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none" role="img" aria-label="ShuleOS">
+  <rect width="40" height="40" rx="10" fill="#4F46E5"/>
+  <path
+    d="M20 9L8 16v2.2c0 6.8 5.1 13.1 12 14.8 6.9-1.7 12-8 12-14.8V16L20 9z"
+    fill="white"
+    fill-opacity="0.95"
+  />
+  <path
+    d="M20 12.5l-7 4.5v1.5c0 4.8 3.4 9.3 7 10.5 3.6-1.2 7-5.7 7-10.5v-1.5l-7-4.5z"
+    fill="#4F46E5"
+  />
+  <path
+    d="M16.5 19.5h7v1.8h-7V19.5zm0 3.2h5.2v1.8H16.5v-1.8z"
+    fill="white"
+  />
+  <circle cx="28" cy="12" r="3" fill="#059669"/>
+</svg>

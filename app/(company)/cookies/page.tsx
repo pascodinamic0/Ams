@@ -1,10 +1,13 @@
 import { LegalPage } from "@/components/company/legal-page";
+import { companyIdentity } from "@/lib/company/identity";
+
+const { productName } = companyIdentity;
 
 export default function CookiePolicyPage() {
   return (
     <LegalPage
       title="Cookie Policy"
-      description="How AMS uses cookies and similar technologies on our website."
+      description={`How ${productName} uses cookies and similar technologies on our website.`}
       lastUpdated="June 8, 2026"
     >
       <h2>1. What are cookies?</h2>
@@ -42,7 +45,7 @@ export default function CookiePolicyPage() {
       <h2>4. Managing cookies</h2>
       <p>
         You can control cookies through your browser settings. Disabling
-        essential cookies may prevent you from logging in or using core AMS
+        essential cookies may prevent you from logging in or using core {productName}
         features.
       </p>
 
@@ -55,7 +58,10 @@ export default function CookiePolicyPage() {
       <h2>6. Contact</h2>
       <p>
         Questions? Email{" "}
-        <a href="mailto:privacy@ams.education">privacy@ams.education</a>.
+        <a href={`mailto:${companyIdentity.contact.privacyEmail}`}>
+          {companyIdentity.contact.privacyEmail}
+        </a>
+        .
       </p>
     </LegalPage>
   );

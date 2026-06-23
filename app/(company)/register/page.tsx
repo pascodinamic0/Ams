@@ -13,6 +13,7 @@ import { registerSchema, type RegisterFormData } from "@/lib/validations";
 import { AuthDivider } from "@/components/auth/auth-divider";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { buildAuthCallbackUrl } from "@/lib/auth/app-url";
+import { companyIdentity } from "@/lib/company/identity";
 import { registerSchoolOrganization } from "@/lib/actions/school-registration";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
@@ -87,7 +88,7 @@ export default function RegisterPage() {
           </h2>
           <p className="mt-4 text-indigo-200">
             Create your account, complete the 4-step school setup, and your team
-            can start using AMS today.
+            can start using {companyIdentity.productName} today.
           </p>
           <div className="mt-8 space-y-3">
             {[
@@ -115,7 +116,7 @@ export default function RegisterPage() {
               Register your school
             </h1>
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Create your school account to get started with AMS
+              Create your school account to get started with {companyIdentity.productName}
             </p>
           </div>
 

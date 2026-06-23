@@ -32,6 +32,9 @@ export function getServiceRoleConfigError(): string | null {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !serviceKey) {
+    if (process.env.NODE_ENV === "development") {
+      return "Missing SUPABASE_SERVICE_ROLE_KEY. Add it to .env.local from Supabase Dashboard > Settings > API (service_role), then restart the dev server.";
+    }
     return "Server configuration error. Contact support.";
   }
 

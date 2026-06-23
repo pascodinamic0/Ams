@@ -1,0 +1,130 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Download, Share, X } from "lucide-react";
+import { companyIdentity } from "@/lib/company/identity";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt(): Promise<void>;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
+}
+
+const DISMISS_KEY = "shuleos-pwa-install-dismissed";
+const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
+
+function isStandaloneMode() {
+  if (typeof window === "undefined") return false;
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (window.navigator as Navigator & { standalone?: boolean }).standalone === true
+  );
+}
+
+function isIosDevice() {
+  if (typeof window === "undefined") return false;
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
+export function InstallPrompt() {
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
+  const [visible, setVisible] = useState(false);
+  const [showIosHelp, setShowIosHelp] = useState(false);
+
+  useEffect(() => {
+    if (isStandaloneMode()) return;
+
+    const dismissedAt = localStorage.getItem(DISMISS_KEY);
+    if (dismissedAt && Date.now() - Number(dismissedAt) < DISMISS_MS) {
+      return;
+    }
+
+    if (isIosDevice()) {
+      setShowIosHelp(true);
+      setVisible(true);
+      return;
+    }
+
+    function handleBeforeInstall(event: Event) {
+      event.preventDefault();
+      setDeferredPrompt(event as BeforeInstallPromptEvent);
+      setVisible(true);
+    }
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
+    return () =>
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
+  }, []);
+
+  function dismiss() {
+    localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    setVisible(false);
+    setDeferredPrompt(null);
+  }
+
+  async function handleInstall() {
+    if (!deferredPrompt) return;
+    await deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    setDeferredPrompt(null);
+    setVisible(false);
+    if (outcome !== "accepted") {
+      localStorage.setItem(DISMISS_KEY, String(Date.now()));
+    }
+  }
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-lg rounded-2xl border border-indigo-200 bg-white p-4 shadow-2xl shadow-indigo-500/10 dark:border-indigo-900 dark:bg-slate-900">
+      <div className="flex items-start gap-3">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white">
+          <Download className="h-5 w-5" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold text-slate-900 dark:text-white">
+            Install {companyIdentity.productName}
+          </p>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+            {showIosHelp
+              ? "Add to your home screen for quick access. Tap Share, then Add to Home Screen."
+              : "Install the app on this device for faster access, full-screen mode, and offline support."}
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {!showIosHelp && deferredPrompt && (
+              <button
+                type="button"
+                onClick={handleInstall}
+                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-500"
+              >
+                <Download className="h-4 w-4" />
+                Install app
+              </button>
+            )}
+            {showIosHelp && (
+              <span className="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+                <Share className="h-4 w-4" />
+                Share, then Add to Home Screen
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={dismiss}
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              Not now
+            </button>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={dismiss}
+          className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+          aria-label="Dismiss install prompt"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -14,6 +14,7 @@ import { loginSchema, type LoginFormData } from "@/lib/validations";
 import { createClient } from "@/lib/supabase/client";
 import { resolvePostAuthDestination } from "@/lib/actions/post-auth-redirect";
 import { toast } from "@/lib/toast";
+import { companyIdentity } from "@/lib/company/identity";
 
 export default function LoginPage() {
   return (
@@ -53,7 +54,7 @@ export default function LoginPage() {
               Welcome back
             </h1>
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Sign in to your AMS account to continue
+              Sign in to your {companyIdentity.productName} account to continue
             </p>
           </div>
 

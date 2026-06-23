@@ -29,6 +29,7 @@ const PUBLIC_ROUTES = [
 function isPublicRoute(pathname: string): boolean {
   if (PUBLIC_ROUTES.includes(pathname)) return true;
   if (pathname.startsWith("/schools/")) return true;
+  if (pathname.startsWith("/modules/")) return true;
   return false;
 }
 
