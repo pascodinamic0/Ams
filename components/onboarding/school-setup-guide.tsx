@@ -37,7 +37,7 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
     return (
       <div className="flex items-center justify-between rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm dark:border-indigo-900 dark:bg-indigo-950/40">
         <p className="text-indigo-900 dark:text-indigo-100">
-          Setup guide paused — {progress.completedCount} of {progress.totalCount} steps done.
+          Setup guide paused - {progress.completedCount} of {progress.totalCount} steps done.
         </p>
         <Button
           variant="ghost"
@@ -69,7 +69,7 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
           <div>
             <CardTitle className="text-lg">Getting started</CardTitle>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-              Optional walkthrough — follow these steps to set up your school from scratch.
+              Optional walkthrough - follow these steps to set up your school from scratch.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -140,7 +140,7 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
                     </div>
                     {!done && (
                       <span className="shrink-0 text-xs font-medium text-indigo-600 dark:text-indigo-400">
-                        Start ?
+                        Start
                       </span>
                     )}
                   </Link>
