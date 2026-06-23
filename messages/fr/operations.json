@@ -1,0 +1,23 @@
+{
+  "title": "Tableau de bord opérations",
+  "libraryTitle": "Bibliothèque",
+  "transportTitle": "Transport",
+  "eventsTitle": "Événements",
+  "staffTitle": "Personnel",
+  "addBook": "Ajouter un livre",
+  "lendBook": "Prêter un livre",
+  "returnBook": "Retourner un livre",
+  "newRoute": "Nouvel itinéraire",
+  "newEvent": "Nouvel événement",
+  "addStaff": "Ajouter un membre du personnel",
+  "libraryTitles": "Titres en bibliothèque",
+  "onLoan": "{count} en prêt",
+  "overdueLoans": "Prêts en retard",
+  "pastDueDate": "Date d'échéance dépassée",
+  "operationsStaff": "Personnel opérations",
+  "transportRoutes": "Itinéraires de transport",
+  "activeRoutes": "Itinéraires actifs",
+  "upcomingEvents": "Événements à venir",
+  "next30Days": "30 prochains jours",
+  "quickActions": "Actions rapides"
+}

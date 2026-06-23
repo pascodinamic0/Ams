@@ -1,0 +1,23 @@
+{
+  "invalidEmail": "E-mail invalide",
+  "passwordRequired": "Le mot de passe est requis",
+  "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères",
+  "passwordUppercase": "Doit inclure une majuscule",
+  "passwordLowercase": "Doit inclure une minuscule",
+  "passwordNumber": "Doit inclure un chiffre",
+  "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+  "confirmPasswordRequired": "Veuillez confirmer votre mot de passe",
+  "currentPasswordRequired": "Le mot de passe actuel est requis",
+  "currentPasswordIncorrect": "Le mot de passe actuel est incorrect",
+  "schoolNameRequired": "Le nom de l'école est requis",
+  "fieldRequired": "Ce champ est requis",
+  "nameRequired": "Le nom est requis",
+  "invalidPhone": "Numéro de téléphone invalide",
+  "invalidDate": "Date invalide",
+  "minLength": "Doit contenir au moins {min} caractères",
+  "maxLength": "Doit contenir au maximum {max} caractères",
+  "selectOption": "Veuillez sélectionner une option",
+  "invalidAmount": "Montant invalide",
+  "positiveNumber": "Doit être un nombre positif",
+  "passwordStrong": "Mot de passe fort"
+}

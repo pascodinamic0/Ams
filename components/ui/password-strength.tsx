@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 
 interface PasswordStrengthProps {
   password: string;
@@ -21,17 +22,18 @@ function calcStrength(password: string): "weak" | "medium" | "strong" {
 }
 
 export function PasswordStrength({ password, onStrengthChange }: PasswordStrengthProps) {
+  const t = useTranslations("validation");
+
   const { strength, feedback } = useMemo(() => {
     const s = calcStrength(password);
     onStrengthChange?.(s);
     const feedback: string[] = [];
-    if (password.length > 0 && password.length < 8) feedback.push("At least 8 characters");
-    if (password.length > 0 && !/[A-Z]/.test(password)) feedback.push("Add uppercase");
-    if (password.length > 0 && !/[a-z]/.test(password)) feedback.push("Add lowercase");
-    if (password.length > 0 && !/\d/.test(password)) feedback.push("Add number");
-    if (password.length > 0 && !/[^a-zA-Z0-9]/.test(password)) feedback.push("Add special char");
+    if (password.length > 0 && password.length < 8) feedback.push(t("passwordMinLength"));
+    if (password.length > 0 && !/[A-Z]/.test(password)) feedback.push(t("passwordUppercase"));
+    if (password.length > 0 && !/[a-z]/.test(password)) feedback.push(t("passwordLowercase"));
+    if (password.length > 0 && !/\d/.test(password)) feedback.push(t("passwordNumber"));
     return { strength: s, feedback };
-  }, [password, onStrengthChange]);
+  }, [password, onStrengthChange, t]);
 
   const width = { weak: "33%", medium: "66%", strong: "100%" }[strength];
   const color = { weak: "bg-red-500", medium: "bg-amber-500", strong: "bg-green-500" }[strength];
@@ -46,7 +48,7 @@ export function PasswordStrength({ password, onStrengthChange }: PasswordStrengt
       </div>
       {password && feedback.length > 0 && (
         <p className="text-xs text-zinc-500">
-          {strength === "strong" ? "Strong password" : feedback.join(", ")}
+          {strength === "strong" ? t("passwordStrong") : feedback.join(", ")}
         </p>
       )}
     </div>

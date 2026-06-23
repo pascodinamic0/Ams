@@ -1,8 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { z } from "zod";
 import { AuthDivider } from "@/components/auth/auth-divider";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { useFormContext } from "react-hook-form";
@@ -10,29 +12,34 @@ import { FormWrapper } from "@/components/forms/form-wrapper";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { loginSchema, type LoginFormData } from "@/lib/validations";
 import { createClient } from "@/lib/supabase/client";
 import { resolvePostAuthDestination } from "@/lib/actions/post-auth-redirect";
 import { toast } from "@/lib/toast";
 import { companyIdentity } from "@/lib/company/identity";
 
+type LoginFormData = {
+  email: string;
+  password: string;
+};
+
 export default function LoginPage() {
+  const t = useTranslations("auth");
+  const brandFeatures = [
+    t("brandFeature1"),
+    t("brandFeature2"),
+    t("brandFeature3"),
+    t("brandFeature4"),
+  ];
+
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">
-      {/* Brand panel */}
       <div className="hidden flex-col justify-center bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-800 p-12 lg:flex lg:w-[45%]">
         <div>
           <blockquote className="text-2xl font-semibold leading-snug text-white">
-            "The operating system for schools — everything your team needs in one
-            platform."
+            &ldquo;{t("brandQuote")}&rdquo;
           </blockquote>
           <div className="mt-8 space-y-4">
-            {[
-              "Academic management & timetables",
-              "Finance, fees & invoices",
-              "Parent & student portals",
-              "Analytics & reporting",
-            ].map((f) => (
+            {brandFeatures.map((f) => (
               <div key={f} className="flex items-center gap-3 text-indigo-200">
                 <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/30">
                   <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -46,15 +53,14 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* Form panel */}
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Welcome back
+              {t("welcomeBack")}
             </h1>
             <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Sign in to your {companyIdentity.productName} account to continue
+              {t("signInSubtitle", { productName: companyIdentity.productName })}
             </p>
           </div>
 
@@ -65,12 +71,12 @@ export default function LoginPage() {
           </Suspense>
 
           <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-            Don&apos;t have an account?{" "}
+            {t("noAccount")}{" "}
             <Link
               href="/get-access"
               className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
             >
-              Get access
+              {t("getAccess")}
             </Link>
           </p>
         </div>
@@ -107,6 +113,17 @@ function LoginFormContent() {
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("auth");
+  const tv = useTranslations("validation");
+
+  const loginSchema = useMemo(
+    () =>
+      z.object({
+        email: z.string().email(tv("invalidEmail")),
+        password: z.string().min(1, tv("passwordRequired")),
+      }),
+    [tv]
+  );
 
   async function onSubmit(data: LoginFormData) {
     setLoading(true);
@@ -124,11 +141,10 @@ function LoginFormContent() {
         });
       }
 
-      toast.success("Logged in successfully");
-      // Full navigation ensures auth cookies are sent on the next server request.
+      toast.success(t("signInSuccess"));
       window.location.assign(destination);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Login failed");
+      toast.error(err instanceof Error ? err.message : t("signInFailed"));
     } finally {
       setLoading(false);
     }
@@ -142,6 +158,7 @@ function LoginFormContent() {
 }
 
 function LoginFormFields({ loading }: { loading: boolean }) {
+  const t = useTranslations("auth");
   const {
     register,
     formState: { errors },
@@ -151,7 +168,7 @@ function LoginFormFields({ loading }: { loading: boolean }) {
     <>
       <div>
         <Label htmlFor="email" required>
-          Email address
+          {t("email")}
         </Label>
         <Input
           id="email"
@@ -168,13 +185,13 @@ function LoginFormFields({ loading }: { loading: boolean }) {
       <div>
         <div className="flex items-center justify-between">
           <Label htmlFor="password" required>
-            Password
+            {t("password")}
           </Label>
           <Link
             href="/forgot-password"
             className="text-xs font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
           >
-            Forgot password?
+            {t("forgotPassword")}
           </Link>
         </div>
         <Input
@@ -195,10 +212,10 @@ function LoginFormFields({ loading }: { loading: boolean }) {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            Signing in...
+            {t("signingIn")}
           </span>
         ) : (
-          "Sign in"
+          t("signIn")
         )}
       </Button>
     </>

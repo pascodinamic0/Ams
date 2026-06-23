@@ -1,0 +1,13 @@
+{
+  "offlineBanner": "You are offline. Some features may be unavailable.",
+  "installTitle": "Install ShuleOS",
+  "installDescription": "Install the app for quick access and offline support.",
+  "installButton": "Install",
+  "installLater": "Not now",
+  "installApp": "Install app",
+  "installAppDescription": "Add ShuleOS to your home screen for faster access.",
+  "alreadyInstalled": "App is installed",
+  "offlineTitle": "You're offline",
+  "offlineDescription": "{productName} needs a connection for most features. Cached pages may still open, and attendance you saved offline will sync when you reconnect.",
+  "goToLogin": "Go to login"
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   signInWithGoogle,
@@ -41,15 +42,17 @@ export function GoogleAuthButton({
   label?: string;
 }) {
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("auth");
   const buttonLabel =
-    label ?? (intent === "register" ? "Continue with Google" : "Sign in with Google");
+    label ??
+    (intent === "register" ? t("continueWithGoogle") : t("signInWithGoogle"));
 
   async function handleClick() {
     setLoading(true);
     try {
       await signInWithGoogle({ intent, redirect });
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Google sign-in failed");
+      toast.error(err instanceof Error ? err.message : t("signInFailed"));
       setLoading(false);
     }
   }
@@ -80,7 +83,7 @@ export function GoogleAuthButton({
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
             />
           </svg>
-          Redirecting...
+          {t("redirecting")}
         </span>
       ) : (
         <>

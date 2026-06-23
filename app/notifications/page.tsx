@@ -6,6 +6,7 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
 } from "./actions";
+import { getTranslations } from "next-intl/server";
 
 function formatNotificationTime(dateStr: string) {
   const date = new Date(dateStr);
@@ -19,6 +20,7 @@ function formatNotificationTime(dateStr: string) {
 }
 
 export default async function NotificationsPage() {
+  const t = await getTranslations("notifications");
   const notifications = await getNotifications();
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
@@ -27,19 +29,19 @@ export default async function NotificationsPage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-            Notifications
+            {t("title")}
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             {unreadCount > 0
-              ? `${unreadCount} unread notification${unreadCount === 1 ? "" : "s"}`
-              : "You're all caught up"}
+              ? t("unreadCount", { count: unreadCount })
+              : t("allCaughtUp")}
           </p>
         </div>
 
         {unreadCount > 0 && (
           <form action={markAllNotificationsRead}>
             <Button type="submit" variant="outline" size="sm">
-              Mark all as read
+              {t("markAllRead")}
             </Button>
           </form>
         )}
@@ -62,8 +64,8 @@ export default async function NotificationsPage() {
               />
             </svg>
           }
-          title="No notifications yet"
-          description="Alerts about fees, messages, and school updates will appear here."
+          title={t("noNotificationsYet")}
+          description={t("noNotificationsDesc")}
         />
       ) : (
         <ul className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white dark:divide-slate-800 dark:border-slate-700 dark:bg-slate-900">
@@ -102,7 +104,7 @@ export default async function NotificationsPage() {
                 {!notification.is_read && (
                   <form action={markNotificationRead.bind(null, notification.id)}>
                     <Button type="submit" variant="ghost" size="sm">
-                      Mark read
+                      {t("markRead")}
                     </Button>
                   </form>
                 )}

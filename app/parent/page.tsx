@@ -11,15 +11,17 @@ import {
 import { CopyableBadge } from "@/components/ui/copyable-badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
+import { getTranslations } from "next-intl/server";
 
 export default async function ParentDashboard() {
+  const t = await getTranslations("parent");
   const profile = await getCurrentProfile();
 
   if (!profile) {
     return (
       <EmptyState
-        title="Not signed in"
-        description="Please log in to view your parent dashboard."
+        title={t("notSignedIn")}
+        description={t("notSignedInDesc")}
       />
     );
   }
@@ -29,8 +31,8 @@ export default async function ParentDashboard() {
   if (!guardian) {
     return (
       <EmptyState
-        title="No guardian profile"
-        description="Your account is not linked to a guardian profile. Contact the school."
+        title={t("noGuardianProfile")}
+        description={t("noGuardianProfileDesc")}
       />
     );
   }
@@ -53,42 +55,40 @@ export default async function ParentDashboard() {
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-          Welcome{profile.name ? `, ${profile.name}` : ""}
+          {t("welcome", { name: profile.name ?? "" })}
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Overview of your linked children and quick links.
-        </p>
+        <p className="mt-1 text-sm text-slate-500">{t("welcomeSubtitle")}</p>
       </div>
 
       {children.length === 0 ? (
         <EmptyState
-          title="No students linked"
-          description="Contact the school to link your children to your account."
+          title={t("noStudentsLinked")}
+          description={t("noStudentsLinkedDesc")}
         />
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <p className="text-xs font-medium text-slate-500">Children</p>
+              <p className="text-xs font-medium text-slate-500">{t("children")}</p>
               <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
                 {children.length}
               </p>
             </div>
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <p className="text-xs font-medium text-slate-500">Outstanding invoices</p>
+              <p className="text-xs font-medium text-slate-500">{t("outstandingInvoices")}</p>
               <p className="mt-1 text-2xl font-bold text-amber-600">{outstanding}</p>
             </div>
             <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <p className="text-xs font-medium text-slate-500">Quick links</p>
+              <p className="text-xs font-medium text-slate-500">{t("quickLinks")}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <Link href="/parent/fees">
-                  <Button size="sm" variant="outline">Fees</Button>
+                  <Button size="sm" variant="outline">{t("fees")}</Button>
                 </Link>
                 <Link href="/parent/performance">
-                  <Button size="sm" variant="outline">Performance</Button>
+                  <Button size="sm" variant="outline">{t("performance")}</Button>
                 </Link>
                 <Link href="/parent/timetable">
-                  <Button size="sm" variant="outline">Timetable</Button>
+                  <Button size="sm" variant="outline">{t("timetable")}</Button>
                 </Link>
               </div>
             </div>
@@ -96,7 +96,7 @@ export default async function ParentDashboard() {
 
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-              Your children
+              {t("yourChildren")}
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {children.map((child) => (
@@ -114,23 +114,23 @@ export default async function ParentDashboard() {
                           {child.name}
                         </p>
                         <p className="text-xs text-slate-500">
-                          {child.class_name ?? "No class"}
+                          {child.class_name ?? t("noClass")}
                         </p>
                       </div>
                     </div>
                   </div>
                   {child.student_id && (
                     <div className="mt-3">
-                      <p className="mb-1 text-xs text-slate-500">Student ID</p>
+                      <p className="mb-1 text-xs text-slate-500">{t("studentId")}</p>
                       <CopyableBadge value={child.student_id} label={child.student_id} />
                     </div>
                   )}
                   <div className="mt-4 flex flex-wrap gap-2">
                     <Link href={`/parent/performance/${child.id}`}>
-                      <Button size="sm" variant="ghost">Performance</Button>
+                      <Button size="sm" variant="ghost">{t("performance")}</Button>
                     </Link>
                     <Link href="/parent/timetable">
-                      <Button size="sm" variant="ghost">Timetable</Button>
+                      <Button size="sm" variant="ghost">{t("timetable")}</Button>
                     </Link>
                   </div>
                 </div>
@@ -141,7 +141,7 @@ export default async function ParentDashboard() {
           {childPreviews.length > 0 && (
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-                Today&apos;s snapshot
+                {t("todaysSnapshot")}
               </h2>
               <div className="grid gap-4 lg:grid-cols-2">
                 {childPreviews.map(({ child, todaySlots, upcoming }) => (
@@ -152,7 +152,7 @@ export default async function ParentDashboard() {
                     <p className="font-medium text-slate-900 dark:text-white">{child.name}</p>
                     <p className="text-xs text-slate-500">{format(new Date(), "EEEE, MMM d")}</p>
                     {todaySlots.length === 0 ? (
-                      <p className="mt-3 text-sm text-slate-500">No classes scheduled today.</p>
+                      <p className="mt-3 text-sm text-slate-500">{t("noClassesToday")}</p>
                     ) : (
                       <ul className="mt-3 space-y-2">
                         {todaySlots.slice(0, 4).map((slot) => (
@@ -168,7 +168,7 @@ export default async function ParentDashboard() {
                     )}
                     {upcoming.length > 0 && (
                       <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
-                        <p className="text-xs font-medium text-slate-500">Due soon</p>
+                        <p className="text-xs font-medium text-slate-500">{t("dueSoon")}</p>
                         <ul className="mt-2 space-y-1">
                           {upcoming.map((a) => (
                             <li key={a.id} className="text-sm text-slate-700 dark:text-slate-300">

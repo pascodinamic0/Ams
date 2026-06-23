@@ -1,0 +1,11 @@
+{
+  "title": "Notifications",
+  "markAllRead": "Tout marquer comme lu",
+  "markRead": "Marquer comme lu",
+  "noNotifications": "Aucune notification",
+  "noNotificationsYet": "Aucune notification pour l'instant",
+  "noNotificationsDesc": "Les alertes concernant les frais, messages et mises à jour de l'école apparaîtront ici.",
+  "unread": "Non lu",
+  "unreadCount": "{count, plural, one {# notification non lue} other {# notifications non lues}}",
+  "allCaughtUp": "Vous êtes à jour"
+}

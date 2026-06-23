@@ -1,15 +1,16 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { z } from "zod";
 import { useFormContext } from "react-hook-form";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { PasswordStrength } from "@/components/ui/password-strength";
-import { registerSchema, type RegisterFormData } from "@/lib/validations";
 import { AuthDivider } from "@/components/auth/auth-divider";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
 import { buildAuthCallbackUrl } from "@/lib/auth/app-url";
@@ -18,8 +19,92 @@ import { registerSchoolOrganization } from "@/lib/actions/school-registration";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
+type RegisterFormData = {
+  school_name: string;
+  admin_email: string;
+  password: string;
+};
+
 export default function RegisterPage() {
+  const t = useTranslations("auth");
+  const registerSteps = [
+    { step: "1", label: t("registerStep1") },
+    { step: "2", label: t("registerStep2") },
+    { step: "3", label: t("registerStep3") },
+    { step: "4", label: t("registerStep4") },
+  ];
+
+  return (
+    <div className="flex min-h-[calc(100vh-4rem)]">
+      <div className="hidden flex-col justify-center bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-800 p-12 lg:flex lg:w-[45%]">
+        <div>
+          <h2 className="text-3xl font-bold leading-tight text-white">
+            {t("registerBrandTitle")}
+          </h2>
+          <p className="mt-4 text-indigo-200">
+            {t("registerBrandSubtitle", { productName: companyIdentity.productName })}
+          </p>
+          <div className="mt-8 space-y-3">
+            {registerSteps.map((s) => (
+              <div key={s.step} className="flex items-center gap-3">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/40 text-xs font-bold text-white">
+                  {s.step}
+                </div>
+                <span className="text-sm text-indigo-200">{s.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-1 items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              {t("registerTitle")}
+            </h1>
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+              {t("registerFormSubtitle", { productName: companyIdentity.productName })}
+            </p>
+          </div>
+
+          <Suspense fallback={<RegisterOAuthSkeleton />}>
+            <RegisterOAuthSection />
+          </Suspense>
+
+          <AuthDivider label={t("orRegisterWithEmail")} />
+
+          <RegisterForm />
+
+          <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+            {t("alreadyHaveAccount")}{" "}
+            <Link
+              href="/login"
+              className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+            >
+              {t("signInLink")}
+            </Link>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RegisterForm() {
   const [loading, setLoading] = useState(false);
+  const t = useTranslations("auth");
+  const tv = useTranslations("validation");
+
+  const registerSchema = useMemo(
+    () =>
+      z.object({
+        school_name: z.string().min(1, tv("schoolNameRequired")),
+        admin_email: z.string().email(tv("invalidEmail")),
+        password: z.string().min(8, tv("passwordMinLength")),
+      }),
+    [tv]
+  );
 
   async function onSubmit(data: RegisterFormData) {
     setLoading(true);
@@ -38,15 +123,10 @@ export default function RegisterPage() {
         },
       });
       if (error) throw error;
-      if (!authData.user) throw new Error("Registration failed");
+      if (!authData.user) throw new Error(t("registrationFailed"));
 
-      // Supabase returns a placeholder user (no identities) when the email is
-      // already registered, to prevent email enumeration. That ID is not in
-      // auth.users and would violate schools.owner_id_fkey.
       if (!authData.user.identities?.length) {
-        throw new Error(
-          "An account with this email already exists. Sign in to finish setting up your school."
-        );
+        throw new Error(t("accountAlreadyExists"));
       }
 
       const org = await registerSchoolOrganization({
@@ -59,7 +139,6 @@ export default function RegisterPage() {
         throw new Error(org.error);
       }
 
-      // Full navigation (not client router) so auth cookies are applied before /pending loads.
       if (authData.session) {
         window.location.assign("/pending");
         return;
@@ -70,82 +149,17 @@ export default function RegisterPage() {
         email: data.admin_email,
       });
       window.location.assign(`/register/success?${successParams.toString()}`);
-      return;
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Registration failed");
+      toast.error(err instanceof Error ? err.message : t("registrationFailed"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
-      {/* Brand panel */}
-      <div className="hidden flex-col justify-center bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-800 p-12 lg:flex lg:w-[45%]">
-        <div>
-          <h2 className="text-3xl font-bold leading-tight text-white">
-            Get your school up and running in minutes
-          </h2>
-          <p className="mt-4 text-indigo-200">
-            Create your account, complete the 4-step school setup, and your team
-            can start using {companyIdentity.productName} today.
-          </p>
-          <div className="mt-8 space-y-3">
-            {[
-              { step: "1", label: "Register your school" },
-              { step: "2", label: "Set domain & colors" },
-              { step: "3", label: "Choose your site template" },
-              { step: "4", label: "Invite your team" },
-            ].map((s) => (
-              <div key={s.step} className="flex items-center gap-3">
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/40 text-xs font-bold text-white">
-                  {s.step}
-                </div>
-                <span className="text-sm text-indigo-200">{s.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Form panel */}
-      <div className="flex flex-1 items-center justify-center px-4 py-12">
-        <div className="w-full max-w-md">
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Register your school
-            </h1>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Create your school account to get started with {companyIdentity.productName}
-            </p>
-          </div>
-
-          <Suspense fallback={<RegisterOAuthSkeleton />}>
-            <RegisterOAuthSection />
-          </Suspense>
-
-          <AuthDivider label="or register with email" />
-
-          <FormWrapper
-            schema={registerSchema}
-            onSubmit={onSubmit}
-            className="space-y-5"
-          >
-            <RegisterFormFields loading={loading} />
-          </FormWrapper>
-
-          <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
-            Already have an account?{" "}
-            <Link
-              href="/login"
-              className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
-            >
-              Sign in
-            </Link>
-          </p>
-        </div>
-      </div>
-    </div>
+    <FormWrapper schema={registerSchema} onSubmit={onSubmit} className="space-y-5">
+      <RegisterFormFields loading={loading} />
+    </FormWrapper>
   );
 }
 
@@ -169,6 +183,7 @@ function RegisterOAuthSkeleton() {
 }
 
 function RegisterFormFields({ loading }: { loading: boolean }) {
+  const t = useTranslations("auth");
   const {
     register,
     watch,
@@ -180,7 +195,7 @@ function RegisterFormFields({ loading }: { loading: boolean }) {
     <>
       <div>
         <Label htmlFor="school_name" required>
-          School name
+          {t("schoolName")}
         </Label>
         <Input
           id="school_name"
@@ -195,7 +210,7 @@ function RegisterFormFields({ loading }: { loading: boolean }) {
 
       <div>
         <Label htmlFor="admin_email" required>
-          Admin email
+          {t("adminEmail")}
         </Label>
         <Input
           id="admin_email"
@@ -211,7 +226,7 @@ function RegisterFormFields({ loading }: { loading: boolean }) {
 
       <div>
         <Label htmlFor="password" required>
-          Password
+          {t("password")}
         </Label>
         <Input
           id="password"
@@ -232,10 +247,10 @@ function RegisterFormFields({ loading }: { loading: boolean }) {
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
-            Creating account...
+            {t("creatingAccount")}
           </span>
         ) : (
-          "Create school account"
+          t("createSchoolAccount")
         )}
       </Button>
     </>

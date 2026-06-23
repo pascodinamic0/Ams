@@ -1,6 +1,7 @@
 "use client";
 
 import { isValidElement, useState, type ReactNode } from "react";
+import { useTranslations } from "next-intl";
 import { TableSkeleton } from "./table-skeleton";
 
 export interface ColumnDef<T> {
@@ -35,8 +36,10 @@ export function DataTable<T extends Record<string, unknown>>({
   isLoading = false,
   keyField = "id" as keyof T & string,
   onRowClick,
-  emptyMessage = "No data found",
+  emptyMessage,
 }: DataTableProps<T>) {
+  const t = useTranslations("common");
+  const resolvedEmptyMessage = emptyMessage ?? t("noData");
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(0);
@@ -97,7 +100,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 colSpan={columns.length}
                 className="px-6 py-12 text-center text-zinc-500"
               >
-                {emptyMessage}
+                {resolvedEmptyMessage}
               </td>
             </tr>
           ) : (
@@ -135,7 +138,7 @@ export function DataTable<T extends Record<string, unknown>>({
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between border-t border-zinc-200 px-4 py-2 dark:border-zinc-800">
           <span className="text-sm text-zinc-600 dark:text-zinc-400">
-            Page {page + 1} of {totalPages}
+            {t("pageOf", { current: page + 1, total: totalPages })}
           </span>
           <div className="flex gap-2">
             <button
@@ -144,7 +147,7 @@ export function DataTable<T extends Record<string, unknown>>({
               disabled={page === 0}
               className="rounded border border-zinc-300 px-3 py-1 text-sm disabled:opacity-50 dark:border-zinc-700"
             >
-              Previous
+              {t("previous")}
             </button>
             <button
               type="button"
@@ -152,7 +155,7 @@ export function DataTable<T extends Record<string, unknown>>({
               disabled={page >= totalPages - 1}
               className="rounded border border-zinc-300 px-3 py-1 text-sm disabled:opacity-50 dark:border-zinc-700"
             >
-              Next
+              {t("next")}
             </button>
           </div>
         </div>

@@ -1,12 +1,15 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { Sidebar } from "@/components/layout/sidebar";
 import { SchoolSetupGuideShell } from "@/components/onboarding/school-setup-guide-shell";
+import { getTranslations } from "next-intl/server";
 
-export default function AcademicLayout({ children }: { children: React.ReactNode }) {
+export default async function AcademicLayout({ children }: { children: React.ReactNode }) {
+  const t = await getTranslations("nav");
+
   return (
     <AppShell
       sidebar={<Sidebar role="academic_admin" />}
-      header={<span className="font-medium">Academic</span>}
+      header={<span className="font-medium">{t("academic")}</span>}
       dashboardHref="/academic"
     >
       <div className="space-y-6">

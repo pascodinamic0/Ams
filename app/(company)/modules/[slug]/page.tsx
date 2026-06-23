@@ -1,20 +1,30 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { ModuleDetailPage } from "@/components/company/module-detail-page";
 import { companyIdentity } from "@/lib/company/identity";
-import { getPlatformModule, platformModules } from "@/lib/company/modules";
+import { getPlatformModule, getPlatformModules } from "@/lib/i18n/modules";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
 };
 
 export function generateStaticParams() {
-  return platformModules.map((module) => ({ slug: module.slug }));
+  return [
+    { slug: "academic" },
+    { slug: "finance" },
+    { slug: "operations" },
+    { slug: "analytics" },
+    { slug: "school-websites" },
+    { slug: "messaging" },
+    { slug: "parent-student-portals" },
+  ];
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const module = getPlatformModule(slug);
+  const t = await getTranslations("modules");
+  const module = getPlatformModule(slug, t);
 
   if (!module) {
     return { title: "Module not found" };
@@ -28,7 +38,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ModulePage(props: PageProps) {
   const { slug } = await props.params;
-  const module = getPlatformModule(slug);
+  const t = await getTranslations("modules");
+  const module = getPlatformModule(slug, t);
 
   if (!module) {
     notFound();

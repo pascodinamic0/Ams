@@ -1,0 +1,44 @@
+{
+  "gettingStarted": "Getting started",
+  "guideDescription": "Optional walkthrough - follow these steps to set up your school from scratch.",
+  "resumeGuide": "Resume guide",
+  "expandGuide": "Expand guide",
+  "collapseGuide": "Collapse guide",
+  "dismissGuide": "Dismiss guide",
+  "skipForNow": "Skip for now",
+  "startStep": "Start",
+  "setupPaused": "Setup guide paused - {completed} of {total} steps done.",
+  "progressComplete": "{completed} of {total} complete",
+  "stepsCompleted": "{completed} of {total} steps completed",
+  "allStepsComplete": "All steps complete!",
+  "steps": {
+    "website": {
+      "title": "Set up your public website",
+      "description": "Add your story, contact details, and branding so families can learn about your school."
+    },
+    "team": {
+      "title": "Invite your team",
+      "description": "Add teachers, finance staff, and other roles so everyone has the right dashboard access."
+    },
+    "subjects": {
+      "title": "Create subjects",
+      "description": "Define the courses your school offers before building classes."
+    },
+    "classes": {
+      "title": "Create classes",
+      "description": "Organize students into grade levels or homerooms."
+    },
+    "students": {
+      "title": "Enroll your first student",
+      "description": "Add a student record to start tracking attendance, grades, and fees."
+    },
+    "timetable": {
+      "title": "Build your timetable",
+      "description": "Assign subjects and teachers to class time slots."
+    },
+    "publish": {
+      "title": "Publish your website",
+      "description": "When you are ready, enable your public site so families can find and apply."
+    }
+  }
+}

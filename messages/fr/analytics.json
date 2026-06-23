@@ -1,0 +1,20 @@
+{
+  "title": "Tableau de bord analytique",
+  "subtitle": "Aperçu des inscriptions, présences et revenus sur toute la plateforme",
+  "studentsTitle": "Analytique élèves",
+  "attendanceTitle": "Analytique présences",
+  "financeTitle": "Analytique finance",
+  "branchesTitle": "Comparaison de campus",
+  "kpiStudents": "Élèves",
+  "kpiActiveStudents": "{count} actifs",
+  "kpiAttendanceRate": "Taux de présence",
+  "kpiLast4Weeks": "4 dernières semaines",
+  "kpiRevenueCollected": "Revenus encaissés",
+  "kpiAllTime": "Depuis le début",
+  "kpiSchools": "Écoles",
+  "kpiPlatformUsers": "{count} utilisateurs plateforme",
+  "chartEnrollmentByClass": "Inscriptions par classe",
+  "chartAttendanceTrend": "Tendance des présences (4 semaines)",
+  "chartGenderDistribution": "Répartition par genre",
+  "chartGradeDistribution": "Répartition par niveau"
+}

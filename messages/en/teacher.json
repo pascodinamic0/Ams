@@ -1,0 +1,22 @@
+{
+  "title": "Teacher Dashboard",
+  "classesTitle": "My Classes",
+  "attendanceTitle": "Attendance",
+  "gradebookTitle": "Gradebook",
+  "assignmentsTitle": "Assignments",
+  "examsTitle": "Exams",
+  "reportCardsTitle": "Report Cards",
+  "markAttendance": "Mark attendance",
+  "enterGrades": "Enter grades",
+  "newAssignment": "New assignment",
+  "newExam": "New exam",
+  "signInRequired": "Please sign in to view your dashboard.",
+  "welcomeBack": "Welcome back, {name}",
+  "studentsTotal": "{count} students total",
+  "todaysSchedule": "Today's Schedule",
+  "noClassesToday": "No classes scheduled for today.",
+  "period": "Period {period}",
+  "quickActions": "Quick actions",
+  "takeAttendance": "Take attendance",
+  "manageAssignments": "Manage assignments"
+}

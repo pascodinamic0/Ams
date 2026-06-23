@@ -1,15 +1,18 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { Sidebar } from "@/components/layout/sidebar";
+import { getTranslations } from "next-intl/server";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = await getTranslations("nav");
+
   return (
     <AppShell
       sidebar={<Sidebar role="super_admin" />}
-      header={<span className="font-medium">Admin</span>}
+      header={<span className="font-medium">{t("admin")}</span>}
       dashboardHref="/admin"
     >
       {children}

@@ -2,12 +2,55 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface NavItem {
   href: string;
-  label: string;
+  labelKey: keyof NavLabels;
   icon: React.ReactNode;
 }
+
+type NavLabels = {
+  dashboard: string;
+  schools: string;
+  websiteTemplates: string;
+  users: string;
+  roles: string;
+  auditLogs: string;
+  features: string;
+  outreach: string;
+  messages: string;
+  publicWebsite: string;
+  team: string;
+  students: string;
+  admissions: string;
+  classes: string;
+  sections: string;
+  subjects: string;
+  timetable: string;
+  curriculum: string;
+  myClasses: string;
+  attendance: string;
+  gradebook: string;
+  assignments: string;
+  exams: string;
+  reportCards: string;
+  feeStructure: string;
+  invoices: string;
+  payments: string;
+  payroll: string;
+  expenses: string;
+  reports: string;
+  feeReminders: string;
+  library: string;
+  transport: string;
+  events: string;
+  staff: string;
+  fees: string;
+  performance: string;
+  grades: string;
+  finance: string;
+};
 
 const icon = {
   dashboard: (
@@ -161,80 +204,80 @@ const icon = {
 
 const ROLE_NAV: Record<string, NavItem[]> = {
   super_admin: [
-    { href: "/admin", label: "Dashboard", icon: icon.dashboard },
-    { href: "/admin/schools", label: "Schools", icon: icon.schools },
-    { href: "/admin/websites", label: "Website Templates", icon: icon.website },
-    { href: "/admin/users", label: "Users", icon: icon.users },
-    { href: "/admin/roles", label: "Roles", icon: icon.roles },
-    { href: "/admin/audit", label: "Audit Logs", icon: icon.audit },
-    { href: "/admin/features", label: "Features", icon: icon.features },
-    { href: "/outreach", label: "Outreach", icon: icon.outreach },
-    { href: "/messages", label: "Messages", icon: icon.chat },
+    { href: "/admin", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/admin/schools", labelKey: "schools", icon: icon.schools },
+    { href: "/admin/websites", labelKey: "websiteTemplates", icon: icon.website },
+    { href: "/admin/users", labelKey: "users", icon: icon.users },
+    { href: "/admin/roles", labelKey: "roles", icon: icon.roles },
+    { href: "/admin/audit", labelKey: "auditLogs", icon: icon.audit },
+    { href: "/admin/features", labelKey: "features", icon: icon.features },
+    { href: "/outreach", labelKey: "outreach", icon: icon.outreach },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   academic_admin: [
-    { href: "/academic", label: "Dashboard", icon: icon.dashboard },
-    { href: "/academic/website", label: "Public Website", icon: icon.website },
-    { href: "/academic/team", label: "Team", icon: icon.users },
-    { href: "/academic/students", label: "Students", icon: icon.students },
-    { href: "/academic/admissions", label: "Admissions", icon: icon.admissions },
-    { href: "/academic/classes", label: "Classes", icon: icon.classes },
-    { href: "/academic/sections", label: "Sections", icon: icon.classes },
-    { href: "/academic/subjects", label: "Subjects", icon: icon.curriculum },
-    { href: "/academic/timetable", label: "Timetable", icon: icon.timetable },
-    { href: "/academic/curriculum", label: "Curriculum", icon: icon.curriculum },
-    { href: "/outreach", label: "Outreach", icon: icon.outreach },
-    { href: "/messages", label: "Messages", icon: icon.chat },
+    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/academic/website", labelKey: "publicWebsite", icon: icon.website },
+    { href: "/academic/team", labelKey: "team", icon: icon.users },
+    { href: "/academic/students", labelKey: "students", icon: icon.students },
+    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
+    { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
+    { href: "/academic/sections", labelKey: "sections", icon: icon.classes },
+    { href: "/academic/subjects", labelKey: "subjects", icon: icon.curriculum },
+    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
+    { href: "/academic/curriculum", labelKey: "curriculum", icon: icon.curriculum },
+    { href: "/outreach", labelKey: "outreach", icon: icon.outreach },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   teacher: [
-    { href: "/teacher", label: "Dashboard", icon: icon.dashboard },
-    { href: "/teacher/classes", label: "My Classes", icon: icon.classes },
-    { href: "/teacher/attendance", label: "Attendance", icon: icon.attendance },
-    { href: "/teacher/gradebook", label: "Gradebook", icon: icon.grades },
-    { href: "/teacher/assignments", label: "Assignments", icon: icon.assignments },
-    { href: "/teacher/exams", label: "Exams", icon: icon.timetable },
-    { href: "/teacher/report-cards", label: "Report Cards", icon: icon.reports },
-    { href: "/messages", label: "Messages", icon: icon.chat },
+    { href: "/teacher", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/teacher/classes", labelKey: "myClasses", icon: icon.classes },
+    { href: "/teacher/attendance", labelKey: "attendance", icon: icon.attendance },
+    { href: "/teacher/gradebook", labelKey: "gradebook", icon: icon.grades },
+    { href: "/teacher/assignments", labelKey: "assignments", icon: icon.assignments },
+    { href: "/teacher/exams", labelKey: "exams", icon: icon.timetable },
+    { href: "/teacher/report-cards", labelKey: "reportCards", icon: icon.reports },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   finance_officer: [
-    { href: "/finance", label: "Dashboard", icon: icon.dashboard },
-    { href: "/finance/fee-structure", label: "Fee Structure", icon: icon.curriculum },
-    { href: "/finance/invoices", label: "Invoices", icon: icon.fees },
-    { href: "/finance/payments", label: "Payments", icon: icon.finance },
-    { href: "/finance/payroll", label: "Payroll", icon: icon.staff },
-    { href: "/finance/expenses", label: "Expenses", icon: icon.finance },
-    { href: "/finance/reports", label: "Reports", icon: icon.reports },
-    { href: "/finance/fee-reminders", label: "Fee Reminders", icon: icon.reminders },
+    { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.curriculum },
+    { href: "/finance/invoices", labelKey: "invoices", icon: icon.fees },
+    { href: "/finance/payments", labelKey: "payments", icon: icon.finance },
+    { href: "/finance/payroll", labelKey: "payroll", icon: icon.staff },
+    { href: "/finance/expenses", labelKey: "expenses", icon: icon.finance },
+    { href: "/finance/reports", labelKey: "reports", icon: icon.reports },
+    { href: "/finance/fee-reminders", labelKey: "feeReminders", icon: icon.reminders },
   ],
   operations_manager: [
-    { href: "/operations", label: "Dashboard", icon: icon.dashboard },
-    { href: "/operations/library", label: "Library", icon: icon.library },
-    { href: "/operations/transport", label: "Transport", icon: icon.transport },
-    { href: "/operations/events", label: "Events", icon: icon.events },
-    { href: "/operations/staff", label: "Staff", icon: icon.staff },
+    { href: "/operations", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/operations/library", labelKey: "library", icon: icon.library },
+    { href: "/operations/transport", labelKey: "transport", icon: icon.transport },
+    { href: "/operations/events", labelKey: "events", icon: icon.events },
+    { href: "/operations/staff", labelKey: "staff", icon: icon.staff },
   ],
   parent: [
-    { href: "/parent", label: "Dashboard", icon: icon.dashboard },
-    { href: "/parent/fees", label: "Fees", icon: icon.fees },
-    { href: "/parent/timetable", label: "Timetable", icon: icon.timetable },
-    { href: "/parent/assignments", label: "Assignments", icon: icon.assignments },
-    { href: "/messages", label: "Messages", icon: icon.chat },
-    { href: "/parent/events", label: "Events", icon: icon.events },
-    { href: "/parent/transport", label: "Transport", icon: icon.transport },
-    { href: "/parent/performance", label: "Performance", icon: icon.performance },
+    { href: "/parent", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/parent/fees", labelKey: "fees", icon: icon.fees },
+    { href: "/parent/timetable", labelKey: "timetable", icon: icon.timetable },
+    { href: "/parent/assignments", labelKey: "assignments", icon: icon.assignments },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/parent/events", labelKey: "events", icon: icon.events },
+    { href: "/parent/transport", labelKey: "transport", icon: icon.transport },
+    { href: "/parent/performance", labelKey: "performance", icon: icon.performance },
   ],
   student: [
-    { href: "/student", label: "Dashboard", icon: icon.dashboard },
-    { href: "/student/timetable", label: "Timetable", icon: icon.timetable },
-    { href: "/student/assignments", label: "Assignments", icon: icon.assignments },
-    { href: "/student/grades", label: "Grades", icon: icon.grades },
-    { href: "/student/library", label: "Library", icon: icon.library },
-    { href: "/student/events", label: "Events", icon: icon.events },
+    { href: "/student", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/student/timetable", labelKey: "timetable", icon: icon.timetable },
+    { href: "/student/assignments", labelKey: "assignments", icon: icon.assignments },
+    { href: "/student/grades", labelKey: "grades", icon: icon.grades },
+    { href: "/student/library", labelKey: "library", icon: icon.library },
+    { href: "/student/events", labelKey: "events", icon: icon.events },
   ],
   analytics: [
-    { href: "/analytics", label: "Dashboard", icon: icon.dashboard },
-    { href: "/analytics/students", label: "Students", icon: icon.students },
-    { href: "/analytics/attendance", label: "Attendance", icon: icon.attendance },
-    { href: "/analytics/finance", label: "Finance", icon: icon.finance },
+    { href: "/analytics", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/analytics/students", labelKey: "students", icon: icon.students },
+    { href: "/analytics/attendance", labelKey: "attendance", icon: icon.attendance },
+    { href: "/analytics/finance", labelKey: "finance", icon: icon.finance },
   ],
 };
 
@@ -250,9 +293,11 @@ interface SidebarProps {
 export function Sidebar({ role = "student" }: SidebarProps) {
   const pathname = usePathname();
   const navItems = getNavForRole(role);
+  const t = useTranslations("nav");
+  const tCommon = useTranslations("common");
 
   return (
-    <nav className="flex flex-col gap-0.5 px-3" aria-label="Sidebar">
+    <nav className="flex flex-col gap-0.5 px-3" aria-label={tCommon("sidebar")}>
       {navItems.map((item) => {
         const isActive =
           pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -275,7 +320,7 @@ export function Sidebar({ role = "student" }: SidebarProps) {
             >
               {item.icon}
             </span>
-            {item.label}
+            {t(item.labelKey)}
           </Link>
         );
       })}

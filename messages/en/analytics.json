@@ -1,0 +1,20 @@
+{
+  "title": "Analytics Dashboard",
+  "subtitle": "Platform-wide enrollment, attendance, and revenue insights",
+  "studentsTitle": "Student Analytics",
+  "attendanceTitle": "Attendance Analytics",
+  "financeTitle": "Finance Analytics",
+  "branchesTitle": "Branch Comparison",
+  "kpiStudents": "Students",
+  "kpiActiveStudents": "{count} active",
+  "kpiAttendanceRate": "Attendance rate",
+  "kpiLast4Weeks": "Last 4 weeks",
+  "kpiRevenueCollected": "Revenue collected",
+  "kpiAllTime": "All time",
+  "kpiSchools": "Schools",
+  "kpiPlatformUsers": "{count} platform users",
+  "chartEnrollmentByClass": "Enrollment by class",
+  "chartAttendanceTrend": "Attendance trend (4 weeks)",
+  "chartGenderDistribution": "Gender distribution",
+  "chartGradeDistribution": "Grade distribution"
+}

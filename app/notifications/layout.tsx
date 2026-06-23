@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { Sidebar } from "@/components/layout/sidebar";
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 
 export default async function NotificationsLayout({
   children,
@@ -11,6 +12,7 @@ export default async function NotificationsLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  const t = await getTranslations("nav");
 
   let role = "teacher";
   if (user) {
@@ -35,7 +37,7 @@ export default async function NotificationsLayout({
   return (
     <AppShell
       sidebar={<Sidebar role={role} />}
-      header={<span className="font-medium">Notifications</span>}
+      header={<span className="font-medium">{t("notifications")}</span>}
       dashboardHref={dashboardMap[role] ?? "/"}
     >
       {children}

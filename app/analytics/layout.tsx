@@ -1,9 +1,16 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { Sidebar } from "@/components/layout/sidebar";
+import { getTranslations } from "next-intl/server";
 
-export default function AnalyticsLayout({ children }: { children: React.ReactNode }) {
+export default async function AnalyticsLayout({ children }: { children: React.ReactNode }) {
+  const t = await getTranslations("nav");
+
   return (
-    <AppShell sidebar={<Sidebar role="analytics" />} header={<span className="font-medium">Analytics</span>} dashboardHref="/analytics">
+    <AppShell
+      sidebar={<Sidebar role="analytics" />}
+      header={<span className="font-medium">{t("analytics")}</span>}
+      dashboardHref="/analytics"
+    >
       {children}
     </AppShell>
   );

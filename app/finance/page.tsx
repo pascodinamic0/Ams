@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getFinanceKPIs } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { getTranslations } from "next-intl/server";
 
 function formatCurrency(value: number) {
   return value.toLocaleString(undefined, {
@@ -12,6 +13,7 @@ function formatCurrency(value: number) {
 }
 
 export default async function FinanceDashboard() {
+  const t = await getTranslations("finance");
   const profile = await getCurrentProfile();
   const kpis = await getFinanceKPIs({
     schoolId: profile?.school_id ?? undefined,
@@ -20,43 +22,43 @@ export default async function FinanceDashboard() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Finance Dashboard</h1>
+      <h1 className="text-2xl font-bold">{t("title")}</h1>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader><CardTitle>Outstanding</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("outstanding")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{formatCurrency(kpis.outstanding)}</p>
-            <p className="text-sm text-slate-500">Unpaid balance</p>
+            <p className="text-sm text-slate-500">{t("outstandingSub")}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Collected</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("collected")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{formatCurrency(kpis.collected)}</p>
-            <p className="text-sm text-slate-500">Total received</p>
+            <p className="text-sm text-slate-500">{t("collectedSub")}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Overdue</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("overdue")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-red-600">{formatCurrency(kpis.overdue)}</p>
-            <p className="text-sm text-slate-500">Past due balance</p>
+            <p className="text-sm text-slate-500">{t("overdueSub")}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Invoices</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("invoicesKpi")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{kpis.invoiceCount}</p>
-            <p className="text-sm text-slate-500">All time</p>
+            <p className="text-sm text-slate-500">{t("invoicesSub")}</p>
           </CardContent>
         </Card>
       </div>
       <Card>
-        <CardHeader><CardTitle>Quick actions</CardTitle></CardHeader>
+        <CardHeader><CardTitle>{t("quickActions")}</CardTitle></CardHeader>
         <CardContent className="flex flex-wrap gap-2">
-          <Link href="/finance/invoices"><Button size="sm">Create invoice</Button></Link>
-          <Link href="/finance/payments"><Button size="sm" variant="ghost">Record payment</Button></Link>
-          <Link href="/finance/fee-structure"><Button size="sm" variant="ghost">Fee structures</Button></Link>
+          <Link href="/finance/invoices"><Button size="sm">{t("createInvoice")}</Button></Link>
+          <Link href="/finance/payments"><Button size="sm" variant="ghost">{t("recordPayment")}</Button></Link>
+          <Link href="/finance/fee-structure"><Button size="sm" variant="ghost">{t("feeStructures")}</Button></Link>
         </CardContent>
       </Card>
     </div>

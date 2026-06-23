@@ -1,10 +1,12 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { Sidebar } from "@/components/layout/sidebar";
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 
 export default async function MessagesLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
+  const t = await getTranslations("nav");
 
   let role = "teacher";
   if (user) {
@@ -28,7 +30,7 @@ export default async function MessagesLayout({ children }: { children: React.Rea
   return (
     <AppShell
       sidebar={<Sidebar role={role} />}
-      header={<span className="font-medium">Messages</span>}
+      header={<span className="font-medium">{t("messages")}</span>}
       dashboardHref={dashboardMap[role] ?? "/"}
     >
       {children}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,26 +11,15 @@ import { Button } from "@/components/ui/button";
 import { PasswordStrength } from "@/components/ui/password-strength";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { InstallAppButton } from "@/components/pwa/install-app-button";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
-const changePasswordSchema = z
-  .object({
-    current_password: z.string().min(1, "Current password is required"),
-    new_password: z
-      .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(/[A-Z]/, "Must include an uppercase letter")
-      .regex(/[a-z]/, "Must include a lowercase letter")
-      .regex(/\d/, "Must include a number"),
-    confirm_password: z.string().min(1, "Please confirm your password"),
-  })
-  .refine((d) => d.new_password === d.confirm_password, {
-    message: "Passwords do not match",
-    path: ["confirm_password"],
-  });
-
-type ChangePasswordData = z.infer<typeof changePasswordSchema>;
+type ChangePasswordData = {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+};
 
 type ProfileInfo = {
   email: string;
@@ -39,6 +29,8 @@ type ProfileInfo = {
 };
 
 export default function SettingsPage() {
+  const t = useTranslations("settings");
+  const tRoles = useTranslations("roles");
   const [profile, setProfile] = useState<ProfileInfo | null>(null);
 
   useEffect(() => {
@@ -67,20 +59,23 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Settings</h1>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("title")}</h1>
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Manage your account preferences and security
+          {t("subtitle")}
         </p>
       </div>
 
-      <AccountCard profile={profile} />
+      <AccountCard profile={profile} roleLabel={profile ? tRoles(profile.role as "student") : ""} />
+      <LanguageCard />
       <AppInstallCard />
       <SecurityCard />
     </div>
   );
 }
 
-function AccountCard({ profile }: { profile: ProfileInfo | null }) {
+function AccountCard({ profile, roleLabel }: { profile: ProfileInfo | null; roleLabel: string }) {
+  const t = useTranslations("settings");
+
   if (!profile) {
     return (
       <Card>
@@ -94,7 +89,7 @@ function AccountCard({ profile }: { profile: ProfileInfo | null }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Account</CardTitle>
+        <CardTitle>{t("account")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
@@ -105,7 +100,7 @@ function AccountCard({ profile }: { profile: ProfileInfo | null }) {
             <p className="font-medium text-slate-900 dark:text-white">{profile.fullName}</p>
             <p className="text-sm text-slate-500 dark:text-slate-400">{profile.email}</p>
             <span className="mt-1 inline-block rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-              {profile.role}
+              {roleLabel || profile.role}
             </span>
           </div>
         </div>
@@ -114,14 +109,33 @@ function AccountCard({ profile }: { profile: ProfileInfo | null }) {
   );
 }
 
-function AppInstallCard() {
+function LanguageCard() {
+  const t = useTranslations("settings");
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Install app</CardTitle>
+        <CardTitle>{t("language")}</CardTitle>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Install ShuleOS on your phone, tablet, or laptop for quick access and
-          offline attendance support.
+          {t("languageDescription")}
+        </p>
+      </CardHeader>
+      <CardContent>
+        <LanguageSwitcher variant="buttons" />
+      </CardContent>
+    </Card>
+  );
+}
+
+function AppInstallCard() {
+  const t = useTranslations("settings");
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("installApp")}</CardTitle>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          {t("installAppDescription")}
         </p>
       </CardHeader>
       <CardContent>
@@ -132,8 +146,30 @@ function AppInstallCard() {
 }
 
 function SecurityCard() {
+  const t = useTranslations("settings");
+  const tv = useTranslations("validation");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
+
+  const changePasswordSchema = useMemo(
+    () =>
+      z
+        .object({
+          current_password: z.string().min(1, tv("currentPasswordRequired")),
+          new_password: z
+            .string()
+            .min(8, tv("passwordMinLength"))
+            .regex(/[A-Z]/, tv("passwordUppercase"))
+            .regex(/[a-z]/, tv("passwordLowercase"))
+            .regex(/\d/, tv("passwordNumber")),
+          confirm_password: z.string().min(1, tv("confirmPasswordRequired")),
+        })
+        .refine((d) => d.new_password === d.confirm_password, {
+          message: tv("passwordsDoNotMatch"),
+          path: ["confirm_password"],
+        }),
+    [tv]
+  );
 
   async function onSubmit(data: ChangePasswordData) {
     setLoading(true);
@@ -148,7 +184,7 @@ function SecurityCard() {
           password: data.current_password,
         });
         if (signInError) {
-          toast.error("Current password is incorrect");
+          toast.error(tv("currentPasswordIncorrect"));
           return;
         }
       }
@@ -156,10 +192,10 @@ function SecurityCard() {
       const { error } = await supabase.auth.updateUser({ password: data.new_password });
       if (error) throw error;
 
-      toast.success("Password updated successfully");
+      toast.success(t("passwordUpdated"));
       setDone(true);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update password");
+      toast.error(err instanceof Error ? err.message : t("passwordUpdateFailed"));
     } finally {
       setLoading(false);
     }
@@ -168,14 +204,14 @@ function SecurityCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Security</CardTitle>
+        <CardTitle>{t("security")}</CardTitle>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Change your account password.
+          {t("securityDescription")}
         </p>
       </CardHeader>
       <CardContent>
         {done ? (
-          <p className="text-green-600">Password changed successfully.</p>
+          <p className="text-green-600">{t("passwordChanged")}</p>
         ) : (
           <FormWrapper schema={changePasswordSchema} onSubmit={onSubmit} className="space-y-5">
             <ChangePasswordFields loading={loading} />
@@ -187,28 +223,30 @@ function SecurityCard() {
 }
 
 function ChangePasswordFields({ loading }: { loading: boolean }) {
+  const t = useTranslations("settings");
+  const tc = useTranslations("common");
   const { register, watch, formState: { errors } } = useFormContext<ChangePasswordData>();
   const newPassword = watch("new_password");
 
   return (
     <>
       <div>
-        <Label htmlFor="current_password" required>Current password</Label>
+        <Label htmlFor="current_password" required>{t("currentPassword")}</Label>
         <Input id="current_password" type="password" error={!!errors.current_password} {...register("current_password")} />
         {errors.current_password && <p className="mt-1.5 text-sm text-red-500">{errors.current_password.message}</p>}
       </div>
       <div>
-        <Label htmlFor="new_password" required>New password</Label>
+        <Label htmlFor="new_password" required>{t("newPassword")}</Label>
         <Input id="new_password" type="password" error={!!errors.new_password} {...register("new_password")} />
         <PasswordStrength password={newPassword ?? ""} />
         {errors.new_password && <p className="mt-1.5 text-sm text-red-500">{errors.new_password.message}</p>}
       </div>
       <div>
-        <Label htmlFor="confirm_password" required>Confirm new password</Label>
+        <Label htmlFor="confirm_password" required>{t("confirmNewPassword")}</Label>
         <Input id="confirm_password" type="password" error={!!errors.confirm_password} {...register("confirm_password")} />
         {errors.confirm_password && <p className="mt-1.5 text-sm text-red-500">{errors.confirm_password.message}</p>}
       </div>
-      <Button type="submit" disabled={loading}>{loading ? "Updating..." : "Update password"}</Button>
+      <Button type="submit" disabled={loading}>{loading ? tc("updating") : t("updatePassword")}</Button>
     </>
   );
 }

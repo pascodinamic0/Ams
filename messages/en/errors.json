@@ -1,0 +1,13 @@
+{
+  "somethingWentWrong": "Something went wrong",
+  "unexpectedError": "An unexpected error occurred",
+  "tryAgain": "Try again",
+  "pageNotFound": "Page not found",
+  "pageNotFoundDescription": "The page you're looking for doesn't exist or has been moved.",
+  "goHome": "Go home",
+  "offlineTitle": "You're offline",
+  "offlineDescription": "Check your internet connection and try again.",
+  "offlineRetry": "Retry",
+  "globalErrorTitle": "Application error",
+  "globalErrorDescription": "A critical error occurred. Please try refreshing the page."
+}

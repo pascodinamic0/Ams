@@ -1,0 +1,22 @@
+{
+  "title": "Tableau de bord enseignant",
+  "classesTitle": "Mes classes",
+  "attendanceTitle": "Présences",
+  "gradebookTitle": "Carnet de notes",
+  "assignmentsTitle": "Devoirs",
+  "examsTitle": "Examens",
+  "reportCardsTitle": "Bulletins",
+  "markAttendance": "Marquer les présences",
+  "enterGrades": "Saisir les notes",
+  "newAssignment": "Nouveau devoir",
+  "newExam": "Nouvel examen",
+  "signInRequired": "Veuillez vous connecter pour voir votre tableau de bord.",
+  "welcomeBack": "Bon retour, {name}",
+  "studentsTotal": "{count} élèves au total",
+  "todaysSchedule": "Emploi du temps du jour",
+  "noClassesToday": "Aucun cours prévu aujourd'hui.",
+  "period": "Période {period}",
+  "quickActions": "Actions rapides",
+  "takeAttendance": "Prendre les présences",
+  "manageAssignments": "Gérer les devoirs"
+}

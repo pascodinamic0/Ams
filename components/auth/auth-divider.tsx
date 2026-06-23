@@ -1,4 +1,11 @@
-export function AuthDivider({ label = "or continue with email" }: { label?: string }) {
+"use client";
+
+import { useTranslations } from "next-intl";
+
+export function AuthDivider({ label }: { label?: string }) {
+  const t = useTranslations("auth");
+  const text = label ?? t("orContinueWithEmail");
+
   return (
     <div className="relative my-6">
       <div className="absolute inset-0 flex items-center">
@@ -6,7 +13,7 @@ export function AuthDivider({ label = "or continue with email" }: { label?: stri
       </div>
       <div className="relative flex justify-center text-xs uppercase tracking-wide">
         <span className="bg-white px-3 text-slate-500 dark:bg-slate-950 dark:text-slate-400">
-          {label}
+          {text}
         </span>
       </div>
     </div>

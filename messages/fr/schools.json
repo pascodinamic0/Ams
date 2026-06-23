@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "programs": "Programmes",
+    "about": "À propos",
+    "events": "Événements",
+    "contact": "Contact",
+    "login": "Connexion",
+    "enroll": "S'inscrire",
+    "admissions": "Admissions"
+  },
+  "forms": {
+    "submitApplication": "Soumettre la candidature",
+    "submitting": "Soumission...",
+    "applicationSubmitted": "Candidature soumise avec succès",
+    "enrollNow": "S'inscrire maintenant",
+    "bookEvent": "Réserver l'événement",
+    "bookVisit": "Réserver une visite",
+    "fullName": "Nom complet",
+    "phoneNumber": "Numéro de téléphone",
+    "gradeLevel": "Niveau scolaire",
+    "message": "Message",
+    "accessibilityNotes": "Besoins d'accessibilité, langue préférée, etc."
+  },
+  "templates": {
+    "modern": "Moderne",
+    "classic": "Classique",
+    "minimal": "Minimal"
+  }
+}

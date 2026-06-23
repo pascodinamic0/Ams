@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 import { dismissSetupGuide, restoreSetupGuide } from "@/lib/actions/setup-guide";
 import type { SetupGuideProgress } from "@/lib/schools/setup-guide";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,8 @@ function CheckIcon({ done }: { done: boolean }) {
 }
 
 export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
+  const t = useTranslations("onboarding");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -37,7 +40,10 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
     return (
       <div className="flex items-center justify-between rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm dark:border-indigo-900 dark:bg-indigo-950/40">
         <p className="text-indigo-900 dark:text-indigo-100">
-          Setup guide paused - {progress.completedCount} of {progress.totalCount} steps done.
+          {t("setupPaused", {
+            completed: progress.completedCount,
+            total: progress.totalCount,
+          })}
         </p>
         <Button
           variant="ghost"
@@ -50,7 +56,7 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
             })
           }
         >
-          Resume guide
+          {t("resumeGuide")}
         </Button>
       </div>
     );
@@ -67,14 +73,14 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <CardTitle className="text-lg">Getting started</CardTitle>
+            <CardTitle className="text-lg">{t("gettingStarted")}</CardTitle>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-              Optional walkthrough - follow these steps to set up your school from scratch.
+              {t("guideDescription")}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => setCollapsed((v) => !v)}>
-              {collapsed ? "Expand" : "Collapse"}
+              {collapsed ? tc("expand") : tc("collapse")}
             </Button>
             <Button
               variant="ghost"
@@ -87,14 +93,17 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
                 })
               }
             >
-              Skip for now
+              {t("skipForNow")}
             </Button>
           </div>
         </div>
         <div className="mt-4">
           <div className="mb-1 flex justify-between text-xs text-slate-500">
             <span>
-              {progress.completedCount} of {progress.totalCount} complete
+              {t("progressComplete", {
+                completed: progress.completedCount,
+                total: progress.totalCount,
+              })}
             </span>
             <span>{pct}%</span>
           </div>
@@ -140,7 +149,7 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
                     </div>
                     {!done && (
                       <span className="shrink-0 text-xs font-medium text-indigo-600 dark:text-indigo-400">
-                        Start
+                        {t("startStep")}
                       </span>
                     )}
                   </Link>

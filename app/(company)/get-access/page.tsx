@@ -1,40 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, Rocket, UserPlus, Users, Zap } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { companyIdentity } from "@/lib/company/identity";
 
-const steps = [
-  {
-    number: "01",
-    title: "Register your school",
-    desc: "Create your school account with your name and admin email. Takes 60 seconds.",
-    icon: <UserPlus className="h-6 w-6" />,
-  },
-  {
-    number: "02",
-    title: "Complete onboarding",
-    desc: "A guided 4-step wizard walks you through domain, colors, and your public site template.",
-    icon: <Zap className="h-6 w-6 text-amber-500" />,
-  },
-  {
-    number: "03",
-    title: "Invite your team",
-    desc: "Add teachers, finance officers, and other admins — each gets a role-specific dashboard.",
-    icon: <Users className="h-6 w-6 text-indigo-500" />,
-  },
-  {
-    number: "04",
-    title: "Go live",
-    desc: "Your school portal and public website are ready. Parents and students can start using it today.",
-    icon: <Rocket className="h-6 w-6 text-emerald-500" />,
-  },
-];
-
 function OnboardingJourney() {
+  const t = useTranslations("marketing.getAccess");
+  const steps = useMemo(
+    () => [
+      {
+        number: "01",
+        title: t("step1Title"),
+        desc: t("step1Desc"),
+        icon: <UserPlus className="h-6 w-6" />,
+      },
+      {
+        number: "02",
+        title: t("step2Title"),
+        desc: t("step2Desc"),
+        icon: <Zap className="h-6 w-6 text-amber-500" />,
+      },
+      {
+        number: "03",
+        title: t("step3Title"),
+        desc: t("step3Desc"),
+        icon: <Users className="h-6 w-6 text-indigo-500" />,
+      },
+      {
+        number: "04",
+        title: t("step4Title"),
+        desc: t("step4Desc"),
+        icon: <Rocket className="h-6 w-6 text-emerald-500" />,
+      },
+    ],
+    [t]
+  );
+
   const [activeIndex, setActiveIndex] = useState(0);
   const stepRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -61,14 +66,13 @@ function OnboardingJourney() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center sm:mb-20">
           <h2 className="text-3xl font-black text-slate-900 dark:text-white md:text-5xl">
-            The Onboarding Journey
+            {t("journeyTitle")}
           </h2>
           <p className="mt-4 text-base text-slate-500 dark:text-slate-400 sm:mt-6 sm:text-xl">
-            Simple, guided steps to get your school online.
+            {t("journeySubtitle")}
           </p>
         </div>
 
-        {/* Desktop progress rail */}
         <div className="relative mb-10 hidden lg:block">
           <div className="absolute left-[12.5%] right-[12.5%] top-6 h-0.5 bg-slate-200 dark:bg-slate-800" />
           <motion.div
@@ -154,7 +158,6 @@ function OnboardingJourney() {
                     : "border-slate-200 bg-white hover:border-indigo-300/50 hover:shadow-md dark:border-slate-800 dark:bg-slate-900/50"
                 )}
               >
-                {/* Mobile / tablet timeline connector */}
                 {!isLast && (
                   <div
                     aria-hidden
@@ -169,7 +172,6 @@ function OnboardingJourney() {
                   </div>
                 )}
 
-                {/* Step badge — visible on mobile/tablet; hidden on lg (rail handles it) */}
                 <motion.div
                   animate={{
                     scale: isActive ? 1.08 : 1,
@@ -195,7 +197,7 @@ function OnboardingJourney() {
 
                 <div className="relative z-10 min-w-0 flex-1 lg:pt-2">
                   <p className="mb-2 hidden text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 md:block lg:hidden">
-                    Step {step.number}
+                    {t("stepLabel", { number: step.number })}
                   </p>
                   <motion.div
                     animate={{
@@ -238,23 +240,23 @@ function OnboardingJourney() {
   );
 }
 
-const included = [
-  "Admin & academic management",
-  "Teacher portal (attendance, grades, assignments)",
-  "Finance & invoicing",
-  "Parent & student portals",
-  "School public website with online admissions",
-  "Analytics & reporting dashboards",
-  "Real-time messaging",
-  "Library & transport management",
-];
-
 export default function GetAccessPage() {
+  const t = useTranslations("marketing.getAccess");
+
+  const included = [
+    t("included1"),
+    t("included2"),
+    t("included3"),
+    t("included4"),
+    t("included5"),
+    t("included6"),
+    t("included7"),
+    t("included8"),
+  ];
+
   return (
     <div className="bg-white dark:bg-[#0a0f1e] min-h-screen">
-      {/* Hero Section */}
       <section className="relative flex min-h-[calc(100dvh-4rem)] items-center overflow-hidden border-b border-slate-200/50 px-4 pb-16 pt-28 sm:min-h-0 sm:block sm:px-0 sm:pb-24 sm:pt-36 md:pt-40">
-        {/* Decorative Background */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 h-64 w-64 rounded-full bg-indigo-500/10 blur-[100px] sm:h-96 sm:w-96" />
         <div className="absolute bottom-0 left-0 -mb-20 -ml-20 h-64 w-64 rounded-full bg-purple-500/5 blur-[100px] sm:h-96 sm:w-96" />
 
@@ -266,31 +268,30 @@ export default function GetAccessPage() {
           >
             <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-bold text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
               <Zap className="h-3.5 w-3.5 shrink-0 fill-indigo-600 dark:fill-indigo-400 sm:h-4 sm:w-4" />
-              Get started in minutes
+              {t("heroBadge")}
             </span>
             <h1 className="mt-5 text-[2rem] font-black leading-[1.1] tracking-tight text-slate-900 dark:text-white sm:mt-8 sm:text-5xl sm:leading-tight md:text-7xl">
-              Launch your school{" "}
+              {t("heroTitle")}{" "}
               <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                on {companyIdentity.productName} today.
+                {t("heroTitleHighlight", { productName: companyIdentity.productName })}
               </span>
             </h1>
             <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-500 dark:text-slate-400 sm:mt-8 sm:text-xl">
-              No setup fees. No long contracts. A complete digital ecosystem for your school,
-              built in Kenya for CBC schools, academies, and international programmes.
+              {t("heroSubtitle")}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:mt-12 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4 md:gap-6">
               <Link
                 href="/register"
                 className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-indigo-600/20 transition-all hover:bg-indigo-500 active:scale-[0.98] sm:w-auto sm:px-10 sm:py-5 sm:text-lg sm:hover:scale-105 sm:active:scale-95"
               >
-                Create school account
+                {t("createSchoolAccount")}
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 href="/login"
                 className="inline-flex w-full items-center justify-center rounded-2xl border-2 border-slate-200 bg-white px-6 py-4 text-base font-bold text-slate-700 transition-all hover:bg-slate-50 active:scale-[0.98] dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800 sm:w-auto sm:px-10 sm:py-5 sm:text-lg sm:active:scale-95"
               >
-                Already have an account
+                {t("alreadyHaveAccount")}
               </Link>
             </div>
           </motion.div>
@@ -299,7 +300,6 @@ export default function GetAccessPage() {
 
       <OnboardingJourney />
 
-      {/* What's included */}
       <section className="bg-slate-50 dark:bg-[#060a16] py-32 border-y border-slate-200 dark:border-slate-800">
         <div className="mx-auto max-w-5xl px-4 text-center">
           <motion.div
@@ -308,10 +308,10 @@ export default function GetAccessPage() {
             viewport={{ once: true }}
           >
             <h2 className="text-3xl font-black text-slate-900 dark:text-white md:text-5xl">
-              Uncompromising Power
+              {t("includedTitle")}
             </h2>
             <p className="mt-6 text-xl text-slate-500 dark:text-slate-400">
-              One platform, all the tools your school needs from day one.
+              {t("includedSubtitle")}
             </p>
 
             <div className="mt-16 grid gap-6 sm:grid-cols-2 text-left">
@@ -339,11 +339,11 @@ export default function GetAccessPage() {
                 href="/register"
                 className="group inline-flex items-center gap-3 rounded-2xl bg-indigo-600 px-12 py-6 text-xl font-black text-white shadow-2xl shadow-indigo-600/30 transition-all hover:bg-indigo-500 hover:scale-105 active:scale-95"
               >
-                Create My School Account
+                {t("createMySchoolAccount")}
                 <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2" />
               </Link>
               <p className="mt-6 text-sm font-bold text-slate-400 uppercase tracking-widest">
-                Join the Educational Revolution
+                {t("joinRevolution")}
               </p>
             </div>
           </motion.div>

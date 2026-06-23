@@ -1,5 +1,8 @@
 import type { NextConfig } from "next";
 import { withSentryConfig } from "@sentry/nextjs";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin();
 
 const nextConfig: NextConfig = {
   env: {
@@ -27,7 +30,7 @@ function withOptionalSerwist(config: NextConfig): NextConfig {
   return withSerwist(config);
 }
 
-export default withSentryConfig(withOptionalSerwist(nextConfig), {
+export default withSentryConfig(withNextIntl(withOptionalSerwist(nextConfig)), {
   org: process.env.SENTRY_ORG ?? "ams",
   project: process.env.SENTRY_PROJECT ?? "ams",
   silent: !process.env.CI,

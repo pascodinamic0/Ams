@@ -1,0 +1,13 @@
+{
+  "somethingWentWrong": "Une erreur s'est produite",
+  "unexpectedError": "Une erreur inattendue s'est produite",
+  "tryAgain": "Réessayer",
+  "pageNotFound": "Page introuvable",
+  "pageNotFoundDescription": "La page que vous recherchez n'existe pas ou a été déplacée.",
+  "goHome": "Retour à l'accueil",
+  "offlineTitle": "Vous êtes hors ligne",
+  "offlineDescription": "Vérifiez votre connexion internet et réessayez.",
+  "offlineRetry": "Réessayer",
+  "globalErrorTitle": "Erreur de l'application",
+  "globalErrorDescription": "Une erreur critique s'est produite. Veuillez actualiser la page."
+}

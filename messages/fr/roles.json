@@ -1,0 +1,10 @@
+{
+  "super_admin": "Super administrateur",
+  "academic_admin": "Administrateur académique",
+  "teacher": "Enseignant",
+  "finance_officer": "Responsable financier",
+  "operations_manager": "Responsable des opérations",
+  "parent": "Parent",
+  "student": "Élève",
+  "analytics": "Analytique"
+}

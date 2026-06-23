@@ -1,22 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { z } from "zod";
 import { useFormContext } from "react-hook-form";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { PasswordStrength } from "@/components/ui/password-strength";
-import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/validations";
 import { getDashboardForRole } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
+type ResetPasswordFormData = {
+  password: string;
+  confirmPassword: string;
+};
+
 export default function ResetPasswordPage() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const tv = useTranslations("validation");
+
+  const resetPasswordSchema = useMemo(
+    () =>
+      z
+        .object({
+          password: z.string().min(8, tv("passwordMinLength")),
+          confirmPassword: z.string(),
+        })
+        .refine((data) => data.password === data.confirmPassword, {
+          message: tv("passwordsDoNotMatch"),
+          path: ["confirmPassword"],
+        }),
+    [tv]
+  );
 
   async function onSubmit(data: ResetPasswordFormData) {
     setLoading(true);
@@ -39,11 +61,11 @@ export default function ResetPasswordPage() {
         destination = getDashboardForRole(profile?.role);
       }
 
-      toast.success("Password updated");
+      toast.success(t("passwordUpdated"));
       router.push(destination);
       router.refresh();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Failed to update password");
+      toast.error(err instanceof Error ? err.message : t("passwordUpdateFailed"));
     } finally {
       setLoading(false);
     }
@@ -52,10 +74,10 @@ export default function ResetPasswordPage() {
   return (
     <div className="mx-auto max-w-md px-4 py-16">
       <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-        Reset password
+        {t("resetPasswordTitle")}
       </h1>
       <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-        Enter your new password
+        {t("resetPasswordSubtitle")}
       </p>
       <FormWrapper
         schema={resetPasswordSchema}
@@ -68,13 +90,14 @@ export default function ResetPasswordPage() {
         href="/login"
         className="mt-6 block text-center text-sm text-zinc-600 hover:underline dark:text-zinc-400"
       >
-        Back to login
+        {t("backToLogin")}
       </Link>
     </div>
   );
 }
 
 function ResetPasswordFormFields({ loading }: { loading: boolean }) {
+  const t = useTranslations("auth");
   const {
     register,
     watch,
@@ -85,7 +108,9 @@ function ResetPasswordFormFields({ loading }: { loading: boolean }) {
   return (
     <>
       <div>
-        <Label htmlFor="password" required>New password</Label>
+        <Label htmlFor="password" required>
+          {t("newPassword")}
+        </Label>
         <Input
           id="password"
           type="password"
@@ -98,7 +123,9 @@ function ResetPasswordFormFields({ loading }: { loading: boolean }) {
         )}
       </div>
       <div>
-        <Label htmlFor="confirmPassword" required>Confirm password</Label>
+        <Label htmlFor="confirmPassword" required>
+          {t("confirmPassword")}
+        </Label>
         <Input
           id="confirmPassword"
           type="password"
@@ -110,7 +137,7 @@ function ResetPasswordFormFields({ loading }: { loading: boolean }) {
         )}
       </div>
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Updating..." : "Update password"}
+        {loading ? t("resetting") : t("updatePassword")}
       </Button>
     </>
   );

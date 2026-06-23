@@ -9,68 +9,61 @@ import {
   CheckCircle2,
   ArrowRight
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { companyIdentity } from "@/lib/company/identity";
-import { platformModules, homepageModuleGrid, homepageCtaSections } from "@/lib/company/modules";
-
-const roles = [
-  {
-    badge: "Administrators & Directors",
-    title: "Run your entire school from one place",
-    description:
-      "Get a comprehensive overview of your school — finances, attendance, student performance, and staff — all in one dashboard. Generate reports, manage enrollments, and communicate with parents in a single click.",
-    features: [
-      "Manage students, classes, admissions, and staff from a single academic dashboard",
-      "Track fees, invoices, payments, and payroll with built-in financial reports",
-      "Launch branded school websites with online admissions and role-based access",
-    ],
-    cta: "Explore admin features",
-    href: "/features#admin",
-    image: "/images/role_admin.png",
-    icon: <Users className="h-6 w-6" />,
-    color: "indigo"
-  },
-  {
-    badge: "Teachers & Educators",
-    title: "Spend less time on admin, more on teaching",
-    description:
-      "Take attendance, enter grades, create assignments, and generate report cards — all from your dashboard. Reuse content across classes and send targeted messages to students and parents.",
-    features: [
-      "Take daily attendance and enter grades in a class gradebook",
-      "Create assignments with file uploads, run exams, and print report cards",
-      "Message students and parents directly from your teacher dashboard",
-    ],
-    cta: "Explore teacher features",
-    href: "/features#teacher",
-    image: "/images/role_teacher.png",
-    icon: <GraduationCap className="h-6 w-6" />,
-    color: "blue"
-  },
-  {
-    badge: "Parents & Students",
-    title: "Stay connected to school, always",
-    description:
-      "Parents track grades, fees, timetables, and assignments in real time. Students submit work, view their schedule, and message teachers — from any device, anywhere.",
-    features: [
-      "View grades, attendance, timetables, and school events in real time",
-      "Pay fees instantly via M-Pesa or smart payment links with the exact amount pre-filled",
-      "Submit assignments, browse the library, and message teachers from any device",
-    ],
-    cta: "Explore parent & student features",
-    href: "/features#parent",
-    image: "/images/role_parent.png",
-    icon: <Users className="h-6 w-6" />,
-    color: "indigo"
-  },
-];
-
-const stats = [
-  { value: "8", label: "User roles" },
-  { value: "76+", label: "Pages & Flows" },
-  { value: "1", label: "Unified Platform" },
-];
+import { getHomepageCtaSections, getPlatformModules } from "@/lib/i18n/modules";
 
 export default function Home() {
+  const t = useTranslations("marketing.home");
+  const tm = useTranslations("modules");
+
+  const homepageModuleGrid = getPlatformModules(tm).filter(
+    (module) => module.showOnHomepageGrid !== false
+  );
+  const homepageCtaSections = getHomepageCtaSections(tm);
+
+  const roles = [
+    {
+      badge: t("adminBadge"),
+      title: t("adminTitle"),
+      description: t("adminDescription"),
+      features: [t("adminFeature1"), t("adminFeature2"), t("adminFeature3")],
+      cta: t("adminCta"),
+      href: "/features#admin",
+      image: "/images/role_admin.png",
+      icon: <Users className="h-6 w-6" />,
+      color: "indigo"
+    },
+    {
+      badge: t("teacherBadge"),
+      title: t("teacherTitle"),
+      description: t("teacherDescription"),
+      features: [t("teacherFeature1"), t("teacherFeature2"), t("teacherFeature3")],
+      cta: t("teacherCta"),
+      href: "/features#teacher",
+      image: "/images/role_teacher.png",
+      icon: <GraduationCap className="h-6 w-6" />,
+      color: "blue"
+    },
+    {
+      badge: t("parentBadge"),
+      title: t("parentTitle"),
+      description: t("parentDescription"),
+      features: [t("parentFeature1"), t("parentFeature2"), t("parentFeature3")],
+      cta: t("parentCta"),
+      href: "/features#parent",
+      image: "/images/role_parent.png",
+      icon: <Users className="h-6 w-6" />,
+      color: "indigo"
+    },
+  ];
+
+  const stats = [
+    { value: "8", label: t("statsRoles") },
+    { value: "76+", label: t("statsPages") },
+    { value: "1", label: t("statsPlatform") },
+  ];
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-[#0a0f1e]">
       {/* Hero Section */}
@@ -107,19 +100,19 @@ export default function Home() {
           >
             <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-200 backdrop-blur-sm sm:gap-2 sm:px-4 sm:py-1.5 sm:text-sm sm:font-medium sm:text-indigo-300">
               <span aria-hidden className="shrink-0">🇰🇪</span>
-              <span className="leading-snug">Built in Nairobi for Kenyan schools</span>
+              <span className="leading-snug">{t("heroBadge")}</span>
             </span>
             <h1 className="mt-5 text-[2.125rem] font-extrabold leading-[1.08] tracking-tight text-white sm:mt-8 sm:text-5xl sm:leading-tight md:text-7xl lg:text-8xl">
-              Manage every part
+              {t("heroTitleLine1")}
               <br />
               <span className="bg-gradient-to-r from-indigo-200 via-indigo-400 to-indigo-200 bg-clip-text text-transparent">
-                of your school
+                {t("heroTitleLine2")}
               </span>
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-indigo-100/80 sm:mt-8 sm:max-w-3xl sm:text-xl sm:text-indigo-100/70">
-              A one-stop solution to manage, track, and automate your entire school — from CBC grading to fee collection.
+              {t("heroSubtitle")}
               <span className="mt-1 block sm:mt-0 sm:inline">
-                {" "}Real-time dashboards designed for Kenyan schools, with M-Pesa-ready payments.
+                {" "}{t("heroSubtitleExtra")}
               </span>
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:mt-12 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-6">
@@ -127,14 +120,14 @@ export default function Home() {
                 href="/get-access"
                 className="group inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-6 py-3.5 text-base font-bold text-indigo-950 transition-all hover:bg-indigo-50 hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] sm:w-auto sm:px-8 sm:py-4"
               >
-                Get access as a school
+                {t("heroCtaPrimary")}
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 href="/features"
                 className="inline-flex w-full items-center justify-center rounded-2xl border border-indigo-400/40 bg-indigo-900/40 px-6 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:bg-indigo-800/60 sm:w-auto sm:px-8 sm:py-4"
               >
-                See all features
+                {t("heroCtaSecondary")}
               </Link>
             </div>
 
@@ -168,10 +161,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center sm:mb-24">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl md:text-6xl">
-              Built for everyone
+              {t("rolesSectionTitle")}
             </h2>
             <p className="mt-4 text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto sm:mt-6 sm:text-xl">
-              Tailored experiences for every stakeholder, ensuring engagement and efficiency across the board.
+              {t("rolesSectionSubtitle")}
             </p>
           </div>
 
@@ -196,6 +189,7 @@ export default function Home() {
                       src={role.image}
                       alt={role.title}
                       fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -209,7 +203,7 @@ export default function Home() {
                     <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                       <CheckCircle2 className="h-6 w-6" />
                     </div>
-                    <p className="text-sm font-bold text-slate-900 dark:text-white">Active User Presence</p>
+                    <p className="text-sm font-bold text-slate-900 dark:text-white">{t("activeUserPresence")}</p>
                   </div>
                 </div>
 
@@ -252,12 +246,12 @@ export default function Home() {
       {/* Bento Grid Modules */}
       <section className="py-16 sm:py-32 bg-slate-50 dark:bg-[#060a16] border-y border-slate-200 dark:border-slate-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mb-10 sm:mb-16">
+          <div className="mb-10 max-w-3xl sm:mb-16">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-4xl md:text-5xl">
-              Powerful Modules
+              {t("modulesSectionTitle")}
             </h2>
             <p className="mt-4 text-base text-slate-500 dark:text-slate-400 sm:mt-6 sm:text-xl">
-              A comprehensive toolkit aligned with Kenya&apos;s CBC curriculum and the way schools run day to day.
+              {t("modulesSectionSubtitle")}
             </p>
           </div>
 
@@ -293,7 +287,7 @@ export default function Home() {
                       <div className="mt-8">
                         <div className="flex items-center justify-end gap-2">
                           <span className="text-sm font-bold text-indigo-600 opacity-0 transition-all duration-300 group-hover:opacity-100 dark:text-indigo-400">
-                            Learn more
+                            {t("learnMore")}
                           </span>
                           <ArrowRight className="h-4 w-4 text-indigo-600 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1 dark:text-indigo-400" />
                         </div>
@@ -334,18 +328,18 @@ export default function Home() {
             viewport={{ once: true }}
             className="space-y-6 sm:space-y-10"
           >
-            <h2 className="text-3xl font-black text-white sm:text-5xl md:text-7xl leading-tight">
-              Ready to elevate <br className="hidden sm:block" /> your school?
+            <h2 className="text-3xl font-black leading-tight text-white sm:text-5xl md:text-7xl">
+              {t("finalCtaTitle")}
             </h2>
             <p className="mx-auto max-w-2xl text-base text-indigo-200/80 sm:text-xl">
-              Join schools across Kenya that are digitizing admissions, fees, and parent communication with {companyIdentity.productName}.
+              {t("finalCtaSubtitle", { productName: companyIdentity.productName })}
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2 sm:gap-6 sm:pt-4">
               <Link
                 href="/get-access"
                 className="inline-flex w-full items-center justify-center rounded-2xl bg-white px-8 py-4 text-base font-bold text-indigo-950 shadow-[0_0_50px_rgba(255,255,255,0.2)] transition-all hover:scale-105 active:scale-95 sm:w-auto sm:px-10 sm:py-5 sm:text-lg"
               >
-                Get Started Today
+                {t("finalCtaButton")}
               </Link>
             </div>
 

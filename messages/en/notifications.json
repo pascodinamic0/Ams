@@ -1,0 +1,11 @@
+{
+  "title": "Notifications",
+  "markAllRead": "Mark all as read",
+  "markRead": "Mark read",
+  "noNotifications": "No notifications",
+  "noNotificationsYet": "No notifications yet",
+  "noNotificationsDesc": "Alerts about fees, messages, and school updates will appear here.",
+  "unread": "Unread",
+  "unreadCount": "{count, plural, one {# unread notification} other {# unread notifications}}",
+  "allCaughtUp": "You're all caught up"
+}

@@ -1,0 +1,19 @@
+{
+  "title": "Paramètres",
+  "subtitle": "Gérez vos préférences de compte et la sécurité",
+  "account": "Compte",
+  "language": "Langue",
+  "languageDescription": "Choisissez votre langue préférée pour l'interface",
+  "languageUpdated": "Langue mise à jour",
+  "installApp": "Installer l'application",
+  "installAppDescription": "Installez ShuleOS sur votre téléphone, tablette ou ordinateur pour un accès rapide et le support de présence hors ligne.",
+  "security": "Sécurité",
+  "securityDescription": "Modifiez le mot de passe de votre compte.",
+  "currentPassword": "Mot de passe actuel",
+  "newPassword": "Nouveau mot de passe",
+  "confirmNewPassword": "Confirmer le nouveau mot de passe",
+  "updatePassword": "Mettre à jour le mot de passe",
+  "passwordUpdated": "Mot de passe mis à jour avec succès",
+  "passwordChanged": "Mot de passe modifié avec succès.",
+  "passwordUpdateFailed": "Échec de la mise à jour du mot de passe"
+}

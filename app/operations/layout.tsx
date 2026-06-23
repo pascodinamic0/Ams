@@ -1,9 +1,16 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { Sidebar } from "@/components/layout/sidebar";
+import { getTranslations } from "next-intl/server";
 
-export default function OperationsLayout({ children }: { children: React.ReactNode }) {
+export default async function OperationsLayout({ children }: { children: React.ReactNode }) {
+  const t = await getTranslations("nav");
+
   return (
-    <AppShell sidebar={<Sidebar role="operations_manager" />} header={<span className="font-medium">Operations</span>} dashboardHref="/operations">
+    <AppShell
+      sidebar={<Sidebar role="operations_manager" />}
+      header={<span className="font-medium">{t("operations")}</span>}
+      dashboardHref="/operations"
+    >
       {children}
     </AppShell>
   );

@@ -1,0 +1,23 @@
+{
+  "invalidEmail": "Invalid email",
+  "passwordRequired": "Password is required",
+  "passwordMinLength": "Password must be at least 8 characters",
+  "passwordUppercase": "Must include an uppercase letter",
+  "passwordLowercase": "Must include a lowercase letter",
+  "passwordNumber": "Must include a number",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "confirmPasswordRequired": "Please confirm your password",
+  "currentPasswordRequired": "Current password is required",
+  "currentPasswordIncorrect": "Current password is incorrect",
+  "schoolNameRequired": "School name is required",
+  "fieldRequired": "This field is required",
+  "nameRequired": "Name is required",
+  "invalidPhone": "Invalid phone number",
+  "invalidDate": "Invalid date",
+  "minLength": "Must be at least {min} characters",
+  "maxLength": "Must be at most {max} characters",
+  "selectOption": "Please select an option",
+  "invalidAmount": "Invalid amount",
+  "positiveNumber": "Must be a positive number",
+  "passwordStrong": "Strong password"
+}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { fetchUnreadNotificationCount } from "@/app/notifications/actions";
 
 interface NotificationBellProps {
@@ -11,6 +12,8 @@ interface NotificationBellProps {
 
 export function NotificationBell({ className = "", showLabel = false }: NotificationBellProps) {
   const [unreadCount, setUnreadCount] = useState(0);
+  const t = useTranslations("nav");
+  const tc = useTranslations("common");
 
   useEffect(() => {
     let active = true;
@@ -33,7 +36,7 @@ export function NotificationBell({ className = "", showLabel = false }: Notifica
     <Link
       href="/notifications"
       className={`relative rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 ${className}`}
-      aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : "Notifications"}
+      aria-label={unreadCount > 0 ? tc("unreadNotifications", { count: unreadCount }) : t("notifications")}
     >
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path
@@ -48,7 +51,7 @@ export function NotificationBell({ className = "", showLabel = false }: Notifica
           {unreadCount > 9 ? "9+" : unreadCount}
         </span>
       )}
-      {showLabel && <span className="text-xs">Alerts</span>}
+      {showLabel && <span className="text-xs">{t("alerts")}</span>}
     </Link>
   );
 }

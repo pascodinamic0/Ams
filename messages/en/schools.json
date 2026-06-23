@@ -1,0 +1,29 @@
+{
+  "nav": {
+    "programs": "Programs",
+    "about": "About",
+    "events": "Events",
+    "contact": "Contact",
+    "login": "Login",
+    "enroll": "Enroll",
+    "admissions": "Admissions"
+  },
+  "forms": {
+    "submitApplication": "Submit application",
+    "submitting": "Submitting...",
+    "applicationSubmitted": "Application submitted successfully",
+    "enrollNow": "Enroll now",
+    "bookEvent": "Book event",
+    "bookVisit": "Book a visit",
+    "fullName": "Full name",
+    "phoneNumber": "Phone number",
+    "gradeLevel": "Grade level",
+    "message": "Message",
+    "accessibilityNotes": "Accessibility needs, preferred language, etc."
+  },
+  "templates": {
+    "modern": "Modern",
+    "classic": "Classic",
+    "minimal": "Minimal"
+  }
+}

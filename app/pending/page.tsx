@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { PendingApprovalCard } from "@/components/auth/pending-approval-card";
 import { getDashboardForRole } from "@/lib/auth/rbac";
 import { getCurrentProfile } from "@/lib/auth/session";
@@ -6,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { SchoolStatus } from "@/lib/db/schools";
 
 export default async function PendingPage() {
+  const t = await getTranslations("auth");
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
 
@@ -13,7 +15,7 @@ export default async function PendingPage() {
     redirect("/admin");
   }
 
-  let schoolName = "Your school";
+  let schoolName = t("defaultSchoolName");
   let schoolStatus: SchoolStatus = "pending";
 
   if (profile.school_id) {

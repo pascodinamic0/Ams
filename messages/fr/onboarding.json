@@ -1,0 +1,44 @@
+{
+  "gettingStarted": "Premiers pas",
+  "guideDescription": "Parcours optionnel — suivez ces étapes pour configurer votre école depuis le début.",
+  "resumeGuide": "Reprendre le guide",
+  "expandGuide": "Développer le guide",
+  "collapseGuide": "Réduire le guide",
+  "dismissGuide": "Ignorer le guide",
+  "skipForNow": "Passer pour l'instant",
+  "startStep": "Commencer",
+  "setupPaused": "Guide en pause — {completed} sur {total} étapes terminées.",
+  "progressComplete": "{completed} sur {total} terminées",
+  "stepsCompleted": "{completed} sur {total} étapes terminées",
+  "allStepsComplete": "Toutes les étapes sont terminées !",
+  "steps": {
+    "website": {
+      "title": "Configurer votre site web public",
+      "description": "Ajoutez votre histoire, coordonnées et image de marque pour que les familles découvrent votre école."
+    },
+    "team": {
+      "title": "Inviter votre équipe",
+      "description": "Ajoutez enseignants, personnel financier et autres rôles pour que chacun ait le bon accès."
+    },
+    "subjects": {
+      "title": "Créer les matières",
+      "description": "Définissez les cours proposés par votre école avant de créer les classes."
+    },
+    "classes": {
+      "title": "Créer les classes",
+      "description": "Organisez les élèves par niveau ou classe principale."
+    },
+    "students": {
+      "title": "Inscrire votre premier élève",
+      "description": "Ajoutez un dossier élève pour commencer à suivre présences, notes et frais."
+    },
+    "timetable": {
+      "title": "Construire l'emploi du temps",
+      "description": "Affectez matières et enseignants aux créneaux horaires."
+    },
+    "publish": {
+      "title": "Publier votre site web",
+      "description": "Quand vous êtes prêt, activez votre site public pour que les familles puissent vous trouver et postuler."
+    }
+  }
+}

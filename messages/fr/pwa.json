@@ -1,0 +1,13 @@
+{
+  "offlineBanner": "Vous êtes hors ligne. Certaines fonctionnalités peuvent être indisponibles.",
+  "installTitle": "Installer ShuleOS",
+  "installDescription": "Installez l'application pour un accès rapide et le support hors ligne.",
+  "installButton": "Installer",
+  "installLater": "Pas maintenant",
+  "installApp": "Installer l'application",
+  "installAppDescription": "Ajoutez ShuleOS à votre écran d'accueil pour un accès plus rapide.",
+  "alreadyInstalled": "Application installée",
+  "offlineTitle": "Vous êtes hors ligne",
+  "offlineDescription": "{productName} nécessite une connexion pour la plupart des fonctionnalités. Les pages en cache peuvent encore s'ouvrir, et les présences enregistrées hors ligne seront synchronisées à la reconnexion.",
+  "goToLogin": "Aller à la connexion"
+}

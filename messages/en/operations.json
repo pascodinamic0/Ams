@@ -1,0 +1,23 @@
+{
+  "title": "Operations Dashboard",
+  "libraryTitle": "Library",
+  "transportTitle": "Transport",
+  "eventsTitle": "Events",
+  "staffTitle": "Staff",
+  "addBook": "Add book",
+  "lendBook": "Lend book",
+  "returnBook": "Return book",
+  "newRoute": "New route",
+  "newEvent": "New event",
+  "addStaff": "Add staff member",
+  "libraryTitles": "Library titles",
+  "onLoan": "{count} on loan",
+  "overdueLoans": "Overdue loans",
+  "pastDueDate": "Past due date",
+  "operationsStaff": "Operations staff",
+  "transportRoutes": "Transport routes",
+  "activeRoutes": "Active routes",
+  "upcomingEvents": "Upcoming events",
+  "next30Days": "Next 30 days",
+  "quickActions": "Quick actions"
+}

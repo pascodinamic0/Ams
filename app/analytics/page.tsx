@@ -1,31 +1,47 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Chart } from "@/components/ui/chart";
 import { getAnalyticsOverview, getAdminDashboardData } from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 
 function formatCurrency(value: number) {
   return value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
 export default async function AnalyticsDashboard() {
+  const t = await getTranslations("analytics");
   const [overview, adminData] = await Promise.all([
     getAnalyticsOverview(),
     getAdminDashboardData(),
   ]);
 
   const kpis = [
-    { label: "Students", value: overview.totalStudents, sub: `${overview.activeStudents} active` },
-    { label: "Attendance rate", value: `${overview.attendanceRate}%`, sub: "Last 4 weeks" },
-    { label: "Revenue collected", value: formatCurrency(overview.revenue), sub: "All time" },
-    { label: "Schools", value: adminData.schools, sub: `${adminData.users} platform users` },
+    {
+      label: t("kpiStudents"),
+      value: overview.totalStudents,
+      sub: t("kpiActiveStudents", { count: overview.activeStudents }),
+    },
+    {
+      label: t("kpiAttendanceRate"),
+      value: `${overview.attendanceRate}%`,
+      sub: t("kpiLast4Weeks"),
+    },
+    {
+      label: t("kpiRevenueCollected"),
+      value: formatCurrency(overview.revenue),
+      sub: t("kpiAllTime"),
+    },
+    {
+      label: t("kpiSchools"),
+      value: adminData.schools,
+      sub: t("kpiPlatformUsers", { count: adminData.users }),
+    },
   ];
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Analytics Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Platform-wide enrollment, attendance, and revenue insights
-        </p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("title")}</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t("subtitle")}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -46,28 +62,28 @@ export default async function AnalyticsDashboard() {
           type="bar"
           xKey="name"
           yKey="value"
-          title="Enrollment by class"
+          title={t("chartEnrollmentByClass")}
         />
         <Chart
           data={overview.attendanceTrend}
           type="line"
           xKey="name"
           yKey="value"
-          title="Attendance trend (4 weeks)"
+          title={t("chartAttendanceTrend")}
         />
         <Chart
           data={overview.genderDistribution}
           type="pie"
           dataKey="value"
           nameKey="name"
-          title="Gender distribution"
+          title={t("chartGenderDistribution")}
         />
         <Chart
           data={overview.gradeDistribution}
           type="pie"
           dataKey="value"
           nameKey="name"
-          title="Grade distribution"
+          title={t("chartGradeDistribution")}
         />
       </div>
     </div>

@@ -1,0 +1,19 @@
+{
+  "title": "Settings",
+  "subtitle": "Manage your account preferences and security",
+  "account": "Account",
+  "language": "Language",
+  "languageDescription": "Choose your preferred language for the interface",
+  "languageUpdated": "Language updated",
+  "installApp": "Install app",
+  "installAppDescription": "Install ShuleOS on your phone, tablet, or laptop for quick access and offline attendance support.",
+  "security": "Security",
+  "securityDescription": "Change your account password.",
+  "currentPassword": "Current password",
+  "newPassword": "New password",
+  "confirmNewPassword": "Confirm new password",
+  "updatePassword": "Update password",
+  "passwordUpdated": "Password updated successfully",
+  "passwordChanged": "Password changed successfully.",
+  "passwordUpdateFailed": "Failed to update password"
+}

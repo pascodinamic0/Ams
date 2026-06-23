@@ -1,0 +1,13 @@
+{
+  "title": "Messages",
+  "newConversation": "New conversation",
+  "noConversations": "No conversations yet",
+  "typeMessage": "Type a message...",
+  "send": "Send",
+  "searchConversations": "Search conversations",
+  "conversations": "Conversations",
+  "startChatting": "Start chatting with a parent",
+  "noMessagesYet": "No messages yet",
+  "selectConversation": "Select a conversation",
+  "startNewWithParent": "Or start a new one with a parent"
+}
