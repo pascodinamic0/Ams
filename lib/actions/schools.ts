@@ -9,7 +9,7 @@ import {
   resolveUniqueSchoolSlug,
 } from "@/lib/schools/identity";
 import {
-  getDefaultWebsiteContent,
+  getEmptyWebsiteContent,
   type SchoolWebsiteContent,
 } from "@/lib/schools/website-content";
 
@@ -46,6 +46,8 @@ export async function createSchool(input: CreateSchoolInput) {
   const slug = await resolveUniqueSchoolSlug(admin, input.name);
   const code = await resolveUniqueSchoolCode(admin, input.name);
 
+  const websiteContent = getEmptyWebsiteContent(input.name);
+
   const { data, error } = await admin
     .from("schools")
     .insert({
@@ -57,12 +59,11 @@ export async function createSchool(input: CreateSchoolInput) {
       theme_primary_color: input.themePrimaryColor ?? "#3b82f6",
       theme_secondary_color: input.themeSecondaryColor ?? "#1d4ed8",
       website_template: input.websiteTemplate ?? "modern",
-      website_content: getDefaultWebsiteContent(input.name),
-      cover_image_url:
-        "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&q=80",
-      about: getDefaultWebsiteContent(input.name).hero_subtitle,
+      website_content: websiteContent,
+      cover_image_url: null,
+      about: null,
       status: "approved",
-      public_site_enabled: true,
+      public_site_enabled: false,
     })
     .select("id, slug")
     .single();

@@ -8,8 +8,7 @@ import {
   resolveUniqueSchoolSlug,
 } from "@/lib/schools/identity";
 import {
-  DEFAULT_HERO_IMAGE,
-  getDefaultWebsiteContent,
+  getEmptyWebsiteContent,
 } from "@/lib/schools/website-content";
 
 export type RegisterSchoolInput = {
@@ -60,6 +59,8 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
   const slug = await resolveUniqueSchoolSlug(admin, schoolName);
   const code = await resolveUniqueSchoolCode(admin, schoolName);
 
+  const websiteContent = getEmptyWebsiteContent(schoolName);
+
   const { data: school, error: schoolError } = await admin
     .from("schools")
     .insert({
@@ -73,9 +74,9 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
       theme_primary_color: "#3b82f6",
       theme_secondary_color: "#1d4ed8",
       website_template: "modern",
-      website_content: getDefaultWebsiteContent(schoolName),
-      cover_image_url: DEFAULT_HERO_IMAGE,
-      about: getDefaultWebsiteContent(schoolName).hero_subtitle,
+      website_content: websiteContent,
+      cover_image_url: null,
+      about: null,
     })
     .select("id, slug")
     .single();

@@ -67,7 +67,20 @@ export function parseWebsiteContent(raw: unknown): SchoolWebsiteContent {
   return raw as SchoolWebsiteContent;
 }
 
-export function getDefaultWebsiteContent(schoolName: string): SchoolWebsiteContent {
+/** Minimal content for newly created schools — no demo stats, programs, or gallery. */
+export function getEmptyWebsiteContent(schoolName: string): SchoolWebsiteContent {
+  return {
+    hero_title: schoolName,
+    hero_subtitle: "",
+    programs: [],
+    stats: [],
+    gallery: [],
+    footer_tagline: "",
+  };
+}
+
+/** Rich sample content for template previews and marketing demos only. */
+export function getPreviewWebsiteContent(schoolName: string): SchoolWebsiteContent {
   return {
     hero_title: `Welcome to ${schoolName}`,
     hero_subtitle:
@@ -106,36 +119,23 @@ export function getDefaultWebsiteContent(schoolName: string): SchoolWebsiteConte
   };
 }
 
+/** @deprecated Use getPreviewWebsiteContent for demos or getEmptyWebsiteContent for new schools. */
+export function getDefaultWebsiteContent(schoolName: string): SchoolWebsiteContent {
+  return getPreviewWebsiteContent(schoolName);
+}
+
 export function resolveSchoolWebsite(school: SchoolRow): ResolvedSchoolWebsite {
   const content = parseWebsiteContent(school.website_content);
-  const defaults = getDefaultWebsiteContent(school.name);
 
   return {
-    heroTitle: content.hero_title ?? defaults.hero_title ?? school.name,
-    heroSubtitle:
-      content.hero_subtitle ??
-      defaults.hero_subtitle ??
-      "A vibrant learning community.",
+    heroTitle: content.hero_title?.trim() || school.name,
+    heroSubtitle: content.hero_subtitle?.trim() || "",
     heroImage: school.cover_image_url ?? DEFAULT_HERO_IMAGE,
-    about:
-      school.about ??
-      "We are committed to nurturing curious minds and preparing students for a changing world.",
-    programs:
-      content.programs && content.programs.length > 0
-        ? content.programs
-        : (defaults.programs ?? []),
-    stats:
-      content.stats && content.stats.length > 0
-        ? content.stats
-        : (defaults.stats ?? []),
-    gallery:
-      content.gallery && content.gallery.length > 0
-        ? content.gallery
-        : (defaults.gallery ?? []),
-    footerTagline:
-      content.footer_tagline ??
-      defaults.footer_tagline ??
-      "Excellence in education.",
+    about: school.about?.trim() || "",
+    programs: content.programs ?? [],
+    stats: content.stats ?? [],
+    gallery: content.gallery ?? [],
+    footerTagline: content.footer_tagline?.trim() || "",
     social: {
       facebook: content.social_facebook,
       instagram: content.social_instagram,

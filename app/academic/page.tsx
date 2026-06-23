@@ -11,6 +11,11 @@ export default async function AcademicDashboard() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Academic Dashboard</h1>
+      {data.totalStudents === 0 && data.classes === 0 && (
+        <p className="text-sm text-slate-500">
+          Your school starts empty — use the setup guide above to add subjects, classes, and students when you are ready.
+        </p>
+      )}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader><CardTitle>Students</CardTitle></CardHeader>

@@ -76,7 +76,7 @@ function NewSchoolForm() {
       return;
     }
     const slug = result.data?.slug ?? form.name.toLowerCase().replace(/\s/g, "-");
-    toast.success("School created. Their site is ready at /schools/" + slug);
+    toast.success("School created. Enable their public site from the academic dashboard when ready.");
     router.push("/admin/schools");
   }
 

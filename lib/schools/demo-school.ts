@@ -3,12 +3,12 @@ import type { WebsiteTemplateId } from "./website-templates";
 import { getWebsiteTemplate } from "./website-templates";
 import {
   DEFAULT_HERO_IMAGE,
-  getDefaultWebsiteContent,
+  getPreviewWebsiteContent,
 } from "./website-content";
 
 export function createDemoSchool(template: WebsiteTemplateId): SchoolRow {
   const meta = getWebsiteTemplate(template)!;
-  const content = getDefaultWebsiteContent("Greenfield Academy");
+  const content = getPreviewWebsiteContent("Greenfield Academy");
 
   return {
     id: "00000000-0000-0000-0000-000000000000",
