@@ -98,11 +98,7 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="mx-auto max-w-3xl text-center sm:max-w-none"
           >
-            <span className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-indigo-400/30 bg-indigo-500/10 px-3 py-1 text-xs font-semibold text-indigo-200 backdrop-blur-sm sm:gap-2 sm:px-4 sm:py-1.5 sm:text-sm sm:font-medium sm:text-indigo-300">
-              <span aria-hidden className="shrink-0">🇰🇪</span>
-              <span className="leading-snug">{t("heroBadge")}</span>
-            </span>
-            <h1 className="mt-5 text-[2.125rem] font-extrabold leading-[1.08] tracking-tight text-white sm:mt-8 sm:text-5xl sm:leading-tight md:text-7xl lg:text-8xl">
+            <h1 className="text-[2.125rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl sm:leading-tight md:text-7xl lg:text-8xl">
               {t("heroTitleLine1")}
               <br />
               <span className="bg-gradient-to-r from-indigo-200 via-indigo-400 to-indigo-200 bg-clip-text text-transparent">
