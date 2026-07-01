@@ -7,7 +7,7 @@ import {
   Users,
   GraduationCap,
   CheckCircle2,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -64,6 +64,7 @@ export default function Home() {
     { value: "76+", label: t("statsPages") },
     { value: "1", label: t("statsPlatform") },
   ];
+
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-[#0a0f1e]">
       {/* Hero Section */}
@@ -302,61 +303,83 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA - Premium Look */}
-      <section className="relative overflow-hidden bg-indigo-950 py-16 sm:py-32">
-        {/* Background Effects */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
-          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white to-transparent" />
-          <div
-            className="h-full w-full"
-            style={{
-              backgroundImage: "radial-gradient(circle at 2px 2px, rgba(255,255,255,0.1) 1px, transparent 0)",
-              backgroundSize: "40px 40px",
-            }}
-          />
-        </div>
+      {/* Final CTA */}
+      <section className="relative overflow-hidden bg-white py-20 dark:bg-[#0a0f1e] sm:py-28 lg:py-32">
+        <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-indigo-500/10 blur-[120px]" />
+        <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-indigo-600/10 blur-[120px]" />
 
-        <div className="relative z-10 mx-auto max-w-5xl px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="space-y-6 sm:space-y-10"
-          >
-            <h2 className="text-3xl font-black leading-tight text-white sm:text-5xl md:text-7xl">
-              {t("finalCtaTitle")}
-            </h2>
-            <p className="mx-auto max-w-2xl text-base text-indigo-200/80 sm:text-xl">
-              {t("finalCtaSubtitle", { productName: companyIdentity.productName })}
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-2 sm:gap-6 sm:pt-4">
-              <Link
-                href="/get-access"
-                className="inline-flex w-full items-center justify-center rounded-2xl bg-white px-8 py-4 text-base font-bold text-indigo-950 shadow-[0_0_50px_rgba(255,255,255,0.2)] transition-all hover:scale-105 active:scale-95 sm:w-auto sm:px-10 sm:py-5 sm:text-lg"
-              >
-                {t("finalCtaButton")}
-              </Link>
-            </div>
-
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 border-t border-white/10 pt-8 text-xs font-semibold uppercase tracking-widest text-indigo-300/70 sm:mt-16 sm:flex-row sm:flex-wrap sm:gap-x-10 sm:gap-y-4 sm:pt-12 sm:text-sm">
-              {homepageCtaSections.map((section, index) => (
-                <span key={section.slug} className="inline-flex items-center gap-3">
-                  {index > 0 && (
-                    <span className="hidden text-indigo-500/40 sm:inline" aria-hidden>
-                      |
-                    </span>
-                  )}
-                  <Link
-                    href={`/modules/${section.slug}`}
-                    className="rounded-lg px-2 py-1 transition-colors hover:bg-white/10 hover:text-white"
-                  >
-                    {section.label}
-                  </Link>
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.6 }}
+              className="text-center lg:text-left"
+            >
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400">
+                {t("heroBadge")}
+              </p>
+              <h2 className="mt-4 text-4xl font-black leading-[1.08] tracking-tight text-slate-900 dark:text-white sm:text-5xl lg:text-6xl">
+                {t("finalCtaTitleLine1")}
+                <span className="mt-1 block text-indigo-600 dark:text-indigo-400 sm:mt-2">
+                  {t("finalCtaTitleLine2")}
                 </span>
-              ))}
-            </div>
-          </motion.div>
+              </h2>
+              <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-slate-500 dark:text-slate-400 sm:text-lg lg:mx-0">
+                {t("finalCtaSubtitle", { productName: companyIdentity.productName })}
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="rounded-3xl bg-indigo-600 p-8 shadow-2xl shadow-indigo-600/25 sm:rounded-[2rem] sm:p-10 lg:p-12"
+            >
+              <ul className="space-y-4">
+                {[t("adminFeature1"), t("parentFeature2"), t("teacherFeature3")].map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-indigo-50">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-indigo-200" />
+                    <span className="text-sm leading-relaxed sm:text-base">{item}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href="/get-access"
+                  className="group inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-base font-bold text-indigo-700 transition-all hover:bg-indigo-50"
+                >
+                  {t("finalCtaButton")}
+                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  href="/contact"
+                  className="inline-flex flex-1 items-center justify-center rounded-2xl border-2 border-indigo-400/60 px-6 py-4 text-base font-bold text-white transition-all hover:bg-white/10"
+                >
+                  {t("finalCtaSecondary")}
+                </Link>
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-indigo-500/40 pt-6 sm:justify-start">
+                {homepageCtaSections.map((section, index) => (
+                  <span key={section.slug} className="inline-flex items-center gap-5">
+                    {index > 0 && (
+                      <span className="hidden h-1 w-1 rounded-full bg-indigo-400/60 sm:inline" aria-hidden />
+                    )}
+                    <Link
+                      href={`/modules/${section.slug}`}
+                      className="text-sm font-semibold text-indigo-100/90 transition-colors hover:text-white"
+                    >
+                      {section.label}
+                    </Link>
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
     </div>

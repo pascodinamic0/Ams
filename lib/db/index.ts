@@ -49,10 +49,14 @@ export {
   getConversations,
   getConversationById,
   getGuardianContacts,
+  getStaffContactsForParent,
+  findExistingConversation,
+  getUnreadConversationCount,
   type ConversationListItem,
   type ConversationMessage,
   type ConversationDetail,
   type GuardianContact,
+  type StaffContact,
 } from "./conversations";
 export {
   getCampaigns,

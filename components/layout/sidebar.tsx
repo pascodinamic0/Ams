@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { fetchUnreadConversationCount } from "@/lib/actions/conversations";
 
 interface NavItem {
   href: string;
@@ -286,6 +288,8 @@ function getNavForRole(role: string): NavItem[] {
   return ROLE_NAV[normalized] ?? ROLE_NAV.student;
 }
 
+const MESSAGING_ROLES = new Set(["super_admin", "academic_admin", "teacher", "parent"]);
+
 interface SidebarProps {
   role?: string;
 }
@@ -295,12 +299,34 @@ export function Sidebar({ role = "student" }: SidebarProps) {
   const navItems = getNavForRole(role);
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
+  const tMessages = useTranslations("messages");
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
+  useEffect(() => {
+    if (!MESSAGING_ROLES.has(role)) return;
+
+    let active = true;
+
+    async function load() {
+      const count = await fetchUnreadConversationCount();
+      if (active) setUnreadMessages(count);
+    }
+
+    load();
+    const interval = setInterval(load, 60_000);
+
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [role, pathname]);
 
   return (
     <nav className="flex flex-col gap-0.5 px-3" aria-label={tCommon("sidebar")}>
       {navItems.map((item) => {
         const isActive =
           pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const showUnreadBadge = item.href === "/messages" && unreadMessages > 0;
         return (
           <Link
             key={item.href}
@@ -312,13 +338,21 @@ export function Sidebar({ role = "student" }: SidebarProps) {
             }`}
           >
             <span
-              className={
+              className={`relative ${
                 isActive
                   ? "text-indigo-600 dark:text-indigo-400"
                   : "text-slate-600 dark:text-slate-400"
-              }
+              }`}
             >
               {item.icon}
+              {showUnreadBadge && (
+                <span
+                  className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-600 px-1 text-[10px] font-semibold text-white"
+                  aria-label={tMessages("unreadMessages", { count: unreadMessages })}
+                >
+                  {unreadMessages > 9 ? "9+" : unreadMessages}
+                </span>
+              )}
             </span>
             {t(item.labelKey)}
           </Link>
