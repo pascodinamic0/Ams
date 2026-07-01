@@ -51,68 +51,91 @@ export default function CompanyLayout({
     return <>{children}</>;
   }
 
+  const navLinkClass = (href: string) =>
+    cn(
+      "whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold transition-all lg:px-4 lg:py-2.5 lg:text-[0.9375rem]",
+      pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))
+        ? solidHeader
+          ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300"
+          : "bg-white/15 text-white"
+        : solidHeader
+          ? "text-slate-600 hover:bg-slate-100 hover:text-indigo-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-indigo-400"
+          : "text-indigo-100 hover:bg-white/10 hover:text-white"
+    );
+
+  const actionDividerClass = cn(
+    "hidden h-6 w-px shrink-0 md:block",
+    solidHeader ? "bg-slate-200 dark:bg-slate-700" : "bg-white/20"
+  );
+
   return (
     <div className="min-h-screen bg-white dark:bg-[#0a0f1e] selection:bg-indigo-500 selection:text-white">
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 px-3 pt-[calc(env(safe-area-inset-top)+0.625rem)] transition-all duration-500 sm:px-0 sm:pt-0",
+          "fixed inset-x-0 top-0 z-50 transition-all duration-500",
+          "px-4 pt-[calc(env(safe-area-inset-top)+0.75rem)] md:px-6 md:pt-0 lg:px-8",
           solidHeader
-            ? "pb-2 sm:bg-white/80 sm:py-3 sm:backdrop-blur-xl sm:border-b sm:border-slate-200/50 sm:dark:bg-[#0a0f1e]/80 sm:dark:border-slate-800/50"
-            : "pb-2.5 sm:bg-transparent sm:py-5"
+            ? "pb-3 md:border-b md:border-slate-200/50 md:bg-white/85 md:py-4 md:backdrop-blur-xl md:dark:border-slate-800/50 md:dark:bg-[#0a0f1e]/85 lg:py-5"
+            : "pb-3 md:bg-transparent md:py-5 lg:py-6"
         )}
       >
         <div
           className={cn(
-            "mx-auto flex min-h-12 w-full max-w-7xl items-center justify-between gap-2 rounded-2xl border px-3 shadow-lg backdrop-blur-xl transition-all sm:h-10 sm:rounded-none sm:border-0 sm:bg-transparent sm:px-6 sm:shadow-none sm:backdrop-blur-0 lg:px-8",
+            "mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 md:min-h-16 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-6 lg:min-h-[4.25rem] lg:gap-10",
+            "max-md:min-h-14 max-md:rounded-2xl max-md:border max-md:px-4 max-md:shadow-lg max-md:backdrop-blur-xl",
             solidHeader
-              ? "border-slate-200/70 bg-white/90 shadow-slate-950/5 dark:border-slate-800/70 dark:bg-[#0a0f1e]/90"
-              : "border-white/10 bg-indigo-950/25 shadow-indigo-950/20"
+              ? "max-md:border-slate-200/70 max-md:bg-white/90 max-md:shadow-slate-950/5 dark:max-md:border-slate-800/70 dark:max-md:bg-[#0a0f1e]/90"
+              : "max-md:border-white/10 max-md:bg-indigo-950/25 max-md:shadow-indigo-950/20"
           )}
         >
-          <Link href="/" className="group min-w-0 shrink">
+          <Link href="/" className="group min-w-0 shrink-0 justify-self-start">
             <motion.div whileHover={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 400 }}>
               <BrandLogo
-                size={34}
-                className="gap-2 sm:gap-3"
+                size={36}
+                className="gap-2.5 md:gap-3"
                 wordmarkClassName={cn(
-                  "text-lg transition-colors sm:text-xl",
+                  "text-lg transition-colors md:text-xl",
                   solidHeader ? "text-slate-900 dark:text-white" : "text-white"
                 )}
               />
             </motion.div>
           </Link>
 
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav
+            className="hidden items-center justify-center gap-0.5 md:flex lg:gap-1"
+            aria-label={tCommon("menu")}
+          >
             {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "px-4 py-2 text-sm font-bold rounded-lg transition-all",
-                  solidHeader
-                    ? "text-slate-600 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800"
-                    : "text-indigo-100 hover:text-white hover:bg-white/10"
-                )}
-              >
+              <Link key={link.href} href={link.href} className={navLinkClass(link.href)}>
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          <div className="flex shrink-0 items-center gap-1.5 sm:gap-4">
+          <div className="flex shrink-0 items-center justify-end gap-2 justify-self-end md:gap-3 lg:gap-4">
+            <LanguageSwitcher
+              variant="select"
+              className={cn(
+                "hidden md:block xl:hidden",
+                solidHeader
+                  ? ""
+                  : "border-white/20 bg-white/10 text-indigo-100 dark:border-white/20 dark:bg-white/10"
+              )}
+            />
             <LanguageSwitcher
               variant="buttons"
               className={cn(
-                "rounded-xl bg-white/10 p-0.5 dark:bg-white/10 [&_button]:px-2 [&_button]:py-1.5 [&_button]:text-xs sm:bg-slate-100 sm:p-1 sm:dark:bg-slate-800 sm:[&_button]:px-3 sm:[&_button]:text-sm",
+                "hidden rounded-xl p-1 xl:flex",
                 solidHeader
                   ? "bg-slate-100 dark:bg-slate-800"
-                  : "[&_button:not([class*='bg-white'])]:text-indigo-100 [&_button:not([class*='bg-white'])]:hover:text-white"
+                  : "bg-white/10 [&_button:not([class*='bg-white'])]:text-indigo-100 [&_button:not([class*='bg-white'])]:hover:text-white"
               )}
             />
+            <span className={actionDividerClass} aria-hidden />
             <Link
               href="/login"
               className={cn(
-                "hidden sm:block text-sm font-bold transition-all",
+                "hidden whitespace-nowrap px-1 text-sm font-semibold transition-all xl:inline-flex",
                 solidHeader
                   ? "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                   : "text-indigo-100 hover:text-white"
@@ -123,10 +146,10 @@ export default function CompanyLayout({
             <Link
               href="/get-access"
               className={cn(
-                "hidden rounded-xl px-4 py-2 text-sm font-bold shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 sm:inline-flex sm:px-6 sm:py-2.5",
+                "hidden whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-95 md:inline-flex lg:px-5 lg:py-3",
                 solidHeader
-                  ? "bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-600/20"
-                  : "bg-white text-indigo-950 hover:bg-indigo-50 shadow-white/10"
+                  ? "bg-indigo-600 text-white shadow-indigo-600/20 hover:bg-indigo-500"
+                  : "bg-white text-indigo-950 shadow-white/10 hover:bg-indigo-50"
               )}
             >
               {t("getStarted")}
@@ -137,7 +160,7 @@ export default function CompanyLayout({
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen((open) => !open)}
               className={cn(
-                "inline-flex h-10 w-10 items-center justify-center rounded-xl transition-all active:scale-95 md:hidden",
+                "inline-flex h-11 w-11 items-center justify-center rounded-xl transition-all active:scale-95 md:hidden",
                 solidHeader
                   ? "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
                   : "text-white hover:bg-white/10"

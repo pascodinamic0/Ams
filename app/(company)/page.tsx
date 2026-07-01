@@ -67,7 +67,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-[#0a0f1e]">
       {/* Hero Section */}
-      <section className="relative flex min-h-[100dvh] items-center overflow-hidden pt-16 pb-12 sm:min-h-[90vh] sm:pt-20 sm:pb-0">
+      <section className="relative flex min-h-[100dvh] items-center overflow-hidden pt-[calc(env(safe-area-inset-top)+5.5rem)] pb-12 sm:min-h-[90vh] md:pt-28 md:pb-0 lg:pt-32">
         {/* Hero background — Kenyan school administrator at work */}
         <div className="absolute inset-0 z-0">
           <Image
