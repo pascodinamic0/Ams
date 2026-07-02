@@ -6,6 +6,7 @@ import sharp from "sharp";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const svgPath = path.join(root, "public/images/shuleos-logo.svg");
+const faviconSourcePath = path.join(root, "scripts/assets/shuleos-favicon-source.png");
 const outDir = path.join(root, "public/icons");
 const faviconPath = path.join(root, "app/favicon.ico");
 
@@ -44,7 +45,8 @@ async function main() {
 
   console.log(`Wrote ${path.relative(root, maskableOut)}`);
 
-  await sharp(svg).resize(32, 32).png().toFile(faviconPath);
+  const faviconSource = await readFile(faviconSourcePath);
+  await sharp(faviconSource).resize(32, 32).png().toFile(faviconPath);
   console.log(`Wrote ${path.relative(root, faviconPath)}`);
 }
 
