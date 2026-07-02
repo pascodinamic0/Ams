@@ -12,6 +12,7 @@ import {
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { companyIdentity } from "@/lib/company/identity";
+import { HeroVideoBackground } from "@/components/company/hero-video-background";
 import { getHomepageCtaSections, getPlatformModules } from "@/lib/i18n/modules";
 
 export default function Home() {
@@ -69,28 +70,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen bg-white dark:bg-[#0c1222]">
       {/* Hero Section */}
       <section className="relative flex min-h-[100dvh] items-center overflow-hidden pt-[calc(env(safe-area-inset-top)+5.5rem)] pb-12 sm:min-h-[90vh] md:pt-28 md:pb-0 lg:pt-32">
-        {/* Hero background — Kenyan school administrator at work */}
-        <div className="absolute inset-0 z-0">
-          <Image
-            src="/images/role_admin.png"
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-[center_30%] opacity-90 dark:opacity-75"
-          />
-
-          <div className="absolute inset-0 bg-teal-950/50" />
-          <div className="absolute inset-0 bg-gradient-to-b from-teal-950/80 via-teal-950/40 to-teal-950/85" />
-          <div className="absolute inset-0 bg-gradient-to-r from-teal-950/70 via-transparent to-teal-950/50" />
-
-          {/* Animated Glows */}
-          <div className="absolute top-1/4 -left-20 h-64 w-64 rounded-full bg-primary/20 blur-[100px] animate-pulse sm:h-96 sm:w-96 sm:blur-[120px]" />
-          <div className="absolute bottom-1/3 -right-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-[100px] animate-pulse delay-700 sm:h-96 sm:w-96 sm:blur-[120px]" />
-
-          {/* Seamless fade into the next section */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-white dark:to-[#0c1222] sm:h-36" />
-        </div>
+        <HeroVideoBackground />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
