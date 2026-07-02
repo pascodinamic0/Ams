@@ -1,21 +1,22 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getTranslations } from "next-intl/server";
 
 export default async function ParentPerformancePage() {
+  const t = await getTranslations("parent");
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     return (
       <EmptyState
-        title="Not signed in"
-        description="Please log in to view your children's performance"
+        title={t("notSignedIn")}
+        description={t("notSignedInDescPerformance")}
       />
     );
   }
 
-  // Find this guardian's students
   const { data: guardian } = await supabase
     .from("guardians")
     .select("id, name")
@@ -25,8 +26,8 @@ export default async function ParentPerformancePage() {
   if (!guardian) {
     return (
       <EmptyState
-        title="No guardian profile"
-        description="Your account is not linked to a guardian profile. Contact the school."
+        title={t("noGuardianProfile")}
+        description={t("noGuardianProfileDesc")}
       />
     );
   }
@@ -49,16 +50,16 @@ export default async function ParentPerformancePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Performance</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Track your {students.length === 1 ? "child's" : "children's"} daily learning, grades, and attendance patterns.
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("performanceTitle")}</h1>
+        <p className="mt-1 text-sm text-stone-500">
+          {t("performanceSubtitle", { count: students.length })}
         </p>
       </div>
 
       {students.length === 0 ? (
         <EmptyState
-          title="No students linked"
-          description="Contact the school to link your children to your account."
+          title={t("noStudentsLinked")}
+          description={t("noStudentsLinkedDesc")}
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -66,24 +67,24 @@ export default async function ParentPerformancePage() {
             <Link
               key={s!.id}
               href={`/parent/performance/${s!.id}`}
-              className="group flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-all hover:border-indigo-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:hover:border-indigo-700"
+              className="group flex flex-col gap-3 rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition-all hover:border-primary-300 hover:shadow-md dark:border-stone-700 dark:bg-stone-900 dark:hover:border-primary-700"
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-100 text-lg font-bold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-light text-lg font-bold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
                   {s!.first_name.charAt(0)}
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900 dark:text-white">
+                  <p className="font-semibold text-stone-900 dark:text-white">
                     {s!.first_name} {s!.last_name}
                   </p>
-                  <p className="text-xs text-slate-500">
-                    {(s!.classes as { name: string } | null)?.name ?? "No class"} · {s!.student_id}
+                  <p className="text-xs text-stone-500">
+                    {(s!.classes as { name: string } | null)?.name ?? t("noClass")} · {s!.student_id}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span>View grades, attendance & daily schedule</span>
-                <svg className="h-4 w-4 text-slate-300 transition-transform group-hover:translate-x-1 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center justify-between text-xs text-stone-400">
+                <span>{t("viewGradesAttendance")}</span>
+                <svg className="h-4 w-4 text-stone-300 transition-transform group-hover:translate-x-1 group-hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </div>

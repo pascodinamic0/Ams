@@ -229,16 +229,16 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-700">
+      <div className="rounded-lg border border-stone-200 p-4 dark:border-stone-700">
         <h2 className="font-semibold">CSV format</h2>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-stone-500">
           Required columns: <code className="text-xs">first_name, last_name, date_of_birth, class, status</code>
         </p>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-stone-500">
           <code className="text-xs">class</code> can be a class name or UUID.
           {classNames ? ` Available classes: ${classNames}.` : " No classes configured yet."}
         </p>
-        <p className="mt-2 text-sm text-slate-500">
+        <p className="mt-2 text-sm text-stone-500">
           <code className="text-xs">date_of_birth</code> should be YYYY-MM-DD.
           <code className="ml-2 text-xs">status</code> is optional (defaults to active).
         </p>
@@ -254,10 +254,10 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
           type="file"
           accept=".csv,text/csv"
           onChange={handleFileChange}
-          className="mt-1 block w-full text-sm text-slate-500 file:mr-4 file:rounded-lg file:border-0 file:bg-indigo-50 file:px-4 file:py-2 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100 dark:file:bg-indigo-950/50 dark:file:text-indigo-200"
+          className="mt-1 block w-full text-sm text-stone-500 file:mr-4 file:rounded-lg file:border-0 file:bg-primary-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-hover hover:file:bg-primary-light dark:file:bg-teal-950/50 dark:file:text-teal-200"
         />
         {fileName && (
-          <p className="mt-1 text-xs text-slate-500">Selected: {fileName}</p>
+          <p className="mt-1 text-xs text-stone-500">Selected: {fileName}</p>
         )}
       </div>
 
@@ -274,12 +274,12 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
 
       {preview.length > 0 && (
         <div className="space-y-3">
-          <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+          <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
             {preview.length} row{preview.length === 1 ? "" : "s"} ready to import
           </p>
-          <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+          <div className="overflow-x-auto rounded-lg border border-stone-200 dark:border-stone-700">
             <table className="w-full min-w-[600px] text-sm">
-              <thead className="bg-slate-100 dark:bg-slate-800">
+              <thead className="bg-stone-100 dark:bg-stone-800">
                 <tr>
                   <th className="px-3 py-2 text-left font-medium">First name</th>
                   <th className="px-3 py-2 text-left font-medium">Last name</th>
@@ -290,7 +290,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
               </thead>
               <tbody>
                 {preview.slice(0, 10).map((row, i) => (
-                  <tr key={`${row.first_name}-${row.last_name}-${i}`} className="border-t border-slate-200 dark:border-slate-700">
+                  <tr key={`${row.first_name}-${row.last_name}-${i}`} className="border-t border-stone-200 dark:border-stone-700">
                     <td className="px-3 py-2">{row.first_name}</td>
                     <td className="px-3 py-2">{row.last_name}</td>
                     <td className="px-3 py-2">{row.date_of_birth}</td>
@@ -303,7 +303,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
               </tbody>
             </table>
             {preview.length > 10 && (
-              <p className="border-t border-slate-200 px-3 py-2 text-xs text-slate-500 dark:border-slate-700">
+              <p className="border-t border-stone-200 px-3 py-2 text-xs text-stone-500 dark:border-stone-700">
                 Showing first 10 of {preview.length} rows
               </p>
             )}
@@ -312,7 +312,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
       )}
 
       {importResult && (
-        <div className="rounded-lg border border-slate-200 p-4 text-sm dark:border-slate-700">
+        <div className="rounded-lg border border-stone-200 p-4 text-sm dark:border-stone-700">
           <p>
             Created <strong>{importResult.created}</strong>, failed{" "}
             <strong>{importResult.failed}</strong>

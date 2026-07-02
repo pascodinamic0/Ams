@@ -9,15 +9,15 @@ export interface ButtonProps
 
 const variantStyles = {
   primary:
-    "bg-indigo-600 text-white hover:bg-indigo-700 focus:ring-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-600",
+    "bg-primary text-primary-foreground hover:bg-primary-hover focus:ring-primary",
   secondary:
-    "bg-slate-100 text-slate-900 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700",
+    "bg-secondary text-secondary-foreground hover:bg-stone-200 dark:hover:bg-stone-700",
   ghost:
-    "bg-transparent text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800",
+    "bg-transparent text-foreground hover:bg-secondary",
   danger:
-    "bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 focus:ring-red-500",
+    "bg-danger text-white hover:bg-red-700 dark:hover:bg-red-600 focus:ring-danger",
   outline:
-    "border border-slate-300 bg-transparent hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800",
+    "border border-border bg-transparent hover:bg-surface-raised",
 };
 
 const sizeStyles = {

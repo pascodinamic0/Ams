@@ -15,13 +15,13 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
           ref={ref}
           type="checkbox"
           id={inputId}
-          className={`h-4 w-4 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-400 dark:border-zinc-600 dark:bg-zinc-950 ${className}`}
+          className={`h-4 w-4 rounded border-border text-primary focus:ring-primary ${className}`}
           {...props}
         />
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm text-zinc-700 dark:text-zinc-300"
+            className="text-sm text-foreground"
           >
             {label}
           </label>

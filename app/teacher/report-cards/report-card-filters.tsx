@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export function ReportCardFilters({ classes, initialClassId, initialTerm }: Props) {
+  const t = useTranslations("teacher");
   const router = useRouter();
   const searchParams = useSearchParams();
   const classId = searchParams.get("class") ?? initialClassId;
@@ -29,12 +31,12 @@ export function ReportCardFilters({ classes, initialClassId, initialTerm }: Prop
   return (
     <div className="flex flex-wrap items-end gap-4 print:hidden">
       <div>
-        <Label htmlFor="rc-class">Class</Label>
+        <Label htmlFor="rc-class">{t("classLabel")}</Label>
         <select
           id="rc-class"
           value={classId}
           onChange={(e) => updateParams({ class: e.target.value })}
-          className="mt-1 w-full min-w-[160px] rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="mt-1 w-full min-w-[160px] rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
           {classes.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
@@ -42,11 +44,11 @@ export function ReportCardFilters({ classes, initialClassId, initialTerm }: Prop
         </select>
       </div>
       <div>
-        <Label htmlFor="rc-term">Term</Label>
+        <Label htmlFor="rc-term">{t("termLabel")}</Label>
         <Input
           id="rc-term"
           defaultValue={term}
-          placeholder="Term 1"
+          placeholder={t("termPlaceholderShort")}
           onBlur={(e) => updateParams({ term: e.target.value })}
           onKeyDown={(e) => {
             if (e.key === "Enter") updateParams({ term: e.currentTarget.value });
@@ -54,7 +56,7 @@ export function ReportCardFilters({ classes, initialClassId, initialTerm }: Prop
         />
       </div>
       <Button type="button" size="sm" onClick={() => window.print()}>
-        Print report cards
+        {t("printReportCards")}
       </Button>
     </div>
   );

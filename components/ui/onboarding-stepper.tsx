@@ -35,8 +35,8 @@ export function OnboardingStepper({
             <div
               className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium ${
                 i <= currentStep
-                  ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                  : "bg-zinc-200 text-zinc-500 dark:bg-zinc-700"
+                  ? "bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900"
+                  : "bg-stone-200 text-stone-500 dark:bg-zinc-700"
               }`}
             >
               {i + 1}
@@ -44,14 +44,14 @@ export function OnboardingStepper({
             {i < steps.length - 1 && (
               <div
                 className={`mx-1 h-0.5 w-8 ${
-                  i < currentStep ? "bg-zinc-900 dark:bg-zinc-100" : "bg-zinc-200 dark:bg-zinc-700"
+                  i < currentStep ? "bg-stone-900 dark:bg-stone-100" : "bg-stone-200 dark:bg-zinc-700"
                 }`}
               />
             )}
           </div>
         ))}
       </div>
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="text-sm text-stone-600 dark:text-stone-400">
         Step {currentStep + 1} of {steps.length}: {steps[currentStep]?.title}
       </p>
       <div>{children}</div>

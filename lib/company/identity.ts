@@ -36,4 +36,16 @@ export const companyIdentity = {
   social: {
     linkedin: "https://www.linkedin.com/company/digni-digital-kenya",
   },
+
+  brand: {
+    primary: "#0d9488",
+    primaryHover: "#0f766e",
+    primaryLight: "#f0fdfa",
+    accent: "#f59e0b",
+    accentHover: "#d97706",
+    background: "#fafaf9",
+    foreground: "#1c1917",
+    darkBackground: "#0c1222",
+    darkPrimary: "#14b8a6",
+  },
 } as const;

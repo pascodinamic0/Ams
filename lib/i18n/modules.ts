@@ -35,8 +35,8 @@ const MODULE_ICONS: Record<
 > = {
   academic: { icon: GraduationCap, iconClassName: "text-blue-500", span: "md:col-span-2" },
   finance: { icon: Wallet, iconClassName: "text-emerald-500", span: "md:col-span-1" },
-  operations: { icon: Settings, iconClassName: "text-slate-500", span: "md:col-span-1" },
-  analytics: { icon: BarChart3, iconClassName: "text-indigo-500", span: "md:col-span-2" },
+  operations: { icon: Settings, iconClassName: "text-stone-500", span: "md:col-span-1" },
+  analytics: { icon: BarChart3, iconClassName: "text-primary", span: "md:col-span-2" },
   "school-websites": { icon: Globe, iconClassName: "text-amber-500", span: "md:col-span-2" },
   messaging: { icon: MessageSquare, iconClassName: "text-purple-500", span: "md:col-span-1" },
   "parent-student-portals": {

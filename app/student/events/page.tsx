@@ -2,13 +2,15 @@ import { format } from "date-fns";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getStudentByAuthUserId, getEvents } from "@/lib/db";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getTranslations } from "next-intl/server";
 
 export default async function StudentEventsPage() {
+  const t = await getTranslations("student");
   const profile = await getCurrentProfile();
 
   if (!profile) {
     return (
-      <EmptyState title="Not signed in" description="Please log in to view events." />
+      <EmptyState title={t("notSignedIn")} description={t("notSignedInDescEvents")} />
     );
   }
 
@@ -16,8 +18,8 @@ export default async function StudentEventsPage() {
   if (!student) {
     return (
       <EmptyState
-        title="No student profile"
-        description="Your account is not linked to a student record."
+        title={t("noStudentProfile")}
+        description={t("noStudentProfileDescShort")}
       />
     );
   }
@@ -32,25 +34,23 @@ export default async function StudentEventsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Events</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Upcoming school events and holidays (read-only).
-        </p>
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("eventsTitle")}</h1>
+        <p className="mt-1 text-sm text-stone-500">{t("eventsPageSubtitle")}</p>
       </div>
 
       {events.length === 0 ? (
         <EmptyState
-          title="No upcoming events"
-          description="There are no scheduled events or holidays on the calendar."
+          title={t("noUpcomingEvents")}
+          description={t("noUpcomingEventsDesc")}
         />
       ) : (
         <div className="space-y-3">
           {events.map((event) => (
             <div
               key={event.id}
-              className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+              className="flex items-start gap-4 rounded-xl border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-900"
             >
-              <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-300">
+              <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-lg bg-primary-light text-primary-hover dark:bg-primary-light/40 dark:text-primary">
                 <span className="text-xs font-medium">
                   {format(new Date(event.date), "MMM")}
                 </span>
@@ -60,7 +60,7 @@ export default async function StudentEventsPage() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <p className="font-semibold text-slate-900 dark:text-white">
+                  <p className="font-semibold text-stone-900 dark:text-white">
                     {event.title}
                   </p>
                   <span
@@ -70,14 +70,14 @@ export default async function StudentEventsPage() {
                         : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                     }`}
                   >
-                    {event.type === "holiday" ? "Holiday" : "Event"}
+                    {event.type === "holiday" ? t("holiday") : t("event")}
                   </span>
                 </div>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-stone-500">
                   {format(new Date(event.date), "EEEE, MMMM d, yyyy")}
                 </p>
                 {event.description && (
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                  <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
                     {event.description}
                   </p>
                 )}

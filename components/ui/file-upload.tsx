@@ -66,7 +66,7 @@ export function FileUpload({
   return (
     <div className="space-y-2">
       <div
-        className={`relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-zinc-300 bg-zinc-50 p-4 transition-colors hover:border-zinc-400 hover:bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 ${
+        className={`relative flex min-h-[140px] cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-stone-300 bg-stone-50 p-4 transition-colors hover:border-zinc-400 hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-900 dark:hover:border-zinc-600 ${
           uploading ? "pointer-events-none opacity-70" : ""
         }`}
         onClick={() => inputRef.current?.click()}
@@ -86,14 +86,14 @@ export function FileUpload({
             className="max-h-32 w-full rounded object-contain"
           />
         ) : uploading ? (
-          <span className="text-sm text-zinc-500">Uploading...</span>
+          <span className="text-sm text-stone-500">Uploading...</span>
         ) : (
           <div className="flex flex-col items-center gap-2 text-center">
-            <ImagePlus className="h-8 w-8 text-zinc-400" />
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            <ImagePlus className="h-8 w-8 text-stone-400" />
+            <span className="text-sm text-stone-600 dark:text-stone-400">
               Click to upload an image
             </span>
-            <span className="text-xs text-zinc-400">JPEG, PNG, WebP up to 5MB</span>
+            <span className="text-xs text-stone-400">JPEG, PNG, WebP up to 5MB</span>
           </div>
         )}
       </div>

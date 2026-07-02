@@ -2,13 +2,15 @@ import { getCurrentProfile } from "@/lib/auth/session";
 import { getStudentByAuthUserId, getTimetableForClass } from "@/lib/db";
 import { TimetableView } from "@/components/portal/timetable-view";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getTranslations } from "next-intl/server";
 
 export default async function StudentTimetablePage() {
+  const t = await getTranslations("student");
   const profile = await getCurrentProfile();
 
   if (!profile) {
     return (
-      <EmptyState title="Not signed in" description="Please log in to view your timetable." />
+      <EmptyState title={t("notSignedIn")} description={t("notSignedInDescTimetable")} />
     );
   }
 
@@ -16,8 +18,8 @@ export default async function StudentTimetablePage() {
   if (!student) {
     return (
       <EmptyState
-        title="No student profile"
-        description="Your account is not linked to a student record."
+        title={t("noStudentProfile")}
+        description={t("noStudentProfileDescShort")}
       />
     );
   }
@@ -27,18 +29,18 @@ export default async function StudentTimetablePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Timetable</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("timetableTitle")}</h1>
+        <p className="mt-1 text-sm text-stone-500">
           {student.class_name
-            ? `Weekly schedule for ${student.class_name}`
-            : "Your weekly class schedule (read-only)."}
+            ? t("weeklyScheduleFor", { className: student.class_name })
+            : t("timetableSubtitle")}
         </p>
       </div>
 
       {!student.class_id ? (
         <EmptyState
-          title="No class assigned"
-          description="You are not assigned to a class yet. Contact the school."
+          title={t("noClassAssigned")}
+          description={t("noClassAssignedDesc")}
         />
       ) : (
         <TimetableView slots={slots} />

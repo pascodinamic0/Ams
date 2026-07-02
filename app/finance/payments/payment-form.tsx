@@ -57,7 +57,7 @@ function PaymentFormFields({
         <select
           id="invoice_id"
           {...register("invoice_id")}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
           <option value="">Select invoice</option>
           {openInvoices.map((inv) => (
@@ -78,7 +78,7 @@ function PaymentFormFields({
         <select
           id="method"
           {...register("method")}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
           <option value="cash">Cash</option>
           <option value="bank_transfer">Bank transfer</option>

@@ -39,7 +39,7 @@ export default async function PendingPage() {
   const isSuspended = schoolStatus === "suspended";
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 dark:bg-[#0a0f1e]">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-stone-50 px-4 dark:bg-[#0c1222]">
       <PendingApprovalCard schoolName={schoolName} isSuspended={isSuspended} />
     </div>
   );

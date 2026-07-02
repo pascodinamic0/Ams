@@ -106,7 +106,7 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
       <Card>
         <CardHeader>
           <CardTitle>Student onboarding</CardTitle>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-stone-500 dark:text-stone-400">
             Register the child and their guardian(s) in one step.
           </p>
         </CardHeader>
@@ -143,9 +143,9 @@ function FormSection({
   return (
     <section className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{title}</h3>
+        <h3 className="text-sm font-semibold text-stone-900 dark:text-white">{title}</h3>
         {description && (
-          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{description}</p>
+          <p className="mt-0.5 text-xs text-stone-500 dark:text-stone-400">{description}</p>
         )}
       </div>
       <div className="space-y-4">{children}</div>
@@ -176,7 +176,7 @@ function Field({
       {children}
       {error && <p className="text-sm text-red-500">{error}</p>}
       {hint && !error && (
-        <p className="text-xs text-slate-500 dark:text-slate-400">{hint}</p>
+        <p className="text-xs text-stone-500 dark:text-stone-400">{hint}</p>
       )}
     </div>
   );
@@ -278,7 +278,7 @@ function StudentFormFields({
         </div>
       </FormSection>
 
-      <div className="border-t border-slate-200 dark:border-slate-800" />
+      <div className="border-t border-stone-200 dark:border-stone-800" />
 
       <FormSection title="Enrollment" description="Class and status">
         <div className="grid gap-4 sm:grid-cols-2">
@@ -304,13 +304,13 @@ function StudentFormFields({
         </div>
       </FormSection>
 
-      <div className="border-t border-slate-200 dark:border-slate-800" />
+      <div className="border-t border-stone-200 dark:border-stone-800" />
 
       <FormSection title="Child home & health" description="Where the child lives and any care notes">
-        <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+        <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
           <input
             type="checkbox"
-            className="rounded border-slate-300"
+            className="rounded border-stone-300"
             {...register("same_address_as_guardian")}
             onChange={(e) => {
               register("same_address_as_guardian").onChange(e);
@@ -338,7 +338,7 @@ function StudentFormFields({
         </Field>
       </FormSection>
 
-      <div className="border-t border-slate-200 dark:border-slate-800" />
+      <div className="border-t border-stone-200 dark:border-stone-800" />
 
       <FormSection title="Primary guardian" description="Parent or guardian responsible for this child">
         {existingGuardians.length > 0 && (
@@ -354,7 +354,7 @@ function StudentFormFields({
               error={!!errors.existing_guardian_id}
               {...register("existing_guardian_id")}
             />
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-stone-500 dark:text-stone-400">
               Choose an existing guardian when enrolling a sibling.
             </p>
           </Field>
@@ -364,13 +364,13 @@ function StudentFormFields({
         )}
       </FormSection>
 
-      <div className="border-t border-slate-200 dark:border-slate-800" />
+      <div className="border-t border-stone-200 dark:border-stone-800" />
 
       <FormSection title="Second guardian" description="Optional additional contact">
-        <label className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
+        <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
           <input
             type="checkbox"
-            className="rounded border-slate-300"
+            className="rounded border-stone-300"
             {...register("add_secondary_guardian")}
           />
           Add a second guardian

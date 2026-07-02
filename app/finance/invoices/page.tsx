@@ -3,6 +3,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getInvoices, getStudents, getFeeStructures } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { getTranslations } from "next-intl/server";
 import { InvoiceForm } from "./invoice-form";
 import { InvoiceFilters } from "./invoice-filters";
 
@@ -11,6 +12,8 @@ export default async function InvoicesPage({
 }: {
   searchParams: Promise<{ status?: string; search?: string }>;
 }) {
+  const t = await getTranslations("finance");
+  const tc = await getTranslations("common");
   const params = await searchParams;
   const profile = await getCurrentProfile();
   const scope = {
@@ -30,7 +33,7 @@ export default async function InvoicesPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Invoices</h1>
+      <h1 className="text-2xl font-bold">{t("invoicesTitle")}</h1>
       <InvoiceForm
         students={students.map((s) => ({
           id: s.id,
@@ -48,21 +51,21 @@ export default async function InvoicesPage({
       </Suspense>
       {invoices.length === 0 ? (
         <EmptyState
-          title="No invoices yet"
-          description="Create fee structures and generate invoices for students"
+          title={t("noInvoices")}
+          description={t("noInvoicesDesc")}
         />
       ) : (
         <DataTable
           data={invoices}
           columns={[
-            { id: "student_id", header: "Student ID", accessorKey: "student_id", sortable: true },
-            { id: "student_name", header: "Student", accessorKey: "student_name", sortable: true },
-            { id: "fee_structure_name", header: "Fee type", accessorKey: "fee_structure_name" },
-            { id: "amount", header: "Amount", accessorKey: "amount", sortable: true },
-            { id: "amount_paid", header: "Paid", accessorKey: "amount_paid" },
-            { id: "balance", header: "Balance", accessorKey: "balance", sortable: true },
-            { id: "due_date", header: "Due Date", accessorKey: "due_date", sortable: true },
-            { id: "status", header: "Status", accessorKey: "status" },
+            { id: "student_id", header: t("colStudentId"), accessorKey: "student_id", sortable: true },
+            { id: "student_name", header: t("colStudent"), accessorKey: "student_name", sortable: true },
+            { id: "fee_structure_name", header: t("colFeeType"), accessorKey: "fee_structure_name" },
+            { id: "amount", header: tc("amount"), accessorKey: "amount", sortable: true },
+            { id: "amount_paid", header: tc("paid"), accessorKey: "amount_paid" },
+            { id: "balance", header: tc("balance"), accessorKey: "balance", sortable: true },
+            { id: "due_date", header: t("colDueDate"), accessorKey: "due_date", sortable: true },
+            { id: "status", header: tc("status"), accessorKey: "status" },
           ]}
         />
       )}

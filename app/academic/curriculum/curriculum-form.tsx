@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,6 +20,8 @@ interface Props {
 }
 
 export function CurriculumForm({ branchId, subjects, editing, onCancelEdit }: Props) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [grade, setGrade] = useState(editing?.grade ?? "");
   const [subjectId, setSubjectId] = useState(editing?.subject_id ?? "");
@@ -44,12 +47,12 @@ export function CurriculumForm({ branchId, subjects, editing, onCancelEdit }: Pr
 
     if (result.error) {
       toast.error(
-        typeof result.error === "string" ? result.error : "Failed to save curriculum entry"
+        typeof result.error === "string" ? result.error : t("curriculumSaveFailed")
       );
       return;
     }
 
-    toast.success(editing ? "Curriculum updated" : "Curriculum entry created");
+    toast.success(editing ? t("curriculumUpdated") : t("curriculumCreated"));
     if (!editing) {
       setGrade("");
       setSubjectId("");
@@ -62,28 +65,28 @@ export function CurriculumForm({ branchId, subjects, editing, onCancelEdit }: Pr
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid gap-3 rounded-lg border border-slate-200 p-4 dark:border-slate-700 sm:grid-cols-2 lg:grid-cols-4"
+      className="grid gap-3 rounded-lg border border-stone-200 p-4 dark:border-stone-700 sm:grid-cols-2 lg:grid-cols-4"
     >
       <div>
-        <Label htmlFor="curriculum-grade">Grade</Label>
+        <Label htmlFor="curriculum-grade">{t("grade")}</Label>
         <Input
           id="curriculum-grade"
           value={grade}
           onChange={(e) => setGrade(e.target.value)}
-          placeholder="e.g. Grade 5"
+          placeholder={t("gradePlaceholder")}
           required
         />
       </div>
       <div>
-        <Label htmlFor="curriculum-subject">Subject</Label>
+        <Label htmlFor="curriculum-subject">{t("subject")}</Label>
         <select
           id="curriculum-subject"
           value={subjectId}
           onChange={(e) => setSubjectId(e.target.value)}
           required
-          className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
-          <option value="">Select subject</option>
+          <option value="">{t("selectSubject")}</option>
           {subjects.map((s) => (
             <option key={s.id} value={s.id}>
               {s.name}
@@ -92,21 +95,21 @@ export function CurriculumForm({ branchId, subjects, editing, onCancelEdit }: Pr
         </select>
       </div>
       <div className="sm:col-span-2 lg:col-span-1">
-        <Label htmlFor="curriculum-syllabus">Syllabus</Label>
+        <Label htmlFor="curriculum-syllabus">{t("syllabus")}</Label>
         <Input
           id="curriculum-syllabus"
           value={syllabus}
           onChange={(e) => setSyllabus(e.target.value)}
-          placeholder="Optional syllabus notes"
+          placeholder={t("syllabusPlaceholder")}
         />
       </div>
       <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-1">
         <Button type="submit" disabled={loading || subjects.length === 0} className="flex-1">
-          {editing ? "Update entry" : "Add entry"}
+          {editing ? t("updateEntry") : t("addEntry")}
         </Button>
         {editing && onCancelEdit && (
           <Button type="button" variant="outline" onClick={onCancelEdit}>
-            Cancel
+            {tc("cancel")}
           </Button>
         )}
       </div>

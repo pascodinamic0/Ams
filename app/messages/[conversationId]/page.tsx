@@ -58,9 +58,9 @@ export default async function ConversationPage({ params }: PageProps) {
 
   return (
     <div className="flex h-[calc(100vh-8rem)] gap-4 overflow-hidden">
-      <div className="hidden w-72 shrink-0 flex-col rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900 lg:flex">
-        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
-          <h2 className="font-semibold text-slate-900 dark:text-white">{t("conversations")}</h2>
+      <div className="hidden w-72 shrink-0 flex-col rounded-xl border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900 lg:flex">
+        <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3 dark:border-stone-700">
+          <h2 className="font-semibold text-stone-900 dark:text-white">{t("conversations")}</h2>
           <NewConversationButton
             role={role}
             schoolId={schoolId}
@@ -77,23 +77,23 @@ export default async function ConversationPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-        <div className="flex items-center gap-3 border-b border-slate-200 px-5 py-3.5 dark:border-slate-700">
+      <div className="flex flex-1 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900">
+        <div className="flex items-center gap-3 border-b border-stone-200 px-5 py-3.5 dark:border-stone-700">
           <Link
             href="/messages"
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 lg:hidden"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-light text-sm font-semibold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
             {conv.title.charAt(0).toUpperCase()}
           </div>
           <div>
-            <p className="font-semibold text-slate-900 dark:text-white">{conv.title}</p>
+            <p className="font-semibold text-stone-900 dark:text-white">{conv.title}</p>
             {conv.student_name && (
-              <p className="text-xs text-slate-500">{t("studentLabel", { name: conv.student_name })}</p>
+              <p className="text-xs text-stone-500">{t("studentLabel", { name: conv.student_name })}</p>
             )}
           </div>
           <div className="ml-auto flex items-center gap-2">
@@ -101,7 +101,7 @@ export default async function ConversationPage({ params }: PageProps) {
               <div
                 key={p.profile_id}
                 title={`${p.name} (${p.role})`}
-                className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-600 dark:bg-slate-700 dark:text-slate-300"
+                className="flex h-7 w-7 items-center justify-center rounded-full bg-stone-200 text-xs font-semibold text-stone-600 dark:bg-stone-700 dark:text-stone-300"
               >
                 {p.name.charAt(0)}
               </div>

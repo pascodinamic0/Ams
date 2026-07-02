@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -21,6 +22,8 @@ interface Props {
 }
 
 export function AttendanceSheet({ classes, initialClassId, initialDate, records }: Props) {
+  const t = useTranslations("teacher");
+  const tc = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
@@ -59,17 +62,17 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
 
     if (typeof navigator !== "undefined" && !navigator.onLine) {
       await queueAttendanceSave(payload);
-      toast.success("Saved offline — will sync when you're back online");
+      toast.success(t("saveAttendanceOffline"));
       return;
     }
 
     startTransition(async () => {
       const result = await saveAttendance(payload);
       if (result.error) {
-        toast.error(typeof result.error === "string" ? result.error : "Failed to save attendance");
+        toast.error(typeof result.error === "string" ? result.error : t("saveAttendanceFailed"));
         return;
       }
-      toast.success("Attendance saved");
+      toast.success(t("attendanceSaved"));
       router.refresh();
     });
   }
@@ -88,18 +91,18 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
         records: presentRecords,
       });
       setStatuses(Object.fromEntries(records.map((r) => [r.student_id, "present" as const])));
-      toast.success("Marked all present offline — will sync when you're back online");
+      toast.success(t("markAllPresentOffline"));
       return;
     }
 
     startTransition(async () => {
       const result = await markAllPresent(classId, dateStr);
       if (result.error) {
-        toast.error(typeof result.error === "string" ? result.error : "Failed to mark all present");
+        toast.error(typeof result.error === "string" ? result.error : t("markAllPresentFailed"));
         return;
       }
       setStatuses(Object.fromEntries(records.map((r) => [r.student_id, "present" as const])));
-      toast.success("All students marked present");
+      toast.success(t("allStudentsMarkedPresent"));
       router.refresh();
     });
   }
@@ -108,12 +111,12 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
     <div className="space-y-4">
       <div className="flex flex-wrap gap-4">
         <div>
-          <Label htmlFor="class-select">Class</Label>
+          <Label htmlFor="class-select">{t("classLabel")}</Label>
           <select
             id="class-select"
             value={classId}
             onChange={(e) => updateParams("class", e.target.value)}
-            className="mt-1 w-full min-w-[180px] rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+            className="mt-1 w-full min-w-[180px] rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           >
             {classes.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
@@ -121,7 +124,7 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
           </select>
         </div>
         <div>
-          <Label>Date</Label>
+          <Label>{tc("date")}</Label>
           <div className="mt-1">
             <DatePicker
               value={selectedDate}
@@ -140,32 +143,32 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
 
       <div className="flex flex-wrap gap-2">
         <Button size="sm" onClick={handleSave} disabled={pending || !classId}>
-          Save attendance
+          {t("saveAttendance")}
         </Button>
         <Button size="sm" variant="outline" onClick={handleMarkAllPresent} disabled={pending || !classId}>
-          Mark all present
+          {t("markAllPresent")}
         </Button>
       </div>
 
       {records.length === 0 ? (
-        <p className="text-sm text-slate-500">No students in this class.</p>
+        <p className="text-sm text-stone-500">{t("noStudentsInClass")}</p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border dark:border-slate-700">
+        <div className="overflow-x-auto rounded-lg border dark:border-stone-700">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 dark:bg-slate-800">
+            <thead className="bg-stone-50 dark:bg-stone-800">
               <tr>
-                <th className="px-4 py-2 text-left font-medium">Student</th>
-                <th className="px-4 py-2 text-left font-medium">ID</th>
-                <th className="px-4 py-2 text-left font-medium">Status</th>
+                <th className="px-4 py-2 text-left font-medium">{t("studentCol")}</th>
+                <th className="px-4 py-2 text-left font-medium">{t("idCol")}</th>
+                <th className="px-4 py-2 text-left font-medium">{tc("status")}</th>
               </tr>
             </thead>
             <tbody>
               {records.map((r) => {
                 const status = statuses[r.student_id] ?? r.status;
                 return (
-                  <tr key={r.student_id} className="border-t dark:border-slate-700">
+                  <tr key={r.student_id} className="border-t dark:border-stone-700">
                     <td className="px-4 py-2">{r.student_name}</td>
-                    <td className="px-4 py-2 text-slate-500">{r.student_number ?? "—"}</td>
+                    <td className="px-4 py-2 text-stone-500">{r.student_number ?? tc("emptyDash")}</td>
                     <td className="px-4 py-2">
                       <button
                         type="button"
@@ -176,7 +179,7 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
                             : "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300"
                         }`}
                       >
-                        {status === "present" ? "Present" : "Absent"}
+                        {status === "present" ? t("present") : t("absent")}
                       </button>
                     </td>
                   </tr>

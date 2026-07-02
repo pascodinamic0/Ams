@@ -45,7 +45,7 @@ export function BranchForm({ schools }: Props) {
 
   if (schools.length === 0) {
     return (
-      <p className="text-sm text-zinc-500">Add a school before creating branches.</p>
+      <p className="text-sm text-stone-500">Add a school before creating branches.</p>
     );
   }
 

@@ -3,12 +3,15 @@ import { Chart } from "@/components/ui/chart";
 import { ExportButton } from "@/components/ui/export-button";
 import { getFinanceAnalytics } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { getTranslations } from "next-intl/server";
 
 function formatCurrency(value: number) {
   return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
 export default async function AnalyticsFinancePage() {
+  const t = await getTranslations("analytics");
+  const tf = await getTranslations("finance");
   const profile = await getCurrentProfile();
   const data = await getFinanceAnalytics({
     schoolId: profile?.school_id ?? undefined,
@@ -16,24 +19,24 @@ export default async function AnalyticsFinancePage() {
   });
 
   const kpis = [
-    { label: "Outstanding", value: formatCurrency(data.kpis.outstanding) },
-    { label: "Collected", value: formatCurrency(data.kpis.collected) },
-    { label: "Overdue", value: formatCurrency(data.kpis.overdue) },
-    { label: "Invoices", value: data.kpis.invoiceCount },
+    { label: tf("outstanding"), value: formatCurrency(data.kpis.outstanding) },
+    { label: tf("collected"), value: formatCurrency(data.kpis.collected) },
+    { label: tf("overdue"), value: formatCurrency(data.kpis.overdue) },
+    { label: tf("invoicesKpi"), value: data.kpis.invoiceCount },
   ];
 
   return (
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Financial Reports</h1>
-          <p className="mt-1 text-sm text-slate-500">Revenue trends and fee collection analytics</p>
+          <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("financeTitle")}</h1>
+          <p className="mt-1 text-sm text-stone-500">{t("financeAnalyticsSubtitle")}</p>
         </div>
         <ExportButton
           data={data.exportRows}
           columns={[
-            { key: "month", label: "Month" },
-            { key: "collected", label: "Collected" },
+            { key: "month", label: t("colMonth") },
+            { key: "collected", label: t("colCollected") },
           ]}
           filename="finance-analytics"
         />
@@ -43,7 +46,7 @@ export default async function AnalyticsFinancePage() {
         {kpis.map((kpi) => (
           <Card key={kpi.label}>
             <CardContent className="p-6">
-              <p className="text-sm text-slate-500">{kpi.label}</p>
+              <p className="text-sm text-stone-500">{kpi.label}</p>
               <p className="mt-2 text-2xl font-bold">{kpi.value}</p>
             </CardContent>
           </Card>
@@ -56,21 +59,21 @@ export default async function AnalyticsFinancePage() {
           type="bar"
           xKey="name"
           yKeys={["collected", "outstanding"]}
-          title="Revenue vs outstanding (6 months)"
+          title={t("chartRevenueOutstanding")}
         />
         <Chart
           data={data.feeStatusBreakdown}
           type="pie"
           dataKey="value"
           nameKey="name"
-          title="Fee status breakdown"
+          title={t("chartFeeStatus")}
         />
         <Chart
           data={data.monthlyCollection}
           type="line"
           xKey="name"
           yKey="value"
-          title="Fee collection trend"
+          title={t("chartCollectionTrend")}
         />
       </div>
     </div>

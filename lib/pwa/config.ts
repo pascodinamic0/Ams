@@ -1,8 +1,8 @@
 import { companyIdentity } from "@/lib/company/identity";
 import type { MetadataRoute } from "next";
 
-export const pwaThemeColor = "#4f46e5";
-export const pwaBackgroundColor = "#ffffff";
+export const pwaThemeColor = companyIdentity.brand.primary;
+export const pwaBackgroundColor = companyIdentity.brand.background;
 
 const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512] as const;
 

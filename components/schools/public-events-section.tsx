@@ -29,7 +29,7 @@ export function PublicEventsSection({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Upcoming events</h2>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+          <p className="mt-2 text-stone-600 dark:text-stone-400">
             School events you can attend or register for online.
           </p>
         </div>
@@ -45,17 +45,17 @@ export function PublicEventsSection({
         {bookable.map((event) => (
           <article
             key={event.id}
-            className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950"
+            className="rounded-2xl border border-stone-200 bg-white p-5 dark:border-stone-800 dark:bg-stone-950"
           >
-            <p className="text-xs font-medium uppercase tracking-widest text-zinc-400">
+            <p className="text-xs font-medium uppercase tracking-widest text-stone-400">
               {formatEventDate(event.date, event.start_time)}
             </p>
             <h3 className="mt-2 text-lg font-semibold">{event.title}</h3>
             {event.location && (
-              <p className="mt-1 text-sm text-zinc-500">{event.location}</p>
+              <p className="mt-1 text-sm text-stone-500">{event.location}</p>
             )}
             {event.description && (
-              <p className="mt-3 line-clamp-3 text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="mt-3 line-clamp-3 text-sm text-stone-600 dark:text-stone-400">
                 {event.description}
               </p>
             )}

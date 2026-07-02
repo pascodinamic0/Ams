@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { OnboardingStepper } from "@/components/ui/onboarding-stepper";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,31 +18,34 @@ import {
 } from "@/lib/schools/website-templates";
 
 const THEME_COLORS: Record<string, { primary: string; secondary: string }> = {
+  teal: { primary: "#0d9488", secondary: "#0f766e" },
   blue: { primary: "#3b82f6", secondary: "#1d4ed8" },
   green: { primary: "#22c55e", secondary: "#15803d" },
   navy: { primary: "#1e3a8a", secondary: "#172554" },
   burgundy: { primary: "#881337", secondary: "#4c0519" },
-  indigo: { primary: "#4f46e5", secondary: "#7c3aed" },
+  amber: { primary: "#f59e0b", secondary: "#d97706" },
 };
 
-const STEPS = [
-  { id: "1", title: "School details" },
-  { id: "2", title: "Domain" },
-  { id: "3", title: "Colors" },
-  { id: "4", title: "Website template" },
-];
-
 function NewSchoolForm() {
+  const t = useTranslations("admin");
+  const tc = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const templateParam = searchParams.get("template");
+
+  const STEPS = [
+    { id: "1", title: t("stepSchoolDetails") },
+    { id: "2", title: t("stepDomain") },
+    { id: "3", title: t("stepColors") },
+    { id: "4", title: t("stepWebsiteTemplate") },
+  ];
 
   const [step, setStep] = useState(0);
   const [form, setForm] = useState({
     name: "",
     admin_email: "",
     domain: "",
-    theme: "blue",
+    theme: "teal",
     template: "modern" as WebsiteTemplateId,
   });
 
@@ -53,13 +57,13 @@ function NewSchoolForm() {
         setForm((f) => ({
           ...f,
           template: templateParam,
-          theme: templateParam === "modern" ? "indigo" : f.theme,
+          theme: templateParam === "modern" ? "teal" : f.theme,
         }));
       }
     }
   }, [templateParam]);
 
-  const colors = THEME_COLORS[form.theme] ?? THEME_COLORS.blue;
+  const colors = THEME_COLORS[form.theme] ?? THEME_COLORS.teal;
   const selectedTemplate = getWebsiteTemplate(form.template);
 
   async function onComplete() {
@@ -75,33 +79,31 @@ function NewSchoolForm() {
       toast.error(result.error);
       return;
     }
-    const slug = result.data?.slug ?? form.name.toLowerCase().replace(/\s/g, "-");
-    toast.success("School created. Enable their public site from the academic dashboard when ready.");
+    toast.success(t("schoolCreatedToast"));
     router.push("/admin/schools");
   }
 
   return (
     <div className={step === 3 ? "mx-auto max-w-5xl" : "mx-auto max-w-2xl"}>
       <div className="mb-6 flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Add School</h1>
+        <h1 className="text-2xl font-bold">{t("newSchoolTitle")}</h1>
         <Link
           href="/admin/websites"
-          className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
+          className="text-sm text-primary hover:underline dark:text-primary"
         >
-          Browse all templates
+          {t("browseAllTemplates")}
         </Link>
       </div>
 
       {selectedTemplate && step === 3 && (
-        <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
-          Choose a pre-built website design. Each template includes a public homepage and
-          admissions path.{" "}
+        <p className="mb-4 text-sm text-stone-600 dark:text-stone-400">
+          {t("templatePickerHint")}{" "}
           <Link
             href={selectedTemplate.previewPath}
             target="_blank"
-            className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+            className="font-medium text-primary hover:underline dark:text-primary"
           >
-            Preview {selectedTemplate.name}
+            {t("previewTemplate", { name: selectedTemplate.name })}
           </Link>
         </p>
       )}
@@ -116,14 +118,14 @@ function NewSchoolForm() {
         {step === 0 && (
           <div className="space-y-4">
             <div>
-              <Label>School name</Label>
+              <Label>{t("schoolNameLabel")}</Label>
               <Input
                 value={form.name}
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               />
             </div>
             <div>
-              <Label>Admin email</Label>
+              <Label>{t("adminEmailLabel")}</Label>
               <Input
                 type="email"
                 value={form.admin_email}
@@ -134,27 +136,28 @@ function NewSchoolForm() {
         )}
         {step === 1 && (
           <div>
-            <Label>Custom domain (optional)</Label>
+            <Label>{t("customDomainLabel")}</Label>
             <Input
-              placeholder="www.school.edu"
+              placeholder={t("customDomainPlaceholder")}
               value={form.domain}
               onChange={(e) => setForm((f) => ({ ...f, domain: e.target.value }))}
             />
-            <p className="mt-2 text-sm text-zinc-500">
-              We&apos;ll provide DNS instructions to connect
+            <p className="mt-2 text-sm text-stone-500">
+              {t("dnsInstructions")}
             </p>
           </div>
         )}
         {step === 2 && (
           <div>
-            <Label>Color palette</Label>
+            <Label>{t("colorPaletteLabel")}</Label>
             <Select
               options={[
-                { value: "blue", label: "Blue" },
-                { value: "indigo", label: "Indigo" },
-                { value: "green", label: "Green" },
-                { value: "navy", label: "Navy" },
-                { value: "burgundy", label: "Burgundy" },
+                { value: "teal", label: t("themeTeal") },
+                { value: "blue", label: t("themeBlue") },
+                { value: "green", label: t("themeGreen") },
+                { value: "navy", label: t("themeNavy") },
+                { value: "burgundy", label: t("themeBurgundy") },
+                { value: "amber", label: t("themeAmber") },
               ]}
               value={form.theme}
               onChange={(e) => setForm((f) => ({ ...f, theme: e.target.value }))}
@@ -168,7 +171,7 @@ function NewSchoolForm() {
                 className="h-10 w-10 rounded-lg border"
                 style={{ backgroundColor: colors.secondary }}
               />
-              <span className="text-sm text-zinc-500">Preview of your brand colors</span>
+              <span className="text-sm text-stone-500">{t("colorPreview")}</span>
             </div>
           </div>
         )}
@@ -186,8 +189,10 @@ function NewSchoolForm() {
 }
 
 export default function NewSchoolPage() {
+  const tc = useTranslations("common");
+
   return (
-    <Suspense fallback={<div className="mx-auto max-w-2xl animate-pulse">Loading...</div>}>
+    <Suspense fallback={<div className="mx-auto max-w-2xl animate-pulse">{tc("loading")}</div>}>
       <NewSchoolForm />
     </Suspense>
   );

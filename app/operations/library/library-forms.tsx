@@ -102,7 +102,7 @@ export function IssueBookForm({ books, students }: IssueFormProps) {
 
   if (availableBooks.length === 0 || students.length === 0) {
     return (
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-stone-500">
         Add books with available copies and students before issuing.
       </p>
     );
@@ -115,7 +115,7 @@ export function IssueBookForm({ books, students }: IssueFormProps) {
         <select
           value={bookId}
           onChange={(e) => setBookId(e.target.value)}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           required
         >
           {availableBooks.map((b) => (
@@ -130,7 +130,7 @@ export function IssueBookForm({ books, students }: IssueFormProps) {
         <select
           value={studentId}
           onChange={(e) => setStudentId(e.target.value)}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           required
         >
           {students.map((s) => (

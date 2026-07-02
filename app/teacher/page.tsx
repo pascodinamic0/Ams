@@ -10,7 +10,7 @@ export default async function TeacherDashboard() {
   const t = await getTranslations("teacher");
   const profile = await getCurrentProfile();
   if (!profile) {
-    return <p className="text-sm text-slate-500">{t("signInRequired")}</p>;
+    return <p className="text-sm text-stone-500">{t("signInRequired")}</p>;
   }
 
   const [classes, schedule] = await Promise.all([
@@ -26,7 +26,7 @@ export default async function TeacherDashboard() {
       <div>
         <h1 className="text-2xl font-bold">{t("title")}</h1>
         {profile.name && (
-          <p className="mt-1 text-sm text-slate-500">{t("welcomeBack", { name: profile.name })}</p>
+          <p className="mt-1 text-sm text-stone-500">{t("welcomeBack", { name: profile.name })}</p>
         )}
       </div>
 
@@ -37,28 +37,28 @@ export default async function TeacherDashboard() {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{classes.length}</p>
-            <p className="text-sm text-slate-500">{t("studentsTotal", { count: totalStudents })}</p>
+            <p className="text-sm text-stone-500">{t("studentsTotal", { count: totalStudents })}</p>
           </CardContent>
         </Card>
 
         <Card className="sm:col-span-2">
           <CardHeader>
             <CardTitle>{t("todaysSchedule")}</CardTitle>
-            <p className="text-sm font-normal text-slate-500">{todayLabel}</p>
+            <p className="text-sm font-normal text-stone-500">{todayLabel}</p>
           </CardHeader>
           <CardContent>
             {schedule.length === 0 ? (
-              <p className="text-sm text-slate-500">{t("noClassesToday")}</p>
+              <p className="text-sm text-stone-500">{t("noClassesToday")}</p>
             ) : (
               <ul className="space-y-2">
                 {schedule.map((slot) => (
                   <li
                     key={slot.id}
-                    className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm dark:border-slate-700"
+                    className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm dark:border-stone-700"
                   >
                     <span className="font-medium">{t("period", { period: slot.period })}</span>
                     <span>{slot.class_name}</span>
-                    <span className="text-slate-500">{slot.subject_name ?? "—"}</span>
+                    <span className="text-stone-500">{slot.subject_name ?? "—"}</span>
                   </li>
                 ))}
               </ul>

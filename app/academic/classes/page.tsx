@@ -2,9 +2,12 @@ import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getClasses, getSections } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { getTranslations } from "next-intl/server";
 import { ClassForm } from "./class-form";
 
 export default async function ClassesPage() {
+  const t = await getTranslations("academic");
+  const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   const branchId = profile?.branch_id ?? "";
   const [classes, sections] = await Promise.all([
@@ -14,22 +17,22 @@ export default async function ClassesPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Classes</h1>
+      <h1 className="text-2xl font-bold">{t("classesTitle")}</h1>
       {branchId ? (
         <ClassForm branchId={branchId} sections={sections.map((s) => ({ id: s.id, name: s.name }))} />
       ) : (
-        <p className="text-sm text-slate-500">Link your account to a school to manage classes.</p>
+        <p className="text-sm text-stone-500">{t("linkSchoolForClasses")}</p>
       )}
       {classes.length === 0 ? (
-        <EmptyState title="No classes yet" description="Create your first class above" />
+        <EmptyState title={t("noClassesYet")} description={t("createFirstClass")} />
       ) : (
         <DataTable
           data={classes}
           columns={[
-            { id: "name", header: "Name", accessorKey: "name", sortable: true },
-            { id: "grade", header: "Grade", accessorKey: "grade" },
-            { id: "section", header: "Section", accessorKey: "section_name" },
-            { id: "capacity", header: "Capacity", accessorKey: "capacity" },
+            { id: "name", header: tc("name"), accessorKey: "name", sortable: true },
+            { id: "grade", header: t("grade"), accessorKey: "grade" },
+            { id: "section", header: t("sectionsTitle"), accessorKey: "section_name" },
+            { id: "capacity", header: t("capacity"), accessorKey: "capacity" },
           ]}
         />
       )}

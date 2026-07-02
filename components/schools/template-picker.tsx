@@ -30,10 +30,10 @@ export function TemplatePicker({
         return (
           <div
             key={template.id}
-            className={`group relative flex flex-col overflow-hidden rounded-2xl border-2 bg-white transition-all dark:bg-zinc-950 ${
+            className={`group relative flex flex-col overflow-hidden rounded-2xl border-2 bg-white transition-all dark:bg-stone-950 ${
               selected
-                ? "border-indigo-600 shadow-lg shadow-indigo-600/10 dark:border-indigo-400"
-                : "border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700"
+                ? "border-primary shadow-lg shadow-primary/10 dark:border-primary"
+                : "border-stone-200 hover:border-stone-300 dark:border-stone-800 dark:hover:border-stone-700"
             }`}
           >
             <button
@@ -44,7 +44,7 @@ export function TemplatePicker({
               <div className="relative p-4 pb-0">
                 <TemplateLivePreview template={template.id} />
                 {selected && (
-                  <span className="absolute right-6 top-6 flex h-7 w-7 items-center justify-center rounded-full bg-indigo-600 text-white shadow-md">
+                  <span className="absolute right-6 top-6 flex h-7 w-7 items-center justify-center rounded-full bg-primary text-white shadow-md">
                     <Check className="h-4 w-4" />
                   </span>
                 )}
@@ -53,22 +53,22 @@ export function TemplatePicker({
               <div className="flex flex-1 flex-col p-5">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
+                    <h3 className="font-semibold text-stone-900 dark:text-stone-100">
                       {template.name}
                     </h3>
-                    <p className="text-sm text-indigo-600 dark:text-indigo-400">
+                    <p className="text-sm text-primary dark:text-primary">
                       {template.tagline}
                     </p>
                   </div>
                 </div>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+                <p className="mt-2 flex-1 text-sm leading-relaxed text-stone-600 dark:text-stone-400">
                   {template.description}
                 </p>
                 <ul className="mt-3 flex flex-wrap gap-1.5">
                   {template.features.map((feature) => (
                     <li
                       key={feature}
-                      className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
+                      className="rounded-full bg-stone-100 px-2.5 py-0.5 text-xs font-medium text-stone-600 dark:bg-stone-800 dark:text-stone-400"
                     >
                       {feature}
                     </li>
@@ -77,12 +77,12 @@ export function TemplatePicker({
               </div>
             </button>
 
-            <div className="flex border-t border-zinc-100 dark:border-zinc-800">
+            <div className="flex border-t border-zinc-100 dark:border-stone-800">
               <Link
                 href={template.previewPath}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-1 items-center justify-center gap-1.5 py-3 text-sm font-medium text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+                className="flex flex-1 items-center justify-center gap-1.5 py-3 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-50 hover:text-stone-900 dark:text-stone-400 dark:hover:bg-stone-900 dark:hover:text-zinc-100"
               >
                 Preview live
                 <ExternalLink className="h-3.5 w-3.5" />
@@ -90,7 +90,7 @@ export function TemplatePicker({
               {showOnboardingLinks && (
                 <Link
                   href={template.onboardingPath}
-                  className="flex flex-1 items-center justify-center border-l border-zinc-100 py-3 text-sm font-medium text-indigo-600 transition-colors hover:bg-indigo-50 dark:border-zinc-800 dark:text-indigo-400 dark:hover:bg-indigo-950/40"
+                  className="flex flex-1 items-center justify-center border-l border-zinc-100 py-3 text-sm font-medium text-primary transition-colors hover:bg-primary-light dark:border-stone-800 dark:text-primary dark:hover:bg-primary-light/40"
                 >
                   Use template
                 </Link>

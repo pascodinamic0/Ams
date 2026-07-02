@@ -30,7 +30,7 @@ function RegistrationActions({
   }
 
   if (status === "cancelled") {
-    return <span className="text-xs text-slate-400">Cancelled</span>;
+    return <span className="text-xs text-stone-400">Cancelled</span>;
   }
 
   return (
@@ -62,7 +62,7 @@ export function EventRegistrationsPanel({
 }) {
   if (registrations.length === 0) {
     return (
-      <p className="text-sm text-slate-500">
+      <p className="text-sm text-stone-500">
         No online bookings yet. Enable booking on events or create campus visit slots for enrollment.
       </p>
     );
@@ -71,7 +71,7 @@ export function EventRegistrationsPanel({
   return (
     <div className="overflow-x-auto rounded-lg border">
       <table className="w-full min-w-[640px] text-left text-sm">
-        <thead className="border-b bg-slate-50 dark:bg-slate-900/50">
+        <thead className="border-b bg-stone-50 dark:bg-stone-900/50">
           <tr>
             <th className="px-4 py-3 font-medium">Event</th>
             <th className="px-4 py-3 font-medium">Enrollment</th>
@@ -87,7 +87,7 @@ export function EventRegistrationsPanel({
             <tr key={row.id}>
               <td className="px-4 py-3">
                 <p className="font-medium">{row.event_title}</p>
-                <p className="text-xs text-slate-500">{formatDate(row.event_date)}</p>
+                <p className="text-xs text-stone-500">{formatDate(row.event_date)}</p>
                 {row.event_purpose === "campus_visit" && (
                   <span className="mt-1 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/40 dark:text-amber-200">
                     Campus visit
@@ -98,15 +98,15 @@ export function EventRegistrationsPanel({
                 {row.student_name ? (
                   <p className="text-sm">{row.student_name}</p>
                 ) : (
-                  <span className="text-xs text-slate-400">{"\u2014"}</span>
+                  <span className="text-xs text-stone-400">{"\u2014"}</span>
                 )}
               </td>
               <td className="px-4 py-3">{row.registrant_name}</td>
               <td className="px-4 py-3">
                 <p>{row.email}</p>
-                {row.phone && <p className="text-xs text-slate-500">{row.phone}</p>}
+                {row.phone && <p className="text-xs text-stone-500">{row.phone}</p>}
                 {row.notes && (
-                  <p className="mt-1 text-xs text-slate-500 line-clamp-2">{row.notes}</p>
+                  <p className="mt-1 text-xs text-stone-500 line-clamp-2">{row.notes}</p>
                 )}
               </td>
               <td className="px-4 py-3">{row.party_size}</td>

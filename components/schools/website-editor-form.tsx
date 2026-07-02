@@ -57,7 +57,7 @@ function schoolToEditorState(school: SchoolRow): EditorState {
     contact_phone: school.contact_phone ?? "",
     address: school.address ?? "",
     custom_domain: school.custom_domain ?? "",
-    theme_primary_color: school.theme_primary_color ?? "#4f46e5",
+    theme_primary_color: school.theme_primary_color ?? "#0d9488",
     theme_secondary_color: school.theme_secondary_color ?? "#7c3aed",
     website_template: (school.website_template ?? "modern") as WebsiteTemplateId,
     public_site_enabled: school.public_site_enabled ?? true,
@@ -83,10 +83,10 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+    <section className="rounded-2xl border border-stone-200 bg-white p-6 dark:border-stone-800 dark:bg-stone-950">
       <h2 className="text-lg font-semibold">{title}</h2>
       {description && (
-        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{description}</p>
+        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">{description}</p>
       )}
       <div className="mt-5 space-y-4">{children}</div>
     </section>
@@ -175,7 +175,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
         <div>
           <Label>Public URL slug</Label>
           <div className="mt-1 flex items-center gap-2">
-            <span className="text-sm text-zinc-500">/schools/</span>
+            <span className="text-sm text-stone-500">/schools/</span>
             <Input
               value={form.slug}
               onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
@@ -280,9 +280,9 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
 
       <Section title="Programs" description="Highlight key academic and extracurricular offerings.">
         {form.programs.map((program, i) => (
-          <div key={i} className="rounded-xl border border-zinc-100 p-4 dark:border-zinc-800">
+          <div key={i} className="rounded-xl border border-zinc-100 p-4 dark:border-stone-800">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-zinc-500">Program {i + 1}</span>
+              <span className="text-sm font-medium text-stone-500">Program {i + 1}</span>
               <Button
                 type="button"
                 variant="ghost"
@@ -379,9 +379,9 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
 
       <Section title="Photo gallery">
         {form.gallery.map((item, i) => (
-          <div key={i} className="rounded-xl border border-zinc-100 p-4 dark:border-zinc-800">
+          <div key={i} className="rounded-xl border border-zinc-100 p-4 dark:border-stone-800">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-zinc-500">Photo {i + 1}</span>
+              <span className="text-sm font-medium text-stone-500">Photo {i + 1}</span>
               <Button
                 type="button"
                 variant="ghost"
@@ -500,7 +500,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
         />
       </Section>
 
-      <div className="sticky bottom-0 flex items-center gap-3 border-t border-zinc-200 bg-white/95 py-4 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
+      <div className="sticky bottom-0 flex items-center gap-3 border-t border-stone-200 bg-white/95 py-4 backdrop-blur dark:border-stone-800 dark:bg-stone-950/95">
         <Button type="submit" disabled={loading}>
           {loading ? "Saving..." : "Save website"}
         </Button>
@@ -509,7 +509,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
             href={`/schools/${form.slug}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+            className="text-sm font-medium text-primary hover:underline dark:text-primary"
           >
             Preview live site
           </a>

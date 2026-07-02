@@ -58,7 +58,7 @@ export function InstallAppButton() {
 
   if (ios) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+      <div className="rounded-xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300">
         <p className="font-semibold">Install on iPhone or iPad</p>
         <p className="mt-1 inline-flex items-center gap-2">
           Tap <Share className="h-4 w-4" /> Share, then choose{" "}
@@ -73,7 +73,7 @@ export function InstallAppButton() {
       type="button"
       onClick={handleInstall}
       disabled={!deferredPrompt}
-      className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700"
+      className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white hover:bg-primary disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700"
     >
       {deferredPrompt ? (
         <>

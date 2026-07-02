@@ -38,7 +38,7 @@ export function GuardianForm({ schoolId }: { schoolId: string }) {
       <Card>
         <CardHeader>
           <CardTitle>Guardian details</CardTitle>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-stone-500 dark:text-stone-400">
             Contact information and relationship to the student.
           </p>
         </CardHeader>
@@ -75,9 +75,9 @@ function FormSection({
   return (
     <section className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold text-slate-900 dark:text-white">{title}</h3>
+        <h3 className="text-sm font-semibold text-stone-900 dark:text-white">{title}</h3>
         {description && (
-          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{description}</p>
+          <p className="mt-0.5 text-xs text-stone-500 dark:text-stone-400">{description}</p>
         )}
       </div>
       <div className="space-y-4">{children}</div>
@@ -108,7 +108,7 @@ function Field({
       {children}
       {error && <p className="text-sm text-red-500">{error}</p>}
       {hint && !error && (
-        <p className="text-xs text-slate-500 dark:text-slate-400">{hint}</p>
+        <p className="text-xs text-stone-500 dark:text-stone-400">{hint}</p>
       )}
     </div>
   );
@@ -137,7 +137,7 @@ function GuardianFormFields() {
         </div>
       </FormSection>
 
-      <div className="border-t border-slate-200 dark:border-slate-800" />
+      <div className="border-t border-stone-200 dark:border-stone-800" />
 
       <FormSection title="Relationship" description="How this person is related to the student">
         <Field label="Relation to student" htmlFor="relation" error={errors.relation?.message}>

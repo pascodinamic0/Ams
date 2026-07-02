@@ -155,7 +155,7 @@ export function NewConversationButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex h-7 w-7 items-center justify-center rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
+        className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-white hover:bg-primary-hover"
         aria-label={t("newConversation")}
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,13 +166,13 @@ export function NewConversationButton({
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setOpen(false)} />
-          <div className="relative z-10 flex w-full max-w-lg flex-col rounded-2xl bg-white shadow-2xl dark:bg-slate-900">
-            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-700">
-              <h2 className="font-semibold text-slate-900 dark:text-white">{t("newConversationTitle")}</h2>
+          <div className="relative z-10 flex w-full max-w-lg flex-col rounded-2xl bg-white shadow-2xl dark:bg-stone-900">
+            <div className="flex items-center justify-between border-b border-stone-200 px-5 py-4 dark:border-stone-700">
+              <h2 className="font-semibold text-stone-900 dark:text-white">{t("newConversationTitle")}</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="rounded-md p-1.5 text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -182,16 +182,16 @@ export function NewConversationButton({
 
             <div className="max-h-[60vh] flex-1 space-y-4 overflow-y-auto p-5">
               <div>
-                <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">
+                <p className="mb-2 text-sm font-medium text-stone-700 dark:text-stone-300">
                   {selected ? t("contact") : isParent ? t("selectStaffContact") : t("selectParentContact")}
                 </p>
                 {selected ? (
-                  <div className="flex items-center justify-between rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2.5 dark:border-indigo-800 dark:bg-indigo-950/40">
+                  <div className="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-light px-3 py-2.5 dark:border-primary-800 dark:bg-primary-light/40">
                     <div>
-                      <p className="text-sm font-semibold text-indigo-900 dark:text-indigo-100">
+                      <p className="text-sm font-semibold text-teal-900 dark:text-teal-100">
                         {selectedName}
                       </p>
-                      <p className="text-xs text-indigo-600 dark:text-indigo-400">
+                      <p className="text-xs text-primary dark:text-primary">
                         {isParent && selectedStaff
                           ? selectedStaff.context
                           : selectedGuardian
@@ -205,7 +205,7 @@ export function NewConversationButton({
                         setSelectedGuardian(null);
                         setSelectedStaff(null);
                       }}
-                      className="text-xs text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+                      className="text-xs text-primary hover:text-teal-800 dark:text-primary"
                     >
                       {t("change")}
                     </button>
@@ -217,23 +217,23 @@ export function NewConversationButton({
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
-                    <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                    <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-stone-200 dark:border-stone-700">
                       {staffFiltered.length === 0 ? (
-                        <p className="p-4 text-center text-sm text-slate-400">{t("noContactsFound")}</p>
+                        <p className="p-4 text-center text-sm text-stone-400">{t("noContactsFound")}</p>
                       ) : (
                         staffFiltered.map((c) => (
                           <button
                             key={`${c.profile_id}-${c.student_id ?? "general"}`}
                             type="button"
                             onClick={() => setSelectedStaff(c)}
-                            className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800"
+                            className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-stone-50 dark:hover:bg-stone-800"
                           >
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-light text-xs font-bold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
                               {c.name.charAt(0)}
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-slate-900 dark:text-white">{c.name}</p>
-                              <p className="text-xs text-slate-500">{c.context}</p>
+                              <p className="text-sm font-medium text-stone-900 dark:text-white">{c.name}</p>
+                              <p className="text-xs text-stone-500">{c.context}</p>
                             </div>
                           </button>
                         ))
@@ -247,13 +247,13 @@ export function NewConversationButton({
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                     />
-                    <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                    <div className="mt-2 max-h-48 overflow-y-auto rounded-lg border border-stone-200 dark:border-stone-700">
                       {Object.keys(guardianGrouped).length === 0 ? (
-                        <p className="p-4 text-center text-sm text-slate-400">{t("noContactsFound")}</p>
+                        <p className="p-4 text-center text-sm text-stone-400">{t("noContactsFound")}</p>
                       ) : (
                         Object.entries(guardianGrouped).map(([className, members]) => (
                           <div key={className}>
-                            <div className="sticky top-0 bg-slate-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                            <div className="sticky top-0 bg-stone-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-stone-500 dark:bg-stone-800 dark:text-stone-400">
                               {className}
                             </div>
                             {members.map((c) => (
@@ -261,14 +261,14 @@ export function NewConversationButton({
                                 key={`${c.guardian_id}-${c.student_id}`}
                                 type="button"
                                 onClick={() => setSelectedGuardian(c)}
-                                className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-slate-50 dark:hover:bg-slate-800"
+                                className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-stone-50 dark:hover:bg-stone-800"
                               >
-                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+                                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-light text-xs font-bold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
                                   {c.name.charAt(0)}
                                 </div>
                                 <div>
-                                  <p className="text-sm font-medium text-slate-900 dark:text-white">{c.name}</p>
-                                  <p className="text-xs text-slate-500">
+                                  <p className="text-sm font-medium text-stone-900 dark:text-white">{c.name}</p>
+                                  <p className="text-xs text-stone-500">
                                     {c.student_name} · {c.relation}
                                   </p>
                                 </div>
@@ -289,19 +289,19 @@ export function NewConversationButton({
 
               {selected && (
                 <div>
-                  <p className="mb-2 text-sm font-medium text-slate-700 dark:text-slate-300">{t("message")}</p>
+                  <p className="mb-2 text-sm font-medium text-stone-700 dark:text-stone-300">{t("message")}</p>
                   <textarea
                     rows={4}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder={t("writeFirstMessage", { name: selectedName ?? "" })}
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
+                    className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500"
                   />
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-end gap-3 border-t border-slate-200 px-5 py-4 dark:border-slate-700">
+            <div className="flex items-center justify-end gap-3 border-t border-stone-200 px-5 py-4 dark:border-stone-700">
               <Button variant="ghost" onClick={() => setOpen(false)} disabled={loading}>
                 {t("cancel")}
               </Button>

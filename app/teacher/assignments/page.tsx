@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { getTranslations } from "next-intl/server";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/lib/auth/session";
@@ -7,9 +8,11 @@ import { AssignmentForm } from "./assignment-form";
 import { DeleteAssignmentButton } from "./delete-button";
 
 export default async function AssignmentsPage() {
+  const t = await getTranslations("teacher");
+  const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   if (!profile) {
-    return <p className="text-sm text-slate-500">Please sign in to manage assignments.</p>;
+    return <p className="text-sm text-stone-500">{t("signInRequiredAssignments")}</p>;
   }
 
   const [classes, assignments] = await Promise.all([
@@ -20,31 +23,34 @@ export default async function AssignmentsPage() {
     ...row,
     due_date_display: row.due_date
       ? format(new Date(row.due_date as string), "MMM d, yyyy")
-      : "—",
-    submissions_display: `${row.submission_count} submitted · ${row.graded_count} graded`,
+      : tc("emptyDash"),
+    submissions_display: t("submissionsCount", {
+      submitted: row.submission_count,
+      graded: row.graded_count,
+    }),
     actions: <DeleteAssignmentButton id={row.id as string} />,
   }));
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Assignments</h1>
+      <h1 className="text-2xl font-bold">{t("assignmentsTitle")}</h1>
 
       {classes.length > 0 ? (
         <AssignmentForm classes={classes.map((c) => ({ id: c.id, name: c.name }))} />
       ) : (
-        <p className="text-sm text-slate-500">No classes assigned yet.</p>
+        <p className="text-sm text-stone-500">{t("noClassesAssignedYet")}</p>
       )}
 
       {assignments.length === 0 ? (
-        <EmptyState title="No assignments yet" description="Create your first assignment above." />
+        <EmptyState title={t("noAssignmentsYet")} description={t("createFirstAssignment")} />
       ) : (
         <DataTable
           data={tableData}
           columns={[
-            { id: "title", header: "Title", accessorKey: "title", sortable: true },
-            { id: "class", header: "Class", accessorKey: "class_name" },
-            { id: "due_date", header: "Due", accessorKey: "due_date_display" },
-            { id: "submissions", header: "Submissions", accessorKey: "submissions_display" },
+            { id: "title", header: t("tableTitle"), accessorKey: "title", sortable: true },
+            { id: "class", header: t("tableClass"), accessorKey: "class_name" },
+            { id: "due_date", header: t("tableDue"), accessorKey: "due_date_display" },
+            { id: "submissions", header: t("tableSubmissions"), accessorKey: "submissions_display" },
             { id: "actions", header: "", accessorKey: "actions" },
           ]}
         />

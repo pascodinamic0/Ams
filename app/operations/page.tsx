@@ -21,35 +21,35 @@ export default async function OperationsDashboard() {
           <CardHeader><CardTitle>{t("libraryTitles")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{kpis.libraryTitles}</p>
-            <p className="text-sm text-slate-500">{t("onLoan", { count: kpis.booksOnLoan })}</p>
+            <p className="text-sm text-stone-500">{t("onLoan", { count: kpis.booksOnLoan })}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>{t("overdueLoans")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-red-600">{kpis.overdueLoans}</p>
-            <p className="text-sm text-slate-500">{t("pastDueDate")}</p>
+            <p className="text-sm text-stone-500">{t("pastDueDate")}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>{t("staffTitle")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{kpis.staffCount}</p>
-            <p className="text-sm text-slate-500">{t("operationsStaff")}</p>
+            <p className="text-sm text-stone-500">{t("operationsStaff")}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>{t("transportRoutes")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{kpis.transportRoutes}</p>
-            <p className="text-sm text-slate-500">{t("activeRoutes")}</p>
+            <p className="text-sm text-stone-500">{t("activeRoutes")}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>{t("upcomingEvents")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{kpis.upcomingEvents}</p>
-            <p className="text-sm text-slate-500">{t("next30Days")}</p>
+            <p className="text-sm text-stone-500">{t("next30Days")}</p>
           </CardContent>
         </Card>
         <Card>

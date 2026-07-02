@@ -3,12 +3,14 @@ import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { WebsiteEditorForm } from "@/components/schools/website-editor-form";
 import { getSchoolById } from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 
 export default async function AdminWebsiteEditorPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations("admin");
   const { id } = await params;
   const school = await getSchoolById(id);
 
@@ -22,23 +24,23 @@ export default async function AdminWebsiteEditorPage({
         <div>
           <Link
             href={`/admin/schools/${school.id}`}
-            className="text-sm text-zinc-600 hover:underline dark:text-zinc-400"
+            className="text-sm text-stone-600 hover:underline dark:text-stone-400"
           >
             &larr; {school.name}
           </Link>
           <h1 className="mt-2 text-2xl font-bold">{school.name}</h1>
-          <p className="mt-1 text-sm text-zinc-500">
-            Customize every section of the public school website.
+          <p className="mt-1 text-sm text-stone-500">
+            {t("customizeWebsiteSubtitle")}
           </p>
         </div>
         <div className="flex gap-2">
           {school.public_site_enabled && (
             <a href={`/schools/${school.slug}`} target="_blank" rel="noopener noreferrer">
-              <Button variant="outline">Preview site</Button>
+              <Button variant="outline">{t("previewSite")}</Button>
             </a>
           )}
           <Link href={`/admin/schools/${school.id}`}>
-            <Button variant="ghost">School settings</Button>
+            <Button variant="ghost">{t("schoolSettings")}</Button>
           </Link>
         </div>
       </div>

@@ -56,26 +56,22 @@ export default function CompanyLayout({
       "whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold transition-all lg:px-4 lg:py-2.5 lg:text-[0.9375rem]",
       pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))
         ? solidHeader
-          ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300"
+          ? "bg-primary-light text-primary-hover dark:bg-primary-light/50 dark:text-primary"
           : "bg-white/15 text-white"
         : solidHeader
-          ? "text-slate-600 hover:bg-slate-100 hover:text-indigo-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-indigo-400"
-          : "text-indigo-100 hover:bg-white/10 hover:text-white"
+          ? "text-stone-600 hover:bg-stone-100 hover:text-primary dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-primary"
+          : "text-teal-100 hover:bg-white/10 hover:text-white"
     );
 
-  const actionDividerClass = cn(
-    "hidden h-6 w-px shrink-0 md:block",
-    solidHeader ? "bg-slate-200 dark:bg-slate-700" : "bg-white/20"
-  );
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0a0f1e] selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-white dark:bg-[#0c1222] selection:bg-primary selection:text-white">
       <header
         className={cn(
           "fixed inset-x-0 top-0 z-50 transition-all duration-500",
           "px-4 pt-[calc(env(safe-area-inset-top)+0.75rem)] md:px-6 md:pt-0 lg:px-8",
           solidHeader
-            ? "pb-3 md:border-b md:border-slate-200/50 md:bg-white/85 md:py-4 md:backdrop-blur-xl md:dark:border-slate-800/50 md:dark:bg-[#0a0f1e]/85 lg:py-5"
+            ? "pb-3 md:border-b md:border-stone-200/50 md:bg-white/85 md:py-4 md:backdrop-blur-xl md:dark:border-stone-800/50 md:dark:bg-[#0c1222]/85 lg:py-5"
             : "pb-3 md:bg-transparent md:py-5 lg:py-6"
         )}
       >
@@ -84,8 +80,8 @@ export default function CompanyLayout({
             "mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 md:min-h-16 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-6 lg:min-h-[4.25rem] lg:gap-10",
             "max-md:min-h-14 max-md:rounded-2xl max-md:border max-md:px-4 max-md:shadow-lg max-md:backdrop-blur-xl",
             solidHeader
-              ? "max-md:border-slate-200/70 max-md:bg-white/90 max-md:shadow-slate-950/5 dark:max-md:border-slate-800/70 dark:max-md:bg-[#0a0f1e]/90"
-              : "max-md:border-white/10 max-md:bg-indigo-950/25 max-md:shadow-indigo-950/20"
+              ? "max-md:border-stone-200/70 max-md:bg-white/90 max-md:shadow-stone-950/5 dark:max-md:border-stone-800/70 dark:max-md:bg-[#0a0f1e]/90"
+              : "max-md:border-white/10 max-md:bg-teal-950/25 max-md:shadow-teal-950/20"
           )}
         >
           <Link href="/" className="group min-w-0 shrink-0 justify-self-start">
@@ -93,10 +89,7 @@ export default function CompanyLayout({
               <BrandLogo
                 size={36}
                 className="gap-2.5 md:gap-3"
-                wordmarkClassName={cn(
-                  "text-lg transition-colors md:text-xl",
-                  solidHeader ? "text-slate-900 dark:text-white" : "text-white"
-                )}
+                variant={solidHeader ? "dark" : "light"}
               />
             </motion.div>
           </Link>
@@ -113,32 +106,13 @@ export default function CompanyLayout({
           </nav>
 
           <div className="flex shrink-0 items-center justify-end gap-2 justify-self-end md:gap-3 lg:gap-4">
-            <LanguageSwitcher
-              variant="select"
-              className={cn(
-                "hidden md:block xl:hidden",
-                solidHeader
-                  ? ""
-                  : "border-white/20 bg-white/10 text-indigo-100 dark:border-white/20 dark:bg-white/10"
-              )}
-            />
-            <LanguageSwitcher
-              variant="buttons"
-              className={cn(
-                "hidden rounded-xl p-1 xl:flex",
-                solidHeader
-                  ? "bg-slate-100 dark:bg-slate-800"
-                  : "bg-white/10 [&_button:not([class*='bg-white'])]:text-indigo-100 [&_button:not([class*='bg-white'])]:hover:text-white"
-              )}
-            />
-            <span className={actionDividerClass} aria-hidden />
             <Link
               href="/login"
               className={cn(
                 "hidden whitespace-nowrap px-1 text-sm font-semibold transition-all xl:inline-flex",
                 solidHeader
-                  ? "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-                  : "text-indigo-100 hover:text-white"
+                  ? "text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
+                  : "text-teal-100 hover:text-white"
               )}
             >
               {t("login")}
@@ -148,8 +122,8 @@ export default function CompanyLayout({
               className={cn(
                 "hidden whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-95 md:inline-flex lg:px-5 lg:py-3",
                 solidHeader
-                  ? "bg-indigo-600 text-white shadow-indigo-600/20 hover:bg-indigo-500"
-                  : "bg-white text-indigo-950 shadow-white/10 hover:bg-indigo-50"
+                  ? "bg-primary text-white shadow-primary/20 hover:bg-primary"
+                  : "bg-white text-teal-950 shadow-white/10 hover:bg-primary-light"
               )}
             >
               {t("getStarted")}
@@ -162,7 +136,7 @@ export default function CompanyLayout({
               className={cn(
                 "inline-flex h-11 w-11 items-center justify-center rounded-xl transition-all active:scale-95 md:hidden",
                 solidHeader
-                  ? "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
+                  ? "text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-800"
                   : "text-white hover:bg-white/10"
               )}
             >
@@ -189,15 +163,15 @@ export default function CompanyLayout({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 320 }}
-              className="fixed bottom-3 right-3 top-[calc(env(safe-area-inset-top)+0.75rem)] z-50 flex w-[calc(100%-1.5rem)] max-w-sm flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-2xl shadow-slate-950/25 dark:border-slate-800 dark:bg-[#0a0f1e] md:hidden"
+              className="fixed bottom-3 right-3 top-[calc(env(safe-area-inset-top)+0.75rem)] z-50 flex w-[calc(100%-1.5rem)] max-w-sm flex-col overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-2xl shadow-stone-950/25 dark:border-stone-800 dark:bg-[#0c1222] md:hidden"
             >
-              <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-800">
-                <span className="text-lg font-black text-slate-900 dark:text-white">{tCommon("menu")}</span>
+              <div className="flex items-center justify-between border-b border-stone-200 px-5 py-4 dark:border-stone-800">
+                <span className="text-lg font-black text-stone-900 dark:text-white">{tCommon("menu")}</span>
                 <button
                   type="button"
                   aria-label={tCommon("closeMenu")}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-slate-600 transition-all hover:bg-slate-100 active:scale-95 dark:text-slate-300 dark:hover:bg-slate-800"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-stone-600 transition-all hover:bg-stone-100 active:scale-95 dark:text-stone-300 dark:hover:bg-stone-800"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -211,8 +185,8 @@ export default function CompanyLayout({
                     className={cn(
                       "rounded-2xl px-4 py-3.5 text-base font-bold transition-colors",
                       pathname === link.href
-                        ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400"
-                        : "text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900"
+                        ? "bg-primary-light text-primary dark:bg-primary-light/50 dark:text-primary"
+                        : "text-stone-700 hover:bg-stone-50 dark:text-stone-200 dark:hover:bg-stone-900"
                     )}
                   >
                     {link.label}
@@ -221,7 +195,7 @@ export default function CompanyLayout({
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="mt-2 rounded-2xl px-4 py-3.5 text-base font-bold text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-900"
+                  className="mt-2 rounded-2xl px-4 py-3.5 text-base font-bold text-stone-700 hover:bg-stone-50 dark:text-stone-200 dark:hover:bg-stone-900"
                 >
                   {t("login")}
                 </Link>
@@ -229,11 +203,11 @@ export default function CompanyLayout({
                   <LanguageSwitcher variant="buttons" />
                 </div>
               </div>
-              <div className="border-t border-slate-200 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] dark:border-slate-800">
+              <div className="border-t border-stone-200 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] dark:border-stone-800">
                 <Link
                   href="/get-access"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex w-full items-center justify-center rounded-2xl bg-indigo-600 px-4 py-3.5 text-base font-bold text-white shadow-lg shadow-indigo-600/20 transition-all active:scale-[0.98]"
+                  className="flex w-full items-center justify-center rounded-2xl bg-primary px-4 py-3.5 text-base font-bold text-white shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
                 >
                   {t("getStarted")}
                 </Link>

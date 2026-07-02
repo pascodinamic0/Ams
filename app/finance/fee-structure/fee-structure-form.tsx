@@ -60,7 +60,7 @@ function FeeStructureFields({ classes }: { classes: { id: string; name: string }
         <select
           id="class_id"
           {...register("class_id")}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
           <option value="">All classes</option>
           {classes.map((c) => (

@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTeacherClasses, getGradesForClass } from "@/lib/db";
@@ -10,9 +11,11 @@ export default async function GradebookPage({
 }: {
   searchParams: Promise<{ class?: string; subject?: string; term?: string }>;
 }) {
+  const t = await getTranslations("teacher");
+  const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   if (!profile) {
-    return <p className="text-sm text-slate-500">Please sign in to view the gradebook.</p>;
+    return <p className="text-sm text-stone-500">{t("signInRequiredGradebook")}</p>;
   }
 
   const params = await searchParams;
@@ -24,8 +27,8 @@ export default async function GradebookPage({
   if (classes.length === 0) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Gradebook</h1>
-        <EmptyState title="No classes assigned" description="Assign classes in the timetable first." />
+        <h1 className="text-2xl font-bold">{t("gradebookTitle")}</h1>
+        <EmptyState title={t("noClassesAssigned")} description={t("noClassesAssignedDesc")} />
       </div>
     );
   }
@@ -43,8 +46,8 @@ export default async function GradebookPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Gradebook</h1>
-      <Suspense fallback={<p className="text-sm text-slate-500">Loading…</p>}>
+      <h1 className="text-2xl font-bold">{t("gradebookTitle")}</h1>
+      <Suspense fallback={<p className="text-sm text-stone-500">{tc("loading")}</p>}>
         <GradebookGrid
           classes={classes.map((c) => ({ id: c.id, name: c.name }))}
           subjects={subjects}

@@ -76,16 +76,16 @@ export function InstallPrompt() {
   if (!visible) return null;
 
   return (
-    <div className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-lg rounded-2xl border border-indigo-200 bg-white p-4 shadow-2xl shadow-indigo-500/10 dark:border-indigo-900 dark:bg-slate-900">
+    <div className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-lg rounded-2xl border border-primary-200 bg-white p-4 shadow-2xl shadow-primary/10 dark:border-primary-900 dark:bg-stone-900">
       <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-indigo-600 text-white">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-white">
           <Download className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-bold text-slate-900 dark:text-white">
+          <p className="text-sm font-bold text-stone-900 dark:text-white">
             Install {companyIdentity.productName}
           </p>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
             {showIosHelp
               ? "Add to your home screen for quick access. Tap Share, then Add to Home Screen."
               : "Install the app on this device for faster access, full-screen mode, and offline support."}
@@ -95,14 +95,14 @@ export function InstallPrompt() {
               <button
                 type="button"
                 onClick={handleInstall}
-                className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-bold text-white hover:bg-indigo-500"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary"
               >
                 <Download className="h-4 w-4" />
                 Install app
               </button>
             )}
             {showIosHelp && (
-              <span className="inline-flex items-center gap-2 rounded-xl bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300">
+              <span className="inline-flex items-center gap-2 rounded-xl bg-primary-light px-3 py-2 text-xs font-semibold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
                 <Share className="h-4 w-4" />
                 Share, then Add to Home Screen
               </span>
@@ -110,7 +110,7 @@ export function InstallPrompt() {
             <button
               type="button"
               onClick={dismiss}
-              className="rounded-xl px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800"
             >
               Not now
             </button>
@@ -119,7 +119,7 @@ export function InstallPrompt() {
         <button
           type="button"
           onClick={dismiss}
-          className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+          className="rounded-lg p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600 dark:hover:bg-stone-800 dark:hover:text-stone-200"
           aria-label="Dismiss install prompt"
         >
           <X className="h-4 w-4" />

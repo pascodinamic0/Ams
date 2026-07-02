@@ -78,17 +78,17 @@ export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
   return (
     <form onSubmit={handleSave} className="space-y-7">
       {/* Enable toggle */}
-      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+      <div className="flex items-center justify-between rounded-xl border border-stone-200 bg-white p-4 dark:border-stone-700 dark:bg-stone-900">
         <div>
-          <p className="font-medium text-slate-900 dark:text-white">Enable Automatic Reminders</p>
-          <p className="text-sm text-slate-500">When disabled, no WhatsApp messages will be sent by the cron job.</p>
+          <p className="font-medium text-stone-900 dark:text-white">Enable Automatic Reminders</p>
+          <p className="text-sm text-stone-500">When disabled, no WhatsApp messages will be sent by the cron job.</p>
         </div>
         <button
           type="button"
           role="switch"
           aria-checked={enabled}
           onClick={() => setEnabled(!enabled)}
-          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${enabled ? "bg-indigo-600" : "bg-slate-300 dark:bg-slate-600"}`}
+          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${enabled ? "bg-primary" : "bg-slate-300 dark:bg-slate-600"}`}
         >
           <span
             className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${enabled ? "translate-x-5" : "translate-x-0"}`}
@@ -97,8 +97,8 @@ export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
       </div>
 
       {/* Timing section */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900 space-y-4">
-        <h3 className="font-semibold text-slate-900 dark:text-white">Timing Rules</h3>
+      <div className="rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900 space-y-4">
+        <h3 className="font-semibold text-stone-900 dark:text-white">Timing Rules</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -111,7 +111,7 @@ export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
               value={gracePeriod}
               onChange={(e) => setGracePeriod(e.target.value)}
             />
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-stone-500">
               After this many days, the final warning is sent and student may be barred.
             </p>
           </div>
@@ -135,7 +135,7 @@ export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
             value={remindDaysBefore}
             onChange={(e) => setRemindDaysBefore(e.target.value)}
           />
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-stone-500">
             Comma-separated list. E.g. "3, 1" sends a reminder 3 days before and 1 day before due date.
           </p>
         </div>
@@ -162,11 +162,11 @@ export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
                 id={opt.id}
                 checked={opt.checked}
                 onChange={(e) => opt.setter(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                className="mt-0.5 h-4 w-4 rounded border-stone-300 text-primary focus:ring-primary-500"
               />
               <div>
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">{opt.label}</p>
-                {opt.sub && <p className="text-xs text-slate-500">{opt.sub}</p>}
+                <p className="text-sm font-medium text-stone-700 dark:text-stone-300">{opt.label}</p>
+                {opt.sub && <p className="text-xs text-stone-500">{opt.sub}</p>}
               </div>
             </label>
           ))}
@@ -174,15 +174,15 @@ export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
       </div>
 
       {/* Message templates */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900 space-y-5">
+      <div className="rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900 space-y-5">
         <div>
-          <h3 className="font-semibold text-slate-900 dark:text-white">Message Templates</h3>
+          <h3 className="font-semibold text-stone-900 dark:text-white">Message Templates</h3>
           <div className="mt-2 flex flex-wrap gap-2">
             {TEMPLATE_VARS.map((v) => (
               <span
                 key={v.var}
                 title={v.desc}
-                className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-mono text-indigo-700 dark:bg-slate-700 dark:text-indigo-400"
+                className="rounded-md bg-stone-100 px-2 py-0.5 text-xs font-mono text-primary-hover dark:bg-stone-700 dark:text-primary"
               >
                 {v.var}
               </span>
@@ -197,9 +197,9 @@ export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
             rows={4}
             value={morningTemplate}
             onChange={(e) => setMorningTemplate(e.target.value)}
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+            className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
           />
-          <p className="text-xs text-slate-500">Used for reminders before or on the due date.</p>
+          <p className="text-xs text-stone-500">Used for reminders before or on the due date.</p>
         </div>
 
         <div className="space-y-1.5">
@@ -211,20 +211,20 @@ export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
             rows={5}
             value={finalTemplate}
             onChange={(e) => setFinalTemplate(e.target.value)}
-            className="w-full rounded-lg border border-red-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:border-red-800 dark:bg-slate-900 dark:text-white"
+            className="w-full rounded-lg border border-red-300 bg-white px-3 py-2.5 text-sm text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:border-red-800 dark:bg-stone-900 dark:text-white"
           />
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-stone-500">
             Sent when grace period expires. Should clearly state the student should not come to school.
           </p>
         </div>
 
         {/* Preview */}
-        <div className="rounded-xl bg-emerald-50 p-4 dark:bg-slate-800/60">
-          <p className="mb-2 text-xs font-medium text-slate-600 dark:text-slate-400">Final warning preview:</p>
+        <div className="rounded-xl bg-emerald-50 p-4 dark:bg-stone-800/60">
+          <p className="mb-2 text-xs font-medium text-stone-600 dark:text-stone-400">Final warning preview:</p>
           <div className="flex items-start gap-2">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white text-xs font-bold">A</div>
-            <div className="rounded-2xl rounded-tl-none bg-white px-4 py-2.5 shadow-sm dark:bg-slate-700 max-w-sm">
-              <p className="text-sm text-slate-800 dark:text-slate-200" style={{ whiteSpace: "pre-wrap" }}>
+            <div className="rounded-2xl rounded-tl-none bg-white px-4 py-2.5 shadow-sm dark:bg-stone-700 max-w-sm">
+              <p className="text-sm text-stone-800 dark:text-stone-200" style={{ whiteSpace: "pre-wrap" }}>
                 {finalTemplate
                   .replace(/\{guardian_name\}/g, "Mrs. Ama Asante")
                   .replace(/\{student_name\}/g, "Kwame Asante")

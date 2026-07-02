@@ -30,7 +30,7 @@ export function LanguageSwitcher({
 
   if (variant === "buttons") {
     return (
-      <div className={cn("flex gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-800", className)}>
+      <div className={cn("flex gap-1 rounded-lg bg-stone-100 p-1 dark:bg-stone-800", className)}>
         {(Object.keys(localeNames) as Locale[]).map((code) => (
           <button
             key={code}
@@ -40,8 +40,8 @@ export function LanguageSwitcher({
             className={cn(
               "rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
               locale === code
-                ? "bg-white text-indigo-700 shadow-sm dark:bg-slate-900 dark:text-indigo-300"
-                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                ? "bg-white text-primary-hover shadow-sm dark:bg-stone-900 dark:text-primary"
+                : "text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
             )}
           >
             {code.toUpperCase()}
@@ -57,7 +57,7 @@ export function LanguageSwitcher({
       disabled={isPending}
       onChange={(e) => handleChange(e.target.value as Locale)}
       className={cn(
-        "rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm transition-colors hover:border-slate-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200",
+        "rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200",
         className
       )}
       aria-label="Language"

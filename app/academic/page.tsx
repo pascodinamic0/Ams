@@ -14,14 +14,14 @@ export default async function AcademicDashboard() {
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{t("title")}</h1>
       {data.totalStudents === 0 && data.classes === 0 && (
-        <p className="text-sm text-slate-500">{t("emptySchoolHint")}</p>
+        <p className="text-sm text-stone-500">{t("emptySchoolHint")}</p>
       )}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader><CardTitle>{t("studentsTitle")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{data.totalStudents}</p>
-            <p className="text-sm text-slate-500">{t("activeStudents", { count: data.activeStudents })}</p>
+            <p className="text-sm text-stone-500">{t("activeStudents", { count: data.activeStudents })}</p>
           </CardContent>
         </Card>
         <Card>

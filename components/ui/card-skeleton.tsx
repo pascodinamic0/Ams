@@ -2,7 +2,7 @@ import { Skeleton } from "./skeleton";
 
 export function CardSkeleton() {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+    <div className="rounded-xl border border-border bg-surface p-6">
       <Skeleton className="mb-4 h-6 w-1/3" />
       <Skeleton className="mb-2 h-8 w-full" />
       <Skeleton className="h-4 w-2/3" />

@@ -13,6 +13,7 @@ import {
   getExpensesByCategory,
 } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { getTranslations } from "next-intl/server";
 
 function formatCurrency(value: number) {
   return value.toLocaleString(undefined, {
@@ -39,6 +40,8 @@ function monthLabel(ym: string) {
 }
 
 export default async function FinancialReportsPage() {
+  const t = await getTranslations("finance");
+  const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   const scope = {
     schoolId: profile?.school_id ?? undefined,
@@ -73,13 +76,13 @@ export default async function FinancialReportsPage() {
   }));
 
   const feeStatusBreakdown = [
-    { name: "Paid", value: invoices.filter((i) => i.status === "paid").length },
+    { name: t("statusPaid"), value: invoices.filter((i) => i.status === "paid").length },
     {
-      name: "Pending",
+      name: t("statusPending"),
       value: invoices.filter((i) => i.status === "pending" && i.balance > 0).length,
     },
     {
-      name: "Overdue",
+      name: tc("overdue"),
       value: invoices.filter(
         (i) =>
           i.balance > 0 &&
@@ -101,14 +104,14 @@ export default async function FinancialReportsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">Financial Reports</h1>
+        <h1 className="text-2xl font-bold">{t("reportsTitle")}</h1>
         <ExportButton
           data={breakdownRows}
           columns={[
-            { key: "month", label: "Month" },
-            { key: "revenue", label: "Revenue" },
-            { key: "expenses", label: "Expenses" },
-            { key: "net", label: "Net" },
+            { key: "month", label: t("colMonth") },
+            { key: "revenue", label: t("colRevenue") },
+            { key: "expenses", label: t("colExpenses") },
+            { key: "net", label: t("colNet") },
           ]}
           filename="financial-report"
         />
@@ -116,33 +119,33 @@ export default async function FinancialReportsPage() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader><CardTitle>Collected</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("collected")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(kpis.collected)}</p>
-            <p className="text-sm text-slate-500">Fee payments received</p>
+            <p className="text-sm text-stone-500">{t("collectedFeesSub")}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Outstanding</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("outstanding")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(kpis.outstanding)}</p>
-            <p className="text-sm text-slate-500">Unpaid invoice balance</p>
+            <p className="text-sm text-stone-500">{t("outstandingInvoiceSub")}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Expenses</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("expensesTitle")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(expenseTotal)}</p>
-            <p className="text-sm text-slate-500">Recorded spending</p>
+            <p className="text-sm text-stone-500">{t("expensesSub")}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Net position</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("netPosition")}</CardTitle></CardHeader>
           <CardContent>
             <p className={`text-2xl font-bold ${netPosition >= 0 ? "text-green-600" : "text-red-600"}`}>
               {formatCurrency(netPosition)}
             </p>
-            <p className="text-sm text-slate-500">Collected minus costs</p>
+            <p className="text-sm text-stone-500">{t("netPositionSub")}</p>
           </CardContent>
         </Card>
       </div>
@@ -153,7 +156,7 @@ export default async function FinancialReportsPage() {
           type="line"
           xKey="month"
           yKeys={["revenue", "expenses"]}
-          title="Revenue vs expenses (last 6 months)"
+          title={t("chartRevenueVsExpenses")}
           height={320}
         />
         {feeStatusBreakdown.length > 0 ? (
@@ -162,14 +165,14 @@ export default async function FinancialReportsPage() {
             type="pie"
             nameKey="name"
             dataKey="value"
-            title="Invoice status breakdown"
+            title={t("chartInvoiceStatus")}
             height={320}
           />
         ) : (
           <Card>
-            <CardHeader><CardTitle>Invoice status breakdown</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t("chartInvoiceStatus")}</CardTitle></CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-500">No invoice data to chart yet.</p>
+              <p className="text-sm text-stone-500">{t("noInvoiceChartData")}</p>
             </CardContent>
           </Card>
         )}
@@ -181,7 +184,7 @@ export default async function FinancialReportsPage() {
           type="bar"
           xKey="month"
           yKeys={["revenue", "expenses"]}
-          title="Monthly collection vs costs"
+          title={t("chartMonthlyCollection")}
           height={320}
         />
         {expensesByCategory.length > 0 ? (
@@ -190,48 +193,48 @@ export default async function FinancialReportsPage() {
             type="pie"
             nameKey="name"
             dataKey="value"
-            title="Expenses by category"
+            title={t("chartExpensesByCategory")}
             height={320}
           />
         ) : (
           <Card>
-            <CardHeader><CardTitle>Expenses by category</CardTitle></CardHeader>
+            <CardHeader><CardTitle>{t("chartExpensesByCategory")}</CardTitle></CardHeader>
             <CardContent>
-              <p className="text-sm text-slate-500">No expenses recorded yet.</p>
+              <p className="text-sm text-stone-500">{t("noExpensesChartData")}</p>
             </CardContent>
           </Card>
         )}
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-lg font-medium">Monthly breakdown</h2>
+        <h2 className="text-lg font-medium">{t("monthlyBreakdown")}</h2>
         <DataTable
           data={breakdownRows}
           keyField="month"
           columns={[
-            { id: "month", header: "Month", accessorKey: "month", sortable: true },
-            { id: "revenue", header: "Revenue", accessorKey: "revenue", sortable: true },
-            { id: "expenses", header: "Expenses", accessorKey: "expenses", sortable: true },
-            { id: "net", header: "Net", accessorKey: "net", sortable: true },
+            { id: "month", header: t("colMonth"), accessorKey: "month", sortable: true },
+            { id: "revenue", header: t("colRevenue"), accessorKey: "revenue", sortable: true },
+            { id: "expenses", header: t("colExpenses"), accessorKey: "expenses", sortable: true },
+            { id: "net", header: t("colNet"), accessorKey: "net", sortable: true },
           ]}
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
         <Card>
-          <CardHeader><CardTitle>Overdue</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{tc("overdue")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-red-600">{formatCurrency(kpis.overdue)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Payroll pending</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("payrollPendingKpi")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(payrollTotals.pending)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Invoices</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("invoicesKpi")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{kpis.invoiceCount}</p>
           </CardContent>

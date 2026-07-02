@@ -7,6 +7,7 @@ import {
   getStudents,
 } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { getTranslations } from "next-intl/server";
 import {
   RouteForm,
   VehicleForm,
@@ -17,6 +18,8 @@ import {
 } from "./transport-forms";
 
 export default async function TransportPage() {
+  const t = await getTranslations("operations");
+  const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   const scope = {
     schoolId: profile?.school_id ?? undefined,
@@ -46,24 +49,24 @@ export default async function TransportPage() {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold">Transport</h1>
+      <h1 className="text-2xl font-bold">{t("transportTitle")}</h1>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Routes</h2>
+        <h2 className="text-lg font-semibold">{t("routesSection")}</h2>
         {branchId ? (
           <RouteForm branchId={branchId} />
         ) : (
-          <p className="text-sm text-slate-500">Assign a branch to your profile to add routes.</p>
+          <p className="text-sm text-stone-500">{t("assignBranchRoutes")}</p>
         )}
         {routes.length === 0 ? (
-          <EmptyState title="No routes yet" description="Create transport routes for your school" />
+          <EmptyState title={t("noRoutes")} description={t("noRoutesDesc")} />
         ) : (
           <DataTable
             data={routeTableData}
             columns={[
-              { id: "name", header: "Route", accessorKey: "name", sortable: true },
-              { id: "description", header: "Description", accessorKey: "description" },
-              { id: "vehicle_count", header: "Vehicles", accessorKey: "vehicle_count" },
+              { id: "name", header: t("colRoute"), accessorKey: "name", sortable: true },
+              { id: "description", header: tc("description"), accessorKey: "description" },
+              { id: "vehicle_count", header: t("colVehicles"), accessorKey: "vehicle_count" },
               { id: "actions", header: "", accessorKey: "actions" },
             ]}
           />
@@ -71,18 +74,18 @@ export default async function TransportPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Vehicles</h2>
+        <h2 className="text-lg font-semibold">{t("vehiclesSection")}</h2>
         <VehicleForm routes={routes.map((r) => ({ id: r.id, name: r.name }))} />
         {vehicles.length === 0 ? (
-          <EmptyState title="No vehicles yet" description="Add vehicles to your routes" />
+          <EmptyState title={t("noVehicles")} description={t("noVehiclesDesc")} />
         ) : (
           <DataTable
             data={vehicleTableData}
             columns={[
-              { id: "route_name", header: "Route", accessorKey: "route_name", sortable: true },
-              { id: "name", header: "Vehicle", accessorKey: "name", sortable: true },
-              { id: "capacity", header: "Capacity", accessorKey: "capacity" },
-              { id: "student_count", header: "Students", accessorKey: "student_count" },
+              { id: "route_name", header: t("colRoute"), accessorKey: "route_name", sortable: true },
+              { id: "name", header: t("colVehicle"), accessorKey: "name", sortable: true },
+              { id: "capacity", header: t("colCapacity"), accessorKey: "capacity" },
+              { id: "student_count", header: t("colStudents"), accessorKey: "student_count" },
               { id: "actions", header: "", accessorKey: "actions" },
             ]}
           />
@@ -90,20 +93,20 @@ export default async function TransportPage() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Student mapping</h2>
+        <h2 className="text-lg font-semibold">{t("studentMappingSection")}</h2>
         <StudentMappingForm
           vehicles={vehicles}
           students={students.map((s) => ({ id: s.id, name: s.name }))}
         />
         {mappings.length === 0 ? (
-          <EmptyState title="No assignments yet" description="Assign students to vehicles" />
+          <EmptyState title={t("noAssignments")} description={t("noAssignmentsDesc")} />
         ) : (
           <DataTable
             data={mappingTableData}
             columns={[
-              { id: "student_name", header: "Student", accessorKey: "student_name", sortable: true },
-              { id: "route_name", header: "Route", accessorKey: "route_name" },
-              { id: "vehicle_name", header: "Vehicle", accessorKey: "vehicle_name" },
+              { id: "student_name", header: t("colStudent"), accessorKey: "student_name", sortable: true },
+              { id: "route_name", header: t("colRoute"), accessorKey: "route_name" },
+              { id: "vehicle_name", header: t("colVehicle"), accessorKey: "vehicle_name" },
               { id: "actions", header: "", accessorKey: "actions" },
             ]}
           />

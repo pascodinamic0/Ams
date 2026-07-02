@@ -40,18 +40,18 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         aria-hidden="true"
       />
       <div
-        className="relative z-10 mx-4 max-h-[90vh] w-full max-w-lg overflow-auto rounded-xl bg-white shadow-xl dark:bg-zinc-950"
+        className="relative z-10 mx-4 max-h-[90vh] w-full max-w-lg overflow-auto rounded-xl bg-surface shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="flex items-center justify-between border-b border-zinc-200 px-6 py-4 dark:border-zinc-800">
-            <h2 id="modal-title" className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          <div className="flex items-center justify-between border-b border-border px-6 py-4">
+            <h2 id="modal-title" className="text-lg font-semibold text-foreground">
               {title}
             </h2>
             <button
               type="button"
               onClick={onClose}
-              className="rounded p-2 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+              className="rounded p-2 text-muted hover:bg-secondary hover:text-foreground"
               aria-label="Close modal"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

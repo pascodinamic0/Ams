@@ -77,7 +77,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
             <div className="space-y-2">
               <Label htmlFor="slug">URL slug</Label>
               <div className="relative">
-                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-slate-400">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-stone-400">
                   /schools/
                 </span>
                 <Input
@@ -88,7 +88,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
                   required
                 />
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-stone-500">
                 Used in the public site URL
               </p>
             </div>
@@ -154,7 +154,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
                 }
                 placeholder="www.school.edu"
               />
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-stone-500">
                 Optional — connect your own domain
               </p>
             </div>
@@ -179,7 +179,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
               />
             </div>
           </div>
-          <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/50">
+          <div className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 dark:border-stone-800 dark:bg-stone-900/50">
             <Checkbox
               id="public_site_enabled"
               checked={form.public_site_enabled}
@@ -188,7 +188,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
               }
               label="Public site enabled"
             />
-            <p className="mt-2 pl-6 text-xs text-slate-500">
+            <p className="mt-2 pl-6 text-xs text-stone-500">
               When disabled, the school website is hidden from visitors
             </p>
           </div>

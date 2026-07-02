@@ -25,7 +25,7 @@ function CheckIcon({ done }: { done: boolean }) {
   }
 
   return (
-    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-slate-200 dark:border-slate-700" />
+    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-stone-200 dark:border-stone-700" />
   );
 }
 
@@ -38,8 +38,8 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
 
   if (progress.dismissed && !progress.allComplete) {
     return (
-      <div className="flex items-center justify-between rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-3 text-sm dark:border-indigo-900 dark:bg-indigo-950/40">
-        <p className="text-indigo-900 dark:text-indigo-100">
+      <div className="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-light px-4 py-3 text-sm dark:border-primary-900 dark:bg-primary-light/40">
+        <p className="text-teal-900 dark:text-teal-100">
           {t("setupPaused", {
             completed: progress.completedCount,
             total: progress.totalCount,
@@ -69,12 +69,12 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
   const pct = Math.round((progress.completedCount / progress.totalCount) * 100);
 
   return (
-    <Card className="border-indigo-200 bg-gradient-to-br from-indigo-50/80 to-white dark:border-indigo-900 dark:from-indigo-950/30 dark:to-slate-900">
+    <Card className="border-primary-200 bg-gradient-to-br from-teal-50/80 to-white dark:border-primary-900 dark:from-teal-950/30 dark:to-slate-900">
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <CardTitle className="text-lg">{t("gettingStarted")}</CardTitle>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+            <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
               {t("guideDescription")}
             </p>
           </div>
@@ -98,7 +98,7 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
           </div>
         </div>
         <div className="mt-4">
-          <div className="mb-1 flex justify-between text-xs text-slate-500">
+          <div className="mb-1 flex justify-between text-xs text-stone-500">
             <span>
               {t("progressComplete", {
                 completed: progress.completedCount,
@@ -107,9 +107,9 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
             </span>
             <span>{pct}%</span>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
+          <div className="h-2 overflow-hidden rounded-full bg-stone-200 dark:bg-stone-800">
             <div
-              className="h-full rounded-full bg-indigo-600 transition-all duration-500"
+              className="h-full rounded-full bg-primary transition-all duration-500"
               style={{ width: `${pct}%` }}
             />
           </div>
@@ -127,7 +127,7 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
                     className={`flex items-start gap-3 rounded-lg border px-4 py-3 transition-colors ${
                       done
                         ? "border-emerald-200 bg-emerald-50/50 dark:border-emerald-900 dark:bg-emerald-950/20"
-                        : "border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50/50 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-800"
+                        : "border-stone-200 bg-white hover:border-primary-300 hover:bg-primary-light/50 dark:border-stone-800 dark:bg-stone-900 dark:hover:border-primary-800"
                     }`}
                   >
                     <CheckIcon done={done} />
@@ -136,19 +136,19 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
                         className={`font-medium ${
                           done
                             ? "text-emerald-800 line-through dark:text-emerald-200"
-                            : "text-slate-900 dark:text-slate-100"
+                            : "text-stone-900 dark:text-stone-100"
                         }`}
                       >
                         {step.title}
                       </p>
                       {!done && (
-                        <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
+                        <p className="mt-0.5 text-sm text-stone-500 dark:text-stone-400">
                           {step.description}
                         </p>
                       )}
                     </div>
                     {!done && (
-                      <span className="shrink-0 text-xs font-medium text-indigo-600 dark:text-indigo-400">
+                      <span className="shrink-0 text-xs font-medium text-primary dark:text-primary">
                         {t("startStep")}
                       </span>
                     )}

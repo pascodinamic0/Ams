@@ -31,7 +31,7 @@ export default async function StudentImportPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Import students</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-stone-500">
           Upload a CSV file to bulk-create students for your branch.
         </p>
       </div>

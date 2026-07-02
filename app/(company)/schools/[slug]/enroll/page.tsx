@@ -21,7 +21,7 @@ export default async function SchoolEnrollPage({
         schoolName={school.name}
         slug={slug}
         schoolAddress={school.address}
-        primary={school.theme_primary_color ?? "#4f46e5"}
+        primary={school.theme_primary_color ?? "#0d9488"}
         campusVisitSlots={campusVisitSlots}
       />
     </div>

@@ -15,17 +15,17 @@ export default async function RegisterSuccessPage({ searchParams }: PageProps) {
     : "Check your email for a confirmation link, then sign in to check your approval status.";
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center bg-slate-50 px-4 py-12 dark:bg-[#0a0f1e]">
+    <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center bg-stone-50 px-4 py-12 dark:bg-[#0c1222]">
       <PendingApprovalCard
         schoolName={schoolName}
         emailConfirmationNote={emailConfirmationNote}
         showSignOut={false}
       />
-      <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+      <p className="mt-6 text-center text-sm text-stone-500 dark:text-stone-400">
         Wrong email?{" "}
         <Link
           href="/register"
-          className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+          className="font-medium text-primary hover:text-primary-hover dark:text-primary"
         >
           Register again
         </Link>

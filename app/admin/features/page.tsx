@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 import { getSchoolFeatureMatrix } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { getTranslations } from "next-intl/server";
 import { FeatureToggleGrid } from "./feature-toggle-grid";
 
 export default async function FeaturesPage() {
+  const t = await getTranslations("admin");
   const [schools, profile] = await Promise.all([
     getSchoolFeatureMatrix(),
     getCurrentProfile(),
@@ -14,17 +16,15 @@ export default async function FeaturesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Feature Toggles</h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-          {isSuperAdmin
-            ? "Choose a school, then enable or disable modules for that school."
-            : "Enable or disable modules for your school."}
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("featuresTitle")}</h1>
+        <p className="mt-2 text-stone-600 dark:text-stone-400">
+          {isSuperAdmin ? t("featuresSubtitleSuperAdmin") : t("featuresSubtitleSchool")}
         </p>
       </div>
 
       <Suspense
         fallback={
-          <p className="text-sm text-slate-500 dark:text-slate-400">Loading features…</p>
+          <p className="text-sm text-stone-500 dark:text-stone-400">{t("loadingFeatures")}</p>
         }
       >
         <FeatureToggleGrid

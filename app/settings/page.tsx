@@ -59,8 +59,8 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("title")}</h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("title")}</h1>
+        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
           {t("subtitle")}
         </p>
       </div>
@@ -80,7 +80,7 @@ function AccountCard({ profile, roleLabel }: { profile: ProfileInfo | null; role
     return (
       <Card>
         <CardContent className="py-8">
-          <div className="h-16 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
+          <div className="h-16 animate-pulse rounded-lg bg-stone-100 dark:bg-stone-800" />
         </CardContent>
       </Card>
     );
@@ -93,13 +93,13 @@ function AccountCard({ profile, roleLabel }: { profile: ProfileInfo | null; role
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xl font-bold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary-light text-xl font-bold text-primary-hover dark:bg-primary-light dark:text-primary">
             {profile.initial}
           </div>
           <div>
-            <p className="font-medium text-slate-900 dark:text-white">{profile.fullName}</p>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{profile.email}</p>
-            <span className="mt-1 inline-block rounded-full bg-indigo-100 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+            <p className="font-medium text-stone-900 dark:text-white">{profile.fullName}</p>
+            <p className="text-sm text-stone-500 dark:text-stone-400">{profile.email}</p>
+            <span className="mt-1 inline-block rounded-full bg-primary-light px-2.5 py-0.5 text-xs font-medium text-primary-hover dark:bg-primary-light dark:text-primary">
               {roleLabel || profile.role}
             </span>
           </div>
@@ -116,7 +116,7 @@ function LanguageCard() {
     <Card>
       <CardHeader>
         <CardTitle>{t("language")}</CardTitle>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-stone-500 dark:text-stone-400">
           {t("languageDescription")}
         </p>
       </CardHeader>
@@ -134,7 +134,7 @@ function AppInstallCard() {
     <Card>
       <CardHeader>
         <CardTitle>{t("installApp")}</CardTitle>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-stone-500 dark:text-stone-400">
           {t("installAppDescription")}
         </p>
       </CardHeader>
@@ -205,7 +205,7 @@ function SecurityCard() {
     <Card>
       <CardHeader>
         <CardTitle>{t("security")}</CardTitle>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-stone-500 dark:text-stone-400">
           {t("securityDescription")}
         </p>
       </CardHeader>

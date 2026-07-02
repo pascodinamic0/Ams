@@ -48,7 +48,7 @@ export function AddGuardianForm({ studentId, schoolId }: Props) {
       <Card>
         <CardHeader>
           <CardTitle>Add guardian</CardTitle>
-          <p className="text-sm text-slate-500">Link a new guardian to this student.</p>
+          <p className="text-sm text-stone-500">Link a new guardian to this student.</p>
         </CardHeader>
         <CardContent className="space-y-4">
           <AddGuardianFields />

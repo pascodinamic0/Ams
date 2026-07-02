@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { getInvoiceById } from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 
 function formatCurrency(value: number) {
   return value.toLocaleString(undefined, {
@@ -17,17 +18,18 @@ export default async function ParentPayPage({
 }: {
   searchParams: Promise<{ invoice?: string }>;
 }) {
+  const t = await getTranslations("parent");
   const params = await searchParams;
   const invoiceId = params.invoice;
 
   if (!invoiceId) {
     return (
       <EmptyState
-        title="No invoice selected"
-        description="Choose an invoice from the fees page to view payment instructions."
+        title={t("noInvoiceSelected")}
+        description={t("noInvoiceSelectedDesc")}
         action={
           <Link href="/parent/fees">
-            <Button>View fees</Button>
+            <Button>{t("viewFees")}</Button>
           </Link>
         }
       />
@@ -39,7 +41,7 @@ export default async function ParentPayPage({
 
   if (!user) {
     return (
-      <EmptyState title="Not signed in" description="Please log in to continue." />
+      <EmptyState title={t("notSignedIn")} description={t("notSignedInDescContinue")} />
     );
   }
 
@@ -52,8 +54,8 @@ export default async function ParentPayPage({
   if (!guardian) {
     return (
       <EmptyState
-        title="No guardian profile"
-        description="Your account is not linked to a guardian profile."
+        title={t("noGuardianProfile")}
+        description={t("noGuardianProfileDescShort")}
       />
     );
   }
@@ -61,7 +63,7 @@ export default async function ParentPayPage({
   const invoice = await getInvoiceById(invoiceId);
   if (!invoice) {
     return (
-      <EmptyState title="Invoice not found" description="This invoice may have been removed." />
+      <EmptyState title={t("invoiceNotFound")} description={t("invoiceNotFoundDesc")} />
     );
   }
 
@@ -83,8 +85,8 @@ export default async function ParentPayPage({
   if (!link) {
     return (
       <EmptyState
-        title="Access denied"
-        description="You can only pay invoices for your linked students."
+        title={t("accessDenied")}
+        description={t("accessDeniedDesc")}
       />
     );
   }
@@ -100,17 +102,17 @@ export default async function ParentPayPage({
   const balance = Math.max(0, amount - amountPaid);
   const studentName = student
     ? `${student.first_name} ${student.last_name}`.trim()
-    : "Student";
+    : t("studentFallback");
 
   if (balance <= 0) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold">Payment</h1>
+        <h1 className="text-2xl font-bold">{t("payment")}</h1>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-slate-600">This invoice is already fully paid. Thank you!</p>
+            <p className="text-stone-600">{t("invoiceFullyPaid")}</p>
             <Link href="/parent/fees" className="mt-4 inline-block">
-              <Button variant="ghost">Back to fees</Button>
+              <Button variant="ghost">{t("backToFees")}</Button>
             </Link>
           </CardContent>
         </Card>
@@ -121,55 +123,55 @@ export default async function ParentPayPage({
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Pay fees</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Manual payment instructions - online card payments are not enabled yet.
-        </p>
+        <h1 className="text-2xl font-bold">{t("payFees")}</h1>
+        <p className="mt-1 text-sm text-stone-500">{t("manualPaymentNote")}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Invoice summary</CardTitle>
+          <CardTitle>{t("invoiceSummary")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
-          <p><span className="text-slate-500">Student:</span> {studentName}{student?.student_id ? ` (${student.student_id})` : ""}</p>
-          <p><span className="text-slate-500">Description:</span> {invoice.description ?? "School fees"}</p>
-          <p><span className="text-slate-500">Due date:</span> {invoice.due_date}</p>
-          <p><span className="text-slate-500">Total:</span> {formatCurrency(amount)}</p>
-          <p><span className="text-slate-500">Paid:</span> {formatCurrency(amountPaid)}</p>
+          <p><span className="text-stone-500">{t("labelStudent")}</span> {studentName}{student?.student_id ? ` (${student.student_id})` : ""}</p>
+          <p><span className="text-stone-500">{t("labelDescription")}</span> {invoice.description ?? t("schoolFees")}</p>
+          <p><span className="text-stone-500">{t("labelDueDate")}</span> {invoice.due_date}</p>
+          <p><span className="text-stone-500">{t("labelTotal")}</span> {formatCurrency(amount)}</p>
+          <p><span className="text-stone-500">{t("labelPaid")}</span> {formatCurrency(amountPaid)}</p>
           <p className="text-lg font-semibold">
-            <span className="text-slate-500 font-normal">Amount due:</span> {formatCurrency(balance)}
+            <span className="text-stone-500 font-normal">{t("labelAmountDue")}</span> {formatCurrency(balance)}
           </p>
-          <p className="text-slate-500">Reference: <span className="font-mono text-slate-900 dark:text-white">{invoice.id.slice(0, 8).toUpperCase()}</span></p>
+          <p className="text-stone-500">{t("labelReference")} <span className="font-mono text-stone-900 dark:text-white">{invoice.id.slice(0, 8).toUpperCase()}</span></p>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle>How to pay</CardTitle>
+          <CardTitle>{t("howToPay")}</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4 text-sm text-slate-600">
+        <CardContent className="space-y-4 text-sm text-stone-600">
           <ol className="list-decimal space-y-2 pl-5">
-            <li>Pay <strong>{formatCurrency(balance)}</strong> via bank transfer or mobile money.</li>
+            <li>{t("payStep1", { amount: formatCurrency(balance) })}</li>
             <li>
-              Use reference <strong className="font-mono">{invoice.id.slice(0, 8).toUpperCase()}</strong> and
-              student name <strong>{studentName}</strong> in the payment description.
+              {t("payStep2", {
+                ref: invoice.id.slice(0, 8).toUpperCase(),
+                name: studentName,
+              })}
             </li>
             <li>
-              Send proof of payment to{" "}
+              {t("payStep3Prefix")}{" "}
               {school?.contact_email ? (
-                <a href={`mailto:${school.contact_email}`} className="text-indigo-600 underline">
+                <a href={`mailto:${school.contact_email}`} className="text-primary underline">
                   {school.contact_email}
                 </a>
               ) : (
-                "the school finance office"
+                t("financeOffice")
               )}
-              {school?.contact_phone ? ` or call ${school.contact_phone}` : ""}.
+              {school?.contact_phone ? ` ${t("payStep3OrCall", { phone: school.contact_phone })}` : ""}.
             </li>
-            <li>Your payment will be recorded by the school and the invoice will update within 1-2 business days.</li>
+            <li>{t("payStep4")}</li>
           </ol>
           {school?.address && (
-            <p className="border-t pt-4 text-slate-500">
+            <p className="border-t pt-4 text-stone-500">
               {school.name} - {school.address}
             </p>
           )}
@@ -177,7 +179,7 @@ export default async function ParentPayPage({
       </Card>
 
       <Link href="/parent/fees">
-        <Button variant="ghost">Back to fees</Button>
+        <Button variant="ghost">{t("backToFees")}</Button>
       </Link>
     </div>
   );

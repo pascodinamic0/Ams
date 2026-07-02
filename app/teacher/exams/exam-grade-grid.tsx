@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ export function ExamGradeGrid({
   initialExamName,
   rows,
 }: Props) {
+  const t = useTranslations("teacher");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
@@ -53,7 +55,7 @@ export function ExamGradeGrid({
 
   async function handleSave() {
     if (!classId || !subjectId || !examName) {
-      toast.error("Select class, subject, and exam name");
+      toast.error(t("selectClassSubjectExam"));
       return;
     }
 
@@ -69,10 +71,10 @@ export function ExamGradeGrid({
 
       const result = await upsertGrades({ grades });
       if (result.error) {
-        toast.error(typeof result.error === "string" ? result.error : "Failed to save exam grades");
+        toast.error(typeof result.error === "string" ? result.error : t("saveExamGradesFailed"));
         return;
       }
-      toast.success("Exam grades saved");
+      toast.success(t("examGradesSaved"));
       router.refresh();
     });
   }
@@ -81,12 +83,12 @@ export function ExamGradeGrid({
     <div className="space-y-4">
       <div className="flex flex-wrap gap-4">
         <div>
-          <Label htmlFor="exam-class">Class</Label>
+          <Label htmlFor="exam-class">{t("classLabel")}</Label>
           <select
             id="exam-class"
             value={classId}
             onChange={(e) => updateParams({ class: e.target.value })}
-            className="mt-1 w-full min-w-[160px] rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+            className="mt-1 w-full min-w-[160px] rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           >
             {classes.map((c) => (
               <option key={c.id} value={c.id}>{c.name}</option>
@@ -94,25 +96,25 @@ export function ExamGradeGrid({
           </select>
         </div>
         <div>
-          <Label htmlFor="exam-subject">Subject</Label>
+          <Label htmlFor="exam-subject">{t("subjectLabel")}</Label>
           <select
             id="exam-subject"
             value={subjectId}
             onChange={(e) => updateParams({ subject: e.target.value })}
-            className="mt-1 w-full min-w-[160px] rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+            className="mt-1 w-full min-w-[160px] rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           >
-            <option value="">Select subject</option>
+            <option value="">{t("selectSubject")}</option>
             {subjects.map((s) => (
               <option key={s.id} value={s.id}>{s.name}</option>
             ))}
           </select>
         </div>
         <div>
-          <Label htmlFor="exam-name">Exam name</Label>
+          <Label htmlFor="exam-name">{t("examNameLabel")}</Label>
           <Input
             id="exam-name"
             defaultValue={examName}
-            placeholder="e.g. Midterm Exam"
+            placeholder={t("examNamePlaceholder")}
             onBlur={(e) => updateParams({ exam: e.target.value })}
             onKeyDown={(e) => {
               if (e.key === "Enter") updateParams({ exam: e.currentTarget.value });
@@ -122,26 +124,26 @@ export function ExamGradeGrid({
       </div>
 
       <Button size="sm" onClick={handleSave} disabled={pending || !subjectId || !examName}>
-        Save exam grades
+        {t("saveExamGrades")}
       </Button>
 
       {!subjectId || !examName ? (
-        <p className="text-sm text-slate-500">Select a subject and exam name to enter marks.</p>
+        <p className="text-sm text-stone-500">{t("selectSubjectExamToEnter")}</p>
       ) : rows.length === 0 ? (
-        <p className="text-sm text-slate-500">No students in this class.</p>
+        <p className="text-sm text-stone-500">{t("noStudentsInClass")}</p>
       ) : (
-        <div className="overflow-x-auto rounded-lg border dark:border-slate-700">
+        <div className="overflow-x-auto rounded-lg border dark:border-stone-700">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 dark:bg-slate-800">
+            <thead className="bg-stone-50 dark:bg-stone-800">
               <tr>
-                <th className="px-4 py-2 text-left font-medium">Student</th>
-                <th className="px-4 py-2 text-left font-medium">Marks</th>
-                <th className="px-4 py-2 text-left font-medium">Grade</th>
+                <th className="px-4 py-2 text-left font-medium">{t("studentCol")}</th>
+                <th className="px-4 py-2 text-left font-medium">{t("marksCol")}</th>
+                <th className="px-4 py-2 text-left font-medium">{t("gradeCol")}</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.student_id} className="border-t dark:border-slate-700">
+                <tr key={r.student_id} className="border-t dark:border-stone-700">
                   <td className="px-4 py-2">{r.student_name}</td>
                   <td className="px-4 py-2">
                     <Input

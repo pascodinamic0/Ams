@@ -82,7 +82,7 @@ export function EventForm({ branchId }: { branchId: string }) {
     <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border p-4">
       <div>
         <h2 className="text-lg font-semibold">Add event or holiday</h2>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-stone-500">
           Events marked for the website appear on the school&apos;s public site automatically.
         </p>
       </div>
@@ -109,7 +109,7 @@ export function EventForm({ branchId }: { branchId: string }) {
               setType(next);
               if (next === "holiday") setPurpose("general");
             }}
-            className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+            className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           >
             <option value="event">Event</option>
             <option value="holiday">Holiday</option>
@@ -130,7 +130,7 @@ export function EventForm({ branchId }: { branchId: string }) {
                   if (!title) setTitle("Campus visit");
                 }
               }}
-              className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+              className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             >
               <option value="general">General event</option>
               <option value="campus_visit">Campus visit slot (enrollment)</option>
@@ -159,7 +159,7 @@ export function EventForm({ branchId }: { branchId: string }) {
       {!isHoliday && isCampusVisit && (
         <div className="space-y-3 rounded-lg border border-dashed border-amber-200 bg-amber-50/50 p-4 dark:border-amber-900 dark:bg-amber-950/20">
           <p className="text-sm font-medium">Campus visit slot</p>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-sm text-stone-600 dark:text-stone-400">
             This time slot appears on the online enrollment page for families to book after they
             submit an application. Set a start time so families know when to arrive.
           </p>
@@ -176,7 +176,7 @@ export function EventForm({ branchId }: { branchId: string }) {
       )}
 
       {!isHoliday && !isCampusVisit && (
-        <div className="space-y-3 rounded-lg border border-dashed p-4 dark:border-slate-700">
+        <div className="space-y-3 rounded-lg border border-dashed p-4 dark:border-stone-700">
           <p className="text-sm font-medium">School website</p>
           <label className="flex items-center gap-2 text-sm">
             <input

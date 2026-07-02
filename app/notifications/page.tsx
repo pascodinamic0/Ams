@@ -28,10 +28,10 @@ export default async function NotificationsPage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
             {t("title")}
           </h1>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
             {unreadCount > 0
               ? t("unreadCount", { count: unreadCount })
               : t("allCaughtUp")}
@@ -68,14 +68,14 @@ export default async function NotificationsPage() {
           description={t("noNotificationsDesc")}
         />
       ) : (
-        <ul className="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white dark:divide-slate-800 dark:border-slate-700 dark:bg-slate-900">
+        <ul className="divide-y divide-stone-200 overflow-hidden rounded-xl border border-stone-200 bg-white dark:divide-stone-800 dark:border-stone-700 dark:bg-stone-900">
           {notifications.map((notification) => (
             <li
               key={notification.id}
               className={`px-4 py-4 sm:px-5 ${
                 notification.is_read
-                  ? "bg-white dark:bg-slate-900"
-                  : "bg-indigo-50/60 dark:bg-indigo-950/20"
+                  ? "bg-white dark:bg-stone-900"
+                  : "bg-primary-light/60 dark:bg-primary-light/20"
               }`}
             >
               <div className="flex items-start justify-between gap-4">
@@ -83,20 +83,20 @@ export default async function NotificationsPage() {
                   <div className="flex items-center gap-2">
                     {!notification.is_read && (
                       <span
-                        className="h-2 w-2 shrink-0 rounded-full bg-indigo-600"
+                        className="h-2 w-2 shrink-0 rounded-full bg-primary"
                         aria-hidden="true"
                       />
                     )}
-                    <p className="font-medium text-slate-900 dark:text-white">
+                    <p className="font-medium text-stone-900 dark:text-white">
                       {notification.title}
                     </p>
                   </div>
                   {notification.body && (
-                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                    <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
                       {notification.body}
                     </p>
                   )}
-                  <p className="mt-2 text-xs text-slate-400">
+                  <p className="mt-2 text-xs text-stone-400">
                     {formatNotificationTime(notification.created_at)}
                   </p>
                 </div>

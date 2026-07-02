@@ -36,21 +36,21 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">
-      <div className="hidden flex-col justify-center bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-800 p-12 lg:flex lg:w-[45%]">
+      <div className="hidden flex-col justify-center bg-gradient-to-br from-teal-950 via-teal-900 to-teal-800 p-12 lg:flex lg:w-[45%]">
         <div>
           <h2 className="text-3xl font-bold leading-tight text-white">
             {t("registerBrandTitle")}
           </h2>
-          <p className="mt-4 text-indigo-200">
+          <p className="mt-4 text-teal-200">
             {t("registerBrandSubtitle", { productName: companyIdentity.productName })}
           </p>
           <div className="mt-8 space-y-3">
             {registerSteps.map((s) => (
               <div key={s.step} className="flex items-center gap-3">
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-500/40 text-xs font-bold text-white">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/40 text-xs font-bold text-white">
                   {s.step}
                 </div>
-                <span className="text-sm text-indigo-200">{s.label}</span>
+                <span className="text-sm text-teal-200">{s.label}</span>
               </div>
             ))}
           </div>
@@ -60,10 +60,10 @@ export default function RegisterPage() {
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
               {t("registerTitle")}
             </h1>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
               {t("registerFormSubtitle", { productName: companyIdentity.productName })}
             </p>
           </div>
@@ -76,11 +76,11 @@ export default function RegisterPage() {
 
           <RegisterForm />
 
-          <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-6 text-center text-sm text-stone-500 dark:text-stone-400">
             {t("alreadyHaveAccount")}{" "}
             <Link
               href="/login"
-              className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+              className="font-medium text-primary hover:text-primary-hover dark:text-primary"
             >
               {t("signInLink")}
             </Link>
@@ -178,7 +178,7 @@ function RegisterOAuthSection() {
 
 function RegisterOAuthSkeleton() {
   return (
-    <div className="h-10 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />
+    <div className="h-10 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
   );
 }
 

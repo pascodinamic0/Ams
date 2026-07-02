@@ -6,13 +6,15 @@ import {
 } from "@/lib/db";
 import { TimetableView } from "@/components/portal/timetable-view";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getTranslations } from "next-intl/server";
 
 export default async function ParentTimetablePage() {
+  const t = await getTranslations("parent");
   const profile = await getCurrentProfile();
 
   if (!profile) {
     return (
-      <EmptyState title="Not signed in" description="Please log in to view timetables." />
+      <EmptyState title={t("notSignedIn")} description={t("notSignedInDescTimetable")} />
     );
   }
 
@@ -20,8 +22,8 @@ export default async function ParentTimetablePage() {
   if (!guardian) {
     return (
       <EmptyState
-        title="No guardian profile"
-        description="Your account is not linked to a guardian profile."
+        title={t("noGuardianProfile")}
+        description={t("noGuardianProfileDescShort")}
       />
     );
   }
@@ -38,25 +40,23 @@ export default async function ParentTimetablePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Timetable</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Weekly class schedules for your children (read-only).
-        </p>
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("timetableTitle")}</h1>
+        <p className="mt-1 text-sm text-stone-500">{t("timetableSubtitle")}</p>
       </div>
 
       {children.length === 0 ? (
         <EmptyState
-          title="No students linked"
-          description="Contact the school to link your children to your account."
+          title={t("noStudentsLinked")}
+          description={t("noStudentsLinkedDesc")}
         />
       ) : (
         <div className="space-y-10">
           {timetables.map(({ child, slots }) => (
             <div key={child.id}>
               {!child.class_id ? (
-                <div className="rounded-xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
-                  <h2 className="font-semibold text-slate-900 dark:text-white">{child.name}</h2>
-                  <p className="mt-2 text-sm text-slate-500">Not assigned to a class yet.</p>
+                <div className="rounded-xl border border-stone-200 bg-white p-6 dark:border-stone-700 dark:bg-stone-900">
+                  <h2 className="font-semibold text-stone-900 dark:text-white">{child.name}</h2>
+                  <p className="mt-2 text-sm text-stone-500">{t("notAssignedToClass")}</p>
                 </div>
               ) : (
                 <TimetableView

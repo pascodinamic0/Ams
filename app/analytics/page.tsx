@@ -40,17 +40,17 @@ export default async function AnalyticsDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t("title")}</h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t("subtitle")}</p>
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("title")}</h1>
+        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">{t("subtitle")}</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {kpis.map((kpi) => (
           <Card key={kpi.label}>
             <CardContent className="p-6">
-              <p className="text-sm font-medium text-slate-500">{kpi.label}</p>
-              <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">{kpi.value}</p>
-              <p className="mt-1 text-xs text-slate-400">{kpi.sub}</p>
+              <p className="text-sm font-medium text-stone-500">{kpi.label}</p>
+              <p className="mt-2 text-3xl font-bold text-stone-900 dark:text-white">{kpi.value}</p>
+              <p className="mt-1 text-xs text-stone-400">{kpi.sub}</p>
             </CardContent>
           </Card>
         ))}

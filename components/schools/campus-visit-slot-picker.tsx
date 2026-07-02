@@ -88,7 +88,7 @@ export function CampusVisitSlotPicker({
     return (
       <div className="mx-auto max-w-xl">
         <h1 className="text-2xl font-bold">You&apos;re all set</h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+        <p className="mt-2 text-stone-600 dark:text-stone-400">
           Your enrollment application and campus visit are scheduled at {schoolName}.
         </p>
         <div className="mt-6 space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 dark:border-emerald-900 dark:bg-emerald-950/40">
@@ -114,11 +114,11 @@ export function CampusVisitSlotPicker({
             </p>
           )}
           {selected?.booking_procedure && (
-            <p className="text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+            <p className="text-sm leading-relaxed text-stone-700 dark:text-stone-300">
               {selected.booking_procedure}
             </p>
           )}
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-stone-600 dark:text-stone-400">
             Bring a valid ID and any documents for {studentName}. The admissions team may contact you
             before your visit.
           </p>
@@ -141,10 +141,10 @@ export function CampusVisitSlotPicker({
   return (
     <div className="mx-auto max-w-xl">
       <h1 className="text-2xl font-bold">Book your campus visit</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+      <p className="mt-2 text-stone-600 dark:text-stone-400">
         Choose a time to visit {schoolName} and complete enrollment for {studentName} in person.
       </p>
-      <p className="mt-1 text-sm text-zinc-500">
+      <p className="mt-1 text-sm text-stone-500">
         Application reference: <span className="font-mono">{admissionApplicationId}</span>
       </p>
 
@@ -154,8 +154,8 @@ export function CampusVisitSlotPicker({
             key={slot.id}
             className={`flex cursor-pointer gap-4 rounded-xl border p-4 transition-colors ${
               selectedId === slot.id
-                ? "border-indigo-400 bg-indigo-50 dark:border-indigo-700 dark:bg-indigo-950/30"
-                : "border-zinc-200 hover:border-zinc-300 dark:border-zinc-800"
+                ? "border-primary-400 bg-primary-light dark:border-primary-700 dark:bg-primary-light/30"
+                : "border-stone-200 hover:border-stone-300 dark:border-stone-800"
             }`}
           >
             <input
@@ -168,14 +168,14 @@ export function CampusVisitSlotPicker({
             />
             <div className="flex-1">
               <p className="font-medium">{slot.title}</p>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+              <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
                 {formatSlotDate(slot.date, slot.start_time)}
               </p>
               {slot.location && (
-                <p className="mt-1 text-sm text-zinc-500">{slot.location}</p>
+                <p className="mt-1 text-sm text-stone-500">{slot.location}</p>
               )}
               {slot.description && (
-                <p className="mt-2 text-sm text-zinc-500">{slot.description}</p>
+                <p className="mt-2 text-sm text-stone-500">{slot.description}</p>
               )}
             </div>
           </label>
@@ -196,7 +196,7 @@ export function CampusVisitSlotPicker({
       <div className="mt-8 flex flex-wrap justify-between gap-3">
         <Link
           href={`/schools/${slug}`}
-          className="text-sm text-zinc-500 hover:underline"
+          className="text-sm text-stone-500 hover:underline"
         >
           Skip for now
         </Link>

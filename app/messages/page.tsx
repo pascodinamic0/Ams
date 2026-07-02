@@ -34,9 +34,9 @@ export default async function MessagesPage() {
 
   return (
     <div className="flex h-[calc(100vh-8rem)] gap-4 overflow-hidden">
-      <div className="flex w-80 shrink-0 flex-col rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
-          <h2 className="font-semibold text-slate-900 dark:text-white">{t("conversations")}</h2>
+      <div className="flex w-80 shrink-0 flex-col rounded-xl border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900">
+        <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3 dark:border-stone-700">
+          <h2 className="font-semibold text-stone-900 dark:text-white">{t("conversations")}</h2>
           <NewConversationButton
             role={role}
             schoolId={schoolId}
@@ -53,10 +53,10 @@ export default async function MessagesPage() {
         </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+      <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-            <svg className="h-8 w-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-stone-100 dark:bg-stone-800">
+            <svg className="h-8 w-8 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -65,10 +65,10 @@ export default async function MessagesPage() {
               />
             </svg>
           </div>
-          <h3 className="text-base font-semibold text-slate-700 dark:text-slate-300">
+          <h3 className="text-base font-semibold text-stone-700 dark:text-stone-300">
             {t("selectConversation")}
           </h3>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-stone-400">
             {isParent ? t("startNewWithStaff") : t("startNewWithParent")}
           </p>
         </div>

@@ -28,21 +28,21 @@ export function Breadcrumbs({ customLabels = {} }: BreadcrumbsProps) {
     <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm">
       <Link
         href="/"
-        className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+        className="text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300"
       >
         Home
       </Link>
       {items.map((item) => (
         <span key={item.href} className="flex items-center gap-2">
-          <span className="text-zinc-400">/</span>
+          <span className="text-stone-400">/</span>
           {item.isLast ? (
-            <span className="font-medium text-zinc-900 dark:text-zinc-100">
+            <span className="font-medium text-stone-900 dark:text-stone-100">
               {item.label}
             </span>
           ) : (
             <Link
               href={item.href}
-              className="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300"
+              className="text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-300"
             >
               {item.label}
             </Link>

@@ -92,7 +92,7 @@ export function VehicleForm({
   }
 
   if (routes.length === 0) {
-    return <p className="text-sm text-slate-500">Create a route before adding vehicles.</p>;
+    return <p className="text-sm text-stone-500">Create a route before adding vehicles.</p>;
   }
 
   return (
@@ -102,7 +102,7 @@ export function VehicleForm({
         <select
           value={routeId}
           onChange={(e) => setRouteId(e.target.value)}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           required
         >
           {routes.map((r) => (
@@ -151,7 +151,7 @@ export function StudentMappingForm({
   }
 
   if (vehicles.length === 0 || students.length === 0) {
-    return <p className="text-sm text-slate-500">Add vehicles and students before mapping.</p>;
+    return <p className="text-sm text-stone-500">Add vehicles and students before mapping.</p>;
   }
 
   return (
@@ -161,7 +161,7 @@ export function StudentMappingForm({
         <select
           value={vehicleId}
           onChange={(e) => setVehicleId(e.target.value)}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           required
         >
           {vehicles.map((v) => (
@@ -174,7 +174,7 @@ export function StudentMappingForm({
         <select
           value={studentId}
           onChange={(e) => setStudentId(e.target.value)}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           required
         >
           {students.map((s) => (

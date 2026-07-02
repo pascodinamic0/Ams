@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import { format } from "date-fns";
+import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTeacherClasses, getAttendanceForClass } from "@/lib/db";
@@ -10,9 +11,11 @@ export default async function AttendancePage({
 }: {
   searchParams: Promise<{ class?: string; date?: string }>;
 }) {
+  const t = await getTranslations("teacher");
+  const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   if (!profile) {
-    return <p className="text-sm text-slate-500">Please sign in to take attendance.</p>;
+    return <p className="text-sm text-stone-500">{t("signInRequiredAttendance")}</p>;
   }
 
   const params = await searchParams;
@@ -21,10 +24,10 @@ export default async function AttendancePage({
   if (classes.length === 0) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Attendance</h1>
+        <h1 className="text-2xl font-bold">{t("attendanceTitle")}</h1>
         <EmptyState
-          title="No classes assigned"
-          description="You need timetable assignments before taking attendance."
+          title={t("noClassesAssigned")}
+          description={t("timetableRequiredForAttendance")}
         />
       </div>
     );
@@ -38,8 +41,8 @@ export default async function AttendancePage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Attendance</h1>
-      <Suspense fallback={<p className="text-sm text-slate-500">Loading…</p>}>
+      <h1 className="text-2xl font-bold">{t("attendanceTitle")}</h1>
+      <Suspense fallback={<p className="text-sm text-stone-500">{tc("loading")}</p>}>
         <AttendanceSheet
           classes={classes.map((c) => ({ id: c.id, name: c.name }))}
           initialClassId={classId}

@@ -52,16 +52,16 @@ export default async function StudentDashboard() {
     <div className="space-y-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
             {t("welcome", { name: student.first_name })}
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-stone-500">
             {student.class_name ?? t("noClassAssigned")}
           </p>
         </div>
         {student.student_id && (
           <div>
-            <p className="mb-1 text-xs text-slate-500">{t("yourStudentId")}</p>
+            <p className="mb-1 text-xs text-stone-500">{t("yourStudentId")}</p>
             <CopyableBadge value={student.student_id} label={student.student_id} variant="button" />
           </div>
         )}
@@ -75,11 +75,11 @@ export default async function StudentDashboard() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-          <h2 className="font-semibold text-slate-900 dark:text-white">{t("todaysSchedule")}</h2>
-          <p className="text-xs text-slate-500">{format(new Date(), "EEEE, MMMM d")}</p>
+        <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+          <h2 className="font-semibold text-stone-900 dark:text-white">{t("todaysSchedule")}</h2>
+          <p className="text-xs text-stone-500">{format(new Date(), "EEEE, MMMM d")}</p>
           {todaySlots.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-500">
+            <p className="mt-4 text-sm text-stone-500">
               {isWeekend ? t("noClassesWeekend") : t("noClassesToday")}
             </p>
           ) : (
@@ -87,36 +87,36 @@ export default async function StudentDashboard() {
               {todaySlots.map((slot) => (
                 <li
                   key={slot.id}
-                  className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm dark:bg-slate-800/50"
+                  className="flex items-center justify-between rounded-lg bg-stone-50 px-3 py-2 text-sm dark:bg-stone-800/50"
                 >
                   <div>
-                    <p className="font-medium text-slate-900 dark:text-white">
+                    <p className="font-medium text-stone-900 dark:text-white">
                       {slot.subject_name ?? "—"}
                     </p>
                     {slot.teacher_name && (
-                      <p className="text-xs text-slate-500">{slot.teacher_name}</p>
+                      <p className="text-xs text-stone-500">{slot.teacher_name}</p>
                     )}
                   </div>
-                  <span className="text-xs text-slate-400">{t("period", { period: slot.period })}</span>
+                  <span className="text-xs text-stone-400">{t("period", { period: slot.period })}</span>
                 </li>
               ))}
             </ul>
           )}
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-          <h2 className="font-semibold text-slate-900 dark:text-white">{t("assignmentsDue")}</h2>
+        <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+          <h2 className="font-semibold text-stone-900 dark:text-white">{t("assignmentsDue")}</h2>
           {upcoming.length === 0 ? (
-            <p className="mt-4 text-sm text-slate-500">{t("noUpcomingAssignments")}</p>
+            <p className="mt-4 text-sm text-stone-500">{t("noUpcomingAssignments")}</p>
           ) : (
             <ul className="mt-4 space-y-2">
               {upcoming.map((a) => (
                 <li
                   key={a.id}
-                  className="rounded-lg border border-slate-100 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-800/50"
+                  className="rounded-lg border border-stone-100 bg-stone-50 px-3 py-2 dark:border-stone-700 dark:bg-stone-800/50"
                 >
-                  <p className="text-sm font-medium text-slate-900 dark:text-white">{a.title}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-sm font-medium text-stone-900 dark:text-white">{a.title}</p>
+                  <p className="text-xs text-stone-500">
                     {t("dueDate", {
                       date: a.due_date ? format(new Date(a.due_date), "MMM d, yyyy") : "—",
                     })}
@@ -125,25 +125,25 @@ export default async function StudentDashboard() {
               ))}
             </ul>
           )}
-          <Link href="/student/assignments" className="mt-4 inline-block text-sm text-indigo-600 hover:underline">
+          <Link href="/student/assignments" className="mt-4 inline-block text-sm text-primary hover:underline">
             {t("viewAllAssignments")}
           </Link>
         </div>
       </div>
 
       {events.length > 0 && (
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+        <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-stone-900">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-semibold text-slate-900 dark:text-white">{t("upcomingEvents")}</h2>
-            <Link href="/student/events" className="text-sm text-indigo-600 hover:underline">
+            <h2 className="font-semibold text-stone-900 dark:text-white">{t("upcomingEvents")}</h2>
+            <Link href="/student/events" className="text-sm text-primary hover:underline">
               {t("viewAll")}
             </Link>
           </div>
           <ul className="space-y-2">
             {events.map((e) => (
               <li key={e.id} className="flex items-center justify-between text-sm">
-                <span className="font-medium text-slate-900 dark:text-white">{e.title}</span>
-                <span className="text-slate-500">{format(new Date(e.date), "MMM d")}</span>
+                <span className="font-medium text-stone-900 dark:text-white">{e.title}</span>
+                <span className="text-stone-500">{format(new Date(e.date), "MMM d")}</span>
               </li>
             ))}
           </ul>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +10,8 @@ import { createSubject } from "@/lib/actions/subjects";
 import { toast } from "@/lib/toast";
 
 export function SubjectForm({ branchId }: { branchId: string }) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,18 +22,18 @@ export function SubjectForm({ branchId }: { branchId: string }) {
     const result = await createSubject({ name, branch_id: branchId });
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to create subject");
+      toast.error(t("subjectCreateFailed"));
       return;
     }
-    toast.success("Subject created");
+    toast.success(t("subjectCreated"));
     setName("");
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-3">
-      <div className="flex-1"><Label>Name</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
-      <div className="flex items-end"><Button type="submit" disabled={loading}>Add subject</Button></div>
+      <div className="flex-1"><Label>{tc("name")}</Label><Input value={name} onChange={(e) => setName(e.target.value)} required /></div>
+      <div className="flex items-end"><Button type="submit" disabled={loading}>{t("addSubject")}</Button></div>
     </form>
   );
 }

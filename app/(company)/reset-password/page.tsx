@@ -73,10 +73,10 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+      <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">
         {t("resetPasswordTitle")}
       </h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+      <p className="mt-2 text-stone-600 dark:text-stone-400">
         {t("resetPasswordSubtitle")}
       </p>
       <FormWrapper
@@ -88,7 +88,7 @@ export default function ResetPasswordPage() {
       </FormWrapper>
       <Link
         href="/login"
-        className="mt-6 block text-center text-sm text-zinc-600 hover:underline dark:text-zinc-400"
+        className="mt-6 block text-center text-sm text-stone-600 hover:underline dark:text-stone-400"
       >
         {t("backToLogin")}
       </Link>

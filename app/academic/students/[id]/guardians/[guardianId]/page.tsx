@@ -27,7 +27,7 @@ export default async function StudentGuardianPage({
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-stone-500">
           Guardian for {student.first_name} {student.last_name}
         </p>
         <h1 className="text-2xl font-bold">{guardian.name}</h1>

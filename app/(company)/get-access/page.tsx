@@ -28,7 +28,7 @@ function OnboardingJourney() {
         number: "03",
         title: t("step3Title"),
         desc: t("step3Desc"),
-        icon: <Users className="h-6 w-6 text-indigo-500" />,
+        icon: <Users className="h-6 w-6 text-primary" />,
       },
       {
         number: "04",
@@ -65,18 +65,18 @@ function OnboardingJourney() {
     <section className="py-16 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center sm:mb-20">
-          <h2 className="text-3xl font-black text-slate-900 dark:text-white md:text-5xl">
+          <h2 className="text-3xl font-black text-stone-900 dark:text-white md:text-5xl">
             {t("journeyTitle")}
           </h2>
-          <p className="mt-4 text-base text-slate-500 dark:text-slate-400 sm:mt-6 sm:text-xl">
+          <p className="mt-4 text-base text-stone-500 dark:text-stone-400 sm:mt-6 sm:text-xl">
             {t("journeySubtitle")}
           </p>
         </div>
 
         <div className="relative mb-10 hidden lg:block">
-          <div className="absolute left-[12.5%] right-[12.5%] top-6 h-0.5 bg-slate-200 dark:bg-slate-800" />
+          <div className="absolute left-[12.5%] right-[12.5%] top-6 h-0.5 bg-stone-200 dark:bg-stone-800" />
           <motion.div
-            className="absolute left-[12.5%] top-6 h-0.5 origin-left bg-gradient-to-r from-indigo-600 to-purple-500"
+            className="absolute left-[12.5%] top-6 h-0.5 origin-left bg-gradient-to-r from-teal-600 to-teal-500"
             initial={false}
             animate={{
               width: `${(activeIndex / (steps.length - 1)) * 75}%`,
@@ -106,17 +106,17 @@ function OnboardingJourney() {
                     className={cn(
                       "relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 text-sm font-black shadow-sm transition-colors",
                       isActive
-                        ? "border-indigo-600 bg-indigo-600 text-white shadow-lg shadow-indigo-600/30"
+                        ? "border-primary-600 bg-primary text-white shadow-lg shadow-primary/30"
                         : isComplete
-                          ? "border-indigo-600 bg-indigo-600 text-white"
-                          : "border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-500"
+                          ? "border-primary-600 bg-primary text-white"
+                          : "border-stone-200 bg-white text-stone-400 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-500"
                     )}
                   >
                     {step.number}
                     {isActive && (
                       <motion.span
                         layoutId="step-ring"
-                        className="absolute inset-0 rounded-full border-2 border-indigo-400"
+                        className="absolute inset-0 rounded-full border-2 border-primary-400"
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1.35 }}
                         transition={{ type: "spring", stiffness: 260, damping: 18 }}
@@ -154,17 +154,17 @@ function OnboardingJourney() {
                   "group relative cursor-pointer rounded-2xl border p-5 transition-shadow sm:p-6",
                   "flex gap-4 md:block md:gap-0",
                   isActive
-                    ? "border-indigo-500/40 bg-indigo-50/50 shadow-lg shadow-indigo-500/10 dark:border-indigo-500/30 dark:bg-indigo-950/20"
-                    : "border-slate-200 bg-white hover:border-indigo-300/50 hover:shadow-md dark:border-slate-800 dark:bg-slate-900/50"
+                    ? "border-primary-500/40 bg-primary-light/50 shadow-lg shadow-primary/10 dark:border-primary-500/30 dark:bg-primary-light/20"
+                    : "border-stone-200 bg-white hover:border-primary-300/50 hover:shadow-md dark:border-stone-800 dark:bg-stone-900/50"
                 )}
               >
                 {!isLast && (
                   <div
                     aria-hidden
-                    className="absolute left-[2.125rem] top-16 bottom-0 -mb-6 w-px bg-slate-200 dark:bg-slate-800 md:hidden"
+                    className="absolute left-[2.125rem] top-16 bottom-0 -mb-6 w-px bg-stone-200 dark:bg-stone-800 md:hidden"
                   >
                     <motion.div
-                      className="w-full bg-gradient-to-b from-indigo-600 to-purple-500"
+                      className="w-full bg-gradient-to-b from-teal-600 to-teal-500"
                       initial={false}
                       animate={{ height: isComplete ? "100%" : isActive ? "50%" : "0%" }}
                       transition={{ type: "spring", stiffness: 120, damping: 22 }}
@@ -180,14 +180,14 @@ function OnboardingJourney() {
                   className={cn(
                     "relative z-10 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 text-xs font-black sm:h-12 sm:w-12 sm:text-sm md:hidden",
                     isActive || isComplete
-                      ? "border-indigo-600 bg-indigo-600 text-white shadow-md shadow-indigo-600/25"
-                      : "border-slate-200 bg-white text-slate-400 dark:border-slate-700 dark:bg-slate-900"
+                      ? "border-primary-600 bg-primary text-white shadow-md shadow-primary/25"
+                      : "border-stone-200 bg-white text-stone-400 dark:border-stone-700 dark:bg-stone-900"
                   )}
                 >
                   {step.number}
                   {isActive && (
                     <motion.span
-                      className="absolute inset-0 rounded-full border-2 border-indigo-400/80"
+                      className="absolute inset-0 rounded-full border-2 border-primary-400/80"
                       initial={{ opacity: 0, scale: 0.85 }}
                       animate={{ opacity: [0.6, 0], scale: [1, 1.45] }}
                       transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut" }}
@@ -196,7 +196,7 @@ function OnboardingJourney() {
                 </motion.div>
 
                 <div className="relative z-10 min-w-0 flex-1 lg:pt-2">
-                  <p className="mb-2 hidden text-xs font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 md:block lg:hidden">
+                  <p className="mb-2 hidden text-xs font-black uppercase tracking-widest text-primary dark:text-primary md:block lg:hidden">
                     {t("stepLabel", { number: step.number })}
                   </p>
                   <motion.div
@@ -211,8 +211,8 @@ function OnboardingJourney() {
                     className={cn(
                       "mb-4 flex h-12 w-12 items-center justify-center rounded-xl border shadow-sm sm:mb-6 sm:h-14 sm:w-14 sm:rounded-2xl sm:shadow-xl",
                       isActive
-                        ? "border-indigo-200 bg-white dark:border-indigo-800 dark:bg-slate-900"
-                        : "border-slate-100 bg-white dark:border-slate-800 dark:bg-slate-900"
+                        ? "border-primary-200 bg-white dark:border-primary-800 dark:bg-stone-900"
+                        : "border-stone-100 bg-white dark:border-stone-800 dark:bg-stone-900"
                     )}
                   >
                     {step.icon}
@@ -221,13 +221,13 @@ function OnboardingJourney() {
                     className={cn(
                       "text-lg font-bold sm:text-2xl",
                       isActive
-                        ? "text-indigo-950 dark:text-white"
-                        : "text-slate-900 dark:text-white"
+                        ? "text-teal-950 dark:text-white"
+                        : "text-stone-900 dark:text-white"
                     )}
                   >
                     {step.title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400 sm:mt-4 sm:text-base sm:font-medium">
+                  <p className="mt-2 text-sm leading-relaxed text-stone-500 dark:text-stone-400 sm:mt-4 sm:text-base sm:font-medium">
                     {step.desc}
                   </p>
                 </div>
@@ -255,9 +255,9 @@ export default function GetAccessPage() {
   ];
 
   return (
-    <div className="bg-white dark:bg-[#0a0f1e] min-h-screen">
-      <section className="relative flex min-h-[calc(100dvh-4rem)] items-center overflow-hidden border-b border-slate-200/50 px-4 pb-16 pt-28 sm:min-h-0 sm:block sm:px-0 sm:pb-24 sm:pt-36 md:pt-40">
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 h-64 w-64 rounded-full bg-indigo-500/10 blur-[100px] sm:h-96 sm:w-96" />
+    <div className="bg-white dark:bg-[#0c1222] min-h-screen">
+      <section className="relative flex min-h-[calc(100dvh-4rem)] items-center overflow-hidden border-b border-stone-200/50 px-4 pb-16 pt-28 sm:min-h-0 sm:block sm:px-0 sm:pb-24 sm:pt-36 md:pt-40">
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 h-64 w-64 rounded-full bg-primary/10 blur-[100px] sm:h-96 sm:w-96" />
         <div className="absolute bottom-0 left-0 -mb-20 -ml-20 h-64 w-64 rounded-full bg-purple-500/5 blur-[100px] sm:h-96 sm:w-96" />
 
         <div className="relative z-10 mx-auto w-full max-w-4xl text-center sm:px-4">
@@ -266,30 +266,30 @@ export default function GetAccessPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1.5 text-xs font-bold text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400 sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
-              <Zap className="h-3.5 w-3.5 shrink-0 fill-indigo-600 dark:fill-indigo-400 sm:h-4 sm:w-4" />
+            <span className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-primary-light px-3 py-1.5 text-xs font-bold text-primary dark:bg-primary-light/40 dark:text-primary sm:gap-2 sm:px-4 sm:py-2 sm:text-sm">
+              <Zap className="h-3.5 w-3.5 shrink-0 fill-primary dark:fill-primary sm:h-4 sm:w-4" />
               {t("heroBadge")}
             </span>
-            <h1 className="mt-5 text-[2rem] font-black leading-[1.1] tracking-tight text-slate-900 dark:text-white sm:mt-8 sm:text-5xl sm:leading-tight md:text-7xl">
+            <h1 className="mt-5 text-[2rem] font-black leading-[1.1] tracking-tight text-stone-900 dark:text-white sm:mt-8 sm:text-5xl sm:leading-tight md:text-7xl">
               {t("heroTitle")}{" "}
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-teal-600 to-teal-600 bg-clip-text text-transparent">
                 {t("heroTitleHighlight", { productName: companyIdentity.productName })}
               </span>
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-slate-500 dark:text-slate-400 sm:mt-8 sm:text-xl">
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-stone-500 dark:text-stone-400 sm:mt-8 sm:text-xl">
               {t("heroSubtitle")}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:mt-12 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4 md:gap-6">
               <Link
                 href="/register"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-6 py-4 text-base font-bold text-white shadow-xl shadow-indigo-600/20 transition-all hover:bg-indigo-500 active:scale-[0.98] sm:w-auto sm:px-10 sm:py-5 sm:text-lg sm:hover:scale-105 sm:active:scale-95"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 text-base font-bold text-white shadow-xl shadow-primary/20 transition-all hover:bg-primary active:scale-[0.98] sm:w-auto sm:px-10 sm:py-5 sm:text-lg sm:hover:scale-105 sm:active:scale-95"
               >
                 {t("createSchoolAccount")}
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 href="/login"
-                className="inline-flex w-full items-center justify-center rounded-2xl border-2 border-slate-200 bg-white px-6 py-4 text-base font-bold text-slate-700 transition-all hover:bg-slate-50 active:scale-[0.98] dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:hover:bg-slate-800 sm:w-auto sm:px-10 sm:py-5 sm:text-lg sm:active:scale-95"
+                className="inline-flex w-full items-center justify-center rounded-2xl border-2 border-stone-200 bg-white px-6 py-4 text-base font-bold text-stone-700 transition-all hover:bg-stone-50 active:scale-[0.98] dark:border-stone-800 dark:bg-stone-900 dark:text-white dark:hover:bg-stone-800 sm:w-auto sm:px-10 sm:py-5 sm:text-lg sm:active:scale-95"
               >
                 {t("alreadyHaveAccount")}
               </Link>
@@ -300,17 +300,17 @@ export default function GetAccessPage() {
 
       <OnboardingJourney />
 
-      <section className="bg-slate-50 dark:bg-[#060a16] py-32 border-y border-slate-200 dark:border-slate-800">
+      <section className="bg-stone-50 dark:bg-[#0c1222] py-32 border-y border-stone-200 dark:border-stone-800">
         <div className="mx-auto max-w-5xl px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-black text-slate-900 dark:text-white md:text-5xl">
+            <h2 className="text-3xl font-black text-stone-900 dark:text-white md:text-5xl">
               {t("includedTitle")}
             </h2>
-            <p className="mt-6 text-xl text-slate-500 dark:text-slate-400">
+            <p className="mt-6 text-xl text-stone-500 dark:text-stone-400">
               {t("includedSubtitle")}
             </p>
 
@@ -322,12 +322,12 @@ export default function GetAccessPage() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.05 }}
-                  className="flex items-center gap-4 rounded-[1.5rem] border border-slate-200 bg-white px-8 py-6 dark:border-slate-800 dark:bg-slate-900 transition-all hover:shadow-lg hover:border-indigo-500/30"
+                  className="flex items-center gap-4 rounded-[1.5rem] border border-stone-200 bg-white px-8 py-6 dark:border-stone-800 dark:bg-stone-900 transition-all hover:shadow-lg hover:border-primary-500/30"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-50 dark:bg-indigo-950">
-                    <CheckCircle2 className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light dark:bg-primary-light">
+                    <CheckCircle2 className="h-6 w-6 text-primary dark:text-primary" />
                   </div>
-                  <span className="text-lg font-bold text-slate-700 dark:text-slate-300">
+                  <span className="text-lg font-bold text-stone-700 dark:text-stone-300">
                     {item}
                   </span>
                 </motion.div>
@@ -337,12 +337,12 @@ export default function GetAccessPage() {
             <div className="mt-20">
               <Link
                 href="/register"
-                className="group inline-flex items-center gap-3 rounded-2xl bg-indigo-600 px-12 py-6 text-xl font-black text-white shadow-2xl shadow-indigo-600/30 transition-all hover:bg-indigo-500 hover:scale-105 active:scale-95"
+                className="group inline-flex items-center gap-3 rounded-2xl bg-primary px-12 py-6 text-xl font-black text-white shadow-2xl shadow-primary/30 transition-all hover:bg-primary hover:scale-105 active:scale-95"
               >
                 {t("createMySchoolAccount")}
                 <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2" />
               </Link>
-              <p className="mt-6 text-sm font-bold text-slate-400 uppercase tracking-widest">
+              <p className="mt-6 text-sm font-bold text-stone-400 uppercase tracking-widest">
                 {t("joinRevolution")}
               </p>
             </div>

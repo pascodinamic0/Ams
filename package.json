@@ -7,6 +7,8 @@
     "dev:pwa": "next dev --webpack",
     "build": "next build --webpack",
     "generate:pwa-icons": "node scripts/generate-pwa-icons.mjs",
+    "generate:social-banners": "node scripts/generate-social-banners.mjs",
+    "generate:marketing-posts": "node scripts/generate-marketing-posts.mjs",
     "start": "next start",
     "lint": "eslint",
     "seed:super-admin": "node scripts/seed-super-admin.mjs",

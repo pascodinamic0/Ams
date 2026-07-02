@@ -24,8 +24,8 @@ export const WEBSITE_TEMPLATES: WebsiteTemplate[] = [
     description:
       "Large hero, gradient accents, and card-based sections. Ideal for progressive schools that want a confident digital presence.",
     features: ["Gradient hero", "Feature cards", "Strong CTAs"],
-    defaultPrimary: "#4f46e5",
-    defaultSecondary: "#7c3aed",
+    defaultPrimary: "#0d9488",
+    defaultSecondary: "#0f766e",
     previewPath: "/schools/templates/preview/modern",
     onboardingPath: "/admin/schools/new?template=modern",
   },

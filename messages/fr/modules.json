@@ -1,147 +1,147 @@
 {
   "homepageCta": {
-    "academic": "Gestion academique",
+    "academic": "Gestion académique",
     "finance": "Suivi des frais et finances",
-    "portals": "Portails parents et eleves"
+    "portals": "Portails parents et élèves"
   },
   "academic": {
-    "title": "Academique",
-    "tagline": "De l admission au bulletin",
-    "summary": "Run your entire academic cycle in one place - enrollments, classes, timetables, attendance, grading, and CBC-ready report cards.",
-    "desc": "Students, classes, timetable, attendance, grades, report cards",
+    "title": "Académique",
+    "tagline": "De l'admission au bulletin",
+    "summary": "Gérez tout votre cycle académique en un seul endroit — inscriptions, classes, emplois du temps, présences, notes et bulletins compatibles CBC.",
+    "desc": "Élèves, classes, emploi du temps, présences, notes, bulletins",
     "highlights": {
-      "0": "Student profiles with guardians, medical notes, and enrollment history",
-      "1": "Classes, sections, and streams aligned to Kenyan grade levels",
-      "2": "Timetable builder with teacher and room assignments",
-      "3": "Daily attendance with bulk marking and absence alerts",
-      "4": "Gradebooks, exams, and report cards mapped to CBC strands",
-      "5": "Online admissions linked to your public school website"
+      "0": "Profils élèves avec tuteurs, notes médicales et historique d'inscription",
+      "1": "Classes, sections et filières alignées sur les niveaux scolaires kenyans",
+      "2": "Constructeur d'emploi du temps avec affectation enseignants et salles",
+      "3": "Présences quotidiennes avec marquage groupé et alertes d'absence",
+      "4": "Carnets de notes, examens et bulletins mappés aux filières CBC",
+      "5": "Admissions en ligne liées à votre site web scolaire public"
     },
     "whoItsFor": {
-      "0": "School administrators managing enrollments and academic records",
-      "1": "Teachers recording attendance and entering grades",
-      "2": "Parents viewing timetables, attendance, and report cards"
+      "0": "Administrateurs scolaires gérant inscriptions et dossiers académiques",
+      "1": "Enseignants enregistrant les présences et saisissant les notes",
+      "2": "Parents consultant emplois du temps, présences et bulletins"
     },
-    "kenyaContext": "Built for CBC workflows - track learning areas, formative assessments, and term reports the way Kenyan schools actually report progress."
+    "kenyaContext": "Conçu pour les flux CBC — suivez les domaines d'apprentissage, évaluations formatives et rapports trimestriels comme le font les écoles kenyans."
   },
   "finance": {
     "title": "Finance",
-    "tagline": "Frais, factures et paie",
-    "summary": "Set fee structures, send invoices, collect payments via M-Pesa or bank transfer, and track payroll - all tied to each student account.",
-    "desc": "Fees, invoices, payments, payroll, tracking",
+    "tagline": "Frais, factures et paie sans tableurs",
+    "summary": "Définissez les structures de frais, envoyez des factures, collectez les paiements via M-Pesa ou virement bancaire, et suivez la paie — le tout lié à chaque compte élève.",
+    "desc": "Frais, factures, paiements, paie, suivi",
     "highlights": {
-      "0": "Flexible fee structures by class, term, or boarding status",
-      "1": "Automated invoices with balances and payment history per student",
-      "2": "M-Pesa-ready payment links with exact amounts pre-filled",
-      "3": "Fee reminders via WhatsApp before due dates",
-      "4": "Expense tracking and financial reports for bursars",
-      "5": "Staff payroll records alongside school fee collections"
+      "0": "Structures de frais flexibles par classe, trimestre ou statut d'internat",
+      "1": "Factures automatisées avec soldes et historique de paiement par élève",
+      "2": "Liens de paiement M-Pesa avec montants exacts préremplis",
+      "3": "Rappels de frais via WhatsApp avant les échéances",
+      "4": "Suivi des dépenses et rapports financiers pour les économes",
+      "5": "Dossiers de paie du personnel aux côtés des collectes de frais scolaires"
     },
     "whoItsFor": {
-      "0": "Bursars and finance officers managing school fees",
-      "1": "Administrators reviewing collections and outstanding balances",
-      "2": "Parents paying fees from their portal or payment links"
+      "0": "Économes et responsables financiers gérant les frais scolaires",
+      "1": "Administrateurs examinant les encaissements et soldes impayés",
+      "2": "Parents payant les frais depuis leur portail ou liens de paiement"
     },
-    "kenyaContext": "Parents expect M-Pesa and clear fee statements. ShuleOS keeps every shilling accounted for in KES, with reminders that reach parents on WhatsApp."
+    "kenyaContext": "Les parents attendent M-Pesa et des relevés de frais clairs. ShuleOS comptabilise chaque shilling en KES, avec des rappels qui atteignent les parents sur WhatsApp."
   },
   "operations": {
-    "title": "Operations",
-    "tagline": "Tout au-dela de la salle de classe",
-    "summary": "Manage library books, school transport routes, events, and staff records - the day-to-day operations that keep your school running.",
-    "desc": "Library, transport, events, staff",
+    "title": "Opérations",
+    "tagline": "Tout au-delà de la salle de classe",
+    "summary": "Gérez la bibliothèque, les routes de transport scolaire, les événements et les dossiers du personnel — les opérations quotidiennes qui font tourner votre école.",
+    "desc": "Bibliothèque, transport, événements, personnel",
     "highlights": {
-      "0": "Library catalog with lending, returns, and overdue tracking",
-      "1": "Transport routes, bus assignments, and student pickup lists",
-      "2": "School events with registrations and campus visit scheduling",
-      "3": "Staff directory with roles, departments, and HR records",
-      "4": "Inventory-friendly workflows for uniforms and materials",
-      "5": "Operational reports for administrators and directors"
+      "0": "Catalogue bibliothèque avec prêts, retours et suivi des retards",
+      "1": "Routes de transport, affectations de bus et listes de ramassage",
+      "2": "Événements scolaires avec inscriptions et planification de visites",
+      "3": "Annuaire du personnel avec rôles, départements et dossiers RH",
+      "4": "Flux adaptés à l'inventaire pour uniformes et matériel",
+      "5": "Rapports opérationnels pour administrateurs et directeurs"
     },
     "whoItsFor": {
-      "0": "Operations managers coordinating transport and events",
-      "1": "Librarians tracking books and student borrowing",
-      "2": "Administrators overseeing staff and school logistics"
+      "0": "Responsables opérationnels coordonnant transport et événements",
+      "1": "Bibliothécaires suivant les livres et emprunts des élèves",
+      "2": "Administrateurs supervisant le personnel et la logistique scolaire"
     },
-    "kenyaContext": "From matatu-route transport lists to prize-giving day registrations, operations modules match how Kenyan schools run outside the classroom."
+    "kenyaContext": "Des listes de transport matatu aux inscriptions pour la remise des prix, les modules opérationnels correspondent à la gestion des écoles kenyans hors salle de classe."
   },
   "analytics": {
     "title": "Analytique",
-    "tagline": "Voyez votre ecole clairement",
-    "summary": "Dashboards and reports for attendance trends, fee collection, academic performance, and branch comparisons - decisions backed by data.",
-    "desc": "Dashboards, branch comparison, attendance & finance reports",
+    "tagline": "Voyez votre école clairement",
+    "summary": "Tableaux de bord et rapports sur les tendances de présence, collecte des frais, performance académique et comparaisons entre campus — des décisions fondées sur les données.",
+    "desc": "Tableaux de bord, comparaison de campus, rapports présences et finances",
     "highlights": {
-      "0": "Executive dashboards for directors and school owners",
-      "1": "Attendance heatmaps and chronic absenteeism alerts",
-      "2": "Fee collection rates and outstanding balance summaries",
-      "3": "Academic performance trends by class, subject, or term",
-      "4": "Branch comparison for schools with multiple campuses",
-      "5": "Exportable reports for board meetings and MOE submissions"
+      "0": "Tableaux de bord exécutifs pour directeurs et propriétaires d'écoles",
+      "1": "Cartes thermiques de présence et alertes d'absentéisme chronique",
+      "2": "Taux de collecte des frais et résumés des soldes impayés",
+      "3": "Tendances de performance académique par classe, matière ou trimestre",
+      "4": "Comparaison entre campus pour les écoles multi-sites",
+      "5": "Rapports exportables pour conseils d'administration et soumissions MOE"
     },
     "whoItsFor": {
-      "0": "School directors reviewing performance at a glance",
-      "1": "Administrators preparing term-end and annual reports",
-      "2": "Finance teams tracking collection targets"
+      "0": "Directeurs d'école examinant la performance en un coup d'œil",
+      "1": "Administrateurs préparant rapports trimestriels et annuels",
+      "2": "Équipes financières suivant les objectifs de collecte"
     },
-    "kenyaContext": "Term reports, fee collection targets, and CBC progress summaries - all in dashboards your leadership team can read in minutes, not days."
+    "kenyaContext": "Rapports trimestriels, objectifs de collecte des frais et résumés de progression CBC — le tout dans des tableaux de bord lisibles en minutes, pas en jours."
   },
   "schoolWebsites": {
     "title": "Sites web scolaires",
-    "tagline": "Votre ecole en ligne",
-    "summary": "Launch a branded public website with online admissions, events, and contact details - connected directly to your ShuleOS portal.",
-    "desc": "Branded sites with online admissions",
+    "tagline": "Votre école en ligne, à votre image",
+    "summary": "Lancez un site public personnalisé avec admissions en ligne, événements et coordonnées — connecté directement à votre portail ShuleOS.",
+    "desc": "Sites personnalisés avec admissions en ligne",
     "highlights": {
-      "0": "Branded homepage with your logo, colours, and cover image",
-      "1": "About, programs, gallery, and contact sections",
-      "2": "Online admissions form feeding straight into your admin queue",
-      "3": "Public events page for open days and school activities",
-      "4": "Three templates: Modern, Classic, and Minimal",
-      "5": "Staff login link connecting visitors to the school portal"
+      "0": "Page d'accueil personnalisée avec logo, couleurs et image de couverture",
+      "1": "Sections À propos, programmes, galerie et contact",
+      "2": "Formulaire d'admission en ligne alimentant directement votre file d'attente admin",
+      "3": "Page événements publics pour journées portes ouvertes et activités",
+      "4": "Trois modèles : Modern, Classic et Minimal",
+      "5": "Lien de connexion personnel connectant les visiteurs au portail scolaire"
     },
     "whoItsFor": {
-      "0": "Schools launching or upgrading their public web presence",
-      "1": "Admissions teams collecting online applications",
-      "2": "Marketing staff showcasing programs and achievements"
+      "0": "Écoles lançant ou modernisant leur présence web publique",
+      "1": "Équipes d'admission collectant des candidatures en ligne",
+      "2": "Personnel marketing mettant en valeur programmes et réalisations"
     },
-    "kenyaContext": "Parents often discover your school on WhatsApp or Google first. A professional site with online admissions helps you capture enquiries before they go to a competitor."
+    "kenyaContext": "Les parents découvrent souvent votre école sur WhatsApp ou Google en premier. Un site professionnel avec admissions en ligne vous aide à capturer les demandes avant qu'elles n'aille chez un concurrent."
   },
   "messaging": {
     "title": "Messagerie",
-    "tagline": "Atteignez les parents",
-    "summary": "Real-time messaging between teachers, parents, students, and administrators - plus bulk announcements when you need everyone at once.",
-    "desc": "Real-time communication for everyone",
+    "tagline": "Atteignez les parents là où ils sont",
+    "summary": "Messagerie en temps réel entre enseignants, parents, élèves et administrateurs — plus annonces groupées quand vous devez toucher tout le monde.",
+    "desc": "Communication en temps réel pour tous",
     "highlights": {
-      "0": "Direct conversations between teachers and guardians",
-      "1": "Class-wide and school-wide announcement broadcasts",
-      "2": "Message history tied to student and staff profiles",
-      "3": "Notifications for new messages and urgent alerts",
-      "4": "Role-based access so students, parents, and staff see the right threads",
-      "5": "Integrates with fee reminders and event updates"
+      "0": "Conversations directes entre enseignants et tuteurs",
+      "1": "Diffusions d'annonces par classe ou pour toute l'école",
+      "2": "Historique des messages lié aux profils élèves et personnel",
+      "3": "Notifications pour nouveaux messages et alertes urgentes",
+      "4": "Accès basé sur les rôles pour que chacun voie les bons fils",
+      "5": "Intégration avec rappels de frais et mises à jour d'événements"
     },
     "whoItsFor": {
-      "0": "Teachers communicating with parents about assignments and behaviour",
-      "1": "Administrators sending school-wide notices",
-      "2": "Parents staying in touch without visiting the office"
+      "0": "Enseignants communiquant avec les parents sur devoirs et comportement",
+      "1": "Administrateurs envoyant des avis à toute l'école",
+      "2": "Parents restant en contact sans se rendre au bureau"
     },
-    "kenyaContext": "Kenyan parents live on WhatsApp. ShuleOS messaging keeps school communication structured and logged, while outreach campaigns can reach guardians on the channels they already use."
+    "kenyaContext": "Les parents kenyans vivent sur WhatsApp. La messagerie ShuleOS structure et journalise la communication scolaire, tandis que les campagnes peuvent atteindre les tuteurs sur leurs canaux habituels."
   },
   "parentStudentPortals": {
-    "title": "Portails parents et eleves",
-    "tagline": "L ecole dans la poche de chaque parent",
-    "summary": "Dedicated portals so parents track fees, grades, and timetables while students submit work, view schedules, and message teachers - from any phone or browser.",
-    "desc": "Portals for parents and students",
+    "title": "Portails parents et élèves",
+    "tagline": "L'école dans la poche de chaque parent",
+    "summary": "Portails dédiés pour que les parents suivent frais, notes et emplois du temps, tandis que les élèves soumettent leurs travaux, consultent leurs horaires et contactent les enseignants — depuis n'importe quel téléphone ou navigateur.",
+    "desc": "Portails pour parents et élèves",
     "highlights": {
-      "0": "Parent dashboard with linked children, fees, and attendance at a glance",
-      "1": "Pay school fees via M-Pesa or payment links without visiting the office",
-      "2": "View report cards, timetables, assignments, and school events in real time",
-      "3": "Student portal for homework submission, grades, library, and messages",
-      "4": "Secure login with role-based access - parents only see their own children",
-      "5": "Works on mobile browsers and low-bandwidth connections common in Kenya"
+      "0": "Tableau de bord parent avec enfants liés, frais et présences en un coup d'œil",
+      "1": "Payer les frais scolaires via M-Pesa ou liens de paiement sans se rendre au bureau",
+      "2": "Consulter bulletins, emplois du temps, devoirs et événements en temps réel",
+      "3": "Portail élève pour soumission de devoirs, notes, bibliothèque et messages",
+      "4": "Connexion sécurisée avec accès par rôle — les parents ne voient que leurs enfants",
+      "5": "Fonctionne sur navigateurs mobiles et connexions à faible bande passante courantes au Kenya"
     },
     "whoItsFor": {
-      "0": "Parents who want fee balances and academic updates without phone calls",
-      "1": "Students checking assignments, schedules, and exam results",
-      "2": "Schools reducing front-office queues and paper notices"
+      "0": "Parents voulant soldes de frais et mises à jour académiques sans appels",
+      "1": "Élèves consultant devoirs, horaires et résultats d'examens",
+      "2": "Écoles réduisant les files d'attente au bureau et les avis papier"
     },
-    "kenyaContext": "Most Kenyan parents manage school life from their phone. ShuleOS portals give them the same clarity the bursar and class teacher have - fees in KES, CBC report cards, and WhatsApp-friendly updates."
+    "kenyaContext": "La plupart des parents kenyans gèrent la vie scolaire depuis leur téléphone. Les portails ShuleOS leur offrent la même clarté que l'économe et l'enseignant — frais en KES, bulletins CBC et mises à jour compatibles WhatsApp."
   }
 }

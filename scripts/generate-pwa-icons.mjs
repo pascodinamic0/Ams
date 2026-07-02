@@ -7,8 +7,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const svgPath = path.join(root, "public/images/shuleos-logo.svg");
 const outDir = path.join(root, "public/icons");
+const faviconPath = path.join(root, "app/favicon.ico");
 
 const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+
+// Teal primary #0d9488
+const maskableBackground = { r: 13, g: 148, b: 136, alpha: 1 };
 
 async function main() {
   await mkdir(outDir, { recursive: true });
@@ -31,7 +35,7 @@ async function main() {
       width: maskableSize,
       height: maskableSize,
       channels: 4,
-      background: { r: 79, g: 70, b: 229, alpha: 1 },
+      background: maskableBackground,
     },
   })
     .composite([{ input: iconBuffer, top: padding, left: padding }])
@@ -39,6 +43,9 @@ async function main() {
     .toFile(maskableOut);
 
   console.log(`Wrote ${path.relative(root, maskableOut)}`);
+
+  await sharp(svg).resize(32, 32).png().toFile(faviconPath);
+  console.log(`Wrote ${path.relative(root, faviconPath)}`);
 }
 
 main().catch((error) => {

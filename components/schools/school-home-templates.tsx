@@ -50,7 +50,7 @@ function ContactBlock({ school }: { school: SchoolRow }) {
       )}
       {school.address && <p>{school.address}</p>}
       {!school.contact_email && !school.contact_phone && !school.address && (
-        <p className="text-zinc-500">Contact details coming soon.</p>
+        <p className="text-stone-500">Contact details coming soon.</p>
       )}
     </div>
   );
@@ -71,10 +71,10 @@ function StatsStrip({
     <section
       className={
         variant === "classic"
-          ? "border-y-2 border-zinc-300 bg-white py-10 dark:border-zinc-700 dark:bg-zinc-950"
+          ? "border-y-2 border-stone-300 bg-white py-10 dark:border-stone-700 dark:bg-stone-950"
           : variant === "minimal"
             ? "py-12"
-            : "rounded-2xl bg-zinc-900 px-6 py-10 text-white"
+            : "rounded-2xl bg-stone-900 px-6 py-10 text-white"
       }
     >
       <div className="mx-auto grid max-w-4xl grid-cols-2 gap-8 md:grid-cols-4">
@@ -89,8 +89,8 @@ function StatsStrip({
             <p
               className={
                 variant === "modern"
-                  ? "mt-1 text-sm text-zinc-400"
-                  : "mt-1 text-sm text-zinc-600 dark:text-zinc-400"
+                  ? "mt-1 text-sm text-stone-400"
+                  : "mt-1 text-sm text-stone-600 dark:text-stone-400"
               }
             >
               {stat.label}
@@ -120,7 +120,7 @@ function ProgramsSection({
           variant === "classic"
             ? "font-serif text-3xl font-bold"
             : variant === "minimal"
-              ? "text-xs font-medium uppercase tracking-[0.2em] text-zinc-400"
+              ? "text-xs font-medium uppercase tracking-[0.2em] text-stone-400"
               : "text-3xl font-bold tracking-tight"
         }
         style={variant === "classic" ? { color: primary } : undefined}
@@ -139,10 +139,10 @@ function ProgramsSection({
             key={program.title}
             className={
               variant === "classic"
-                ? "overflow-hidden border border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-950"
+                ? "overflow-hidden border border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-950"
                 : variant === "minimal"
                   ? "grid gap-6 md:grid-cols-[140px_1fr]"
-                  : "overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950"
+                  : "overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-sm dark:border-stone-800 dark:bg-stone-950"
             }
           >
             <img
@@ -165,7 +165,7 @@ function ProgramsSection({
               >
                 {program.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
+              <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-400">
                 {program.description}
               </p>
             </div>
@@ -192,7 +192,7 @@ function GallerySection({
           variant === "classic"
             ? "font-serif text-3xl font-bold text-center"
             : variant === "minimal"
-              ? "text-xs font-medium uppercase tracking-[0.2em] text-zinc-400"
+              ? "text-xs font-medium uppercase tracking-[0.2em] text-stone-400"
               : "text-3xl font-bold tracking-tight"
         }
       >
@@ -213,7 +213,7 @@ function GallerySection({
               className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
             {item.caption && variant !== "minimal" && (
-              <figcaption className="mt-2 text-center text-xs text-zinc-500">
+              <figcaption className="mt-2 text-center text-xs text-stone-500">
                 {item.caption}
               </figcaption>
             )}
@@ -233,7 +233,7 @@ function ModernTemplate({
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
 }) {
-  const primary = school.theme_primary_color ?? "#4f46e5";
+  const primary = school.theme_primary_color ?? "#0d9488";
   const secondary = school.theme_secondary_color ?? "#7c3aed";
   const site = resolveSchoolWebsite(school);
 
@@ -295,7 +295,7 @@ function ModernTemplate({
         <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
           <div>
             <h2 className="text-3xl font-bold tracking-tight">About us</h2>
-            <p className="mt-4 leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <p className="mt-4 leading-relaxed text-stone-600 dark:text-stone-400">
               {site.about}
             </p>
           </div>
@@ -317,12 +317,12 @@ function ModernTemplate({
 
       <section
         id="contact"
-        className="scroll-mt-24 rounded-2xl border border-zinc-100 bg-zinc-50 p-8 dark:border-zinc-800 dark:bg-zinc-900/50 md:p-12"
+        className="scroll-mt-24 rounded-2xl border border-zinc-100 bg-stone-50 p-8 dark:border-stone-800 dark:bg-stone-900/50 md:p-12"
       >
         <div className="grid gap-8 md:grid-cols-2">
           <div>
             <h2 className="text-3xl font-bold tracking-tight">Get in touch</h2>
-            <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+            <p className="mt-2 text-stone-600 dark:text-stone-400">
               We would love to hear from prospective families.
             </p>
             <div className="mt-6">
@@ -366,7 +366,7 @@ function ClassicTemplate({
 
   return (
     <div className="mx-auto max-w-5xl">
-      <section className="relative border-2 border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-950">
+      <section className="relative border-2 border-stone-300 bg-white dark:border-stone-700 dark:bg-stone-950">
         <div className="relative h-72 overflow-hidden md:h-96">
           <img src={site.heroImage} alt="" className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-black/40" />
@@ -393,32 +393,32 @@ function ClassicTemplate({
           <ProgramsSection programs={site.programs} primary={primary} variant="classic" />
         </div>
 
-        <section id="about" className="scroll-mt-24 border-t border-zinc-300 p-8 md:p-12 dark:border-zinc-700">
+        <section id="about" className="scroll-mt-24 border-t border-stone-300 p-8 md:p-12 dark:border-stone-700">
           <h2 className="font-serif text-3xl font-bold" style={{ color: primary }}>
             About our school
           </h2>
-          <p className="mt-4 max-w-3xl leading-relaxed text-zinc-700 dark:text-zinc-300">
+          <p className="mt-4 max-w-3xl leading-relaxed text-stone-700 dark:text-stone-300">
             {site.about}
           </p>
         </section>
 
-        <div className="border-t border-zinc-300 p-8 md:p-12 dark:border-zinc-700">
+        <div className="border-t border-stone-300 p-8 md:p-12 dark:border-stone-700">
           <GallerySection gallery={site.gallery} variant="classic" />
         </div>
 
         {!isPreview && events.length > 0 && (
-          <div className="border-t border-zinc-300 p-8 md:p-12 dark:border-zinc-700">
+          <div className="border-t border-stone-300 p-8 md:p-12 dark:border-stone-700">
             <PublicEventsSection events={events} slug={school.slug} primary={primary} />
           </div>
         )}
 
         <section
           id="contact"
-          className="scroll-mt-24 grid border-t border-zinc-300 md:grid-cols-2 dark:border-zinc-700"
+          className="scroll-mt-24 grid border-t border-stone-300 md:grid-cols-2 dark:border-stone-700"
         >
-          <div className="border-b border-zinc-300 p-8 md:border-b-0 md:border-r dark:border-zinc-700">
+          <div className="border-b border-stone-300 p-8 md:border-b-0 md:border-r dark:border-stone-700">
             <h2 className="font-serif text-2xl font-semibold">Contact</h2>
-            <div className="mt-4 text-zinc-700 dark:text-zinc-300">
+            <div className="mt-4 text-stone-700 dark:text-stone-300">
               <ContactBlock school={school} />
             </div>
           </div>
@@ -426,7 +426,7 @@ function ClassicTemplate({
             <h2 className="font-serif text-2xl font-semibold" style={{ color: primary }}>
               Admissions
             </h2>
-            <p className="mt-3 max-w-sm text-zinc-600 dark:text-zinc-400">
+            <p className="mt-3 max-w-sm text-stone-600 dark:text-stone-400">
               Begin your journey with {school.name} today.
             </p>
             <AdmissionsCta
@@ -468,7 +468,7 @@ function MinimalTemplate({
         <h1 className="text-4xl font-light tracking-tight md:text-5xl" style={{ color: primary }}>
           {site.heroTitle}
         </h1>
-        <p className="mt-6 text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+        <p className="mt-6 text-lg leading-relaxed text-stone-600 dark:text-stone-400">
           {site.heroSubtitle}
         </p>
         <AdmissionsCta
@@ -484,9 +484,9 @@ function MinimalTemplate({
 
       <ProgramsSection programs={site.programs} primary={primary} variant="minimal" />
 
-      <section id="about" className="scroll-mt-24 border-t border-zinc-200 pt-12 dark:border-zinc-800">
-        <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-zinc-400">About</h2>
-        <p className="mt-6 leading-relaxed text-zinc-600 dark:text-zinc-400">{site.about}</p>
+      <section id="about" className="scroll-mt-24 border-t border-stone-200 pt-12 dark:border-stone-800">
+        <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-stone-400">About</h2>
+        <p className="mt-6 leading-relaxed text-stone-600 dark:text-stone-400">{site.about}</p>
       </section>
 
       <GallerySection gallery={site.gallery} variant="minimal" />
@@ -495,9 +495,9 @@ function MinimalTemplate({
         <PublicEventsSection events={events} slug={school.slug} primary={primary} />
       )}
 
-      <section id="contact" className="scroll-mt-24 border-t border-zinc-200 pt-12 dark:border-zinc-800">
-        <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-zinc-400">Contact</h2>
-        <div className="mt-6 text-zinc-600 dark:text-zinc-400">
+      <section id="contact" className="scroll-mt-24 border-t border-stone-200 pt-12 dark:border-stone-800">
+        <h2 className="text-xs font-medium uppercase tracking-[0.2em] text-stone-400">Contact</h2>
+        <div className="mt-6 text-stone-600 dark:text-stone-400">
           <ContactBlock school={school} />
         </div>
       </section>

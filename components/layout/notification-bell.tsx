@@ -35,7 +35,7 @@ export function NotificationBell({ className = "", showLabel = false }: Notifica
   return (
     <Link
       href="/notifications"
-      className={`relative rounded-md p-2 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 ${className}`}
+      className={`relative rounded-md p-2 text-stone-500 hover:bg-stone-100 hover:text-stone-700 dark:hover:bg-stone-800 ${className}`}
       aria-label={unreadCount > 0 ? tc("unreadNotifications", { count: unreadCount }) : t("notifications")}
     >
       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +47,7 @@ export function NotificationBell({ className = "", showLabel = false }: Notifica
         />
       </svg>
       {unreadCount > 0 && (
-        <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-indigo-600 px-1 text-[10px] font-semibold text-white">
+        <span className="absolute right-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-white">
           {unreadCount > 9 ? "9+" : unreadCount}
         </span>
       )}

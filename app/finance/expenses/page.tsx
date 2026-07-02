@@ -3,6 +3,7 @@ import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getExpenses, getExpenseCategories } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { getTranslations } from "next-intl/server";
 import { ExpenseForm } from "./expense-form";
 import { ExpenseActions } from "./expense-actions";
 
@@ -18,6 +19,8 @@ export default async function ExpensesPage({
 }: {
   searchParams: Promise<{ edit?: string; category?: string }>;
 }) {
+  const t = await getTranslations("finance");
+  const tc = await getTranslations("common");
   const params = await searchParams;
   const profile = await getCurrentProfile();
   const scope = {
@@ -43,9 +46,9 @@ export default async function ExpensesPage({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-bold">Expenses</h1>
-        <p className="text-sm text-slate-500">
-          Total: <span className="font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(total)}</span>
+        <h1 className="text-2xl font-bold">{t("expensesTitle")}</h1>
+        <p className="text-sm text-stone-500">
+          {t("totalLabel", { amount: formatCurrency(total) })}
         </p>
       </div>
 
@@ -54,9 +57,9 @@ export default async function ExpensesPage({
           {editingExpense ? (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-medium">Edit expense</h2>
+                <h2 className="text-lg font-medium">{t("editExpense")}</h2>
                 <Link href="/finance/expenses" className="text-sm text-blue-600 hover:underline">
-                  Cancel
+                  {tc("cancel")}
                 </Link>
               </div>
               <ExpenseForm
@@ -70,21 +73,21 @@ export default async function ExpensesPage({
           )}
         </>
       ) : (
-        <p className="text-sm text-slate-500">Assign a branch to your profile to record expenses.</p>
+        <p className="text-sm text-stone-500">{t("assignBranchExpenses")}</p>
       )}
 
       <div className="flex flex-wrap gap-2">
         <Link
           href="/finance/expenses"
-          className={`rounded-full px-3 py-1 text-sm ${!params.category ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900" : "border hover:bg-slate-50 dark:hover:bg-slate-900"}`}
+          className={`rounded-full px-3 py-1 text-sm ${!params.category ? "bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900" : "border hover:bg-stone-50 dark:hover:bg-stone-900"}`}
         >
-          All categories
+          {t("allCategories")}
         </Link>
         {categories.map((category) => (
           <Link
             key={category}
             href={`/finance/expenses?category=${encodeURIComponent(category)}`}
-            className={`rounded-full px-3 py-1 text-sm ${params.category === category ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900" : "border hover:bg-slate-50 dark:hover:bg-slate-900"}`}
+            className={`rounded-full px-3 py-1 text-sm ${params.category === category ? "bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900" : "border hover:bg-stone-50 dark:hover:bg-stone-900"}`}
           >
             {category}
           </Link>
@@ -93,18 +96,18 @@ export default async function ExpensesPage({
 
       {expenses.length === 0 ? (
         <EmptyState
-          title="No expenses yet"
-          description="Track operational spending by category and date"
+          title={t("noExpenses")}
+          description={t("noExpensesDesc")}
         />
       ) : (
         <DataTable
           data={tableData}
           columns={[
-            { id: "date", header: "Date", accessorKey: "date", sortable: true },
-            { id: "category", header: "Category", accessorKey: "category", sortable: true },
-            { id: "amount", header: "Amount", accessorKey: "amount", sortable: true },
-            { id: "description", header: "Description", accessorKey: "description" },
-            { id: "branch_name", header: "Branch", accessorKey: "branch_name" },
+            { id: "date", header: tc("date"), accessorKey: "date", sortable: true },
+            { id: "category", header: t("colCategory"), accessorKey: "category", sortable: true },
+            { id: "amount", header: tc("amount"), accessorKey: "amount", sortable: true },
+            { id: "description", header: tc("description"), accessorKey: "description" },
+            { id: "branch_name", header: t("colBranch"), accessorKey: "branch_name" },
             { id: "actions", header: "", accessorKey: "actions" },
           ]}
         />

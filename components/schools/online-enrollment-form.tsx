@@ -94,10 +94,10 @@ export function OnlineEnrollmentForm({
     return (
       <div className="mx-auto max-w-xl">
         <h1 className="text-2xl font-bold">Application submitted</h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+        <p className="mt-2 text-stone-600 dark:text-stone-400">
           Thank you for starting enrollment at {schoolName}.
         </p>
-        <div className="mt-6 space-y-4 rounded-2xl border border-indigo-200 bg-indigo-50 p-6 dark:border-indigo-900 dark:bg-indigo-950/40">
+        <div className="mt-6 space-y-4 rounded-2xl border border-primary-200 bg-primary-light p-6 dark:border-primary-900 dark:bg-primary-light/40">
           <p className="text-sm">
             Reference number: <span className="font-mono font-semibold">{referenceId}</span>
           </p>
@@ -110,7 +110,7 @@ export function OnlineEnrollmentForm({
               <span className="font-medium">Campus address:</span> {schoolAddress}
             </p>
           )}
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-stone-600 dark:text-stone-400">
             The admissions team will review your application and may contact you before your visit.
           </p>
         </div>
@@ -128,7 +128,7 @@ export function OnlineEnrollmentForm({
   return (
     <div className="mx-auto max-w-xl">
       <h1 className="text-2xl font-bold">Online enrollment</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+      <p className="mt-2 text-stone-600 dark:text-stone-400">
         Submit your details online
         {hasVisitSlots
           ? ", then book a campus visit to complete enrollment in person."
@@ -141,8 +141,8 @@ export function OnlineEnrollmentForm({
             key={label}
             className={`flex-1 rounded-lg px-3 py-2 text-center text-xs font-medium ${
               i <= step
-                ? "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-200"
-                : "bg-zinc-100 text-zinc-500 dark:bg-zinc-900"
+                ? "bg-primary-light text-teal-800 dark:bg-primary-light dark:text-teal-200"
+                : "bg-stone-100 text-stone-500 dark:bg-stone-900"
             }`}
           >
             {label}
@@ -261,14 +261,14 @@ export function OnlineEnrollmentForm({
         )}
 
         {step === 2 && (
-          <div className="space-y-3 rounded-xl border border-zinc-200 p-5 text-sm dark:border-zinc-800">
+          <div className="space-y-3 rounded-xl border border-stone-200 p-5 text-sm dark:border-stone-800">
             <p><span className="font-medium">Student:</span> {form.student_name}</p>
             <p><span className="font-medium">DOB:</span> {form.dob}</p>
             <p><span className="font-medium">Class:</span> {form.class_applying}</p>
             <p><span className="font-medium">Guardian:</span> {form.guardian_name}</p>
             <p><span className="font-medium">Contact:</span> {form.guardian_email} / {form.guardian_phone}</p>
             <p><span className="font-medium">Address:</span> {form.address}</p>
-            <p className="pt-2 text-zinc-600 dark:text-zinc-400">
+            <p className="pt-2 text-stone-600 dark:text-stone-400">
               {hasVisitSlots
                 ? "After submitting, you will book a campus visit slot to complete enrollment in person."
                 : "After submitting, you will receive a reference number and instructions to visit the school to complete enrollment."}

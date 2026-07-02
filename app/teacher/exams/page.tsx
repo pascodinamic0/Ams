@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTeacherClasses, getGradesForClass } from "@/lib/db";
@@ -10,9 +11,11 @@ export default async function ExamsPage({
 }: {
   searchParams: Promise<{ class?: string; subject?: string; exam?: string }>;
 }) {
+  const t = await getTranslations("teacher");
+  const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   if (!profile) {
-    return <p className="text-sm text-slate-500">Please sign in to enter exam grades.</p>;
+    return <p className="text-sm text-stone-500">{t("signInRequiredExams")}</p>;
   }
 
   const params = await searchParams;
@@ -24,8 +27,8 @@ export default async function ExamsPage({
   if (classes.length === 0) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Exams</h1>
-        <EmptyState title="No classes assigned" description="Assign classes in the timetable first." />
+        <h1 className="text-2xl font-bold">{t("examsTitle")}</h1>
+        <EmptyState title={t("noClassesAssigned")} description={t("noClassesAssignedDesc")} />
       </div>
     );
   }
@@ -42,9 +45,9 @@ export default async function ExamsPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Exams</h1>
-      <p className="text-sm text-slate-500">Enter exam marks and letter grades per subject.</p>
-      <Suspense fallback={<p className="text-sm text-slate-500">Loading…</p>}>
+      <h1 className="text-2xl font-bold">{t("examsTitle")}</h1>
+      <p className="text-sm text-stone-500">{t("examsDescription")}</p>
+      <Suspense fallback={<p className="text-sm text-stone-500">{tc("loading")}</p>}>
         <ExamGradeGrid
           classes={classes.map((c) => ({ id: c.id, name: c.name }))}
           subjects={subjects}

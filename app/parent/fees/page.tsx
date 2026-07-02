@@ -4,15 +4,17 @@ import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { getGuardianByAuthUserId, getInvoicesForGuardian } from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 
 export default async function ParentFeesPage() {
+  const t = await getTranslations("parent");
   const profile = await getCurrentProfile();
 
   if (!profile) {
     return (
       <EmptyState
-        title="Not signed in"
-        description="Please log in to view fees and invoices"
+        title={t("notSignedIn")}
+        description={t("notSignedInDescFees")}
       />
     );
   }
@@ -22,8 +24,8 @@ export default async function ParentFeesPage() {
   if (!guardian) {
     return (
       <EmptyState
-        title="No guardian profile"
-        description="Your account is not linked to a guardian profile. Contact the school."
+        title={t("noGuardianProfile")}
+        description={t("noGuardianProfileDesc")}
       />
     );
   }
@@ -34,7 +36,7 @@ export default async function ParentFeesPage() {
     pay_action:
       Number(row.balance) > 0 ? (
         <Link href={`/parent/pay?invoice=${row.id}`}>
-          <Button size="sm">Pay</Button>
+          <Button size="sm">{t("pay")}</Button>
         </Link>
       ) : (
         "—"
@@ -44,27 +46,25 @@ export default async function ParentFeesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Fees & Payments</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          View invoices and payment status for your children.
-        </p>
+        <h1 className="text-2xl font-bold">{t("feesPageTitle")}</h1>
+        <p className="mt-1 text-sm text-stone-500">{t("feesPageSubtitle")}</p>
       </div>
       {invoices.length === 0 ? (
         <EmptyState
-          title="No invoices"
-          description="There are no fee invoices for your linked students."
+          title={t("noInvoices")}
+          description={t("noInvoicesDesc")}
         />
       ) : (
         <DataTable
           data={tableData}
           columns={[
-            { id: "student_name", header: "Student", accessorKey: "student_name", sortable: true },
-            { id: "fee_structure_name", header: "Fee type", accessorKey: "fee_structure_name" },
-            { id: "amount", header: "Amount", accessorKey: "amount" },
-            { id: "amount_paid", header: "Paid", accessorKey: "amount_paid" },
-            { id: "balance", header: "Balance", accessorKey: "balance" },
-            { id: "due_date", header: "Due date", accessorKey: "due_date", sortable: true },
-            { id: "status", header: "Status", accessorKey: "status" },
+            { id: "student_name", header: t("colStudent"), accessorKey: "student_name", sortable: true },
+            { id: "fee_structure_name", header: t("colFeeType"), accessorKey: "fee_structure_name" },
+            { id: "amount", header: t("colAmount"), accessorKey: "amount" },
+            { id: "amount_paid", header: t("colPaid"), accessorKey: "amount_paid" },
+            { id: "balance", header: t("colBalance"), accessorKey: "balance" },
+            { id: "due_date", header: t("colDueDate"), accessorKey: "due_date", sortable: true },
+            { id: "status", header: t("colStatus"), accessorKey: "status" },
             { id: "pay", header: "", accessorKey: "pay_action" },
           ]}
         />

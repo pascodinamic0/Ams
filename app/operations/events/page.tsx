@@ -3,11 +3,14 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { getEvents } from "@/lib/db";
 import { getEventRegistrations } from "@/lib/db/public-events";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { getTranslations } from "next-intl/server";
 import { EventForm, DeleteEventButton } from "./events-form";
 import { EventRegistrationsPanel } from "./event-registrations-panel";
 import { EventsCalendar } from "./events-calendar";
 
 export default async function EventsPage() {
+  const t = await getTranslations("operations");
+  const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   const scope = {
     schoolId: profile?.school_id ?? undefined,
@@ -23,50 +26,50 @@ export default async function EventsPage() {
     ...row,
     purpose:
       row.purpose === "campus_visit"
-        ? "Campus visit"
+        ? t("purposeCampusVisit")
         : row.type === "holiday"
-          ? "Holiday"
-          : "General",
-    website: row.type === "holiday" ? "—" : row.public_on_website ? "Yes" : "No",
-    booking: row.booking_enabled ? "Open" : "—",
+          ? t("purposeHoliday")
+          : t("purposeGeneral"),
+    website: row.type === "holiday" ? tc("emptyDash") : row.public_on_website ? tc("yes") : tc("no"),
+    booking: row.booking_enabled ? t("bookingOpen") : tc("emptyDash"),
     actions: <DeleteEventButton id={String(row.id)} />,
   }));
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Events & Holidays</h1>
+      <h1 className="text-2xl font-bold">{t("eventsTitle")}</h1>
 
       {branchId ? (
         <EventForm branchId={branchId} />
       ) : (
-        <p className="text-sm text-slate-500">Assign a branch to your profile to add events.</p>
+        <p className="text-sm text-stone-500">{t("assignBranchEvents")}</p>
       )}
 
       <EventsCalendar events={events} />
 
       <div>
-        <h2 className="mb-3 text-lg font-semibold">Event bookings</h2>
-        <p className="mb-4 text-sm text-slate-500">
-          Registrations submitted from your school&apos;s public events page.
+        <h2 className="mb-3 text-lg font-semibold">{t("eventBookings")}</h2>
+        <p className="mb-4 text-sm text-stone-500">
+          {t("eventBookingsDesc")}
         </p>
         <EventRegistrationsPanel registrations={registrations} />
       </div>
 
       <div>
-        <h2 className="mb-3 text-lg font-semibold">All events</h2>
+        <h2 className="mb-3 text-lg font-semibold">{t("allEvents")}</h2>
         {events.length === 0 ? (
-          <EmptyState title="No events yet" description="Add school events and holidays" />
+          <EmptyState title={t("noEvents")} description={t("noEventsDesc")} />
         ) : (
           <DataTable
             data={tableData}
             columns={[
-              { id: "title", header: "Title", accessorKey: "title", sortable: true },
-              { id: "date", header: "Date", accessorKey: "date", sortable: true },
-              { id: "type", header: "Type", accessorKey: "type" },
-              { id: "purpose", header: "Purpose", accessorKey: "purpose" },
-              { id: "website", header: "Website", accessorKey: "website" },
-              { id: "booking", header: "Booking", accessorKey: "booking" },
-              { id: "description", header: "Description", accessorKey: "description" },
+              { id: "title", header: t("colTitle"), accessorKey: "title", sortable: true },
+              { id: "date", header: tc("date"), accessorKey: "date", sortable: true },
+              { id: "type", header: t("colType"), accessorKey: "type" },
+              { id: "purpose", header: t("colPurpose"), accessorKey: "purpose" },
+              { id: "website", header: t("colWebsite"), accessorKey: "website" },
+              { id: "booking", header: t("colBooking"), accessorKey: "booking" },
+              { id: "description", header: tc("description"), accessorKey: "description" },
               { id: "actions", header: "", accessorKey: "actions" },
             ]}
           />

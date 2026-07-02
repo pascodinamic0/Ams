@@ -74,12 +74,12 @@ export function DataTable<T extends Record<string, unknown>>({
     <div className="w-full overflow-x-auto">
       <table className="w-full border-collapse text-left text-sm">
         <thead>
-          <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
+          <tr className="border-b border-border bg-surface-raised">
             {columns.map((col) => (
               <th
                 key={col.id}
-                className={`px-6 py-4 font-medium text-zinc-700 dark:text-zinc-300 ${
-                  col.sortable ? "cursor-pointer select-none hover:bg-zinc-100 dark:hover:bg-zinc-800" : ""
+                className={`px-6 py-4 font-medium text-muted ${
+                  col.sortable ? "cursor-pointer select-none hover:bg-secondary" : ""
                 } ${col.className ?? ""}`}
                 onClick={() => col.sortable && handleSort(col.id)}
               >
@@ -98,7 +98,7 @@ export function DataTable<T extends Record<string, unknown>>({
             <tr>
               <td
                 colSpan={columns.length}
-                className="px-6 py-12 text-center text-zinc-500"
+                className="px-6 py-12 text-center text-muted"
               >
                 {resolvedEmptyMessage}
               </td>
@@ -114,9 +114,9 @@ export function DataTable<T extends Record<string, unknown>>({
               return (
               <tr
                 key={rowKey}
-                className={`border-b border-zinc-200 last:border-0 dark:border-zinc-800 ${
+                className={`border-b border-border last:border-0 ${
                   onRowClick
-                    ? "cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                    ? "cursor-pointer hover:bg-surface-raised"
                     : ""
                 }`}
                 onClick={() => onRowClick?.(row)}
@@ -124,7 +124,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 {columns.map((col) => (
                   <td
                     key={col.id}
-                    className={`px-6 py-4 text-zinc-900 dark:text-zinc-100 ${col.className ?? ""}`}
+                    className={`px-6 py-4 text-foreground ${col.className ?? ""}`}
                   >
                     {getCellValue(row, col.accessorKey)}
                   </td>
@@ -136,8 +136,8 @@ export function DataTable<T extends Record<string, unknown>>({
         </tbody>
       </table>
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-between border-t border-zinc-200 px-4 py-2 dark:border-zinc-800">
-          <span className="text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="mt-4 flex items-center justify-between border-t border-border px-4 py-2">
+          <span className="text-sm text-muted">
             {t("pageOf", { current: page + 1, total: totalPages })}
           </span>
           <div className="flex gap-2">
@@ -145,7 +145,7 @@ export function DataTable<T extends Record<string, unknown>>({
               type="button"
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="rounded border border-zinc-300 px-3 py-1 text-sm disabled:opacity-50 dark:border-zinc-700"
+              className="rounded border border-border px-3 py-1 text-sm disabled:opacity-50"
             >
               {t("previous")}
             </button>
@@ -153,7 +153,7 @@ export function DataTable<T extends Record<string, unknown>>({
               type="button"
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1}
-              className="rounded border border-zinc-300 px-3 py-1 text-sm disabled:opacity-50 dark:border-zinc-700"
+              className="rounded border border-border px-3 py-1 text-sm disabled:opacity-50"
             >
               {t("next")}
             </button>

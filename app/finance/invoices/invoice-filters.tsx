@@ -25,7 +25,7 @@ export function InvoiceFilters() {
           id="status-filter"
           value={status}
           onChange={(e) => updateParams("status", e.target.value)}
-          className="mt-1 w-full min-w-[140px] rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="mt-1 w-full min-w-[140px] rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
           <option value="">All</option>
           <option value="pending">Pending</option>

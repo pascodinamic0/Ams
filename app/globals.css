@@ -1,64 +1,101 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
+  --background: #fafaf9;
+  --foreground: #1c1917;
 
-  /* Brand */
-  --color-primary: #4f46e5;
-  --color-primary-hover: #4338ca;
-  --color-primary-light: #eef2ff;
-  --color-primary-border: #c7d2fe;
-  --color-primary-foreground: #ffffff;
+  /* Brand — teal primary */
+  --brand-primary: #0d9488;
+  --brand-primary-hover: #0f766e;
+  --brand-primary-light: #f0fdfa;
+  --brand-primary-border: #99f6e4;
+  --brand-primary-foreground: #ffffff;
 
-  /* Neutral */
-  --color-secondary: #f1f5f9;
-  --color-secondary-foreground: #0f172a;
+  /* Accent — warm amber */
+  --brand-accent: #f59e0b;
+  --brand-accent-hover: #d97706;
+  --brand-accent-light: #fffbeb;
+  --brand-accent-foreground: #1c1917;
+
+  /* Neutral — stone */
+  --brand-secondary: #f5f5f4;
+  --brand-secondary-foreground: #1c1917;
 
   /* Semantic */
-  --color-success: #16a34a;
-  --color-warning: #d97706;
-  --color-danger: #dc2626;
+  --brand-success: #16a34a;
+  --brand-warning: #d97706;
+  --brand-danger: #dc2626;
 
   /* Surface */
-  --color-surface: #ffffff;
-  --color-surface-raised: #f8fafc;
-  --color-border: #e2e8f0;
-  --color-muted: #64748b;
-  --color-muted-foreground: #94a3b8;
+  --brand-surface: #ffffff;
+  --brand-surface-raised: #fafaf9;
+  --brand-border: #e7e5e4;
+  --brand-muted: #78716c;
+  --brand-muted-foreground: #a8a29e;
 
   --radius: 0.75rem;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-jakarta-sans);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0f1e;
-    --foreground: #f1f5f9;
+    --background: #0c1222;
+    --foreground: #f5f5f4;
 
-    --color-primary: #6366f1;
-    --color-primary-hover: #4f46e5;
-    --color-primary-light: #1e1b4b;
-    --color-primary-border: #3730a3;
-    --color-primary-foreground: #ffffff;
+    --brand-primary: #14b8a6;
+    --brand-primary-hover: #0d9488;
+    --brand-primary-light: #042f2e;
+    --brand-primary-border: #115e59;
+    --brand-primary-foreground: #ffffff;
 
-    --color-secondary: #1e293b;
-    --color-secondary-foreground: #f1f5f9;
+    --brand-accent: #fbbf24;
+    --brand-accent-hover: #f59e0b;
+    --brand-accent-light: #451a03;
+    --brand-accent-foreground: #1c1917;
 
-    --color-surface: #111827;
-    --color-surface-raised: #1e293b;
-    --color-border: #1e293b;
-    --color-muted: #94a3b8;
-    --color-muted-foreground: #64748b;
+    --brand-secondary: #292524;
+    --brand-secondary-foreground: #f5f5f4;
+
+    --brand-surface: #1c1917;
+    --brand-surface-raised: #292524;
+    --brand-border: #44403c;
+    --brand-muted: #a8a29e;
+    --brand-muted-foreground: #78716c;
   }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-primary: var(--brand-primary);
+  --color-primary-hover: var(--brand-primary-hover);
+  --color-primary-light: var(--brand-primary-light);
+  --color-primary-border: var(--brand-primary-border);
+  --color-primary-foreground: var(--brand-primary-foreground);
+
+  --color-accent: var(--brand-accent);
+  --color-accent-hover: var(--brand-accent-hover);
+  --color-accent-light: var(--brand-accent-light);
+  --color-accent-foreground: var(--brand-accent-foreground);
+
+  --color-secondary: var(--brand-secondary);
+  --color-secondary-foreground: var(--brand-secondary-foreground);
+
+  --color-success: var(--brand-success);
+  --color-warning: var(--brand-warning);
+  --color-danger: var(--brand-danger);
+
+  --color-surface: var(--brand-surface);
+  --color-surface-raised: var(--brand-surface-raised);
+  --color-border: var(--brand-border);
+  --color-muted: var(--brand-muted);
+  --color-muted-foreground: var(--brand-muted-foreground);
+
+  --font-sans: var(--font-jakarta-sans);
+  --font-mono: var(--font-jetbrains-mono);
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) * 0.75);
   --radius-sm: calc(var(--radius) * 0.5);
@@ -70,4 +107,9 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--brand-primary);
+  color: var(--brand-primary-foreground);
 }

@@ -3,13 +3,15 @@ import { getStudentByAuthUserId, getGradesForStudent } from "@/lib/db";
 import { CopyableBadge } from "@/components/ui/copyable-badge";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getTranslations } from "next-intl/server";
 
 export default async function StudentGradesPage() {
+  const t = await getTranslations("student");
   const profile = await getCurrentProfile();
 
   if (!profile) {
     return (
-      <EmptyState title="Not signed in" description="Please log in to view grades." />
+      <EmptyState title={t("notSignedIn")} description={t("notSignedInDescGrades")} />
     );
   }
 
@@ -17,8 +19,8 @@ export default async function StudentGradesPage() {
   if (!student) {
     return (
       <EmptyState
-        title="No student profile"
-        description="Your account is not linked to a student record."
+        title={t("noStudentProfile")}
+        description={t("noStudentProfileDescShort")}
       />
     );
   }
@@ -33,29 +35,27 @@ export default async function StudentGradesPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Grades</h1>
-          <p className="mt-1 text-sm text-slate-500">
-            Your marks and report card (read-only).
-          </p>
+          <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("gradesTitle")}</h1>
+          <p className="mt-1 text-sm text-stone-500">{t("gradesSubtitle")}</p>
         </div>
         {student.student_id && (
-          <CopyableBadge value={student.student_id} label={`ID: ${student.student_id}`} />
+          <CopyableBadge value={student.student_id} label={t("idLabel", { id: student.student_id })} />
         )}
       </div>
 
       {grades.length === 0 ? (
         <EmptyState
-          title="No grades recorded"
-          description="Your grades will appear here once teachers publish them."
+          title={t("noGradesRecorded")}
+          description={t("noGradesRecordedDesc")}
         />
       ) : (
         <DataTable
           data={tableData}
           columns={[
-            { id: "subject", header: "Subject", accessorKey: "subject_name", sortable: true },
-            { id: "term", header: "Term", accessorKey: "term", sortable: true },
-            { id: "marks", header: "Marks", accessorKey: "marks_display" },
-            { id: "grade", header: "Grade", accessorKey: "grade" },
+            { id: "subject", header: t("colSubject"), accessorKey: "subject_name", sortable: true },
+            { id: "term", header: t("colTerm"), accessorKey: "term", sortable: true },
+            { id: "marks", header: t("colMarks"), accessorKey: "marks_display" },
+            { id: "grade", header: t("colGrade"), accessorKey: "grade" },
           ]}
         />
       )}

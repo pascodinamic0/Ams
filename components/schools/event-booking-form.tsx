@@ -63,10 +63,10 @@ export function EventBookingForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-zinc-200 p-5 dark:border-zinc-800">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-xl border border-stone-200 p-5 dark:border-stone-800">
       <h3 className="font-semibold">Book this event</h3>
       {event.booking_procedure && (
-        <p className="text-sm text-zinc-600 dark:text-zinc-400">{event.booking_procedure}</p>
+        <p className="text-sm text-stone-600 dark:text-stone-400">{event.booking_procedure}</p>
       )}
       <div>
         <Label>Your name</Label>

@@ -40,14 +40,14 @@ export function PasswordStrength({ password, onStrengthChange }: PasswordStrengt
 
   return (
     <div className="space-y-2">
-      <div className="h-1 w-full rounded-full bg-zinc-200 dark:bg-zinc-700">
+      <div className="h-1 w-full rounded-full bg-stone-200 dark:bg-zinc-700">
         <div
           className={`h-full rounded-full transition-all ${color}`}
           style={{ width: password ? width : "0%" }}
         />
       </div>
       {password && feedback.length > 0 && (
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-stone-500">
           {strength === "strong" ? t("passwordStrong") : feedback.join(", ")}
         </p>
       )}

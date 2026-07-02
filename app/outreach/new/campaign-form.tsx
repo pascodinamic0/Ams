@@ -105,12 +105,12 @@ export function CampaignForm({ schoolId }: Props) {
               onClick={() => setChannel(opt.id)}
               className={`flex flex-col gap-2 rounded-xl border-2 p-4 text-left transition-all ${
                 channel === opt.id
-                  ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40"
-                  : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900"
+                  ? "border-primary-500 bg-primary-light dark:bg-primary-light/40"
+                  : "border-stone-200 bg-white hover:border-stone-300 dark:border-stone-700 dark:bg-stone-900"
               }`}
             >
-              <span className="text-sm font-semibold text-slate-900 dark:text-white">{opt.label}</span>
-              <span className="text-xs text-slate-500">{opt.description}</span>
+              <span className="text-sm font-semibold text-stone-900 dark:text-white">{opt.label}</span>
+              <span className="text-xs text-stone-500">{opt.description}</span>
             </button>
           ))}
         </div>
@@ -126,12 +126,12 @@ export function CampaignForm({ schoolId }: Props) {
               onClick={() => setTargetType(opt.id)}
               className={`flex-1 rounded-lg border-2 p-3 text-left transition-all ${
                 targetType === opt.id
-                  ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40"
-                  : "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
+                  ? "border-primary-500 bg-primary-light dark:bg-primary-light/40"
+                  : "border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900"
               }`}
             >
-              <p className="text-sm font-semibold text-slate-900 dark:text-white">{opt.label}</p>
-              <p className="text-xs text-slate-500">{opt.description}</p>
+              <p className="text-sm font-semibold text-stone-900 dark:text-white">{opt.label}</p>
+              <p className="text-xs text-stone-500">{opt.description}</p>
             </button>
           ))}
         </div>
@@ -152,7 +152,7 @@ export function CampaignForm({ schoolId }: Props) {
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
           <Label htmlFor="body" required>Message</Label>
-          <span className={`text-xs ${charCount > whatsappLimit * 0.9 ? "text-red-500" : "text-slate-400"}`}>
+          <span className={`text-xs ${charCount > whatsappLimit * 0.9 ? "text-red-500" : "text-stone-400"}`}>
             {charCount} / {whatsappLimit}
           </span>
         </div>
@@ -161,7 +161,7 @@ export function CampaignForm({ schoolId }: Props) {
           rows={6}
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+          className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm dark:border-stone-700 dark:bg-stone-900 dark:text-white"
         />
         <div className="flex flex-wrap gap-2">
           {VARIABLE_HINTS.map((v) => (
@@ -169,7 +169,7 @@ export function CampaignForm({ schoolId }: Props) {
               key={v.var}
               type="button"
               onClick={() => setBody((b) => b + v.var)}
-              className="rounded-md bg-slate-100 px-2 py-1 text-xs font-mono dark:bg-slate-800"
+              className="rounded-md bg-stone-100 px-2 py-1 text-xs font-mono dark:bg-stone-800"
             >
               {v.var}
             </button>

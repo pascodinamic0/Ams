@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   DndContext,
   DragOverlay,
@@ -81,7 +82,7 @@ function DraggableSubject({ subject }: { subject: SubjectOption }) {
       type="button"
       {...listeners}
       {...attributes}
-      className={`cursor-grab rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-800 active:cursor-grabbing dark:border-indigo-800 dark:bg-indigo-950/50 dark:text-indigo-200 ${
+      className={`cursor-grab rounded-lg border border-primary-200 bg-primary-light px-3 py-1.5 text-sm font-medium text-teal-800 active:cursor-grabbing dark:border-primary-800 dark:bg-primary-light/50 dark:text-teal-200 ${
         isDragging ? "opacity-40" : ""
       }`}
     >
@@ -95,11 +96,13 @@ function TimetableCell({
   period,
   cellSlots,
   onEdit,
+  clickOrDropLabel,
 }: {
   day: number;
   period: number;
   cellSlots: TimetableSlotItem[];
   onEdit: () => void;
+  clickOrDropLabel: string;
 }) {
   const { setNodeRef, isOver } = useDroppable({
     id: `cell-${day}-${period}`,
@@ -109,37 +112,37 @@ function TimetableCell({
   const filled = cellSlots.some((s) => s.subject_name || s.teacher_name);
 
   return (
-    <td className="border border-slate-200 p-1 dark:border-slate-700">
+    <td className="border border-stone-200 p-1 dark:border-stone-700">
       <button
         ref={setNodeRef}
         type="button"
         onClick={onEdit}
         className={`flex min-h-[72px] w-full min-w-[110px] flex-col items-start justify-start gap-1 rounded-md px-2 py-1.5 text-left text-sm transition-colors ${
           isOver
-            ? "bg-indigo-100 ring-2 ring-indigo-400 dark:bg-indigo-900/40"
+            ? "bg-primary-light ring-2 ring-primary-400 dark:bg-primary-light/40"
             : filled
-              ? "bg-white hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-800"
-              : "bg-slate-50 text-slate-400 hover:bg-slate-100 dark:bg-slate-800/50 dark:hover:bg-slate-800"
+              ? "bg-white hover:bg-stone-50 dark:bg-stone-900 dark:hover:bg-stone-800"
+              : "bg-stone-50 text-stone-400 hover:bg-stone-100 dark:bg-stone-800/50 dark:hover:bg-stone-800"
         }`}
       >
         {filled ? (
           cellSlots.map((slot) => (
-            <div key={slot.id} className="w-full border-b border-slate-100 pb-1 last:border-0 last:pb-0 dark:border-slate-800">
+            <div key={slot.id} className="w-full border-b border-stone-100 pb-1 last:border-0 last:pb-0 dark:border-stone-800">
               {formatTimeRange(slot.start_time, slot.end_time) && (
-                <span className="text-[10px] font-medium uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
+                <span className="text-[10px] font-medium uppercase tracking-wide text-primary dark:text-primary">
                   {formatTimeRange(slot.start_time, slot.end_time)}
                 </span>
               )}
-              <span className="block font-medium text-slate-900 dark:text-slate-100">
+              <span className="block font-medium text-stone-900 dark:text-stone-100">
                 {slot.subject_name ?? "-"}
               </span>
               {slot.teacher_name && (
-                <span className="text-xs text-slate-500">{slot.teacher_name}</span>
+                <span className="text-xs text-stone-500">{slot.teacher_name}</span>
               )}
             </div>
           ))
         ) : (
-          <span className="text-xs">Click or drop</span>
+          <span className="text-xs">{clickOrDropLabel}</span>
         )}
       </button>
     </td>
@@ -153,6 +156,8 @@ export function TimetableBuilder({
   slots,
   selectedClassId,
 }: TimetableBuilderProps) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [editing, setEditing] = useState<EditingCell>(null);
@@ -195,7 +200,7 @@ export function TimetableBuilder({
         toast.error(result.error);
         return;
       }
-      toast.success("Timetable updated");
+      toast.success(t("timetableUpdated"));
       setEditing(null);
       router.refresh();
     });
@@ -218,7 +223,7 @@ export function TimetableBuilder({
         toast.error(result.error);
         return;
       }
-      toast.success("Slot cleared");
+      toast.success(t("slotCleared"));
       setEditing(null);
       router.refresh();
     });
@@ -278,10 +283,10 @@ export function TimetableBuilder({
   if (classes.length === 0) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Timetable</h1>
+        <h1 className="text-2xl font-bold">{t("timetableTitle")}</h1>
         <EmptyState
-          title="No classes yet"
-          description="Create classes first, then build a weekly timetable for each class."
+          title={t("noClassesYet")}
+          description={t("createClassesFirst")}
         />
       </div>
     );
@@ -292,18 +297,18 @@ export function TimetableBuilder({
       <div className="space-y-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Timetable</h1>
-            <p className="mt-1 text-sm text-slate-500">
-              Build weekly schedules per class. Add multiple subjects per period with custom times.
+            <h1 className="text-2xl font-bold">{t("timetableTitle")}</h1>
+            <p className="mt-1 text-sm text-stone-500">
+              {t("timetableDescription")}
             </p>
           </div>
           <div className="w-full sm:w-64">
-            <Label htmlFor="class-select">Class</Label>
+            <Label htmlFor="class-select">{t("class")}</Label>
             <select
               id="class-select"
               value={selectedClassId}
               onChange={(e) => handleClassChange(e.target.value)}
-              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+              className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             >
               {classes.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -315,9 +320,9 @@ export function TimetableBuilder({
         </div>
 
         {subjects.length > 0 && (
-          <div className="rounded-lg border border-slate-200 p-4 dark:border-slate-700">
-            <p className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-300">
-              Drag subjects into the grid
+          <div className="rounded-lg border border-stone-200 p-4 dark:border-stone-700">
+            <p className="mb-3 text-sm font-medium text-stone-700 dark:text-stone-300">
+              {t("dragSubjects")}
             </p>
             <div className="flex flex-wrap gap-2">
               {subjects.map((s) => (
@@ -329,21 +334,21 @@ export function TimetableBuilder({
 
         {subjects.length === 0 && (
           <p className="text-sm text-amber-700 dark:text-amber-400">
-            Add subjects under Academic → Subjects before filling the timetable.
+            {t("addSubjectsTimetableHint")}
           </p>
         )}
 
-        <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+        <div className="overflow-x-auto rounded-lg border border-stone-200 dark:border-stone-700">
           <table className="w-full min-w-[700px] border-collapse text-sm">
             <thead>
-              <tr className="bg-slate-100 dark:bg-slate-800">
-                <th className="border border-slate-200 px-3 py-2 text-left font-medium dark:border-slate-700">
-                  Period
+              <tr className="bg-stone-100 dark:bg-stone-800">
+                <th className="border border-stone-200 px-3 py-2 text-left font-medium dark:border-stone-700">
+                  {t("period")}
                 </th>
                 {TIMETABLE_DAYS.map((d) => (
                   <th
                     key={d.value}
-                    className="border border-slate-200 px-3 py-2 text-left font-medium dark:border-slate-700"
+                    className="border border-stone-200 px-3 py-2 text-left font-medium dark:border-stone-700"
                   >
                     {d.label}
                   </th>
@@ -355,11 +360,11 @@ export function TimetableBuilder({
                 const periodTimes = defaultTimesForPeriod(period);
                 return (
                   <tr key={period}>
-                    <td className="border border-slate-200 bg-slate-50 px-3 py-2 dark:border-slate-700 dark:bg-slate-800/50">
-                      <span className="block font-medium text-slate-600 dark:text-slate-400">
+                    <td className="border border-stone-200 bg-stone-50 px-3 py-2 dark:border-stone-700 dark:bg-stone-800/50">
+                      <span className="block font-medium text-stone-600 dark:text-stone-400">
                         {period}
                       </span>
-                      <span className="mt-0.5 block text-[10px] text-slate-400">
+                      <span className="mt-0.5 block text-[10px] text-stone-400">
                         {formatTimeRange(periodTimes.start, periodTimes.end)}
                       </span>
                     </td>
@@ -370,6 +375,7 @@ export function TimetableBuilder({
                         period={period}
                         cellSlots={slotsByCell.get(slotKey(d.value, period)) ?? []}
                         onEdit={() => openEditor(d.value, period)}
+                        clickOrDropLabel={t("clickOrDrop")}
                       />
                     ))}
                   </tr>
@@ -382,7 +388,7 @@ export function TimetableBuilder({
 
       <DragOverlay>
         {activeSubject ? (
-          <span className="rounded-lg border border-indigo-300 bg-indigo-100 px-3 py-1.5 text-sm font-medium text-indigo-900 shadow-lg">
+          <span className="rounded-lg border border-primary-300 bg-primary-light px-3 py-1.5 text-sm font-medium text-teal-900 shadow-lg">
             {activeSubject.name}
           </span>
         ) : null}
@@ -393,24 +399,24 @@ export function TimetableBuilder({
         onClose={() => setEditing(null)}
         title={
           editing
-            ? `Period ${editing.period} — ${editingDay?.fullLabel ?? ""}`
+            ? t("periodTitle", { period: editing.period, day: editingDay?.fullLabel ?? "" })
             : undefined
         }
       >
         <div className="space-y-4">
-          <p className="text-sm text-slate-500">
-            Add one or more subjects for this period. Set start and end times for each lesson.
+          <p className="text-sm text-stone-500">
+            {t("periodModalDesc")}
           </p>
 
           <div className="max-h-[50vh] space-y-4 overflow-y-auto pr-1">
             {entries.map((entry, index) => (
               <div
                 key={entry.key}
-                className="rounded-lg border border-slate-200 p-3 dark:border-slate-700"
+                className="rounded-lg border border-stone-200 p-3 dark:border-stone-700"
               >
                 <div className="mb-3 flex items-center justify-between">
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Lesson {index + 1}
+                  <span className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                    {t("lesson", { number: index + 1 })}
                   </span>
                   {entries.length > 1 && (
                     <Button
@@ -420,14 +426,14 @@ export function TimetableBuilder({
                       className="h-8 text-red-600 hover:text-red-700"
                       onClick={() => removeEntry(entry.key)}
                     >
-                      Remove
+                      {tc("remove")}
                     </Button>
                   )}
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <Label htmlFor={`start-${entry.key}`}>Start time</Label>
+                    <Label htmlFor={`start-${entry.key}`}>{t("startTime")}</Label>
                     <input
                       id={`start-${entry.key}`}
                       type="time"
@@ -435,11 +441,11 @@ export function TimetableBuilder({
                       onChange={(e) =>
                         updateEntry(entry.key, { start_time: e.target.value || null })
                       }
-                      className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                      className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
                     />
                   </div>
                   <div>
-                    <Label htmlFor={`end-${entry.key}`}>End time</Label>
+                    <Label htmlFor={`end-${entry.key}`}>{t("endTime")}</Label>
                     <input
                       id={`end-${entry.key}`}
                       type="time"
@@ -447,22 +453,22 @@ export function TimetableBuilder({
                       onChange={(e) =>
                         updateEntry(entry.key, { end_time: e.target.value || null })
                       }
-                      className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                      className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
                     />
                   </div>
                 </div>
 
                 <div className="mt-3">
-                  <Label htmlFor={`subject-${entry.key}`}>Subject</Label>
+                  <Label htmlFor={`subject-${entry.key}`}>{t("subject")}</Label>
                   <select
                     id={`subject-${entry.key}`}
                     value={entry.subject_id ?? ""}
                     onChange={(e) =>
                       updateEntry(entry.key, { subject_id: e.target.value || null })
                     }
-                    className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                    className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
                   >
-                    <option value="">None</option>
+                    <option value="">{t("none")}</option>
                     {subjects.map((s) => (
                       <option key={s.id} value={s.id}>
                         {s.name}
@@ -472,19 +478,19 @@ export function TimetableBuilder({
                 </div>
 
                 <div className="mt-3">
-                  <Label htmlFor={`teacher-${entry.key}`}>Teacher</Label>
+                  <Label htmlFor={`teacher-${entry.key}`}>{t("teacher")}</Label>
                   <select
                     id={`teacher-${entry.key}`}
                     value={entry.teacher_id ?? ""}
                     onChange={(e) =>
                       updateEntry(entry.key, { teacher_id: e.target.value || null })
                     }
-                    className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+                    className="mt-1 w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
                   >
-                    <option value="">None</option>
-                    {teachers.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name ?? "Unnamed"}
+                    <option value="">{t("none")}</option>
+                    {teachers.map((teacher) => (
+                      <option key={teacher.id} value={teacher.id}>
+                        {teacher.name ?? t("unnamed")}
                       </option>
                     ))}
                   </select>
@@ -494,12 +500,12 @@ export function TimetableBuilder({
           </div>
 
           <Button type="button" variant="outline" size="sm" onClick={addEntry}>
-            Add another subject
+            {t("addAnotherSubject")}
           </Button>
 
-          <div className="flex flex-wrap gap-2 border-t border-slate-200 pt-4 dark:border-slate-700">
+          <div className="flex flex-wrap gap-2 border-t border-stone-200 pt-4 dark:border-stone-700">
             <Button type="button" onClick={handleSave} disabled={isPending}>
-              Save period
+              {t("savePeriod")}
             </Button>
             <Button
               type="button"
@@ -507,7 +513,7 @@ export function TimetableBuilder({
               onClick={handleClear}
               disabled={isPending}
             >
-              Clear period
+              {t("clearPeriod")}
             </Button>
           </div>
         </div>

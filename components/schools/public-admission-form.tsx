@@ -55,15 +55,15 @@ export function PublicAdmissionForm({
     return (
       <div className="mx-auto max-w-xl px-6 py-16">
         <h1 className="text-2xl font-bold">Application received</h1>
-        <p className="mt-2 text-zinc-600">
+        <p className="mt-2 text-stone-600">
           Thank you for applying to {schoolName}.
         </p>
-        <p className="mt-6 rounded-lg border bg-zinc-50 p-4 text-sm">
+        <p className="mt-6 rounded-lg border bg-stone-50 p-4 text-sm">
           Reference: <span className="font-mono font-medium">{referenceId}</span>
         </p>
         <Link
           href={`/schools/${slug}`}
-          className="mt-6 block text-center text-sm text-zinc-600 hover:underline"
+          className="mt-6 block text-center text-sm text-stone-600 hover:underline"
         >
           Back to school
         </Link>
@@ -74,7 +74,7 @@ export function PublicAdmissionForm({
   return (
     <div className="mx-auto max-w-xl px-6 py-16">
       <h1 className="text-2xl font-bold">Admissions</h1>
-      <p className="mt-2 text-zinc-600">Apply to {schoolName}</p>
+      <p className="mt-2 text-stone-600">Apply to {schoolName}</p>
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
         <div>
           <Label>Student name</Label>
@@ -102,7 +102,7 @@ export function PublicAdmissionForm({
       </form>
       <Link
         href={`/schools/${slug}`}
-        className="mt-6 block text-center text-sm text-zinc-600 hover:underline"
+        className="mt-6 block text-center text-sm text-stone-600 hover:underline"
       >
         Back to school
       </Link>

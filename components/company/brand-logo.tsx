@@ -8,6 +8,7 @@ type BrandLogoProps = {
   showWordmark?: boolean;
   wordmarkClassName?: string;
   size?: number;
+  variant?: "default" | "light" | "dark";
 };
 
 export function BrandLogo({
@@ -16,7 +17,15 @@ export function BrandLogo({
   showWordmark = true,
   wordmarkClassName,
   size = 40,
+  variant = "default",
 }: BrandLogoProps) {
+  const wordmarkColor =
+    variant === "light"
+      ? "text-white"
+      : variant === "dark"
+        ? "text-stone-900 dark:text-white"
+        : "text-stone-900 dark:text-white";
+
   return (
     <span className={cn("inline-flex items-center gap-3", className)}>
       <Image
@@ -24,12 +33,22 @@ export function BrandLogo({
         alt={`${companyIdentity.productName} logo`}
         width={size}
         height={size}
-        className={cn("shrink-0 rounded-xl shadow-lg shadow-indigo-600/20", imageClassName)}
+        className={cn(
+          "shrink-0 rounded-xl shadow-lg shadow-primary/20",
+          imageClassName
+        )}
         priority
       />
       {showWordmark && (
-        <span className={cn("text-xl font-black tracking-tight", wordmarkClassName)}>
-          {companyIdentity.productName}
+        <span
+          className={cn(
+            "text-xl font-extrabold tracking-tight",
+            wordmarkColor,
+            wordmarkClassName
+          )}
+        >
+          <span>Shule</span>
+          <span className="text-accent">OS</span>
         </span>
       )}
     </span>

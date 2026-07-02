@@ -1,6 +1,7 @@
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getClasses, getSubjects, getTimetableSlots, getTeachers } from "@/lib/db";
+import { getTranslations } from "next-intl/server";
 import { TimetableBuilder } from "./timetable-builder";
 
 interface PageProps {
@@ -8,6 +9,7 @@ interface PageProps {
 }
 
 export default async function TimetablePage({ searchParams }: PageProps) {
+  const t = await getTranslations("academic");
   const params = await searchParams;
   const profile = await getCurrentProfile();
   const branchId = profile?.branch_id ?? "";
@@ -16,10 +18,10 @@ export default async function TimetablePage({ searchParams }: PageProps) {
   if (!branchId) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-bold">Timetable</h1>
+        <h1 className="text-2xl font-bold">{t("timetableTitle")}</h1>
         <EmptyState
-          title="Branch required"
-          description="Assign a branch to your profile to manage class timetables."
+          title={t("branchRequired")}
+          description={t("branchRequiredTimetable")}
         />
       </div>
     );

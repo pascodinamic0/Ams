@@ -29,7 +29,7 @@ export function AuditFilters({ entityTypes }: { entityTypes: string[] }) {
           id="entity-type"
           value={entityType}
           onChange={(e) => applyFilters({ entityType: e.target.value })}
-          className="mt-1 w-full min-w-[160px] rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="mt-1 w-full min-w-[160px] rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
           <option value="">All entities</option>
           {entityTypes.map((type) => (

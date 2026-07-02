@@ -34,7 +34,7 @@ export function RoleGuard({ roles, children }: RoleGuardProps) {
   if (allowed === null) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-900" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-stone-300 border-t-zinc-900" />
       </div>
     );
   }
@@ -42,16 +42,16 @@ export function RoleGuard({ roles, children }: RoleGuardProps) {
   if (!allowed) {
     return (
       <div className="flex min-h-[200px] flex-col items-center justify-center gap-4">
-        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+        <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100">
           Access denied
         </h2>
-        <p className="text-zinc-600 dark:text-zinc-400">
+        <p className="text-stone-600 dark:text-stone-400">
           You do not have permission to view this page.
         </p>
         <button
           type="button"
           onClick={() => router.push("/")}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900"
+          className="rounded-lg bg-stone-900 px-4 py-2 text-white hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900"
         >
           Go home
         </button>

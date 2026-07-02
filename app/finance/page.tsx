@@ -28,28 +28,28 @@ export default async function FinanceDashboard() {
           <CardHeader><CardTitle>{t("outstanding")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{formatCurrency(kpis.outstanding)}</p>
-            <p className="text-sm text-slate-500">{t("outstandingSub")}</p>
+            <p className="text-sm text-stone-500">{t("outstandingSub")}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>{t("collected")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{formatCurrency(kpis.collected)}</p>
-            <p className="text-sm text-slate-500">{t("collectedSub")}</p>
+            <p className="text-sm text-stone-500">{t("collectedSub")}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>{t("overdue")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold text-red-600">{formatCurrency(kpis.overdue)}</p>
-            <p className="text-sm text-slate-500">{t("overdueSub")}</p>
+            <p className="text-sm text-stone-500">{t("overdueSub")}</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader><CardTitle>{t("invoicesKpi")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{kpis.invoiceCount}</p>
-            <p className="text-sm text-slate-500">{t("invoicesSub")}</p>
+            <p className="text-sm text-stone-500">{t("invoicesSub")}</p>
           </CardContent>
         </Card>
       </div>

@@ -96,7 +96,7 @@ export default function RegisterCompletePage() {
   if (checkingSession) {
     return (
       <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-indigo-600 border-t-transparent" />
+        <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
       </div>
     );
   }
@@ -105,10 +105,10 @@ export default function RegisterCompletePage() {
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
             Finish school setup
           </h1>
-          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
             You signed in with Google
             {adminEmail ? ` as ${adminEmail}` : ""}. Enter your school name to
             complete registration.
@@ -123,11 +123,11 @@ export default function RegisterCompletePage() {
           <CompleteFormFields loading={loading} />
         </FormWrapper>
 
-        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-6 text-center text-sm text-stone-500 dark:text-stone-400">
           Wrong account?{" "}
           <Link
             href="/login"
-            className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+            className="font-medium text-primary hover:text-primary-hover dark:text-primary"
           >
             Sign in with a different account
           </Link>

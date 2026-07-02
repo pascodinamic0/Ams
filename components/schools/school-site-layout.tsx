@@ -48,7 +48,7 @@ function SocialLinks({
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+          className="text-sm text-stone-500 hover:text-zinc-800 dark:hover:text-zinc-200"
         >
           {link.label}
         </a>
@@ -68,11 +68,11 @@ function SchoolFooter({
 }) {
   return (
     <div className={className}>
-      <p className="text-sm text-zinc-500">
+      <p className="text-sm text-stone-500">
         &copy; {new Date().getFullYear()} {school.name}
       </p>
       {site.footerTagline && (
-        <p className="mt-1 text-sm text-zinc-400">{site.footerTagline}</p>
+        <p className="mt-1 text-sm text-stone-400">{site.footerTagline}</p>
       )}
       <SocialLinks social={site.social} className="mt-3" />
     </div>
@@ -80,12 +80,12 @@ function SchoolFooter({
 }
 
 function ModernShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
-  const primary = school.theme_primary_color ?? "#4f46e5";
+  const primary = school.theme_primary_color ?? "#0d9488";
   const site = resolveSchoolWebsite(school);
   const base = isPreview ? "#" : `/schools/${school.slug}`;
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900">
+    <div className="min-h-screen bg-white text-stone-900">
       <header className="sticky top-0 z-20 border-b border-zinc-100 bg-white/90 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link href={base} className="flex items-center gap-3">
@@ -118,7 +118,7 @@ function ModernShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
         </div>
       </header>
       <main>{children}</main>
-      <footer className="border-t border-zinc-100 bg-zinc-50">
+      <footer className="border-t border-zinc-100 bg-stone-50">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <SchoolFooter school={school} site={site} />
         </div>
@@ -133,7 +133,7 @@ function ClassicShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
   const base = isPreview ? "#" : `/schools/${school.slug}`;
 
   return (
-    <div className="min-h-screen bg-amber-50/40 text-zinc-900">
+    <div className="min-h-screen bg-amber-50/40 text-stone-900">
       <header className="border-b-2 bg-white" style={{ borderColor: primary }}>
         <div className="mx-auto max-w-4xl px-6 py-5 text-center">
           <Link href={base}>
@@ -161,7 +161,7 @@ function ClassicShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
         </div>
       </header>
       <main>{children}</main>
-      <footer className="border-t-2 border-zinc-300 bg-white py-8 text-center dark:border-zinc-700">
+      <footer className="border-t-2 border-stone-300 bg-white py-8 text-center dark:border-stone-700">
         <SchoolFooter school={school} site={site} className="mx-auto max-w-4xl px-6" />
       </footer>
     </div>
@@ -174,7 +174,7 @@ function MinimalShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
   const base = isPreview ? "#" : `/schools/${school.slug}`;
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900">
+    <div className="min-h-screen bg-white text-stone-900">
       <header className="mx-auto max-w-2xl px-6 pt-10 pb-6">
         <div className="flex items-center justify-between">
           <Link
@@ -184,7 +184,7 @@ function MinimalShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
           >
             {school.name}
           </Link>
-          <nav className="flex flex-wrap justify-end gap-5 text-xs uppercase tracking-widest text-zinc-400">
+          <nav className="flex flex-wrap justify-end gap-5 text-xs uppercase tracking-widest text-stone-400">
             <NavLink href={`${base}#programs`}>Programs</NavLink>
             <NavLink href={`${base}#about`}>About</NavLink>
             <NavLink href={isPreview ? "#events" : `/schools/${school.slug}/events`}>Events</NavLink>

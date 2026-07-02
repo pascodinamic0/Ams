@@ -16,7 +16,7 @@ export default async function AdminDashboard() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
         </svg>
       ),
-      color: "text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-950/40",
+      color: "text-primary bg-primary-light dark:text-primary dark:bg-primary-light/40",
       trend: t("kpiSchoolsTrend"),
     },
     {
@@ -46,10 +46,10 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
           {t("dashboardTitle")}
         </h1>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
           {t("dashboardSubtitle")}
         </p>
       </div>
@@ -60,13 +60,13 @@ export default async function AdminDashboard() {
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  <p className="text-sm font-medium text-stone-500 dark:text-stone-400">
                     {c.label}
                   </p>
-                  <p className="mt-2 text-4xl font-bold text-slate-900 dark:text-white">
+                  <p className="mt-2 text-4xl font-bold text-stone-900 dark:text-white">
                     {c.value}
                   </p>
-                  <p className="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
+                  <p className="mt-1.5 text-xs text-stone-400 dark:text-stone-500">
                     {c.trend}
                   </p>
                 </div>

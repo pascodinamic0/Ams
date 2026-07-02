@@ -63,7 +63,7 @@ function InvoiceFormFields({
         <select
           id="student_id"
           {...register("student_id")}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
           <option value="">Select student</option>
           {students.map((s) => (
@@ -80,7 +80,7 @@ function InvoiceFormFields({
           id="fee_structure_id"
           value={selectedStructureId ?? ""}
           onChange={onStructureChange}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900"
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
           <option value="">Custom amount</option>
           {feeStructures.map((s) => (

@@ -37,7 +37,7 @@ export function DatePicker({
             className="fixed inset-0 z-40"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute left-0 top-full z-50 mt-2 rounded-lg border border-zinc-200 bg-white p-4 shadow-lg dark:border-zinc-800 dark:bg-zinc-950">
+          <div className="absolute left-0 top-full z-50 mt-2 rounded-lg border border-stone-200 bg-white p-4 shadow-lg dark:border-stone-800 dark:bg-stone-950">
             <DayPicker
               mode="single"
               selected={value}

@@ -22,7 +22,7 @@ export function PendingApprovalCard({
   const t = useTranslations("auth");
 
   return (
-    <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+    <div className="w-full max-w-lg rounded-2xl border border-stone-200 bg-white p-8 shadow-sm dark:border-stone-800 dark:bg-stone-900">
       <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-100 dark:bg-amber-950">
         <svg
           className="h-7 w-7 text-amber-600 dark:text-amber-400"
@@ -39,11 +39,11 @@ export function PendingApprovalCard({
         </svg>
       </div>
 
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+      <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
         {isSuspended ? t("schoolAccessSuspended") : t("awaitingApproval")}
       </h1>
 
-      <p className="mt-3 text-slate-600 dark:text-slate-400">
+      <p className="mt-3 text-stone-600 dark:text-stone-400">
         {isSuspended
           ? t.rich("suspendedMessage", {
               schoolName: () => <strong>{schoolName}</strong>,
@@ -56,13 +56,13 @@ export function PendingApprovalCard({
       </p>
 
       {emailConfirmationNote && (
-        <p className="mt-4 rounded-xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-900 dark:border-indigo-900 dark:bg-indigo-950/40 dark:text-indigo-200">
+        <p className="mt-4 rounded-xl border border-primary-100 bg-primary-light px-4 py-3 text-sm text-teal-900 dark:border-primary-900 dark:bg-primary-light/40 dark:text-teal-200">
           {emailConfirmationNote}
         </p>
       )}
 
       {!isSuspended && (
-        <ul className="mt-6 space-y-2 text-sm text-slate-500 dark:text-slate-400">
+        <ul className="mt-6 space-y-2 text-sm text-stone-500 dark:text-stone-400">
           <li>{t("reviewTimeline")}</li>
           <li>{t("afterApprovalHint")}</li>
         </ul>

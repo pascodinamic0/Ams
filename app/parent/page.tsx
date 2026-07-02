@@ -54,10 +54,10 @@ export default async function ParentDashboard() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
           {t("welcome", { name: profile.name ?? "" })}
         </h1>
-        <p className="mt-1 text-sm text-slate-500">{t("welcomeSubtitle")}</p>
+        <p className="mt-1 text-sm text-stone-500">{t("welcomeSubtitle")}</p>
       </div>
 
       {children.length === 0 ? (
@@ -68,18 +68,18 @@ export default async function ParentDashboard() {
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <p className="text-xs font-medium text-slate-500">{t("children")}</p>
-              <p className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
+            <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+              <p className="text-xs font-medium text-stone-500">{t("children")}</p>
+              <p className="mt-1 text-2xl font-bold text-stone-900 dark:text-white">
                 {children.length}
               </p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <p className="text-xs font-medium text-slate-500">{t("outstandingInvoices")}</p>
+            <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+              <p className="text-xs font-medium text-stone-500">{t("outstandingInvoices")}</p>
               <p className="mt-1 text-2xl font-bold text-amber-600">{outstanding}</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <p className="text-xs font-medium text-slate-500">{t("quickLinks")}</p>
+            <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+              <p className="text-xs font-medium text-stone-500">{t("quickLinks")}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 <Link href="/parent/fees">
                   <Button size="sm" variant="outline">{t("fees")}</Button>
@@ -95,25 +95,25 @@ export default async function ParentDashboard() {
           </div>
 
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+            <h2 className="text-lg font-semibold text-stone-900 dark:text-white">
               {t("yourChildren")}
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {children.map((child) => (
                 <div
                   key={child.id}
-                  className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+                  className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-stone-900"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-indigo-100 text-base font-bold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-light text-base font-bold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
                         {child.first_name.charAt(0)}
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-900 dark:text-white">
+                        <p className="font-semibold text-stone-900 dark:text-white">
                           {child.name}
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-stone-500">
                           {child.class_name ?? t("noClass")}
                         </p>
                       </div>
@@ -121,7 +121,7 @@ export default async function ParentDashboard() {
                   </div>
                   {child.student_id && (
                     <div className="mt-3">
-                      <p className="mb-1 text-xs text-slate-500">{t("studentId")}</p>
+                      <p className="mb-1 text-xs text-stone-500">{t("studentId")}</p>
                       <CopyableBadge value={child.student_id} label={child.student_id} />
                     </div>
                   )}
@@ -140,41 +140,41 @@ export default async function ParentDashboard() {
 
           {childPreviews.length > 0 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+              <h2 className="text-lg font-semibold text-stone-900 dark:text-white">
                 {t("todaysSnapshot")}
               </h2>
               <div className="grid gap-4 lg:grid-cols-2">
                 {childPreviews.map(({ child, todaySlots, upcoming }) => (
                   <div
                     key={child.id}
-                    className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+                    className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-stone-900"
                   >
-                    <p className="font-medium text-slate-900 dark:text-white">{child.name}</p>
-                    <p className="text-xs text-slate-500">{format(new Date(), "EEEE, MMM d")}</p>
+                    <p className="font-medium text-stone-900 dark:text-white">{child.name}</p>
+                    <p className="text-xs text-stone-500">{format(new Date(), "EEEE, MMM d")}</p>
                     {todaySlots.length === 0 ? (
-                      <p className="mt-3 text-sm text-slate-500">{t("noClassesToday")}</p>
+                      <p className="mt-3 text-sm text-stone-500">{t("noClassesToday")}</p>
                     ) : (
                       <ul className="mt-3 space-y-2">
                         {todaySlots.slice(0, 4).map((slot) => (
                           <li
                             key={slot.id}
-                            className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm dark:bg-slate-800/50"
+                            className="flex items-center justify-between rounded-lg bg-stone-50 px-3 py-2 text-sm dark:bg-stone-800/50"
                           >
                             <span className="font-medium">{slot.subject_name ?? "—"}</span>
-                            <span className="text-xs text-slate-500">P{slot.period}</span>
+                            <span className="text-xs text-stone-500">P{slot.period}</span>
                           </li>
                         ))}
                       </ul>
                     )}
                     {upcoming.length > 0 && (
-                      <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
-                        <p className="text-xs font-medium text-slate-500">{t("dueSoon")}</p>
+                      <div className="mt-4 border-t border-stone-100 pt-3 dark:border-stone-800">
+                        <p className="text-xs font-medium text-stone-500">{t("dueSoon")}</p>
                         <ul className="mt-2 space-y-1">
                           {upcoming.map((a) => (
-                            <li key={a.id} className="text-sm text-slate-700 dark:text-slate-300">
+                            <li key={a.id} className="text-sm text-stone-700 dark:text-stone-300">
                               {a.title}
                               {a.due_date && (
-                                <span className="ml-2 text-xs text-slate-400">
+                                <span className="ml-2 text-xs text-stone-400">
                                   {format(new Date(a.due_date), "MMM d")}
                                 </span>
                               )}

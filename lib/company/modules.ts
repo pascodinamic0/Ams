@@ -86,7 +86,7 @@ export const platformModules: PlatformModule[] = [
     desc: "Library, transport, events, staff",
     span: "md:col-span-1",
     icon: Settings,
-    iconClassName: "text-slate-500",
+    iconClassName: "text-stone-500",
     highlights: [
       "Library catalog with lending, returns, and overdue tracking",
       "Transport routes, bus assignments, and student pickup lists",
@@ -112,7 +112,7 @@ export const platformModules: PlatformModule[] = [
     desc: "Dashboards, branch comparison, attendance & finance reports",
     span: "md:col-span-2",
     icon: BarChart3,
-    iconClassName: "text-indigo-500",
+    iconClassName: "text-primary",
     highlights: [
       "Executive dashboards for directors and school owners",
       "Attendance heatmaps and chronic absenteeism alerts",

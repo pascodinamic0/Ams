@@ -37,14 +37,14 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+        <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">
           {t("forgotPasswordTitle")}
         </h1>
-        <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+        <p className="mt-2 text-stone-600 dark:text-stone-400">
           {t("forgotPasswordSubtitle")}
         </p>
         {sent ? (
-          <p className="mt-8 text-zinc-600 dark:text-zinc-400">
+          <p className="mt-8 text-stone-600 dark:text-stone-400">
             {t("resetLinkSentMessage")}
           </p>
         ) : (
@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
         )}
         <Link
           href="/login"
-          className="mt-6 block text-center text-sm text-zinc-600 hover:underline dark:text-zinc-400"
+          className="mt-6 block text-center text-sm text-stone-600 hover:underline dark:text-stone-400"
         >
           {t("backToLogin")}
         </Link>

@@ -8,7 +8,7 @@ export function ExpenseActions({ id }: { id: string }) {
     <div className="flex gap-1">
       <Link
         href={`/finance/expenses?edit=${id}`}
-        className="inline-flex h-8 items-center rounded-md px-3 text-sm hover:bg-slate-100 dark:hover:bg-slate-800"
+        className="inline-flex h-8 items-center rounded-md px-3 text-sm hover:bg-stone-100 dark:hover:bg-stone-800"
       >
         Edit
       </Link>

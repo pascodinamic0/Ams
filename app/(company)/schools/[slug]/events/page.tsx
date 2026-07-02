@@ -25,23 +25,23 @@ export default async function SchoolEventsPage({
   if (!school) notFound();
 
   const events = await getPublicSchoolEvents(school.id, { upcomingOnly: true });
-  const primary = school.theme_primary_color ?? "#4f46e5";
+  const primary = school.theme_primary_color ?? "#0d9488";
 
   return (
     <div className="mx-auto max-w-4xl px-6 py-12">
       <Link
         href={`/schools/${slug}`}
-        className="text-sm text-zinc-500 hover:underline"
+        className="text-sm text-stone-500 hover:underline"
       >
         &larr; Back to {school.name}
       </Link>
       <h1 className="mt-4 text-3xl font-bold">School events</h1>
-      <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+      <p className="mt-2 text-stone-600 dark:text-stone-400">
         Upcoming events at {school.name}. Register online where booking is available.
       </p>
 
       {events.length === 0 ? (
-        <p className="mt-10 rounded-xl border border-dashed border-zinc-300 p-8 text-center text-zinc-500 dark:border-zinc-700">
+        <p className="mt-10 rounded-xl border border-dashed border-stone-300 p-8 text-center text-stone-500 dark:border-stone-700">
           No upcoming public events right now. Check back soon.
         </p>
       ) : (
@@ -50,24 +50,24 @@ export default async function SchoolEventsPage({
             <article
               key={event.id}
               id={`event-${event.id}`}
-              className="scroll-mt-24 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
+              className="scroll-mt-24 rounded-2xl border border-stone-200 bg-white p-6 dark:border-stone-800 dark:bg-stone-950"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs font-medium uppercase tracking-widest text-zinc-400">
+                  <p className="text-xs font-medium uppercase tracking-widest text-stone-400">
                     {event.type === "holiday" ? "Holiday" : "Event"}
                   </p>
                   <h2 className="mt-1 text-2xl font-semibold">{event.title}</h2>
-                  <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
                     {formatEventDate(event.date, event.start_time)}
                   </p>
                   {event.location && (
-                    <p className="mt-1 text-sm text-zinc-500">{event.location}</p>
+                    <p className="mt-1 text-sm text-stone-500">{event.location}</p>
                   )}
                 </div>
               </div>
               {event.description && (
-                <p className="mt-4 leading-relaxed text-zinc-700 dark:text-zinc-300">
+                <p className="mt-4 leading-relaxed text-stone-700 dark:text-stone-300">
                   {event.description}
                 </p>
               )}
@@ -77,9 +77,9 @@ export default async function SchoolEventsPage({
                 </div>
               )}
               {event.type === "event" && !event.booking_enabled && event.booking_procedure && (
-                <div className="mt-6 rounded-xl bg-zinc-50 p-4 text-sm dark:bg-zinc-900">
+                <div className="mt-6 rounded-xl bg-stone-50 p-4 text-sm dark:bg-stone-900">
                   <p className="font-medium">How to attend</p>
-                  <p className="mt-2 text-zinc-600 dark:text-zinc-400">{event.booking_procedure}</p>
+                  <p className="mt-2 text-stone-600 dark:text-stone-400">{event.booking_procedure}</p>
                 </div>
               )}
             </article>

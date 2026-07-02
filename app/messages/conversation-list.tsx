@@ -43,8 +43,8 @@ export function ConversationList({
   if (conversations.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-12 text-center">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-          <svg className="h-6 w-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-stone-100 dark:bg-stone-800">
+          <svg className="h-6 w-6 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -54,8 +54,8 @@ export function ConversationList({
           </svg>
         </div>
         <div>
-          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">{t("noConversations")}</p>
-          <p className="text-xs text-slate-400">{t("startChatting")}</p>
+          <p className="text-sm font-medium text-stone-600 dark:text-stone-400">{t("noConversations")}</p>
+          <p className="text-xs text-stone-400">{t("startChatting")}</p>
         </div>
       </div>
     );
@@ -63,7 +63,7 @@ export function ConversationList({
 
   return (
     <>
-      <div className="border-b border-slate-200 px-3 py-2 dark:border-slate-700">
+      <div className="border-b border-stone-200 px-3 py-2 dark:border-stone-700">
         <Input
           placeholder={t("searchConversations")}
           value={search}
@@ -71,23 +71,23 @@ export function ConversationList({
           className="h-8 text-sm"
         />
       </div>
-      <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+      <ul className="divide-y divide-stone-100 dark:divide-stone-800">
         {filtered.length === 0 ? (
-          <li className="px-4 py-6 text-center text-sm text-slate-400">{t("noContactsFound")}</li>
+          <li className="px-4 py-6 text-center text-sm text-stone-400">{t("noContactsFound")}</li>
         ) : (
           filtered.map((conv) => (
             <li key={conv.id}>
               <Link
                 href={`/messages/${conv.id}`}
-                className={`flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-slate-50 dark:hover:bg-slate-800/60 ${
-                  conv.id === activeConversationId ? "bg-indigo-50 dark:bg-indigo-950/40" : ""
+                className={`flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-stone-50 dark:hover:bg-stone-800/60 ${
+                  conv.id === activeConversationId ? "bg-primary-light dark:bg-primary-light/40" : ""
                 }`}
               >
-                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300">
+                <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-light text-sm font-semibold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
                   {conv.title.charAt(0).toUpperCase()}
                   {conv.unread && (
                     <span
-                      className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-white dark:ring-slate-900"
+                      className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-primary ring-2 ring-white dark:ring-slate-900"
                       aria-label={t("unreadMessages", { count: 1 })}
                     />
                   )}
@@ -95,19 +95,19 @@ export function ConversationList({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <p
-                      className={`truncate text-sm text-slate-900 dark:text-white ${
+                      className={`truncate text-sm text-stone-900 dark:text-white ${
                         conv.unread ? "font-bold" : "font-semibold"
                       }`}
                     >
                       {conv.title}
                     </p>
-                    <span className="shrink-0 text-xs text-slate-400">
+                    <span className="shrink-0 text-xs text-stone-400">
                       {formatTime(conv.last_message_at ?? conv.created_at, yesterdayLabel)}
                     </span>
                   </div>
                   <p
                     className={`mt-0.5 truncate text-xs ${
-                      conv.unread ? "font-medium text-slate-700 dark:text-slate-300" : "text-slate-500"
+                      conv.unread ? "font-medium text-stone-700 dark:text-stone-300" : "text-stone-500"
                     }`}
                   >
                     {conv.last_message ?? t("noMessagesYet")}

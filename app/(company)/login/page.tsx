@@ -33,15 +33,15 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)]">
-      <div className="hidden flex-col justify-center bg-gradient-to-br from-indigo-950 via-indigo-900 to-indigo-800 p-12 lg:flex lg:w-[45%]">
+      <div className="hidden flex-col justify-center bg-gradient-to-br from-teal-950 via-teal-900 to-teal-800 p-12 lg:flex lg:w-[45%]">
         <div>
           <blockquote className="text-2xl font-semibold leading-snug text-white">
             &ldquo;{t("brandQuote")}&rdquo;
           </blockquote>
           <div className="mt-8 space-y-4">
             {brandFeatures.map((f) => (
-              <div key={f} className="flex items-center gap-3 text-indigo-200">
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-indigo-500/30">
+              <div key={f} className="flex items-center gap-3 text-teal-200">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/30">
                   <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
@@ -56,10 +56,10 @@ export default function LoginPage() {
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
               {t("welcomeBack")}
             </h1>
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
               {t("signInSubtitle", { productName: companyIdentity.productName })}
             </p>
           </div>
@@ -70,11 +70,11 @@ export default function LoginPage() {
             <LoginFormContent />
           </Suspense>
 
-          <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
+          <p className="mt-6 text-center text-sm text-stone-500 dark:text-stone-400">
             {t("noAccount")}{" "}
             <Link
               href="/get-access"
-              className="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+              className="font-medium text-primary hover:text-primary-hover dark:text-primary"
             >
               {t("getAccess")}
             </Link>
@@ -102,9 +102,9 @@ function LoginOAuthSection() {
 function LoginSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="h-10 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />
-      <div className="h-10 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />
-      <div className="h-10 animate-pulse rounded-lg bg-slate-200 dark:bg-slate-800" />
+      <div className="h-10 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
+      <div className="h-10 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
+      <div className="h-10 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
     </div>
   );
 }
@@ -189,7 +189,7 @@ function LoginFormFields({ loading }: { loading: boolean }) {
           </Label>
           <Link
             href="/forgot-password"
-            className="text-xs font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+            className="text-xs font-medium text-primary hover:text-primary-hover dark:text-primary"
           >
             {t("forgotPassword")}
           </Link>
