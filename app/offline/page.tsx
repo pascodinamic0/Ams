@@ -10,7 +10,7 @@ export default function OfflinePage() {
   const tc = useTranslations("common");
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-stone-50 px-6 text-center dark:bg-stone-950">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-stone-50 px-6 text-center dark:bg-stone-950">
       <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary text-white">
         <WifiOff className="h-8 w-8" />
       </div>

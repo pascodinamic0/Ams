@@ -203,7 +203,7 @@ export function ChatPanel({
         )}
       </div>
 
-      <div className="border-t border-stone-200 px-4 py-3 dark:border-stone-700">
+      <div className="border-t border-stone-200 px-4 py-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] dark:border-stone-700">
         <div className="flex items-end gap-3">
           <textarea
             ref={textareaRef}
