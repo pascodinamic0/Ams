@@ -12,14 +12,13 @@ import {
   Sparkles,
   HeadphonesIcon,
   Wallet,
-  Smartphone,
   Wifi,
-  Download,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { companyIdentity } from "@/lib/company/identity";
 import { HeroVideoBackground } from "@/components/company/hero-video-background";
+import { PwaInstallShowcase } from "@/components/pwa/pwa-install-showcase";
 import { getHomepageCtaSections, getPlatformModules } from "@/lib/i18n/modules";
 
 export function HomePage() {
@@ -89,7 +88,7 @@ export function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-[#0c1222]">
       {/* Hero Section */}
-      <section className="relative flex min-h-[100dvh] items-center overflow-hidden pt-[calc(env(safe-area-inset-top)+5.5rem)] pb-12 sm:min-h-[90vh] md:pt-28 md:pb-0 lg:pt-32">
+      <section className="relative flex min-h-[100dvh] items-center overflow-hidden pt-[calc(env(safe-area-inset-top)+5.5rem)] pb-24 sm:min-h-[90vh] sm:pb-28 md:pt-28 md:pb-32 lg:pt-32">
         <HeroVideoBackground />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -137,7 +136,7 @@ export function HomePage() {
             </div>
 
             {/* Stats */}
-            <div className="mx-auto mt-10 max-w-4xl rounded-2xl border border-white/10 bg-teal-950/50 px-3 py-6 backdrop-blur-md sm:mt-16 sm:px-6 sm:py-8">
+            <div className="relative z-10 mx-auto mt-10 max-w-4xl rounded-2xl border border-white/10 bg-teal-950/70 px-3 py-6 shadow-lg shadow-teal-950/30 backdrop-blur-md sm:mt-16 sm:px-6 sm:py-8">
               <div className="grid grid-cols-3 gap-3 sm:gap-8">
                 {stats.map((s, i) => (
                   <motion.div
@@ -160,7 +159,7 @@ export function HomePage() {
       </section>
 
       {/* Trust Pillars — local differentiators vs enterprise competitors */}
-      <section className="relative z-20 -mt-8 sm:-mt-12">
+      <section className="bg-white py-10 dark:bg-[#0c1222] sm:py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-xl shadow-stone-950/5 dark:border-stone-800 dark:bg-stone-900 sm:grid-cols-2 sm:gap-6 sm:rounded-3xl sm:p-6 lg:grid-cols-4">
             {trustPillars.map((pillar, i) => {
@@ -374,31 +373,8 @@ export function HomePage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="relative mx-auto w-full max-w-sm"
             >
-              <div className="absolute -inset-4 rounded-[2.5rem] bg-teal-500/20 blur-2xl" />
-              <div className="relative overflow-hidden rounded-[2rem] border border-teal-800/50 bg-teal-900/50 p-8 backdrop-blur-sm sm:p-10">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-800/80">
-                  <Smartphone className="h-8 w-8 text-teal-200" />
-                </div>
-                <p className="mt-6 text-center text-lg font-bold text-white">
-                  {companyIdentity.productName}
-                </p>
-                <p className="mt-2 text-center text-sm text-teal-200/70">
-                  {companyIdentity.tagline}
-                </p>
-                <div className="mt-8 flex items-center justify-center gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-800/60">
-                    <Download className="h-5 w-5 text-teal-200" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-xs font-bold uppercase tracking-wider text-teal-300">
-                      PWA
-                    </p>
-                    <p className="text-sm text-teal-100/80">Install from browser</p>
-                  </div>
-                </div>
-              </div>
+              <PwaInstallShowcase />
             </motion.div>
           </div>
         </div>

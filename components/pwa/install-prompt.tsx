@@ -5,12 +5,8 @@ import { Download, Share, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { companyIdentity } from "@/lib/company/identity";
 import { isStandaloneMode, useIsMobile } from "@/lib/pwa/display-mode";
+import { usePwaInstall } from "@/lib/pwa/use-pwa-install";
 import { MOBILE_TAB_BAR_HEIGHT } from "@/components/layout/mobile-tab-bar";
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
 
 const DISMISS_KEY = "shuleos-pwa-install-dismissed";
 const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
@@ -31,11 +27,6 @@ const APP_ROUTE_PREFIXES = [
   "/pending",
 ];
 
-function isIosDevice() {
-  if (typeof window === "undefined") return false;
-  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-}
-
 function isAppRoute(pathname: string) {
   return APP_ROUTE_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
@@ -45,10 +36,8 @@ function isAppRoute(pathname: string) {
 export function InstallPrompt() {
   const pathname = usePathname();
   const isMobile = useIsMobile();
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
+  const { canInstall, ios, install } = usePwaInstall();
   const [visible, setVisible] = useState(false);
-  const [showIosHelp, setShowIosHelp] = useState(false);
 
   useEffect(() => {
     if (isStandaloneMode()) return;
@@ -59,36 +48,20 @@ export function InstallPrompt() {
       return;
     }
 
-    if (isIosDevice()) {
-      setShowIosHelp(true);
-      setVisible(true);
-      return;
-    }
-
-    function handleBeforeInstall(event: Event) {
-      event.preventDefault();
-      setDeferredPrompt(event as BeforeInstallPromptEvent);
+    if (ios || canInstall) {
       setVisible(true);
     }
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
-    return () =>
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-  }, [pathname]);
+  }, [pathname, ios, canInstall]);
 
   function dismiss() {
     localStorage.setItem(DISMISS_KEY, String(Date.now()));
     setVisible(false);
-    setDeferredPrompt(null);
   }
 
   async function handleInstall() {
-    if (!deferredPrompt) return;
-    await deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    setDeferredPrompt(null);
+    const accepted = await install();
     setVisible(false);
-    if (outcome !== "accepted") {
+    if (!accepted) {
       localStorage.setItem(DISMISS_KEY, String(Date.now()));
     }
   }
@@ -113,22 +86,22 @@ export function InstallPrompt() {
             Install {companyIdentity.productName}
           </p>
           <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-            {showIosHelp
+            {ios
               ? "Add to your home screen for quick access. Tap Share, then Add to Home Screen."
               : "Install the app on this device for faster access, full-screen mode, and offline support."}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {!showIosHelp && deferredPrompt && (
+            {!ios && canInstall && (
               <button
                 type="button"
-                onClick={handleInstall}
+                onClick={() => void handleInstall()}
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary"
               >
                 <Download className="h-4 w-4" />
                 Install app
               </button>
             )}
-            {showIosHelp && (
+            {ios && (
               <span className="inline-flex items-center gap-2 rounded-xl bg-primary-light px-3 py-2 text-xs font-semibold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
                 <Share className="h-4 w-4" />
                 Share, then Add to Home Screen

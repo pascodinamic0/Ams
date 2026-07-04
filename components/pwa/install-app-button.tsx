@@ -1,47 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Download, Share, Smartphone } from "lucide-react";
+import { Download, Share } from "lucide-react";
 import { companyIdentity } from "@/lib/company/identity";
-import { isStandaloneMode } from "@/lib/pwa/display-mode";
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt(): Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
-
-function isIosDevice() {
-  if (typeof window === "undefined") return false;
-  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
-}
+import { usePwaInstall } from "@/lib/pwa/use-pwa-install";
 
 export function InstallAppButton() {
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
-  const [installed, setInstalled] = useState(false);
-  const [ios, setIos] = useState(false);
-
-  useEffect(() => {
-    setInstalled(isStandaloneMode());
-    setIos(isIosDevice());
-
-    function handleBeforeInstall(event: Event) {
-      event.preventDefault();
-      setDeferredPrompt(event as BeforeInstallPromptEvent);
-    }
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
-    return () =>
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-  }, []);
-
-  async function handleInstall() {
-    if (!deferredPrompt) return;
-    await deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    setDeferredPrompt(null);
-    setInstalled(isStandaloneMode());
-  }
+  const { installed, ios, canInstall, install } = usePwaInstall();
 
   if (installed) {
     return (
@@ -66,21 +30,12 @@ export function InstallAppButton() {
   return (
     <button
       type="button"
-      onClick={handleInstall}
-      disabled={!deferredPrompt}
+      onClick={() => void install()}
+      disabled={!canInstall}
       className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white hover:bg-primary disabled:cursor-not-allowed disabled:bg-slate-300 dark:disabled:bg-slate-700"
     >
-      {deferredPrompt ? (
-        <>
-          <Download className="h-4 w-4" />
-          Install app
-        </>
-      ) : (
-        <>
-          <Smartphone className="h-4 w-4" />
-          Install from browser menu
-        </>
-      )}
+      <Download className="h-4 w-4" />
+      {canInstall ? "Install app" : "Install from browser menu"}
     </button>
   );
 }
