@@ -5,23 +5,23 @@ import sharp from "sharp";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
-const svgPath = path.join(root, "public/images/shuleos-logo.svg");
-const faviconSourcePath = path.join(root, "scripts/assets/shuleos-favicon-source.png");
+const faviconSvgPath = path.join(root, "public/images/shuleos-favicon.svg");
 const outDir = path.join(root, "public/icons");
 const faviconPath = path.join(root, "app/favicon.ico");
+const appIconPath = path.join(root, "app/icon.png");
 
-const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+const sizes = [72, 96, 128, 144, 152, 180, 192, 384, 512];
 
 // Teal primary #0d9488
 const maskableBackground = { r: 13, g: 148, b: 136, alpha: 1 };
 
 async function main() {
   await mkdir(outDir, { recursive: true });
-  const svg = await readFile(svgPath);
+  const faviconSvg = await readFile(faviconSvgPath);
 
   for (const size of sizes) {
     const out = path.join(outDir, `icon-${size}x${size}.png`);
-    await sharp(svg).resize(size, size).png().toFile(out);
+    await sharp(faviconSvg).resize(size, size).png().toFile(out);
     console.log(`Wrote ${path.relative(root, out)}`);
   }
 
@@ -29,7 +29,7 @@ async function main() {
   const maskableOut = path.join(outDir, "maskable-icon-512x512.png");
   const iconSize = Math.round(maskableSize * 0.72);
   const padding = Math.round((maskableSize - iconSize) / 2);
-  const iconBuffer = await sharp(svg).resize(iconSize, iconSize).png().toBuffer();
+  const iconBuffer = await sharp(faviconSvg).resize(iconSize, iconSize).png().toBuffer();
 
   await sharp({
     create: {
@@ -45,9 +45,14 @@ async function main() {
 
   console.log(`Wrote ${path.relative(root, maskableOut)}`);
 
-  const faviconSource = await readFile(faviconSourcePath);
-  await sharp(faviconSource).resize(32, 32).png().toFile(faviconPath);
-  console.log(`Wrote ${path.relative(root, faviconPath)}`);
+  // Favicon + Next.js app/icon — bannerless mark, crisp at 32px
+  for (const [out, size] of [
+    [faviconPath, 32],
+    [appIconPath, 32],
+  ]) {
+    await sharp(faviconSvg).resize(size, size).png().toFile(out);
+    console.log(`Wrote ${path.relative(root, out)}`);
+  }
 }
 
 main().catch((error) => {

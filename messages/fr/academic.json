@@ -1,6 +1,6 @@
 {
   "title": "Tableau de bord académique",
-  "emptySchoolHint": "Votre école commence vide — utilisez le guide ci-dessus pour ajouter matières, classes et élèves quand vous êtes prêt.",
+  "emptySchoolHint": "Chaque jour sans classes et matières configurées vous coûte à l'inscription—utilisez le guide ci-dessus pour stopper les fuites.",
   "studentsTitle": "Élèves",
   "studentsSubtitle": "Gérer les dossiers et inscriptions des élèves",
   "activeStudents": "{count} actifs",

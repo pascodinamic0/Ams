@@ -1,6 +1,6 @@
 {
   "title": "Academic Dashboard",
-  "emptySchoolHint": "Your school starts empty — use the setup guide above to add subjects, classes, and students when you are ready.",
+  "emptySchoolHint": "Every day without classes and subjects configured costs you at registration time—use the setup guide above to stop the leaks.",
   "studentsTitle": "Students",
   "studentsSubtitle": "Manage student records and enrollment",
   "activeStudents": "{count} active",

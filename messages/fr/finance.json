@@ -33,7 +33,7 @@
   "noFeeStructuresDesc": "Définissez les modèles de frais et scolarité pour votre campus",
   "colClass": "Classe",
   "noInvoices": "Aucune facture",
-  "noInvoicesDesc": "Créez des structures de frais et générez des factures pour les élèves",
+  "noInvoicesDesc": "Chaque jour sans factures, les parents ne voient ni ne paient les soldes—créez des structures de frais et générez des factures",
   "colStudentId": "ID élève",
   "colStudent": "Élève",
   "colFeeType": "Type de frais",

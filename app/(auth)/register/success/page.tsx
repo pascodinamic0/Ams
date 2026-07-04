@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { PendingApprovalCard } from "@/components/auth/pending-approval-card";
 
 type PageProps = {
@@ -6,13 +7,14 @@ type PageProps = {
 };
 
 export default async function RegisterSuccessPage({ searchParams }: PageProps) {
+  const t = await getTranslations("auth");
   const params = await searchParams;
-  const schoolName = params.school?.trim() || "Your school";
+  const schoolName = params.school?.trim() || t("defaultSchoolName");
   const email = params.email?.trim();
 
   const emailConfirmationNote = email
-    ? `We sent a confirmation link to ${email}. Confirm your email, then sign in to check your approval status.`
-    : "Check your email for a confirmation link, then sign in to check your approval status.";
+    ? t("registerSuccessEmailNote", { email })
+    : t("registerSuccessEmailNoteGeneric");
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
@@ -22,12 +24,12 @@ export default async function RegisterSuccessPage({ searchParams }: PageProps) {
         showSignOut={false}
       />
       <p className="mt-6 text-center text-sm text-stone-500 dark:text-stone-400">
-        Wrong email?{" "}
+        {t("registerWrongEmail")}{" "}
         <Link
           href="/register"
           className="font-medium text-primary hover:text-primary-hover dark:text-primary"
         >
-          Register again
+          {t("registerAgain")}
         </Link>
       </p>
     </div>

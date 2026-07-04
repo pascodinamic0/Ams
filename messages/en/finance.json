@@ -33,7 +33,7 @@
   "noFeeStructuresDesc": "Define tuition and fee templates for your branch",
   "colClass": "Class",
   "noInvoices": "No invoices yet",
-  "noInvoicesDesc": "Create fee structures and generate invoices for students",
+  "noInvoicesDesc": "Every day without invoices, parents can't see or pay balances—create fee structures and generate invoices",
   "colStudentId": "Student ID",
   "colStudent": "Student",
   "colFeeType": "Fee type",

@@ -84,7 +84,7 @@ export function getPreviewWebsiteContent(schoolName: string): SchoolWebsiteConte
   return {
     hero_title: `Welcome to ${schoolName}`,
     hero_subtitle:
-      "Inspiring excellence, creativity, and character in every student.",
+      "Don't miss enrollment deadlines—apply online in minutes. See fees, events, and contact details without visiting the office.",
     programs: [
       {
         title: "STEM & Sciences",

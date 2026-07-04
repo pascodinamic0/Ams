@@ -1,14 +1,14 @@
 {
-  "builtForLocalSchools": "Conçu pour les écoles de RDC",
+  "builtForLocalSchools": "Stoppez les fuites · Conçu pour la RDC",
   "homepageCta": {
-    "academic": "Gestion académique",
-    "finance": "Suivi des frais et finances",
-    "portals": "Portails parents et élèves"
+    "academic": "Stoppez la panique des bulletins",
+    "finance": "Stoppez les fuites de frais",
+    "portals": "Stoppez la file au bureau"
   },
   "academic": {
     "title": "Académique",
-    "tagline": "De l'admission au bulletin",
-    "summary": "Gérez tout votre cycle académique en un seul endroit — inscriptions, classes, emplois du temps, présences, notes et bulletins alignés sur le Programme National.",
+    "tagline": "La saison des bulletins ne devrait pas paralyser le bureau",
+    "summary": "Quand inscriptions, présences et notes sont éparpillées, les bulletins prennent des jours et les erreurs se multiplient. Un cycle académique complet—de l'admission aux bulletins du Programme National—sans la panique de fin de trimestre.",
     "desc": "Élèves, classes, emploi du temps, présences, notes, bulletins",
     "highlights": {
       "0": "Profils élèves avec tuteurs, notes médicales et historique d'inscription",
@@ -19,16 +19,16 @@
       "5": "Admissions en ligne liées à votre site web scolaire public"
     },
     "whoItsFor": {
-      "0": "Administrateurs scolaires gérant inscriptions et dossiers académiques",
-      "1": "Enseignants enregistrant les présences et saisissant les notes",
-      "2": "Parents consultant emplois du temps, présences et bulletins"
+      "0": "Administrateurs fatigués de réconcilier les dossiers en fin de trimestre",
+      "1": "Enseignants perdant leurs soirées sur listes de présence et resaisie de notes",
+      "2": "Parents qui ne voient la progression que quand il y a déjà un problème"
     },
-    "localContext": "Conçu pour les flux du Programme National — suivez les domaines d'apprentissage, évaluations formatives et rapports trimestriels comme le font les écoles congolaises."
+    "localContext": "Chaque trimestre sans système académique unique, les écoles congolaises retape les mêmes données du Programme National. ShuleOS suit les domaines et rapports trimestriels comme vous travaillez vraiment."
   },
   "finance": {
     "title": "Finance",
-    "tagline": "Frais, factures et paie sans tableurs",
-    "summary": "Définissez les structures de frais, envoyez des factures, collectez les paiements via mobile money ou virement bancaire, et suivez la paie — le tout lié à chaque compte élève.",
+    "tagline": "Arrêtez de relancer les mêmes soldes chaque mois",
+    "summary": "Les soldes impayés se cachent dans des carnets jusqu'à ce que les parents contestent à la porte. Ce n'est pas un problème de recouvrement—c'est un problème de visibilité. Factures, mobile money et rappels WhatsApp liés à chaque compte élève.",
     "desc": "Frais, factures, paiements, paie, suivi",
     "highlights": {
       "0": "Structures de frais flexibles par classe, trimestre ou statut d'internat",
@@ -39,16 +39,16 @@
       "5": "Dossiers de paie du personnel aux côtés des collectes de frais scolaires"
     },
     "whoItsFor": {
-      "0": "Économes et responsables financiers gérant les frais scolaires",
-      "1": "Administrateurs examinant les encaissements et soldes impayés",
-      "2": "Parents payant les frais depuis leur portail ou liens de paiement"
+      "0": "Économes fatigués des surprises de réconciliation en fin de trimestre",
+      "1": "Directeurs qui ne font confiance à la trésorerie qu'après addition manuelle",
+      "2": "Parents qui paient tard parce que les soldes n'étaient pas clairs"
     },
-    "localContext": "Les parents attendent le mobile money et des relevés de frais clairs. ShuleOS comptabilise chaque franc en CDF et USD, avec des rappels qui atteignent les parents sur WhatsApp."
+    "localContext": "Les parents attendent le mobile money et des relevés clairs. Chaque franc non comptabilisé en CDF ou USD est une dispute qui attend à la porte. ShuleOS rend les soldes visibles avant le jour de collecte."
   },
   "operations": {
     "title": "Opérations",
-    "tagline": "Tout au-delà de la salle de classe",
-    "summary": "Gérez la bibliothèque, les routes de transport scolaire, les événements et les dossiers du personnel — les opérations quotidiennes qui font tourner votre école.",
+    "tagline": "Arrêtez de perdre le fil hors de la salle de classe",
+    "summary": "Listes de transport sur papier, livres qui ne reviennent pas, inscriptions d'événements dans WhatsApp—ces petites fuites s'accumulent chaque semaine. Bibliothèque, transport, événements et personnel en un seul endroit.",
     "desc": "Bibliothèque, transport, événements, personnel",
     "highlights": {
       "0": "Catalogue bibliothèque avec prêts, retours et suivi des retards",
@@ -59,16 +59,16 @@
       "5": "Rapports opérationnels pour administrateurs et directeurs"
     },
     "whoItsFor": {
-      "0": "Responsables opérationnels coordonnant transport et événements",
-      "1": "Bibliothécaires suivant les livres et emprunts des élèves",
-      "2": "Administrateurs supervisant le personnel et la logistique scolaire"
+      "0": "Responsables opérationnels qui ne trouvent pas la dernière liste de transport",
+      "1": "Bibliothécaires perdant des livres à cause de registres manuels",
+      "2": "Administrateurs jonglant avec des dossiers personnel éparpillés"
     },
-    "localContext": "Des listes de transport scolaire aux inscriptions pour la remise des prix, les modules opérationnels correspondent à la gestion des écoles congolaises hors salle de classe."
+    "localContext": "Des listes de transport aux inscriptions pour la remise des prix, les écoles congolaises perdent des heures chaque semaine sur de la logistique qui devrait prendre des minutes."
   },
   "analytics": {
     "title": "Analytique",
-    "tagline": "Voyez votre école clairement",
-    "summary": "Tableaux de bord et rapports sur les tendances de présence, collecte des frais, performance académique et comparaisons entre campus — des décisions fondées sur les données.",
+    "tagline": "Arrêtez de décider à l'aveugle en fin de trimestre",
+    "summary": "Quand présences, frais et performance sont dans des carnets séparés, les directeurs passent des jours sur des rapports lisibles en minutes. Tableaux de bord pour tendances, taux de collecte et comparaisons entre campus.",
     "desc": "Tableaux de bord, comparaison de campus, rapports présences et finances",
     "highlights": {
       "0": "Tableaux de bord exécutifs pour directeurs et propriétaires d'écoles",
@@ -79,16 +79,16 @@
       "5": "Rapports exportables pour conseils d'administration et soumissions au ministère"
     },
     "whoItsFor": {
-      "0": "Directeurs d'école examinant la performance en un coup d'œil",
-      "1": "Administrateurs préparant rapports trimestriels et annuels",
-      "2": "Équipes financières suivant les objectifs de collecte"
+      "0": "Directeurs qui découvrent les problèmes trop tard",
+      "1": "Administrateurs passant des jours sur des rapports qu'un tableur pourrait générer",
+      "2": "Équipes financières manquant les objectifs de collecte jusqu'en fin de trimestre"
     },
-    "localContext": "Rapports trimestriels, objectifs de collecte des frais et résumés de progression du Programme National — le tout dans des tableaux de bord lisibles en minutes, pas en jours."
+    "localContext": "Rapports trimestriels et objectifs de collecte ne devraient pas prendre une semaine à compiler. Les tableaux de bord ShuleOS montrent ce qu'il faut en minutes—pas en jours d'agrégation manuelle."
   },
   "schoolWebsites": {
     "title": "Sites web scolaires",
-    "tagline": "Votre école en ligne, à votre image",
-    "summary": "Lancez un site public personnalisé avec admissions en ligne, événements et coordonnées — connecté directement à votre portail ShuleOS.",
+    "tagline": "Arrêtez de perdre des familles avant qu'elles entrent",
+    "summary": "Les parents découvrent les écoles sur WhatsApp et Google en premier. Sans site professionnel et admissions en ligne, les demandes vont à l'école qui a répondu le plus vite.",
     "desc": "Sites personnalisés avec admissions en ligne",
     "highlights": {
       "0": "Page d'accueil personnalisée avec logo, couleurs et image de couverture",
@@ -99,16 +99,16 @@
       "5": "Lien de connexion personnel connectant les visiteurs au portail scolaire"
     },
     "whoItsFor": {
-      "0": "Écoles lançant ou modernisant leur présence web publique",
-      "1": "Équipes d'admission collectant des candidatures en ligne",
-      "2": "Personnel marketing mettant en valeur programmes et réalisations"
+      "0": "Écoles perdant des inscriptions face à des concurrents mieux présents en ligne",
+      "1": "Équipes d'admission noyées sous les candidatures papier",
+      "2": "Directeurs sachant que la première impression se fait sur un écran de téléphone"
     },
-    "localContext": "Les parents découvrent souvent votre école sur WhatsApp ou Google en premier. Un site professionnel avec admissions en ligne vous aide à capturer les demandes avant qu'elles n'aille chez un concurrent."
+    "localContext": "Chaque saison d'inscription sans admissions en ligne, les familles choisissent l'école qui a facilité l'inscription. Capturez les demandes avant qu'elles n'aille ailleurs."
   },
   "messaging": {
     "title": "Messagerie",
-    "tagline": "Atteignez les parents là où ils sont",
-    "summary": "Messagerie en temps réel entre enseignants, parents, élèves et administrateurs — plus annonces groupées quand vous devez toucher tout le monde.",
+    "tagline": "Arrêtez « passez au bureau » comme réponse par défaut",
+    "summary": "Les parents ne font pas confiance à « on vous rappellera ». Les fils WhatsApp non journalisés créent des disputes sans trace. Messagerie structurée entre enseignants, parents et admins—avec historique lié à chaque élève.",
     "desc": "Communication en temps réel pour tous",
     "highlights": {
       "0": "Conversations directes entre enseignants et tuteurs",
@@ -119,16 +119,16 @@
       "5": "Intégration avec rappels de frais et mises à jour d'événements"
     },
     "whoItsFor": {
-      "0": "Enseignants communiquant avec les parents sur devoirs et comportement",
-      "1": "Administrateurs envoyant des avis à toute l'école",
-      "2": "Parents restant en contact sans se rendre au bureau"
+      "0": "Enseignants répétant la même info à vingt parents",
+      "1": "Administrateurs sans trace de ce qui a été communiqué",
+      "2": "Parents n'apprenant les problèmes qu'après escalade"
     },
-    "localContext": "Les parents congolais vivent sur WhatsApp. La messagerie ShuleOS structure et journalise la communication scolaire, tandis que les campagnes peuvent atteindre les tuteurs sur leurs canaux habituels."
+    "localContext": "Les parents congolais vivent sur WhatsApp—mais les chats non structurés perdent des messages et créent des disputes. ShuleOS garde la communication scolaire journalisée et accessible."
   },
   "parentStudentPortals": {
     "title": "Portails parents et élèves",
-    "tagline": "L'école dans la poche de chaque parent",
-    "summary": "Portails dédiés pour que les parents suivent frais, notes et emplois du temps, tandis que les élèves soumettent leurs travaux, consultent leurs horaires et contactent les enseignants — depuis n'importe quel téléphone ou navigateur.",
+    "tagline": "Stoppez la file au bureau",
+    "summary": "Chaque visite parent pour un solde ou une note coûte du temps au personnel et érode la confiance. Les portails mettent frais, notes, horaires et devoirs sur leur téléphone—paiement mobile money inclus.",
     "desc": "Portails pour parents et élèves",
     "highlights": {
       "0": "Tableau de bord parent avec enfants liés, frais et présences en un coup d'œil",
@@ -139,10 +139,10 @@
       "5": "Fonctionne sur navigateurs mobiles et connexions à faible bande passante courantes en RDC"
     },
     "whoItsFor": {
-      "0": "Parents voulant soldes de frais et mises à jour académiques sans appels",
-      "1": "Élèves consultant devoirs, horaires et résultats d'examens",
-      "2": "Écoles réduisant les files d'attente au bureau et les avis papier"
+      "0": "Parents fatigués de se rendre au bureau pour des infos visibles à la maison",
+      "1": "Élèves manquant des échéances parce que les devoirs n'étaient pas visibles",
+      "2": "Écoles dont le bureau devient un help desk chaque saison de frais"
     },
-    "localContext": "La plupart des parents congolais gèrent la vie scolaire depuis leur téléphone. Les portails ShuleOS leur offrent la même clarté que l'économe et l'enseignant — frais en CDF, bulletins du Programme National et mises à jour compatibles WhatsApp."
+    "localContext": "La plupart des parents congolais gèrent la vie scolaire depuis leur téléphone. Sans portail, ils apprennent tard—et vous payez en confiance, temps et paiements retardés."
   }
 }

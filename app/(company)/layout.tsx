@@ -85,10 +85,18 @@ export default function CompanyLayout({
               : "max-md:border-white/10 max-md:bg-teal-950/25 max-md:shadow-teal-950/20"
           )}
         >
-          <Link href="/" className="group min-w-0 shrink-0 justify-self-start">
-            <motion.div whileHover={{ scale: 1.03 }} transition={{ type: "spring", stiffness: 400 }}>
+          <Link
+            href="/"
+            className="group min-w-0 shrink-0 justify-self-start rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+            aria-label="ShuleOS home"
+          >
+            <motion.div
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 420, damping: 22 }}
+            >
               <BrandLogo
-                size={36}
+                size={38}
                 className="gap-2.5 md:gap-3"
                 variant={solidHeader ? "dark" : "light"}
               />
