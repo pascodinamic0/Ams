@@ -39,12 +39,13 @@ function registerInstallListener() {
 
 export function usePwaInstall() {
   const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(sharedDeferredPrompt);
+    useState<BeforeInstallPromptEvent | null>(null);
   const [installed, setInstalled] = useState(false);
-  const [ios] = useState(isIosDevice);
+  const [ios, setIos] = useState(false);
 
   useEffect(() => {
     registerInstallListener();
+    setIos(isIosDevice());
     setInstalled(isStandaloneMode());
 
     function handlePromptChange(prompt: BeforeInstallPromptEvent | null) {

@@ -18,6 +18,7 @@ import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import { companyIdentity } from "@/lib/company/identity";
 import { HeroVideoBackground } from "@/components/company/hero-video-background";
+import { HeroMobileSubtitle } from "@/components/company/hero-mobile-subtitle";
 import { PwaInstallShowcase } from "@/components/pwa/pwa-install-showcase";
 import { getHomepageCtaSections, getPlatformModules } from "@/lib/i18n/modules";
 
@@ -113,11 +114,15 @@ export function HomePage() {
                 {t("heroTitleLine2")}
               </span>
             </h1>
-            <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-teal-100/80 sm:mt-8 sm:max-w-3xl sm:text-xl sm:text-teal-100/70">
-              {t("heroSubtitle")}
-              <span className="mt-1 block sm:mt-0 sm:inline">
-                {" "}{t("heroSubtitleExtra")}
-              </span>
+            <HeroMobileSubtitle
+              frags={t("heroSubtitle")}
+              payoff={t("heroSubtitleMobilePayoff")}
+              className="mt-5 sm:hidden"
+            />
+            <p className="mx-auto mt-5 hidden max-w-xl text-base leading-relaxed text-teal-100/80 sm:mt-8 sm:block sm:max-w-3xl sm:text-xl sm:text-teal-100/70">
+              <span className="block">{t("heroSubtitle")}</span>
+              <span className="mt-2 block">{t("heroSubtitleBody")}</span>
+              <span className="mt-2 block text-teal-100/70">{t("heroSubtitleExtra")}</span>
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:mt-12 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-6">
               <Link
