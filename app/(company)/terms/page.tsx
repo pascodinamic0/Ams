@@ -71,7 +71,7 @@ export default function TermsOfServicePage() {
 
       <h2>9. Governing law</h2>
       <p>
-        These terms are governed by the laws of the Republic of Kenya. Any disputes
+        These terms are governed by the laws of the Democratic Republic of the Congo. Any disputes
         shall be subject to the exclusive jurisdiction of the courts of{" "}
         {companyIdentity.office.city}.
       </p>

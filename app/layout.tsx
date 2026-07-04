@@ -22,7 +22,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: companyIdentity.productFullName,
   description:
-    `${companyIdentity.productName} — school management platform built in Nairobi, Kenya. Academics, fees, M-Pesa payments, and parent communication in one place.`,
+    `${companyIdentity.productName} — school management platform built for DRC schools. Academics, fees, mobile money payments, and parent communication in one place.`,
   applicationName: companyIdentity.productName,
   appleWebApp: {
     capable: true,

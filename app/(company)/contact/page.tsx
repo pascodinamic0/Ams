@@ -39,7 +39,7 @@ export default async function ContactPage() {
     <div className="min-h-screen bg-white pb-24 pt-[calc(env(safe-area-inset-top)+7.5rem)] dark:bg-[#0c1222] sm:pt-40 md:pt-44 lg:pt-48">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <p className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold uppercase tracking-wider text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400">
-          <span aria-hidden>🇰🇪</span>
+          <span aria-hidden>🇨🇩</span>
           {companyIdentity.origin}
         </p>
         <h1 className="mt-6 text-4xl font-black tracking-tight text-stone-900 dark:text-white md:text-5xl">

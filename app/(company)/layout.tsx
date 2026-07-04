@@ -29,6 +29,7 @@ export default function CompanyLayout({
     { label: t("home"), href: "/" },
     { label: t("features"), href: "/features" },
     { label: t("getAccess"), href: "/get-access" },
+    { label: t("contact"), href: "/contact" },
   ];
 
   const solidHeader = scrolled || !isHome;

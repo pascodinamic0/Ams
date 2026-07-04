@@ -9,5 +9,7 @@
   "alreadyInstalled": "Application installée",
   "offlineTitle": "Vous êtes hors ligne",
   "offlineDescription": "{productName} nécessite une connexion pour la plupart des fonctionnalités. Les pages en cache peuvent encore s'ouvrir, et les présences enregistrées hors ligne seront synchronisées à la reconnexion.",
-  "goToLogin": "Aller à la connexion"
+  "goToLogin": "Aller à la connexion",
+  "splashTagline": "{tagline}",
+  "splashLoading": "Chargement de {productName}"
 }

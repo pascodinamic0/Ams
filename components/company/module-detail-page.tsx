@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { companyIdentity } from "@/lib/company/identity";
 import type { PlatformModule } from "@/lib/company/modules";
 
-export function ModuleDetailPage({ module }: { module: PlatformModule }) {
+export async function ModuleDetailPage({ module }: { module: PlatformModule }) {
+  const t = await getTranslations("modules");
   const Icon = module.icon;
 
   return (
@@ -65,13 +67,13 @@ export function ModuleDetailPage({ module }: { module: PlatformModule }) {
           </ul>
         </section>
 
-        {module.kenyaContext && (
+        {module.localContext && (
           <section className="mt-12 rounded-2xl border border-emerald-200 bg-emerald-50/80 p-6 dark:border-emerald-900/50 dark:bg-emerald-950/20">
             <p className="text-xs font-bold uppercase tracking-widest text-emerald-700 dark:text-emerald-400">
-              Built for Kenyan schools
+              {t("builtForLocalSchools")}
             </p>
             <p className="mt-3 text-base leading-relaxed text-emerald-900/90 dark:text-emerald-100/90">
-              {module.kenyaContext}
+              {module.localContext}
             </p>
           </section>
         )}

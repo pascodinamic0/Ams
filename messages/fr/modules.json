@@ -1,4 +1,5 @@
 {
+  "builtForLocalSchools": "Conçu pour les écoles de RDC",
   "homepageCta": {
     "academic": "Gestion académique",
     "finance": "Suivi des frais et finances",
@@ -7,14 +8,14 @@
   "academic": {
     "title": "Académique",
     "tagline": "De l'admission au bulletin",
-    "summary": "Gérez tout votre cycle académique en un seul endroit — inscriptions, classes, emplois du temps, présences, notes et bulletins compatibles CBC.",
+    "summary": "Gérez tout votre cycle académique en un seul endroit — inscriptions, classes, emplois du temps, présences, notes et bulletins alignés sur le Programme National.",
     "desc": "Élèves, classes, emploi du temps, présences, notes, bulletins",
     "highlights": {
       "0": "Profils élèves avec tuteurs, notes médicales et historique d'inscription",
-      "1": "Classes, sections et filières alignées sur les niveaux scolaires kenyans",
+      "1": "Classes, sections et filières alignées sur les niveaux scolaires congolais",
       "2": "Constructeur d'emploi du temps avec affectation enseignants et salles",
       "3": "Présences quotidiennes avec marquage groupé et alertes d'absence",
-      "4": "Carnets de notes, examens et bulletins mappés aux filières CBC",
+      "4": "Carnets de notes, examens et bulletins mappés au Programme National",
       "5": "Admissions en ligne liées à votre site web scolaire public"
     },
     "whoItsFor": {
@@ -22,17 +23,17 @@
       "1": "Enseignants enregistrant les présences et saisissant les notes",
       "2": "Parents consultant emplois du temps, présences et bulletins"
     },
-    "kenyaContext": "Conçu pour les flux CBC — suivez les domaines d'apprentissage, évaluations formatives et rapports trimestriels comme le font les écoles kenyans."
+    "localContext": "Conçu pour les flux du Programme National — suivez les domaines d'apprentissage, évaluations formatives et rapports trimestriels comme le font les écoles congolaises."
   },
   "finance": {
     "title": "Finance",
     "tagline": "Frais, factures et paie sans tableurs",
-    "summary": "Définissez les structures de frais, envoyez des factures, collectez les paiements via M-Pesa ou virement bancaire, et suivez la paie — le tout lié à chaque compte élève.",
+    "summary": "Définissez les structures de frais, envoyez des factures, collectez les paiements via mobile money ou virement bancaire, et suivez la paie — le tout lié à chaque compte élève.",
     "desc": "Frais, factures, paiements, paie, suivi",
     "highlights": {
       "0": "Structures de frais flexibles par classe, trimestre ou statut d'internat",
       "1": "Factures automatisées avec soldes et historique de paiement par élève",
-      "2": "Liens de paiement M-Pesa avec montants exacts préremplis",
+      "2": "Liens de paiement mobile money avec montants exacts préremplis",
       "3": "Rappels de frais via WhatsApp avant les échéances",
       "4": "Suivi des dépenses et rapports financiers pour les économes",
       "5": "Dossiers de paie du personnel aux côtés des collectes de frais scolaires"
@@ -42,7 +43,7 @@
       "1": "Administrateurs examinant les encaissements et soldes impayés",
       "2": "Parents payant les frais depuis leur portail ou liens de paiement"
     },
-    "kenyaContext": "Les parents attendent M-Pesa et des relevés de frais clairs. ShuleOS comptabilise chaque shilling en KES, avec des rappels qui atteignent les parents sur WhatsApp."
+    "localContext": "Les parents attendent le mobile money et des relevés de frais clairs. ShuleOS comptabilise chaque franc en CDF et USD, avec des rappels qui atteignent les parents sur WhatsApp."
   },
   "operations": {
     "title": "Opérations",
@@ -62,7 +63,7 @@
       "1": "Bibliothécaires suivant les livres et emprunts des élèves",
       "2": "Administrateurs supervisant le personnel et la logistique scolaire"
     },
-    "kenyaContext": "Des listes de transport matatu aux inscriptions pour la remise des prix, les modules opérationnels correspondent à la gestion des écoles kenyans hors salle de classe."
+    "localContext": "Des listes de transport scolaire aux inscriptions pour la remise des prix, les modules opérationnels correspondent à la gestion des écoles congolaises hors salle de classe."
   },
   "analytics": {
     "title": "Analytique",
@@ -75,14 +76,14 @@
       "2": "Taux de collecte des frais et résumés des soldes impayés",
       "3": "Tendances de performance académique par classe, matière ou trimestre",
       "4": "Comparaison entre campus pour les écoles multi-sites",
-      "5": "Rapports exportables pour conseils d'administration et soumissions MOE"
+      "5": "Rapports exportables pour conseils d'administration et soumissions au ministère"
     },
     "whoItsFor": {
       "0": "Directeurs d'école examinant la performance en un coup d'œil",
       "1": "Administrateurs préparant rapports trimestriels et annuels",
       "2": "Équipes financières suivant les objectifs de collecte"
     },
-    "kenyaContext": "Rapports trimestriels, objectifs de collecte des frais et résumés de progression CBC — le tout dans des tableaux de bord lisibles en minutes, pas en jours."
+    "localContext": "Rapports trimestriels, objectifs de collecte des frais et résumés de progression du Programme National — le tout dans des tableaux de bord lisibles en minutes, pas en jours."
   },
   "schoolWebsites": {
     "title": "Sites web scolaires",
@@ -102,7 +103,7 @@
       "1": "Équipes d'admission collectant des candidatures en ligne",
       "2": "Personnel marketing mettant en valeur programmes et réalisations"
     },
-    "kenyaContext": "Les parents découvrent souvent votre école sur WhatsApp ou Google en premier. Un site professionnel avec admissions en ligne vous aide à capturer les demandes avant qu'elles n'aille chez un concurrent."
+    "localContext": "Les parents découvrent souvent votre école sur WhatsApp ou Google en premier. Un site professionnel avec admissions en ligne vous aide à capturer les demandes avant qu'elles n'aille chez un concurrent."
   },
   "messaging": {
     "title": "Messagerie",
@@ -122,7 +123,7 @@
       "1": "Administrateurs envoyant des avis à toute l'école",
       "2": "Parents restant en contact sans se rendre au bureau"
     },
-    "kenyaContext": "Les parents kenyans vivent sur WhatsApp. La messagerie ShuleOS structure et journalise la communication scolaire, tandis que les campagnes peuvent atteindre les tuteurs sur leurs canaux habituels."
+    "localContext": "Les parents congolais vivent sur WhatsApp. La messagerie ShuleOS structure et journalise la communication scolaire, tandis que les campagnes peuvent atteindre les tuteurs sur leurs canaux habituels."
   },
   "parentStudentPortals": {
     "title": "Portails parents et élèves",
@@ -131,17 +132,17 @@
     "desc": "Portails pour parents et élèves",
     "highlights": {
       "0": "Tableau de bord parent avec enfants liés, frais et présences en un coup d'œil",
-      "1": "Payer les frais scolaires via M-Pesa ou liens de paiement sans se rendre au bureau",
+      "1": "Payer les frais scolaires via mobile money ou liens de paiement sans se rendre au bureau",
       "2": "Consulter bulletins, emplois du temps, devoirs et événements en temps réel",
       "3": "Portail élève pour soumission de devoirs, notes, bibliothèque et messages",
       "4": "Connexion sécurisée avec accès par rôle — les parents ne voient que leurs enfants",
-      "5": "Fonctionne sur navigateurs mobiles et connexions à faible bande passante courantes au Kenya"
+      "5": "Fonctionne sur navigateurs mobiles et connexions à faible bande passante courantes en RDC"
     },
     "whoItsFor": {
       "0": "Parents voulant soldes de frais et mises à jour académiques sans appels",
       "1": "Élèves consultant devoirs, horaires et résultats d'examens",
       "2": "Écoles réduisant les files d'attente au bureau et les avis papier"
     },
-    "kenyaContext": "La plupart des parents kenyans gèrent la vie scolaire depuis leur téléphone. Les portails ShuleOS leur offrent la même clarté que l'économe et l'enseignant — frais en KES, bulletins CBC et mises à jour compatibles WhatsApp."
+    "localContext": "La plupart des parents congolais gèrent la vie scolaire depuis leur téléphone. Les portails ShuleOS leur offrent la même clarté que l'économe et l'enseignant — frais en CDF, bulletins du Programme National et mises à jour compatibles WhatsApp."
   }
 }

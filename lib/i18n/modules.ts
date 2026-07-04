@@ -21,7 +21,7 @@ export type PlatformModule = {
   iconClassName: string;
   highlights: string[];
   whoItsFor: string[];
-  kenyaContext?: string;
+  localContext?: string;
 };
 
 type ModuleTranslator = (
@@ -80,7 +80,7 @@ export function getPlatformModules(t: ModuleTranslator): PlatformModule[] {
         t(`${key}.highlights.${i}`)
       ),
       whoItsFor: [0, 1, 2].map((i) => t(`${key}.whoItsFor.${i}`)),
-      kenyaContext: t(`${key}.kenyaContext`),
+      localContext: t(`${key}.localContext`),
     };
   });
 }

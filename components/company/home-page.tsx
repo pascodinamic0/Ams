@@ -8,6 +8,13 @@ import {
   GraduationCap,
   CheckCircle2,
   ArrowRight,
+  MapPin,
+  Sparkles,
+  HeadphonesIcon,
+  Wallet,
+  Smartphone,
+  Wifi,
+  Download,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -23,6 +30,19 @@ export function HomePage() {
     (module) => module.showOnHomepageGrid !== false
   );
   const homepageCtaSections = getHomepageCtaSections(tm);
+
+  const trustPillars = [
+    { icon: MapPin, title: t("trustLocal"), desc: t("trustLocalDesc") },
+    { icon: Sparkles, title: t("trustSimple"), desc: t("trustSimpleDesc") },
+    { icon: HeadphonesIcon, title: t("trustSupport"), desc: t("trustSupportDesc") },
+    { icon: Wallet, title: t("trustAffordable"), desc: t("trustAffordableDesc") },
+  ];
+
+  const connectivityFeatures = [
+    t("connectivityFeature1"),
+    t("connectivityFeature2"),
+    t("connectivityFeature3"),
+  ];
 
   const roles = [
     {
@@ -79,7 +99,15 @@ export function HomePage() {
             transition={{ duration: 0.8 }}
             className="mx-auto max-w-3xl text-center sm:max-w-none"
           >
-            <h1 className="text-[2.125rem] font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl sm:leading-tight md:text-7xl lg:text-8xl">
+            <motion.span
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-teal-100 backdrop-blur-sm sm:text-sm"
+            >
+              {t("heroBadge")}
+            </motion.span>
+            <h1 className="mt-6 text-[2.125rem] font-extrabold leading-[1.08] tracking-tight text-white sm:mt-8 sm:text-5xl sm:leading-tight md:text-7xl lg:text-8xl">
               {t("heroTitleLine1")}
               <br />
               <span className="bg-gradient-to-r from-teal-200 via-teal-400 to-teal-200 bg-clip-text text-transparent">
@@ -101,7 +129,7 @@ export function HomePage() {
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
-                href="/features"
+                href="/contact"
                 className="inline-flex w-full items-center justify-center rounded-2xl border border-primary-400/40 bg-teal-900/40 px-6 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:bg-teal-800/60 sm:w-auto sm:px-8 sm:py-4"
               >
                 {t("heroCtaSecondary")}
@@ -128,6 +156,89 @@ export function HomePage() {
               </div>
             </div>
           </motion.div>
+        </div>
+      </section>
+
+      {/* Trust Pillars — local differentiators vs enterprise competitors */}
+      <section className="relative z-20 -mt-8 sm:-mt-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-xl shadow-stone-950/5 dark:border-stone-800 dark:bg-stone-900 sm:grid-cols-2 sm:gap-6 sm:rounded-3xl sm:p-6 lg:grid-cols-4">
+            {trustPillars.map((pillar, i) => {
+              const Icon = pillar.icon;
+              return (
+                <motion.div
+                  key={pillar.title}
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="flex items-start gap-3 rounded-2xl p-3 sm:p-4"
+                >
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary dark:bg-primary-light/40">
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-stone-900 dark:text-white">{pillar.title}</p>
+                    <p className="mt-0.5 text-sm leading-snug text-stone-500 dark:text-stone-400">
+                      {pillar.desc}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Compact Role Cards — Schoolap-style quick scan */}
+      <section className="bg-white py-16 dark:bg-[#0c1222] sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p className="mx-auto max-w-2xl text-center text-lg text-stone-500 dark:text-stone-400 sm:text-xl">
+            {t("audienceIntro")}
+          </p>
+          <div className="mt-10 grid gap-6 sm:mt-12 md:grid-cols-3">
+            {roles.map((role, i) => (
+              <motion.div
+                key={role.badge}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Link
+                  href={role.href}
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-stone-50 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl dark:border-stone-800 dark:bg-stone-900/50 sm:rounded-3xl"
+                >
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <Image
+                      src={role.image}
+                      alt={role.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-stone-900/70 via-stone-900/20 to-transparent" />
+                    <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
+                      {role.icon}
+                      {role.badge}
+                    </div>
+                  </div>
+                  <div className="flex flex-1 flex-col p-5 sm:p-6">
+                    <h3 className="text-lg font-bold text-stone-900 dark:text-white sm:text-xl">
+                      {role.title}
+                    </h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-stone-500 dark:text-stone-400">
+                      {role.description}
+                    </p>
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-primary group-hover:gap-2.5 transition-all">
+                      {role.cta}
+                      <ArrowRight className="h-4 w-4" />
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -216,6 +327,79 @@ export function HomePage() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Connectivity / PWA — inspired by Schoolap offline messaging, our own angle */}
+      <section className="relative overflow-hidden bg-teal-950 py-16 dark:bg-[#071018] sm:py-24">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-800/30 via-transparent to-transparent" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="inline-flex items-center gap-2 rounded-full bg-teal-900/80 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-teal-200">
+                <Wifi className="h-3.5 w-3.5" />
+                {companyIdentity.productName}
+              </div>
+              <h2 className="mt-5 text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl">
+                {t("connectivityTitle")}
+              </h2>
+              <p className="mt-4 text-base leading-relaxed text-teal-100/70 sm:text-lg">
+                {t("connectivitySubtitle")}
+              </p>
+              <ul className="mt-8 space-y-4">
+                {connectivityFeatures.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3 text-teal-50">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-teal-400" />
+                    <span className="text-sm sm:text-base">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/get-access"
+                className="group mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-base font-bold text-teal-950 transition-all hover:bg-teal-50"
+              >
+                {t("connectivityCta")}
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="relative mx-auto w-full max-w-sm"
+            >
+              <div className="absolute -inset-4 rounded-[2.5rem] bg-teal-500/20 blur-2xl" />
+              <div className="relative overflow-hidden rounded-[2rem] border border-teal-800/50 bg-teal-900/50 p-8 backdrop-blur-sm sm:p-10">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-800/80">
+                  <Smartphone className="h-8 w-8 text-teal-200" />
+                </div>
+                <p className="mt-6 text-center text-lg font-bold text-white">
+                  {companyIdentity.productName}
+                </p>
+                <p className="mt-2 text-center text-sm text-teal-200/70">
+                  {companyIdentity.tagline}
+                </p>
+                <div className="mt-8 flex items-center justify-center gap-3">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-teal-800/60">
+                    <Download className="h-5 w-5 text-teal-200" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs font-bold uppercase tracking-wider text-teal-300">
+                      PWA
+                    </p>
+                    <p className="text-sm text-teal-100/80">Install from browser</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -319,7 +503,7 @@ export function HomePage() {
               className="rounded-3xl bg-primary p-8 shadow-2xl shadow-primary/25 sm:rounded-[2rem] sm:p-10 lg:p-12"
             >
               <ul className="space-y-4">
-                {[t("adminFeature1"), t("parentFeature2"), t("teacherFeature3")].map((item) => (
+                {[t("finalCtaHighlight1"), t("finalCtaHighlight2"), t("finalCtaHighlight3")].map((item) => (
                   <li key={item} className="flex items-start gap-3 text-teal-50">
                     <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-teal-200" />
                     <span className="text-sm leading-relaxed sm:text-base">{item}</span>

@@ -1,26 +1,25 @@
-/** Public company identity - sourced from digni-digital-llc.com (Nairobi office). */
+/** Public company identity - sourced from digni-digital-llc.com (Kinshasa office). */
 export const companyIdentity = {
   productName: "ShuleOS",
   productFullName: "ShuleOS - School Management Platform",
   legalName: "Digni Digital LLC",
   tagline: "The operating system for schools",
-  origin: "Serving schools across Africa",
+  origin: "Serving schools across the DRC",
   website: "https://www.digni-digital-llc.com",
 
   office: {
-    city: "Nairobi",
-    country: "Kenya",
-    label: "Nairobi, Kenya",
+    city: "Kinshasa",
+    country: "Democratic Republic of the Congo",
+    label: "Kinshasa, DRC",
     addressLines: [
-      "Westlands Business Park",
-      "Waiyaki Way",
-      "Nairobi, 00100",
-      "Kenya",
+      "Immeuble Crown Towers",
+      "Sur Batetela, Floor 15, Office 1502",
+      "Kinshasa, Democratic Republic of the Congo",
     ],
     addressFormatted:
-      "Westlands Business Park, Waiyaki Way, Nairobi, 00100, Kenya",
-    timezone: "EAT (UTC+3)",
-    supportHours: "Mon-Fri, 8:00 AM - 6:00 PM EAT",
+      "Immeuble Crown Towers, Sur Batetela, Floor 15, Office 1502, Kinshasa, Democratic Republic of the Congo",
+    timezone: "WAT (UTC+1)",
+    supportHours: "Mon-Fri, 8:00 AM - 6:00 PM WAT",
   },
 
   contact: {
@@ -28,9 +27,9 @@ export const companyIdentity = {
     supportEmail: "support@digni-digital-llc.com",
     legalEmail: "growth@digni-digital-llc.com",
     privacyEmail: "support@digni-digital-llc.com",
-    phone: "+254702593518",
-    phoneDisplay: "+254 702 593 518",
-    whatsappUrl: "https://wa.me/254702593518",
+    phone: "+243822378097",
+    phoneDisplay: "+243 822 378 097",
+    whatsappUrl: "https://wa.me/243822378097",
   },
 
   social: {

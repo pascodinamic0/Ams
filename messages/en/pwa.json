@@ -9,5 +9,7 @@
   "alreadyInstalled": "App is installed",
   "offlineTitle": "You're offline",
   "offlineDescription": "{productName} needs a connection for most features. Cached pages may still open, and attendance you saved offline will sync when you reconnect.",
-  "goToLogin": "Go to login"
+  "goToLogin": "Go to login",
+  "splashTagline": "{tagline}",
+  "splashLoading": "Loading {productName}"
 }

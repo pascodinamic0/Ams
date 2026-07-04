@@ -1,4 +1,5 @@
 {
+  "builtForLocalSchools": "Built for DRC schools",
   "homepageCta": {
     "academic": "Academic management",
     "finance": "Fee & finance tracking",
@@ -7,14 +8,14 @@
   "academic": {
     "title": "Academic",
     "tagline": "From admission to report card",
-    "summary": "Run your entire academic cycle in one place - enrollments, classes, timetables, attendance, grading, and CBC-ready report cards.",
+    "summary": "Run your entire academic cycle in one place - enrollments, classes, timetables, attendance, grading, and national curriculum-ready report cards.",
     "desc": "Students, classes, timetable, attendance, grades, report cards",
     "highlights": {
       "0": "Student profiles with guardians, medical notes, and enrollment history",
-      "1": "Classes, sections, and streams aligned to Kenyan grade levels",
+      "1": "Classes, sections, and streams aligned to DRC grade levels",
       "2": "Timetable builder with teacher and room assignments",
       "3": "Daily attendance with bulk marking and absence alerts",
-      "4": "Gradebooks, exams, and report cards mapped to CBC strands",
+      "4": "Gradebooks, exams, and report cards mapped to national curriculum strands",
       "5": "Online admissions linked to your public school website"
     },
     "whoItsFor": {
@@ -22,17 +23,17 @@
       "1": "Teachers recording attendance and entering grades",
       "2": "Parents viewing timetables, attendance, and report cards"
     },
-    "kenyaContext": "Built for CBC workflows - track learning areas, formative assessments, and term reports the way Kenyan schools actually report progress."
+    "localContext": "Built for Programme National workflows - track learning areas, formative assessments, and term reports the way DRC schools actually report progress."
   },
   "finance": {
     "title": "Finance",
     "tagline": "Fees, invoices, and payroll without spreadsheets",
-    "summary": "Set fee structures, send invoices, collect payments via M-Pesa or bank transfer, and track payroll - all tied to each student account.",
+    "summary": "Set fee structures, send invoices, collect payments via mobile money or bank transfer, and track payroll - all tied to each student account.",
     "desc": "Fees, invoices, payments, payroll, tracking",
     "highlights": {
       "0": "Flexible fee structures by class, term, or boarding status",
       "1": "Automated invoices with balances and payment history per student",
-      "2": "M-Pesa-ready payment links with exact amounts pre-filled",
+      "2": "Mobile-money-ready payment links with exact amounts pre-filled",
       "3": "Fee reminders via WhatsApp before due dates",
       "4": "Expense tracking and financial reports for bursars",
       "5": "Staff payroll records alongside school fee collections"
@@ -42,7 +43,7 @@
       "1": "Administrators reviewing collections and outstanding balances",
       "2": "Parents paying fees from their portal or payment links"
     },
-    "kenyaContext": "Parents expect M-Pesa and clear fee statements. ShuleOS keeps every shilling accounted for in KES, with reminders that reach parents on WhatsApp."
+    "localContext": "Parents expect mobile money and clear fee statements. ShuleOS keeps every franc accounted for in CDF and USD, with reminders that reach parents on WhatsApp."
   },
   "operations": {
     "title": "Operations",
@@ -62,7 +63,7 @@
       "1": "Librarians tracking books and student borrowing",
       "2": "Administrators overseeing staff and school logistics"
     },
-    "kenyaContext": "From matatu-route transport lists to prize-giving day registrations, operations modules match how Kenyan schools run outside the classroom."
+    "localContext": "From school transport lists to prize-giving day registrations, operations modules match how DRC schools run outside the classroom."
   },
   "analytics": {
     "title": "Analytics",
@@ -75,14 +76,14 @@
       "2": "Fee collection rates and outstanding balance summaries",
       "3": "Academic performance trends by class, subject, or term",
       "4": "Branch comparison for schools with multiple campuses",
-      "5": "Exportable reports for board meetings and MOE submissions"
+      "5": "Exportable reports for board meetings and ministry submissions"
     },
     "whoItsFor": {
       "0": "School directors reviewing performance at a glance",
       "1": "Administrators preparing term-end and annual reports",
       "2": "Finance teams tracking collection targets"
     },
-    "kenyaContext": "Term reports, fee collection targets, and CBC progress summaries - all in dashboards your leadership team can read in minutes, not days."
+    "localContext": "Term reports, fee collection targets, and national curriculum progress summaries - all in dashboards your leadership team can read in minutes, not days."
   },
   "schoolWebsites": {
     "title": "School Websites",
@@ -102,7 +103,7 @@
       "1": "Admissions teams collecting online applications",
       "2": "Marketing staff showcasing programs and achievements"
     },
-    "kenyaContext": "Parents often discover your school on WhatsApp or Google first. A professional site with online admissions helps you capture enquiries before they go to a competitor."
+    "localContext": "Parents often discover your school on WhatsApp or Google first. A professional site with online admissions helps you capture enquiries before they go to a competitor."
   },
   "messaging": {
     "title": "Messaging",
@@ -122,7 +123,7 @@
       "1": "Administrators sending school-wide notices",
       "2": "Parents staying in touch without visiting the office"
     },
-    "kenyaContext": "Kenyan parents live on WhatsApp. ShuleOS messaging keeps school communication structured and logged, while outreach campaigns can reach guardians on the channels they already use."
+    "localContext": "Congolese parents live on WhatsApp. ShuleOS messaging keeps school communication structured and logged, while outreach campaigns can reach guardians on the channels they already use."
   },
   "parentStudentPortals": {
     "title": "Parent & Student Portals",
@@ -131,17 +132,17 @@
     "desc": "Portals for parents and students",
     "highlights": {
       "0": "Parent dashboard with linked children, fees, and attendance at a glance",
-      "1": "Pay school fees via M-Pesa or payment links without visiting the office",
+      "1": "Pay school fees via mobile money or payment links without visiting the office",
       "2": "View report cards, timetables, assignments, and school events in real time",
       "3": "Student portal for homework submission, grades, library, and messages",
       "4": "Secure login with role-based access - parents only see their own children",
-      "5": "Works on mobile browsers and low-bandwidth connections common in Kenya"
+      "5": "Works on mobile browsers and low-bandwidth connections common in the DRC"
     },
     "whoItsFor": {
       "0": "Parents who want fee balances and academic updates without phone calls",
       "1": "Students checking assignments, schedules, and exam results",
       "2": "Schools reducing front-office queues and paper notices"
     },
-    "kenyaContext": "Most Kenyan parents manage school life from their phone. ShuleOS portals give them the same clarity the bursar and class teacher have - fees in KES, CBC report cards, and WhatsApp-friendly updates."
+    "localContext": "Most Congolese parents manage school life from their phone. ShuleOS portals give them the same clarity the bursar and class teacher have - fees in CDF, national curriculum report cards, and WhatsApp-friendly updates."
   }
 }
