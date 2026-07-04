@@ -10,6 +10,7 @@ export default async function OperationsLayout({ children }: { children: React.R
       sidebar={<Sidebar role="operations_manager" />}
       header={<span className="font-medium">{t("operations")}</span>}
       dashboardHref="/operations"
+      role="operations_manager"
     >
       {children}
     </AppShell>

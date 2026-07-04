@@ -57,7 +57,7 @@ export default async function ConversationPage({ params }: PageProps) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] gap-4 overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden md:gap-4 md:h-[calc(100vh-8rem)] md:flex-row">
       <div className="hidden w-72 shrink-0 flex-col rounded-xl border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900 lg:flex">
         <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3 dark:border-stone-700">
           <h2 className="font-semibold text-stone-900 dark:text-white">{t("conversations")}</h2>
@@ -77,8 +77,8 @@ export default async function ConversationPage({ params }: PageProps) {
         </div>
       </div>
 
-      <div className="flex flex-1 flex-col overflow-hidden rounded-xl border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900">
-        <div className="flex items-center gap-3 border-b border-stone-200 px-5 py-3.5 dark:border-stone-700">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-none border-0 bg-white md:rounded-xl md:border md:border-stone-200 dark:bg-stone-900 md:dark:border-stone-700">
+        <div className="flex items-center gap-3 border-b border-stone-200 px-4 py-3 pt-[calc(env(safe-area-inset-top)+0.75rem)] dark:border-stone-700 md:px-5 md:pt-3.5">
           <Link
             href="/messages"
             className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 lg:hidden"

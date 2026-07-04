@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Download, Share, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { companyIdentity } from "@/lib/company/identity";
+import { isStandaloneMode, useIsMobile } from "@/lib/pwa/display-mode";
+import { MOBILE_TAB_BAR_HEIGHT } from "@/components/layout/mobile-tab-bar";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
@@ -12,20 +15,36 @@ interface BeforeInstallPromptEvent extends Event {
 const DISMISS_KEY = "shuleos-pwa-install-dismissed";
 const DISMISS_MS = 7 * 24 * 60 * 60 * 1000;
 
-function isStandaloneMode() {
-  if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    (window.navigator as Navigator & { standalone?: boolean }).standalone === true
-  );
-}
+const APP_ROUTE_PREFIXES = [
+  "/admin",
+  "/academic",
+  "/teacher",
+  "/finance",
+  "/operations",
+  "/parent",
+  "/student",
+  "/analytics",
+  "/messages",
+  "/settings",
+  "/notifications",
+  "/outreach",
+  "/pending",
+];
 
 function isIosDevice() {
   if (typeof window === "undefined") return false;
   return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
 
+function isAppRoute(pathname: string) {
+  return APP_ROUTE_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+}
+
 export function InstallPrompt() {
+  const pathname = usePathname();
+  const isMobile = useIsMobile();
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [visible, setVisible] = useState(false);
@@ -33,6 +52,7 @@ export function InstallPrompt() {
 
   useEffect(() => {
     if (isStandaloneMode()) return;
+    if (isAppRoute(pathname)) return;
 
     const dismissedAt = localStorage.getItem(DISMISS_KEY);
     if (dismissedAt && Date.now() - Number(dismissedAt) < DISMISS_MS) {
@@ -54,7 +74,7 @@ export function InstallPrompt() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstall);
     return () =>
       window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-  }, []);
+  }, [pathname]);
 
   function dismiss() {
     localStorage.setItem(DISMISS_KEY, String(Date.now()));
@@ -75,8 +95,15 @@ export function InstallPrompt() {
 
   if (!visible) return null;
 
+  const bottomOffset = isMobile && isAppRoute(pathname)
+    ? `calc(${MOBILE_TAB_BAR_HEIGHT} + env(safe-area-inset-bottom) + 0.75rem)`
+    : "calc(env(safe-area-inset-bottom) + 1rem)";
+
   return (
-    <div className="fixed inset-x-4 bottom-4 z-[100] mx-auto max-w-lg rounded-2xl border border-primary-200 bg-white p-4 shadow-2xl shadow-primary/10 dark:border-primary-900 dark:bg-stone-900">
+    <div
+      className="fixed inset-x-4 z-[100] mx-auto max-w-lg rounded-2xl border border-primary-200 bg-white p-4 shadow-2xl shadow-primary/10 dark:border-primary-900 dark:bg-stone-900"
+      style={{ bottom: bottomOffset }}
+    >
       <div className="flex items-start gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary text-white">
           <Download className="h-5 w-5" />

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import { Toaster } from "sonner";
+import { AppToaster } from "@/components/ui/app-toaster";
 import { PwaRoot } from "@/components/pwa/pwa-root";
 import { companyIdentity } from "@/lib/company/identity";
 import { pwaBackgroundColor, pwaThemeColor } from "@/lib/pwa/config";
@@ -72,7 +72,7 @@ export default async function RootLayout({
       >
         <NextIntlClientProvider messages={messages}>
           <PwaRoot>{children}</PwaRoot>
-          <Toaster position="top-right" richColors closeButton />
+          <AppToaster />
         </NextIntlClientProvider>
       </body>
     </html>

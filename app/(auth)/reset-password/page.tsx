@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
+    <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-8">
       <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-100">
         {t("resetPasswordTitle")}
       </h1>

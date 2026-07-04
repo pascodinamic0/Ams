@@ -3,20 +3,15 @@
 import { useEffect, useState } from "react";
 import { Download, Share, Smartphone } from "lucide-react";
 import { companyIdentity } from "@/lib/company/identity";
+import { isStandaloneMode } from "@/lib/pwa/display-mode";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
-function isStandaloneMode() {
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    (window.navigator as Navigator & { standalone?: boolean }).standalone === true
-  );
-}
-
 function isIosDevice() {
+  if (typeof window === "undefined") return false;
   return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
 

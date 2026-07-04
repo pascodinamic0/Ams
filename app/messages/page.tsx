@@ -33,8 +33,8 @@ export default async function MessagesPage() {
   ]);
 
   return (
-    <div className="flex h-[calc(100vh-8rem)] gap-4 overflow-hidden">
-      <div className="flex w-80 shrink-0 flex-col rounded-xl border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900">
+    <div className="flex h-full min-h-0 flex-col gap-0 overflow-hidden md:gap-4 md:h-[calc(100vh-8rem)] md:flex-row">
+      <div className="flex min-h-0 w-full flex-1 flex-col rounded-none border-0 bg-white md:w-80 md:shrink-0 md:rounded-xl md:border md:border-stone-200 dark:bg-stone-900 md:dark:border-stone-700">
         <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3 dark:border-stone-700">
           <h2 className="font-semibold text-stone-900 dark:text-white">{t("conversations")}</h2>
           <NewConversationButton
@@ -53,7 +53,7 @@ export default async function MessagesPage() {
         </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center rounded-xl border border-dashed border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900">
+      <div className="hidden flex-1 items-center justify-center rounded-xl border border-dashed border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900 md:flex">
         <div className="text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-stone-100 dark:bg-stone-800">
             <svg className="h-8 w-8 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

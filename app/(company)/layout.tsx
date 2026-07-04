@@ -219,7 +219,7 @@ export default function CompanyLayout({
 
       <main>{children}</main>
 
-      <SiteFooter />
+      <SiteFooter className="hidden md:block" />
     </div>
   );
 }

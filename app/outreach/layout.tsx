@@ -25,6 +25,7 @@ export default async function OutreachLayout({ children }: { children: React.Rea
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("outreach")}</span>}
       dashboardHref={dashboardHref}
+      role={role}
     >
       {children}
     </AppShell>

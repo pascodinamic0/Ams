@@ -35,7 +35,7 @@ function FooterLinkList({
   );
 }
 
-export function SiteFooter() {
+export function SiteFooter({ className = "" }: { className?: string }) {
   const t = useTranslations("marketing.footer");
   const tNav = useTranslations("marketing.nav");
 
@@ -66,7 +66,7 @@ export function SiteFooter() {
   ];
 
   return (
-    <footer className="border-t border-stone-200 bg-stone-50 py-16 dark:border-stone-800 dark:bg-[#0c1222] md:py-20">
+    <footer className={`border-t border-stone-200 bg-stone-50 py-16 dark:border-stone-800 dark:bg-[#0c1222] md:py-20 ${className}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
           <div className="space-y-6 lg:col-span-4">

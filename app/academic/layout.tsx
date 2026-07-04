@@ -11,6 +11,7 @@ export default async function AcademicLayout({ children }: { children: React.Rea
       sidebar={<Sidebar role="academic_admin" />}
       header={<span className="font-medium">{t("academic")}</span>}
       dashboardHref="/academic"
+      role="academic_admin"
     >
       <div className="space-y-6">
         <SchoolSetupGuideShell />

@@ -32,7 +32,7 @@ export default function LoginPage() {
   ];
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)]">
+    <div className="flex flex-1 flex-col lg:flex-row">
       <div className="hidden flex-col justify-center bg-gradient-to-br from-teal-950 via-teal-900 to-teal-800 p-12 lg:flex lg:w-[45%]">
         <div>
           <blockquote className="text-2xl font-semibold leading-snug text-white">

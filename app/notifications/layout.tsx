@@ -39,6 +39,7 @@ export default async function NotificationsLayout({
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("notifications")}</span>}
       dashboardHref={dashboardMap[role] ?? "/"}
+      role={role}
     >
       {children}
     </AppShell>

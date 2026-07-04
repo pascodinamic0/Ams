@@ -32,6 +32,7 @@ export default async function MessagesLayout({ children }: { children: React.Rea
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("messages")}</span>}
       dashboardHref={dashboardMap[role] ?? "/"}
+      role={role}
     >
       {children}
     </AppShell>

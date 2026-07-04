@@ -30,6 +30,7 @@ export default async function SettingsLayout({
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("settings")}</span>}
       dashboardHref={getDashboardForRole(role)}
+      role={role}
     >
       {children}
     </AppShell>

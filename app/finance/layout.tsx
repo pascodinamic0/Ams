@@ -10,6 +10,7 @@ export default async function FinanceLayout({ children }: { children: React.Reac
       sidebar={<Sidebar role="finance_officer" />}
       header={<span className="font-medium">{t("finance")}</span>}
       dashboardHref="/finance"
+      role="finance_officer"
     >
       {children}
     </AppShell>

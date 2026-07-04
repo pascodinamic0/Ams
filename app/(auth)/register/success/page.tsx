@@ -15,7 +15,7 @@ export default async function RegisterSuccessPage({ searchParams }: PageProps) {
     : "Check your email for a confirmation link, then sign in to check your approval status.";
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center bg-stone-50 px-4 py-12 dark:bg-[#0c1222]">
+    <div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
       <PendingApprovalCard
         schoolName={schoolName}
         emailConfirmationNote={emailConfirmationNote}

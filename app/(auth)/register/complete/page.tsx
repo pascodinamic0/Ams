@@ -95,14 +95,14 @@ export default function RegisterCompletePage() {
 
   if (checkingSession) {
     return (
-      <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-primary-600 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+    <div className="flex flex-1 items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-stone-900 dark:text-white">

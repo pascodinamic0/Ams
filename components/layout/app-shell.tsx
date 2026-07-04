@@ -1,18 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { BrandLogo } from "@/components/company/brand-logo";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { LogoutButton } from "@/components/layout/logout-button";
+import { MOBILE_TAB_BAR_HEIGHT, MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { NotificationBell } from "@/components/layout/notification-bell";
+import { useIsMobile } from "@/lib/pwa/display-mode";
+import { cn } from "@/lib/utils";
+
+export type AppShellMobileMode = "tabs" | "stack" | "fullscreen";
 
 interface AppShellProps {
   children: React.ReactNode;
   sidebar?: React.ReactNode;
   header?: React.ReactNode;
   dashboardHref?: string;
+  role?: string;
+  mobileMode?: AppShellMobileMode;
+}
+
+function resolveMobileMode(pathname: string, mobileMode?: AppShellMobileMode): AppShellMobileMode {
+  if (mobileMode) return mobileMode;
+  if (/^\/messages\/[^/]+$/.test(pathname)) return "fullscreen";
+  return "tabs";
 }
 
 export function AppShell({
@@ -20,54 +34,66 @@ export function AppShell({
   sidebar,
   header,
   dashboardHref = "/",
+  role = "student",
+  mobileMode,
 }: AppShellProps) {
+  const pathname = usePathname();
+  const isMobile = useIsMobile();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
 
+  const resolvedMobileMode = resolveMobileMode(pathname, mobileMode);
+  const showMobileTabs = Boolean(sidebar) && resolvedMobileMode === "tabs";
+  const showMobileHeader = resolvedMobileMode !== "fullscreen";
+  const isStack = resolvedMobileMode === "stack";
+
+  const mainPaddingBottom = useMemo(() => {
+    if (!isMobile || !showMobileTabs) return undefined;
+    return `calc(${MOBILE_TAB_BAR_HEIGHT} + env(safe-area-inset-bottom))`;
+  }, [isMobile, showMobileTabs]);
+
   useEffect(() => {
-    const isMobile = window.matchMedia("(max-width: 767px)").matches;
     document.body.style.overflow = sidebarOpen && isMobile ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [sidebarOpen]);
+  }, [sidebarOpen, isMobile]);
+
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-stone-50 dark:bg-stone-950 md:flex-row">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-stone-50 dark:bg-stone-950 md:min-h-screen md:h-auto md:overflow-visible">
       {sidebar && (
         <>
-          {/* Mobile overlay */}
           {sidebarOpen && (
             <div
-              className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-black/50 md:hidden"
               onClick={() => setSidebarOpen(false)}
               aria-hidden="true"
             />
           )}
 
-          {/* Sidebar */}
           <aside
-            className={`
-              fixed bottom-3 left-3 top-[calc(env(safe-area-inset-top)+0.75rem)] z-50 flex w-[calc(100%-1.5rem)] max-w-72 flex-col overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-2xl shadow-stone-950/20 transition-transform
-              md:inset-y-0 md:left-0 md:top-0 md:bottom-auto md:relative md:w-64 md:max-w-none md:rounded-none md:border-y-0 md:border-l-0 md:shadow-none md:translate-x-0
-              ${sidebarOpen ? "translate-x-0" : "-translate-x-[110%]"}
-              dark:border-stone-800 dark:bg-stone-900
-            `}
+            className={cn(
+              "fixed inset-y-0 left-0 flex w-full max-w-[min(100%,20rem)] flex-col overflow-hidden border-r border-stone-200 bg-white transition-transform md:inset-y-0 md:relative md:z-auto md:w-64 md:max-w-none md:translate-x-0 md:border-y-0 md:border-l-0 dark:border-stone-800 dark:bg-stone-900",
+              sidebarOpen ? "z-[60] translate-x-0" : "z-50 -translate-x-full md:translate-x-0"
+            )}
             onClick={(event) => {
               if ((event.target as HTMLElement).closest("a")) {
                 setSidebarOpen(false);
               }
             }}
           >
-            {/* Logo area */}
-            <div className="flex h-16 shrink-0 items-center justify-between border-b border-stone-200 px-4 dark:border-stone-800">
+            <div className="flex h-16 shrink-0 items-center justify-between border-b border-stone-200 px-4 pt-[env(safe-area-inset-top)] md:pt-0 dark:border-stone-800">
               <Link href={dashboardHref}>
                 <BrandLogo size={32} wordmarkClassName="text-base font-bold text-stone-900 dark:text-white" />
               </Link>
               <button
                 type="button"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
+                onClick={() => setSidebarOpen(false)}
                 className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-stone-400 transition-all hover:bg-stone-100 hover:text-stone-600 active:scale-95 dark:hover:bg-stone-800 dark:hover:text-stone-300 md:hidden"
                 aria-label={tCommon("closeSidebar")}
               >
@@ -77,10 +103,8 @@ export function AppShell({
               </button>
             </div>
 
-            {/* Nav */}
             <div className="flex-1 overflow-y-auto py-4">{sidebar}</div>
 
-            {/* Bottom links */}
             <div className="space-y-1 border-t border-stone-200 p-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] dark:border-stone-800 md:pb-3">
               <Link
                 href="/settings"
@@ -99,85 +123,70 @@ export function AppShell({
         </>
       )}
 
-      {/* Main content area */}
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col pb-[calc(env(safe-area-inset-bottom)+4.5rem)] md:pb-0">
-        {/* Top header */}
-        <header className="sticky top-0 z-30 flex min-h-16 shrink-0 items-center justify-between gap-3 border-b border-stone-200 bg-white/95 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-xl dark:border-stone-800 dark:bg-stone-900/95 md:h-16 md:pt-0">
-          <div className="flex min-w-0 items-center gap-3">
-            {/* Hamburger for mobile */}
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-stone-500 transition-all hover:bg-stone-100 hover:text-stone-700 active:scale-95 dark:hover:bg-stone-800 dark:hover:text-stone-200 md:hidden"
-              aria-label={tCommon("openMenu")}
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col md:min-h-screen">
+        {showMobileHeader && (
+          <header
+            className={cn(
+              "sticky top-0 z-30 flex min-h-14 shrink-0 items-center justify-between gap-3 border-b border-stone-200 bg-white/95 px-4 backdrop-blur-xl dark:border-stone-800 dark:bg-stone-900/95 md:h-16",
+              isStack ? "pt-[env(safe-area-inset-top)] md:pt-0" : "pt-[env(safe-area-inset-top)] md:pt-0"
+            )}
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              {sidebar && (
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen(true)}
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-stone-500 transition-all hover:bg-stone-100 hover:text-stone-700 active:scale-95 dark:hover:bg-stone-800 dark:hover:text-stone-200 md:hidden"
+                  aria-label={tCommon("openMenu")}
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+              )}
 
-            {/* Desktop toggle */}
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="hidden rounded-md p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-600 dark:hover:bg-stone-800 md:flex"
-              aria-label={tCommon("toggleSidebar")}
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-              </svg>
-            </button>
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="hidden rounded-md p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-600 dark:hover:bg-stone-800 md:flex"
+                aria-label={tCommon("toggleSidebar")}
+              >
+                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+              </button>
 
-            <div className="min-w-0 truncate text-sm font-semibold text-stone-900 dark:text-white sm:text-base">
-              {header}
+              <div className="min-w-0 truncate text-sm font-semibold text-stone-900 dark:text-white sm:text-base">
+                {header}
+              </div>
             </div>
-          </div>
 
-          {/* Right side: notifications + avatar */}
-          <div className="flex shrink-0 items-center gap-2">
-            <NotificationBell />
+            <div className="flex shrink-0 items-center gap-2">
+              <NotificationBell />
 
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-xs font-semibold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
-              U
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-xs font-semibold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
+                U
+              </div>
             </div>
-          </div>
-        </header>
+          </header>
+        )}
 
-        {/* Page content */}
-        <main className="flex-1 overflow-auto px-4 py-5 md:p-6 lg:p-8">
+        <main
+          className={cn(
+            "min-h-0 flex-1 overflow-auto",
+            resolvedMobileMode === "fullscreen"
+              ? "p-0 md:p-6 lg:p-8"
+              : "px-4 py-4 md:p-6 lg:p-8",
+            isMobile && resolvedMobileMode === "tabs" && "max-md:[&>div>h1:first-child]:sr-only"
+          )}
+          style={mainPaddingBottom ? { paddingBottom: mainPaddingBottom } : undefined}
+        >
           {children}
         </main>
       </div>
 
-      {/* Mobile bottom nav */}
-      {sidebar && (
-        <nav className="fixed inset-x-3 bottom-3 z-50 flex rounded-[1.75rem] border border-stone-200 bg-white/95 shadow-2xl shadow-stone-950/10 backdrop-blur-xl md:hidden dark:border-stone-800 dark:bg-stone-900/95">
-          <div className="flex flex-1 items-center justify-around gap-1 px-2 py-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)]">
-            <Link
-              href={dashboardHref}
-              className="flex min-w-0 flex-1 flex-col items-center gap-1 rounded-2xl px-3 py-2 text-xs font-medium text-stone-500 transition-colors hover:bg-primary-light hover:text-primary dark:text-stone-400 dark:hover:bg-primary-light/40"
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-              </svg>
-              {tCommon("home")}
-            </Link>
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              className="flex min-w-0 flex-1 flex-col items-center gap-1 rounded-2xl px-3 py-2 text-xs font-medium text-stone-500 transition-colors hover:bg-primary-light hover:text-primary active:scale-95 dark:text-stone-400 dark:hover:bg-primary-light/40"
-            >
-              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-              {tCommon("menu")}
-            </button>
-            <NotificationBell
-              className="flex min-w-0 flex-1 flex-col items-center gap-1 rounded-2xl px-3 py-2 text-stone-500 transition-colors hover:bg-primary-light hover:text-primary dark:text-stone-400 dark:hover:bg-primary-light/40"
-              showLabel
-            />
-          </div>
-        </nav>
+      {showMobileTabs && !sidebarOpen && (
+        <MobileTabBar role={role} onMenuOpen={() => setSidebarOpen(true)} />
       )}
     </div>
   );

@@ -10,6 +10,7 @@ export default async function AnalyticsLayout({ children }: { children: React.Re
       sidebar={<Sidebar role="analytics" />}
       header={<span className="font-medium">{t("analytics")}</span>}
       dashboardHref="/analytics"
+      role="analytics"
     >
       {children}
     </AppShell>

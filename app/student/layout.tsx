@@ -10,6 +10,7 @@ export default async function StudentLayout({ children }: { children: React.Reac
       sidebar={<Sidebar role="student" />}
       header={<span className="font-medium">{t("student")}</span>}
       dashboardHref="/student"
+      role="student"
     >
       {children}
     </AppShell>

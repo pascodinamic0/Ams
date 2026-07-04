@@ -10,6 +10,7 @@ export default async function ParentLayout({ children }: { children: React.React
       sidebar={<Sidebar role="parent" />}
       header={<span className="font-medium">{t("parent")}</span>}
       dashboardHref="/parent"
+      role="parent"
     >
       {children}
     </AppShell>

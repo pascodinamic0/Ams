@@ -14,6 +14,7 @@ export default async function AdminLayout({
       sidebar={<Sidebar role="super_admin" />}
       header={<span className="font-medium">{t("admin")}</span>}
       dashboardHref="/admin"
+      role="super_admin"
     >
       {children}
     </AppShell>
