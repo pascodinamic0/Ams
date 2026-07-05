@@ -65,21 +65,25 @@ export function AppShell({
   }, [pathname]);
 
   return (
-    <div className="flex h-[100dvh] flex-col overflow-hidden bg-stone-50 dark:bg-stone-950 md:min-h-screen md:h-auto md:overflow-visible">
-      {sidebar && (
-        <>
-          {sidebarOpen && (
-            <div
-              className="fixed inset-0 z-40 bg-black/50 md:hidden"
-              onClick={() => setSidebarOpen(false)}
-              aria-hidden="true"
-            />
-          )}
+    <>
+      {sidebarOpen && sidebar && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
+      <div className="flex min-h-screen flex-col bg-stone-50 dark:bg-stone-950 max-md:h-[100dvh] max-md:overflow-hidden md:flex-row">
+        {sidebar && (
           <aside
             className={cn(
-              "fixed inset-y-0 left-0 flex w-full max-w-[min(100%,20rem)] flex-col overflow-hidden border-r border-stone-200 bg-white transition-transform md:inset-y-0 md:relative md:z-auto md:w-64 md:max-w-none md:translate-x-0 md:border-y-0 md:border-l-0 dark:border-stone-800 dark:bg-stone-900",
-              sidebarOpen ? "z-[60] translate-x-0" : "z-50 -translate-x-full md:translate-x-0"
+              "flex w-64 shrink-0 flex-col overflow-hidden border-r border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-900",
+              "max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-50 max-md:w-full max-md:max-w-[min(100%,20rem)] max-md:transition-transform",
+              "md:relative md:h-screen",
+              sidebarOpen
+                ? "max-md:z-[60] max-md:translate-x-0"
+                : "max-md:-translate-x-full"
             )}
             onClick={(event) => {
               if ((event.target as HTMLElement).closest("a")) {
@@ -120,74 +124,78 @@ export function AppShell({
               <LogoutButton />
             </div>
           </aside>
-        </>
-      )}
-
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col md:min-h-screen">
-        {showMobileHeader && (
-          <header
-            className={cn(
-              "sticky top-0 z-30 flex min-h-14 shrink-0 items-center justify-between gap-3 border-b border-stone-200 bg-white/95 px-4 backdrop-blur-xl dark:border-stone-800 dark:bg-stone-900/95 md:h-16",
-              isStack ? "pt-[env(safe-area-inset-top)] md:pt-0" : "pt-[env(safe-area-inset-top)] md:pt-0"
-            )}
-          >
-            <div className="flex min-w-0 items-center gap-3">
-              {sidebar && (
-                <button
-                  type="button"
-                  onClick={() => setSidebarOpen(true)}
-                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-stone-500 transition-all hover:bg-stone-100 hover:text-stone-700 active:scale-95 dark:hover:bg-stone-800 dark:hover:text-stone-200 md:hidden"
-                  aria-label={tCommon("openMenu")}
-                >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                </button>
-              )}
-
-              <button
-                type="button"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="hidden rounded-md p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-600 dark:hover:bg-stone-800 md:flex"
-                aria-label={tCommon("toggleSidebar")}
-              >
-                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
-                </svg>
-              </button>
-
-              <div className="min-w-0 truncate text-sm font-semibold text-stone-900 dark:text-white sm:text-base">
-                {header}
-              </div>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-2">
-              <NotificationBell />
-
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-xs font-semibold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
-                U
-              </div>
-            </div>
-          </header>
         )}
 
-        <main
+        <div
           className={cn(
-            "min-h-0 flex-1 overflow-auto",
-            resolvedMobileMode === "fullscreen"
-              ? "p-0 md:p-6 lg:p-8"
-              : "px-4 py-4 md:p-6 lg:p-8",
-            isMobile && resolvedMobileMode === "tabs" && "max-md:[&>div>h1:first-child]:sr-only"
+            "flex min-w-0 flex-1 flex-col",
+            "max-md:min-h-0 max-md:overflow-hidden",
+            "md:h-screen md:overflow-y-auto"
           )}
-          style={mainPaddingBottom ? { paddingBottom: mainPaddingBottom } : undefined}
         >
-          {children}
-        </main>
+          {showMobileHeader && (
+            <header
+              className={cn(
+                "sticky top-0 z-30 flex min-h-14 shrink-0 items-center justify-between gap-3 border-b border-stone-200 bg-white/95 px-4 backdrop-blur-xl dark:border-stone-800 dark:bg-stone-900/95 md:h-16",
+                isStack ? "pt-[env(safe-area-inset-top)] md:pt-0" : "pt-[env(safe-area-inset-top)] md:pt-0"
+              )}
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                {sidebar && (
+                  <button
+                    type="button"
+                    onClick={() => setSidebarOpen(true)}
+                    className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-stone-500 transition-all hover:bg-stone-100 hover:text-stone-700 active:scale-95 dark:hover:bg-stone-800 dark:hover:text-stone-200 md:hidden"
+                    aria-label={tCommon("openMenu")}
+                  >
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                  </button>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="hidden rounded-md p-1.5 text-stone-400 hover:bg-stone-100 hover:text-stone-600 dark:hover:bg-stone-800 md:flex"
+                  aria-label={tCommon("toggleSidebar")}
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+                  </svg>
+                </button>
+
+                <div className="min-w-0 truncate text-sm font-semibold text-stone-900 dark:text-white sm:text-base">
+                  {header}
+                </div>
+              </div>
+
+              <div className="flex shrink-0 items-center gap-2">
+                <NotificationBell />
+
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-xs font-semibold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
+                  U
+                </div>
+              </div>
+            </header>
+          )}
+
+          <main
+            className={cn(
+              "px-4 py-5 md:p-6 lg:p-8",
+              resolvedMobileMode === "fullscreen" && "p-0 md:p-6 lg:p-8",
+              "max-md:min-h-0 max-md:flex-1 max-md:overflow-auto"
+            )}
+            style={mainPaddingBottom ? { paddingBottom: mainPaddingBottom } : undefined}
+          >
+            {children}
+          </main>
+        </div>
       </div>
 
       {showMobileTabs && !sidebarOpen && (
         <MobileTabBar role={role} onMenuOpen={() => setSidebarOpen(true)} />
       )}
-    </div>
+    </>
   );
 }
