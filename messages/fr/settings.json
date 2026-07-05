@@ -15,5 +15,10 @@
   "updatePassword": "Mettre à jour le mot de passe",
   "passwordUpdated": "Mot de passe mis à jour avec succès",
   "passwordChanged": "Mot de passe modifié avec succès.",
-  "passwordUpdateFailed": "Échec de la mise à jour du mot de passe"
+  "passwordUpdateFailed": "Échec de la mise à jour du mot de passe",
+  "changeAvatar": "Changer la photo",
+  "avatarUpdated": "Photo de profil mise à jour",
+  "avatarUpdateFailed": "Échec de la mise à jour de la photo de profil",
+  "avatarUploading": "Téléversement...",
+  "avatarHint": "Cliquez sur votre photo pour en téléverser une nouvelle"
 }

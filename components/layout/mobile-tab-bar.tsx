@@ -21,6 +21,7 @@ export function MobileTabBar({ role, onMenuOpen }: MobileTabBarProps) {
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const tabs = getMobileTabs(role);
+  const tabHrefs = tabs.map((tab) => tab.href);
   const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export function MobileTabBar({ role, onMenuOpen }: MobileTabBarProps) {
     >
       <div className="flex items-stretch pb-[env(safe-area-inset-bottom)]">
         {tabs.map((tab) => {
-          const active = isTabActive(pathname, tab.href);
+          const active = isTabActive(pathname, tab.href, tabHrefs);
           const Icon = tab.icon;
           const showBadge = tab.href === "/messages" && unreadMessages > 0;
 

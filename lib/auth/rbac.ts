@@ -38,6 +38,7 @@ export const SHARED_AUTH_ROUTES = [
   "/settings",
   "/outreach",
   "/register/complete",
+  "/onboarding",
   "/pending",
   "/reset-password",
 ];

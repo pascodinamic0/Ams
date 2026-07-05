@@ -9,6 +9,7 @@ import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { LogoutButton } from "@/components/layout/logout-button";
 import { MOBILE_TAB_BAR_HEIGHT, MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { NotificationBell } from "@/components/layout/notification-bell";
+import { UserAvatarMenu } from "@/components/layout/user-avatar-menu";
 import { useIsMobile } from "@/lib/pwa/display-mode";
 import { cn } from "@/lib/utils";
 
@@ -172,10 +173,7 @@ export function AppShell({
 
               <div className="flex shrink-0 items-center gap-2">
                 <NotificationBell />
-
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light text-xs font-semibold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
-                  U
-                </div>
+                <UserAvatarMenu />
               </div>
             </header>
           )}

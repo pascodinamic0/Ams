@@ -15,5 +15,10 @@
   "updatePassword": "Update password",
   "passwordUpdated": "Password updated successfully",
   "passwordChanged": "Password changed successfully.",
-  "passwordUpdateFailed": "Failed to update password"
+  "passwordUpdateFailed": "Failed to update password",
+  "changeAvatar": "Change photo",
+  "avatarUpdated": "Profile photo updated",
+  "avatarUpdateFailed": "Failed to update profile photo",
+  "avatarUploading": "Uploading...",
+  "avatarHint": "Click your photo to upload a new one"
 }

@@ -1,11 +1,17 @@
 import { createClient } from "@supabase/supabase-js";
 import { getServiceRoleConfigError } from "@/lib/supabase/env";
 
+let loggedServiceRoleConfigError = false;
+
 /** Server-only Supabase client with service role. Returns null if key is not configured. */
 export function createAdminClient() {
   const configError = getServiceRoleConfigError();
   if (configError) {
-    console.error("createAdminClient:", configError);
+    if (!loggedServiceRoleConfigError) {
+      loggedServiceRoleConfigError = true;
+      // Warn once in dev — missing key is a config gap, not a thrown runtime error.
+      console.warn("createAdminClient:", configError);
+    }
     return null;
   }
 

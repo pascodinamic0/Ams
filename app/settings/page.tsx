@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
+import { Camera } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,7 +14,9 @@ import { PasswordStrength } from "@/components/ui/password-strength";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { InstallAppButton } from "@/components/pwa/install-app-button";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { UserAvatar } from "@/components/layout/user-avatar";
 import { createClient } from "@/lib/supabase/client";
+import { uploadUserAvatar } from "@/lib/profile/avatar";
 import { toast } from "@/lib/toast";
 
 type ChangePasswordData = {
@@ -22,10 +26,11 @@ type ChangePasswordData = {
 };
 
 type ProfileInfo = {
+  id: string;
   email: string;
   fullName: string;
   role: string;
-  initial: string;
+  avatarUrl: string | null;
 };
 
 export default function SettingsPage() {
@@ -41,16 +46,17 @@ export default function SettingsPage() {
 
       const { data: row } = await supabase
         .from("profiles")
-        .select("name, role")
+        .select("name, role, avatar_url")
         .eq("id", user.id)
         .single();
 
       const fullName = row?.name || user.email?.split("@")[0] || "User";
       setProfile({
+        id: user.id,
         email: user.email ?? "",
         fullName,
         role: row?.role ?? "user",
-        initial: fullName.charAt(0).toUpperCase(),
+        avatarUrl: row?.avatar_url ?? null,
       });
     }
     loadProfile();
@@ -65,7 +71,13 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <AccountCard profile={profile} roleLabel={profile ? tRoles(profile.role as "student") : ""} />
+      <AccountCard
+        profile={profile}
+        roleLabel={profile ? tRoles(profile.role as "student") : ""}
+        onAvatarUpdated={(avatarUrl) =>
+          setProfile((current) => (current ? { ...current, avatarUrl } : current))
+        }
+      />
       <LanguageCard />
       <AppInstallCard />
       <SecurityCard />
@@ -73,8 +85,19 @@ export default function SettingsPage() {
   );
 }
 
-function AccountCard({ profile, roleLabel }: { profile: ProfileInfo | null; roleLabel: string }) {
+function AccountCard({
+  profile,
+  roleLabel,
+  onAvatarUpdated,
+}: {
+  profile: ProfileInfo | null;
+  roleLabel: string;
+  onAvatarUpdated: (avatarUrl: string) => void;
+}) {
   const t = useTranslations("settings");
+  const router = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   if (!profile) {
     return (
@@ -86,6 +109,24 @@ function AccountCard({ profile, roleLabel }: { profile: ProfileInfo | null; role
     );
   }
 
+  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file || !profile) return;
+
+    setUploading(true);
+    try {
+      const avatarUrl = await uploadUserAvatar(file, profile.id);
+      onAvatarUpdated(avatarUrl);
+      toast.success(t("avatarUpdated"));
+      router.refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("avatarUpdateFailed"));
+    } finally {
+      setUploading(false);
+      event.target.value = "";
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -93,15 +134,35 @@ function AccountCard({ profile, roleLabel }: { profile: ProfileInfo | null; role
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary-light text-xl font-bold text-primary-hover dark:bg-primary-light dark:text-primary">
-            {profile.initial}
-          </div>
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+            className="group relative rounded-full ring-offset-2 transition hover:ring-2 hover:ring-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-70"
+            aria-label={t("changeAvatar")}
+          >
+            <UserAvatar name={profile.fullName} avatarUrl={profile.avatarUrl} size="lg" />
+            <span className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-full bg-black/0 text-white opacity-0 transition group-hover:bg-black/35 group-hover:opacity-100">
+              <Camera className="h-5 w-5" />
+            </span>
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/gif,image/webp"
+            className="hidden"
+            onChange={handleFileChange}
+            disabled={uploading}
+          />
           <div>
             <p className="font-medium text-stone-900 dark:text-white">{profile.fullName}</p>
             <p className="text-sm text-stone-500 dark:text-stone-400">{profile.email}</p>
             <span className="mt-1 inline-block rounded-full bg-primary-light px-2.5 py-0.5 text-xs font-medium text-primary-hover dark:bg-primary-light dark:text-primary">
               {roleLabel || profile.role}
             </span>
+            <p className="mt-2 text-xs text-stone-500 dark:text-stone-400">
+              {uploading ? t("avatarUploading") : t("avatarHint")}
+            </p>
           </div>
         </div>
       </CardContent>

@@ -11,6 +11,43 @@
   "progressComplete": "{completed} sur {total} terminées",
   "stepsCompleted": "{completed} sur {total} étapes terminées",
   "allStepsComplete": "Toutes les étapes sont terminées !",
+  "account": {
+    "badge": "Configuration du compte",
+    "title": "Configurez votre profil",
+    "subtitle": "Une configuration rapide pour que votre équipe vous reconnaisse sur ShuleOS.",
+    "stepProgress": "Étape {current} sur {total} : {title}",
+    "welcomeBody": "Bienvenue ! Vous êtes connecté en tant que {role}. Nous confirmerons votre nom et vous pourrez ajouter une photo de profil avant de continuer.",
+    "signedInAs": "Connecté en tant que {email}",
+    "displayName": "Nom affiché",
+    "displayNamePlaceholder": "Votre nom complet",
+    "displayNameHint": "Ce nom apparaît sur votre profil, vos messages et les rapports.",
+    "nameRequired": "Veuillez saisir votre nom pour continuer.",
+    "saveFailed": "Impossible d'enregistrer votre nom. Réessayez.",
+    "uploadPhoto": "Téléverser la photo de profil",
+    "photoPrompt": "Facultatif — appuyez sur votre photo pour téléverser une image. JPG, PNG, GIF ou WebP, max. 5 Mo.",
+    "photoUploading": "Téléversement de votre photo...",
+    "photoReady": "Photo téléversée. Appuyez pour la modifier.",
+    "photoUploaded": "Photo de profil téléversée",
+    "photoUploadFailed": "Impossible de téléverser votre photo. Réessayez.",
+    "photoRequired": "Ajoutez une photo de profil pour terminer la configuration.",
+    "finish": "Terminer la configuration",
+    "completeSuccess": "Votre profil est prêt.",
+    "completeFailed": "Impossible de terminer la configuration. Réessayez.",
+    "steps": {
+      "welcome": {
+        "title": "Bienvenue",
+        "description": "Un court parcours pour personnaliser votre compte."
+      },
+      "profile": {
+        "title": "Votre nom",
+        "description": "Confirmez comment votre nom doit apparaître sur la plateforme."
+      },
+      "photo": {
+        "title": "Photo de profil",
+        "description": "Ajoutez une photo pour que enseignants, personnel et familles puissent vous reconnaître. Vous pouvez passer cette étape et en ajouter une plus tard dans Paramètres."
+      }
+    }
+  },
   "steps": {
     "website": {
       "title": "Configurer votre site web public",

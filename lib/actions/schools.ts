@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getServiceRoleConfigError } from "@/lib/supabase/env";
 import {
   DEFAULT_BRANCH_NAME,
   resolveUniqueSchoolCode,
@@ -41,7 +42,9 @@ export async function createSchool(input: CreateSchoolInput) {
   }
 
   const admin = createAdminClient();
-  if (!admin) return { error: "Server configuration error" };
+  if (!admin) {
+    return { error: getServiceRoleConfigError() ?? "Server configuration error" };
+  }
 
   const slug = await resolveUniqueSchoolSlug(admin, input.name);
   const code = await resolveUniqueSchoolCode(admin, input.name);
@@ -187,12 +190,20 @@ export async function deleteSchool(id: string) {
   }
 
   const admin = createAdminClient();
-  if (!admin) return { error: "Server configuration error" };
+  const db = admin ?? supabase;
 
-  const { error } = await admin.from("schools").delete().eq("id", id);
+  await db.from("feature_toggles").delete().like("key", `school:${id}:%`);
+
+  const { error } = await db.from("schools").delete().eq("id", id);
 
   if (error) {
     console.error("deleteSchool error:", error);
+    const configError = getServiceRoleConfigError();
+    if (!admin && configError) {
+      return {
+        error: `Could not delete school: ${error.message}. ${configError}`,
+      };
+    }
     return { error: error.message };
   }
 

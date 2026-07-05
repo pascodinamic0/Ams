@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { fetchUnreadConversationCount } from "@/lib/actions/conversations";
+import { isNavItemActive } from "@/lib/layout/nav-active";
 
 const iconClass = "h-4 w-4";
 
@@ -228,11 +229,12 @@ export function Sidebar({ role = "student" }: SidebarProps) {
     };
   }, [role, pathname]);
 
+  const navHrefs = navItems.map((item) => item.href);
+
   return (
     <nav className="flex flex-col gap-0.5 px-3" aria-label={tCommon("sidebar")}>
       {navItems.map((item) => {
-        const isActive =
-          pathname === item.href || pathname.startsWith(`${item.href}/`);
+        const isActive = isNavItemActive(pathname, item.href, navHrefs);
         const showUnreadBadge = item.href === "/messages" && unreadMessages > 0;
         return (
           <Link

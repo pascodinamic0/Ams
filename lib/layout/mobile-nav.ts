@@ -7,6 +7,7 @@ import {
   Home,
   MessageSquare,
 } from "lucide-react";
+import { isNavItemActive } from "@/lib/layout/nav-active";
 
 export type MobileTabId = "home" | "tab2" | "tab3" | "messages";
 
@@ -65,10 +66,10 @@ export function getMobileTabs(role: string): MobileTabDef[] {
   return TAB_PRESETS[normalized] ?? TAB_PRESETS.student;
 }
 
-export function isTabActive(pathname: string, href: string) {
-  if (href === "/admin" || href === "/academic" || href === "/teacher" || href === "/finance" ||
-      href === "/operations" || href === "/parent" || href === "/student" || href === "/analytics") {
-    return pathname === href;
+export function isTabActive(pathname: string, href: string, allHrefs?: string[]) {
+  if (allHrefs?.length) {
+    return isNavItemActive(pathname, href, allHrefs);
   }
+
   return pathname === href || pathname.startsWith(`${href}/`);
 }

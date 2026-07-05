@@ -12,7 +12,7 @@ export async function getPostAuthRedirect(options: {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, school_id")
+    .select("role, school_id, onboarding_completed_at")
     .eq("id", options.userId)
     .single();
 
@@ -30,6 +30,10 @@ export async function getPostAuthRedirect(options: {
     if (!ownedSchool && !profile?.school_id) {
       return "/register/complete";
     }
+  }
+
+  if (!profile?.onboarding_completed_at) {
+    return "/onboarding";
   }
 
   let schoolStatus: SchoolStatus = null;

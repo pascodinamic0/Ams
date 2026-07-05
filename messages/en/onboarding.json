@@ -11,6 +11,43 @@
   "progressComplete": "{completed} of {total} complete",
   "stepsCompleted": "{completed} of {total} steps completed",
   "allStepsComplete": "All steps complete!",
+  "account": {
+    "badge": "Account setup",
+    "title": "Set up your profile",
+    "subtitle": "A quick setup so your team knows who you are across ShuleOS.",
+    "stepProgress": "Step {current} of {total}: {title}",
+    "welcomeBody": "Welcome! You are signed in as a {role}. We will confirm your name and you can add a profile photo before you continue.",
+    "signedInAs": "Signed in as {email}",
+    "displayName": "Display name",
+    "displayNamePlaceholder": "Your full name",
+    "displayNameHint": "This name appears on your profile, messages, and reports.",
+    "nameRequired": "Please enter your name to continue.",
+    "saveFailed": "Could not save your name. Try again.",
+    "uploadPhoto": "Upload profile photo",
+    "photoPrompt": "Optional — tap your photo to upload an image. JPG, PNG, GIF, or WebP up to 5MB.",
+    "photoUploading": "Uploading your photo...",
+    "photoReady": "Photo uploaded. You can tap to change it.",
+    "photoUploaded": "Profile photo uploaded",
+    "photoUploadFailed": "Could not upload your photo. Try again.",
+    "photoRequired": "Add a profile photo to finish setup.",
+    "finish": "Finish setup",
+    "completeSuccess": "Your profile is ready.",
+    "completeFailed": "Could not finish setup. Try again.",
+    "steps": {
+      "welcome": {
+        "title": "Welcome",
+        "description": "A short walkthrough to personalize your account."
+      },
+      "profile": {
+        "title": "Your name",
+        "description": "Confirm how your name should appear across the platform."
+      },
+      "photo": {
+        "title": "Profile photo",
+        "description": "Add a photo so teachers, staff, and families can recognize you. You can skip this and add one later in Settings."
+      }
+    }
+  },
   "steps": {
     "website": {
       "title": "Set up your public website",
