@@ -1,9 +1,9 @@
 {
   "builtForLocalSchools": "Stoppez les fuites · Conçu pour la RDC",
   "homepageCta": {
-    "academic": "Stoppez la panique des bulletins",
-    "finance": "Stoppez les fuites de frais",
-    "portals": "Stoppez la file au bureau"
+    "academic": "Notes et bulletins",
+    "finance": "Frais et paiements",
+    "portals": "Portail parent"
   },
   "academic": {
     "title": "Académique",

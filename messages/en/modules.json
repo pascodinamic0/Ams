@@ -1,9 +1,9 @@
 {
   "builtForLocalSchools": "Stop the leaks · Built for DRC schools",
   "homepageCta": {
-    "academic": "Stop report card panic",
-    "finance": "Stop fee leakage",
-    "portals": "Stop the office queue"
+    "academic": "Grades & report cards",
+    "finance": "Fees & payments",
+    "portals": "Parent portal"
   },
   "academic": {
     "title": "Academic",

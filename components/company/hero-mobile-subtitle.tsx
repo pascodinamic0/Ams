@@ -41,7 +41,7 @@ export function HeroMobileSubtitle({
       <p
         className={cn(
           className,
-          "text-pretty text-base leading-snug text-teal-50 [text-shadow:0_1px_14px_rgba(0,0,0,0.55)]"
+          "text-pretty text-sm leading-snug text-teal-50/90 [text-shadow:0_1px_14px_rgba(0,0,0,0.55)]"
         )}
       >
         {frags}. {payoff}
@@ -53,7 +53,7 @@ export function HeroMobileSubtitle({
     <p
       className={cn(
         className,
-        "relative mx-auto min-h-[3.5rem] max-w-[20rem] text-pretty [text-shadow:0_1px_14px_rgba(0,0,0,0.55)]"
+        "relative mx-auto min-h-[3rem] max-w-[18rem] text-pretty [text-shadow:0_1px_14px_rgba(0,0,0,0.55)]"
       )}
       aria-live="polite"
     >
@@ -67,8 +67,8 @@ export function HeroMobileSubtitle({
           className={cn(
             "absolute inset-x-0 top-0 block px-1",
             isPayoff
-              ? "text-[0.9375rem] font-medium leading-snug text-teal-50/95"
-              : "text-lg font-semibold leading-tight text-white"
+              ? "text-sm font-medium leading-snug text-teal-50/90"
+              : "text-base font-semibold leading-snug text-white"
           )}
         >
           {slides[index]}

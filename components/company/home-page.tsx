@@ -89,7 +89,7 @@ export function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-white dark:bg-[#0c1222]">
       {/* Hero Section */}
-      <section className="relative flex min-h-[100dvh] items-center overflow-hidden pt-[calc(env(safe-area-inset-top)+5.5rem)] pb-24 sm:min-h-[90vh] sm:pb-28 md:pt-28 md:pb-32 lg:pt-32">
+      <section className="relative flex min-h-[85dvh] items-center overflow-hidden pt-[calc(env(safe-area-inset-top)+5rem)] pb-20 sm:min-h-0 sm:pb-24 md:pt-24 md:pb-28 lg:pt-28">
         <HeroVideoBackground />
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -97,52 +97,51 @@ export function HomePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="mx-auto max-w-3xl text-center sm:max-w-none"
+            className="mx-auto max-w-2xl text-center sm:max-w-3xl lg:max-w-4xl"
           >
             <motion.span
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.15em] text-teal-100 backdrop-blur-sm sm:text-sm"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-teal-100/90 backdrop-blur-sm sm:px-3.5 sm:py-1.5 sm:text-xs"
             >
               {t("heroBadge")}
             </motion.span>
-            <h1 className="mt-6 text-[2.125rem] font-extrabold leading-[1.08] tracking-tight text-white sm:mt-8 sm:text-5xl sm:leading-tight md:text-7xl lg:text-8xl">
-              {t("heroTitleLine1")}
-              <br />
-              <span className="bg-gradient-to-r from-teal-200 via-teal-400 to-teal-200 bg-clip-text text-transparent">
+            <h1 className="mt-4 text-[1.75rem] font-bold leading-[1.2] tracking-tight text-white sm:mt-6 sm:text-4xl sm:leading-[1.15] md:text-5xl lg:text-[3.25rem] lg:leading-[1.12]">
+              <span className="block">{t("heroTitleLine1")}</span>
+              <span className="mt-1 block bg-gradient-to-r from-teal-200 via-teal-400 to-teal-200 bg-clip-text text-transparent sm:mt-1.5">
                 {t("heroTitleLine2")}
               </span>
             </h1>
             <HeroMobileSubtitle
               frags={t("heroSubtitle")}
               payoff={t("heroSubtitleMobilePayoff")}
-              className="mt-5 sm:hidden"
+              className="mt-4 sm:hidden"
             />
-            <p className="mx-auto mt-5 hidden max-w-xl text-base leading-relaxed text-teal-100/80 sm:mt-8 sm:block sm:max-w-3xl sm:text-xl sm:text-teal-100/70">
+            <p className="mx-auto mt-4 hidden max-w-lg text-sm leading-relaxed text-teal-100/75 sm:mt-6 sm:block sm:max-w-2xl sm:text-base md:text-[1.0625rem]">
               <span className="block">{t("heroSubtitle")}</span>
-              <span className="mt-2 block">{t("heroSubtitleBody")}</span>
-              <span className="mt-2 block text-teal-100/70">{t("heroSubtitleExtra")}</span>
+              <span className="mt-1.5 block text-teal-100/65">{t("heroSubtitleBody")}</span>
+              <span className="mt-1.5 block text-xs text-teal-100/55 sm:text-sm">{t("heroSubtitleExtra")}</span>
             </p>
-            <div className="mt-8 flex flex-col gap-3 sm:mt-12 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-6">
+            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
               <Link
                 href="/get-access"
-                className="group inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-6 py-3.5 text-base font-bold text-teal-950 transition-all hover:bg-primary-light hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] sm:w-auto sm:px-8 sm:py-4"
+                className="group inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-5 py-3 text-sm font-bold text-teal-950 transition-all hover:bg-primary-light hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] sm:w-auto sm:px-7 sm:py-3.5 sm:text-base"
               >
                 {t("heroCtaPrimary")}
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
               <Link
                 href="/contact"
-                className="inline-flex w-full items-center justify-center rounded-2xl border border-primary-400/40 bg-teal-900/40 px-6 py-3.5 text-base font-bold text-white backdrop-blur-md transition-all hover:bg-teal-800/60 sm:w-auto sm:px-8 sm:py-4"
+                className="inline-flex w-full items-center justify-center rounded-2xl border border-primary-400/40 bg-teal-900/40 px-5 py-3 text-sm font-bold text-white backdrop-blur-md transition-all hover:bg-teal-800/60 sm:w-auto sm:px-7 sm:py-3.5 sm:text-base"
               >
                 {t("heroCtaSecondary")}
               </Link>
             </div>
 
             {/* Stats */}
-            <div className="relative z-10 mx-auto mt-10 max-w-4xl rounded-2xl border border-white/10 bg-teal-950/70 px-3 py-6 shadow-lg shadow-teal-950/30 backdrop-blur-md sm:mt-16 sm:px-6 sm:py-8">
-              <div className="grid grid-cols-3 gap-3 sm:gap-8">
+            <div className="relative z-10 mx-auto mt-8 max-w-md rounded-xl border border-white/10 bg-teal-950/60 px-3 py-4 shadow-lg shadow-teal-950/20 backdrop-blur-md sm:mt-10 sm:max-w-2xl sm:rounded-2xl sm:px-5 sm:py-6">
+              <div className="grid grid-cols-3 gap-2 sm:gap-6">
                 {stats.map((s, i) => (
                   <motion.div
                     key={s.label}
@@ -151,8 +150,8 @@ export function HomePage() {
                     transition={{ delay: 0.5 + i * 0.1 }}
                     className="text-center"
                   >
-                    <p className="text-2xl font-black text-white sm:text-4xl">{s.value}</p>
-                    <p className="mt-1 text-[10px] font-medium uppercase leading-tight tracking-wide text-teal-200/90 sm:mt-2 sm:text-sm sm:tracking-widest">
+                    <p className="text-xl font-bold text-white sm:text-3xl">{s.value}</p>
+                    <p className="mt-0.5 text-[9px] font-medium uppercase leading-tight tracking-wide text-teal-200/80 sm:mt-1 sm:text-xs sm:tracking-wider">
                       {s.label}
                     </p>
                   </motion.div>
