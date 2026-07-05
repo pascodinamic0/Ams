@@ -44,8 +44,13 @@ export default function RegisterCompletePage() {
         .eq("id", user.id)
         .single();
 
-      if (profile?.school_id || profile?.role === "super_admin") {
-        router.replace("/login");
+      if (profile?.school_id) {
+        router.replace("/");
+        return;
+      }
+
+      if (profile?.role === "super_admin") {
+        window.location.assign("/admin");
         return;
       }
 

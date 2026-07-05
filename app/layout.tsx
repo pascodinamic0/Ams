@@ -70,7 +70,7 @@ export default async function RootLayout({
         className={`${jakartaSans.variable} ${jetbrainsMono.variable} antialiased`}
         style={{ backgroundColor: pwaBackgroundColor }}
       >
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <PwaRoot>{children}</PwaRoot>
           <AppToaster />
         </NextIntlClientProvider>
