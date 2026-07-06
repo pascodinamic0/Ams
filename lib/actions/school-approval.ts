@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdminClient } from "@/lib/supabase/admin";
 
 type SchoolStatus = "pending" | "approved" | "suspended";
 
@@ -30,8 +30,10 @@ export async function updateSchoolStatus(schoolId: string, status: SchoolStatus)
   const auth = await requireSuperAdmin();
   if ("error" in auth) return auth;
 
-  const admin = createAdminClient();
-  if (!admin) return { error: "Server configuration error" };
+  const adminResult = requireAdminClient();
+  if ("error" in adminResult) return adminResult;
+
+  const admin = adminResult.client;
 
   const updates: Record<string, unknown> = {
     status,

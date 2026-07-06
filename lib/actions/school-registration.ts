@@ -1,7 +1,6 @@
 "use server";
 
-import { createAdminClient } from "@/lib/supabase/admin";
-import { getServiceRoleConfigError } from "@/lib/supabase/env";
+import { requireAdminClient } from "@/lib/supabase/admin";
 import {
   DEFAULT_BRANCH_NAME,
   resolveUniqueSchoolCode,
@@ -19,11 +18,9 @@ export type RegisterSchoolInput = {
 };
 
 export async function registerSchoolOrganization(input: RegisterSchoolInput) {
-  const configError = getServiceRoleConfigError();
-  const admin = createAdminClient();
-  if (!admin) {
-    return { error: configError ?? "Server configuration error. Contact support." };
-  }
+  const adminResult = requireAdminClient();
+  if ("error" in adminResult) return { error: adminResult.error };
+  const admin = adminResult.client;
 
   const { userId, schoolName, adminEmail, adminName } = input;
 

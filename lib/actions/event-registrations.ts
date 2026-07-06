@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdminClient } from "@/lib/supabase/admin";
 import {
   campusVisitBookingSchema,
   eventRegistrationSchema,
@@ -45,10 +45,9 @@ export async function bookCampusVisitSlot(input: CampusVisitBookingFormData) {
     return { error: parsed.error.flatten().fieldErrors };
   }
 
-  const admin = createAdminClient();
-  if (!admin) {
-    return { error: "Server configuration error. Contact support." };
-  }
+  const adminResult = requireAdminClient();
+  if ("error" in adminResult) return { error: adminResult.error };
+  const admin = adminResult.client;
 
   const { data: admission, error: admissionError } = await admin
     .from("admission_applications")

@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { getServiceRoleConfigError } from "@/lib/supabase/env";
 
 let loggedServiceRoleConfigError = false;
@@ -21,6 +21,22 @@ export function createAdminClient() {
   return createClient(url, key, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
+}
+
+export type AdminClientResult =
+  | { client: SupabaseClient }
+  | { error: string };
+
+/** Returns admin client or a user-safe configuration error message. */
+export function requireAdminClient(): AdminClientResult {
+  const client = createAdminClient();
+  if (client) return { client };
+
+  return {
+    error:
+      getServiceRoleConfigError() ??
+      "Server configuration error. Contact support.",
+  };
 }
 
 export async function getAuthEmailsByUserIds(

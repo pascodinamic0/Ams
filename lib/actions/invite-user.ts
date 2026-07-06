@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { buildAuthCallbackUrl } from "@/lib/auth/app-url";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdminClient } from "@/lib/supabase/admin";
 import { inviteUserSchema, type InvitableRole } from "@/lib/validations/team";
 
 type InviteAuth =
@@ -80,8 +80,9 @@ export async function inviteSchoolUser(input: {
   const branchId =
     input.branchId && auth.isSuperAdmin ? input.branchId : auth.branchId;
 
-  const admin = createAdminClient();
-  if (!admin) return { error: "Server configuration error" };
+  const adminResult = requireAdminClient();
+  if ("error" in adminResult) return { error: adminResult.error };
+  const admin = adminResult.client;
 
   const email = parsed.data.email.toLowerCase().trim();
 

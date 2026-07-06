@@ -75,7 +75,7 @@ export async function proxy(request: NextRequest) {
   const serverAction = isServerAction(request);
 
   if (isPublicRoute(pathname)) {
-    if (pathname === "/login" && user) {
+    if (pathname === "/login" && user && !serverAction) {
       const redirectParam = request.nextUrl.searchParams.get("redirect");
       const destination = await getPostAuthRedirect({
         userId: user.id,

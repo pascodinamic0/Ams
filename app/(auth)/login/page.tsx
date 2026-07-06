@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { AuthDivider } from "@/components/auth/auth-divider";
@@ -86,15 +86,21 @@ export default function LoginPage() {
 }
 
 function LoginOAuthSection() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
   const errorParam = searchParams.get("error");
 
   useEffect(() => {
-    if (errorParam) {
-      toast.error(decodeURIComponent(errorParam));
-    }
-  }, [errorParam]);
+    if (!errorParam) return;
+
+    toast.error(decodeURIComponent(errorParam));
+
+    const nextParams = new URLSearchParams(window.location.search);
+    nextParams.delete("error");
+    const query = nextParams.toString();
+    router.replace(query ? `/login?${query}` : "/login", { scroll: false });
+  }, [errorParam, router]);
 
   return <GoogleAuthButton intent="login" redirect={redirectParam} />;
 }

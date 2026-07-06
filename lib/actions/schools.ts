@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, requireAdminClient } from "@/lib/supabase/admin";
 import { getServiceRoleConfigError } from "@/lib/supabase/env";
 import {
   DEFAULT_BRANCH_NAME,
@@ -41,10 +41,9 @@ export async function createSchool(input: CreateSchoolInput) {
     return { error: "Only platform administrators can add schools from the admin panel" };
   }
 
-  const admin = createAdminClient();
-  if (!admin) {
-    return { error: getServiceRoleConfigError() ?? "Server configuration error" };
-  }
+  const adminResult = requireAdminClient();
+  if ("error" in adminResult) return { error: adminResult.error };
+  const admin = adminResult.client;
 
   const slug = await resolveUniqueSchoolSlug(admin, input.name);
   const code = await resolveUniqueSchoolCode(admin, input.name);

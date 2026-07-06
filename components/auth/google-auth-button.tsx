@@ -3,10 +3,9 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
-import {
-  signInWithGoogle,
-  type GoogleOAuthIntent,
-} from "@/lib/auth/google-oauth";
+import { buildAuthCallbackUrl } from "@/lib/auth/app-url";
+import type { GoogleOAuthIntent } from "@/lib/auth/google-oauth";
+import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
 function GoogleIcon() {
@@ -50,7 +49,25 @@ export function GoogleAuthButton({
   async function handleClick() {
     setLoading(true);
     try {
-      await signInWithGoogle({ intent, redirect });
+      const supabase = createClient();
+      const callbackUrl = buildAuthCallbackUrl({ intent, redirect });
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: callbackUrl,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
+        },
+      });
+
+      if (error) throw error;
+      if (!data.url) {
+        throw new Error("Google sign-in could not be started. Please try again.");
+      }
+
+      window.location.assign(data.url);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("signInFailed"));
       setLoading(false);

@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { BrandLogo } from "@/components/company/brand-logo";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { companyIdentity } from "@/lib/company/identity";
+import type { CompanyFooterLabels } from "@/lib/company/layout-labels";
 
 function FooterLinkList({
   title,
@@ -35,27 +35,30 @@ function FooterLinkList({
   );
 }
 
-export function SiteFooter({ className = "" }: { className?: string }) {
-  const t = useTranslations("marketing.footer");
-  const tNav = useTranslations("marketing.nav");
-
+export function SiteFooter({
+  className = "",
+  labels,
+}: {
+  className?: string;
+  labels: CompanyFooterLabels;
+}) {
   const platformLinks = [
-    { label: tNav("features"), href: "/features" },
-    { label: tNav("getAccess"), href: "/get-access" },
-    { label: tNav("login"), href: "/login" },
-    { label: tNav("register"), href: "/register" },
+    { label: labels.features, href: "/features" },
+    { label: labels.getAccess, href: "/get-access" },
+    { label: labels.login, href: "/login" },
+    { label: labels.register, href: "/register" },
   ];
 
   const legalLinks = [
-    { label: t("privacyPolicy"), href: "/privacy" },
-    { label: t("termsOfService"), href: "/terms" },
-    { label: t("cookiePolicy"), href: "/cookies" },
+    { label: labels.privacyPolicy, href: "/privacy" },
+    { label: labels.termsOfService, href: "/terms" },
+    { label: labels.cookiePolicy, href: "/cookies" },
   ];
 
   const supportLinks = [
-    { label: t("documentation"), href: "/docs" },
-    { label: t("contact"), href: "/contact" },
-    { label: t("forgotPassword"), href: "/forgot-password" },
+    { label: labels.documentation, href: "/docs" },
+    { label: labels.contact, href: "/contact" },
+    { label: labels.forgotPassword, href: "/forgot-password" },
   ];
 
   const socialLinks = [
@@ -74,7 +77,7 @@ export function SiteFooter({ className = "" }: { className?: string }) {
               <BrandLogo wordmarkClassName="text-stone-900 dark:text-white" />
             </Link>
             <p className="max-w-sm text-sm leading-relaxed text-stone-500 dark:text-stone-400">
-              {companyIdentity.tagline} — {t("taglineSuffix")} {companyIdentity.origin}.
+              {companyIdentity.tagline} — {labels.taglineSuffix} {companyIdentity.origin}.
             </p>
             <div className="space-y-3 text-sm text-stone-600 dark:text-stone-300">
               <p className="flex items-start gap-2">
@@ -113,16 +116,16 @@ export function SiteFooter({ className = "" }: { className?: string }) {
           </div>
 
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-8">
-            <FooterLinkList title={t("platform")} links={platformLinks} />
-            <FooterLinkList title={t("legal")} links={legalLinks} />
-            <FooterLinkList title={t("support")} links={supportLinks} />
+            <FooterLinkList title={labels.platform} links={platformLinks} />
+            <FooterLinkList title={labels.legal} links={legalLinks} />
+            <FooterLinkList title={labels.support} links={supportLinks} />
           </div>
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-stone-200 pt-8 dark:border-stone-800 md:flex-row">
           <p className="text-sm text-stone-500 dark:text-stone-400">
-            &copy; {new Date().getFullYear()} {companyIdentity.legalName}. {t("copyright")}{" "}
-            {companyIdentity.productName} {t("productOf")}{" "}
+            &copy; {new Date().getFullYear()} {companyIdentity.legalName}. {labels.copyright}{" "}
+            {companyIdentity.productName} {labels.productOf}{" "}
             <a
               href={companyIdentity.website}
               target="_blank"
@@ -136,17 +139,17 @@ export function SiteFooter({ className = "" }: { className?: string }) {
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-stone-500 dark:text-stone-400">
             <LanguageSwitcher variant="buttons" className="bg-stone-200 dark:bg-stone-800" />
             <Link href="/privacy" className="transition-colors hover:text-primary dark:hover:text-primary">
-              {t("privacy")}
+              {labels.privacy}
             </Link>
             <Link href="/terms" className="transition-colors hover:text-primary dark:hover:text-primary">
-              {t("terms")}
+              {labels.terms}
             </Link>
             <Link href="/cookies" className="transition-colors hover:text-primary dark:hover:text-primary">
-              {t("cookies")}
+              {labels.cookies}
             </Link>
             <span className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              {t("allSystemsOperational")}
+              {labels.allSystemsOperational}
             </span>
           </div>
         </div>

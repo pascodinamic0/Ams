@@ -26,10 +26,21 @@ bun install
 
 ### 2. Environment variables
 
+**Local dev uses one file:** `.env.local` (gitignored). Next.js loads `.env` then `.env.local`; local wins.
+
+| File | Purpose |
+|------|---------|
+| `.env.example` | Committed template — copy values from here |
+| `.env.local` | **Your real secrets for `bun run dev`** |
+| `.env` | Optional non-secret defaults (no service role here) |
+| `.env.vercel.*` | Snapshots from `vercel env pull` — **Next.js does not read these** |
+
+Do not spread secrets across multiple files. After `vercel env pull`, copy what you need into `.env.local` only. The Vercel dev snapshot may point at a different Supabase project than AMC (`ooheotsnplfrpgblrnot`).
+
 Copy the example file and fill in your Supabase credentials:
 
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
 Required for local development:

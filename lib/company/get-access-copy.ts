@@ -1,0 +1,24 @@
+export type GetAccessCopy = {
+  heroBadge: string;
+  heroTitle: string;
+  heroTitleHighlight: string;
+  heroSubtitle: string;
+  createSchoolAccount: string;
+  alreadyHaveAccount: string;
+  journeyTitle: string;
+  journeySubtitle: string;
+  stepLabels: string[];
+  step1Title: string;
+  step1Desc: string;
+  step2Title: string;
+  step2Desc: string;
+  step3Title: string;
+  step3Desc: string;
+  step4Title: string;
+  step4Desc: string;
+  includedTitle: string;
+  includedSubtitle: string;
+  included: string[];
+  createMySchoolAccount: string;
+  joinRevolution: string;
+};
