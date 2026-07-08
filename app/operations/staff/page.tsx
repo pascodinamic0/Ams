@@ -27,6 +27,9 @@ export default async function StaffPage() {
           name: String(row.name),
           email: row.email as string | null,
           role: row.role as string | null,
+          department: row.department as string | null,
+          monthly_salary: Number(row.monthly_salary ?? 0),
+          employment_status: (row.employment_status ?? "active") as "active" | "inactive",
         }}
         schoolId={schoolId}
         campusId={campusId}
@@ -58,6 +61,9 @@ export default async function StaffPage() {
             { id: "name", header: tc("name"), accessorKey: "name", sortable: true },
             { id: "email", header: tc("email"), accessorKey: "email" },
             { id: "role", header: t("colRole"), accessorKey: "role" },
+            { id: "department", header: "Department", accessorKey: "department" },
+            { id: "monthly_salary", header: "Monthly Salary", accessorKey: "monthly_salary" },
+            { id: "employment_status", header: "Status", accessorKey: "employment_status" },
             { id: "actions", header: "", accessorKey: "actions" },
           ]}
         />

@@ -160,7 +160,9 @@ export {
   getPayrollById,
   getPayrollTotals,
   getMonthlyPayrollTotals,
+  getPayrollMonths,
   type PayrollListItem,
+  type PayrollMonthListItem,
 } from "./payroll";
 export {
   getNotifications,

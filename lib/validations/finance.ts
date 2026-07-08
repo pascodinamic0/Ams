@@ -48,9 +48,18 @@ export const payrollSchema = z.object({
 });
 
 export const payrollGenerateSchema = z.object({
-  period_start: z.string().min(1, "Start date is required"),
-  period_end: z.string().min(1, "End date is required"),
+  month: z.coerce.number().int().min(1, "Month is required").max(12, "Month is invalid"),
+  year: z.coerce.number().int().min(2000, "Year is required").max(2100, "Year is invalid"),
+});
+
+export const payrollPaymentSchema = z.object({
   amount: z.coerce.number().min(0, "Amount must be zero or positive"),
+  payment_date: z.string().min(1, "Payment date is required"),
+  payment_method: z.enum(["cash", "bank", "mobile_money"], {
+    errorMap: () => ({ message: "Payment method is required" }),
+  }),
+  reference_number: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 export type FeeStructureFormData = z.infer<typeof feeStructureSchema>;
@@ -59,3 +68,4 @@ export type PaymentFormData = z.infer<typeof paymentSchema>;
 export type ExpenseFormData = z.infer<typeof expenseSchema>;
 export type PayrollFormData = z.infer<typeof payrollSchema>;
 export type PayrollGenerateFormData = z.infer<typeof payrollGenerateSchema>;
+export type PayrollPaymentFormData = z.infer<typeof payrollPaymentSchema>;

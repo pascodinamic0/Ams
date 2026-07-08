@@ -66,6 +66,10 @@ export const staffSchema = z.object({
   branch_id: z.string().uuid().optional().nullable(),
   email: z.string().email("Invalid email").optional().or(z.literal("")),
   role: z.string().optional(),
+  department: z.string().optional(),
+  monthly_salary: z.coerce.number().min(0, "Monthly salary must be zero or positive").default(0),
+  employment_status: z.enum(["active", "inactive"]).default("active"),
+  photo_url: z.string().url("Invalid photo URL").optional().or(z.literal("")),
 });
 
 export type BookFormData = z.infer<typeof bookSchema>;

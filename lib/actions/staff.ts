@@ -12,6 +12,8 @@ export async function createStaff(input: StaffFormData) {
     ...parsed.data,
     email: parsed.data.email || null,
     branch_id: parsed.data.branch_id || null,
+    department: parsed.data.department || null,
+    photo_url: parsed.data.photo_url || null,
   };
 
   const supabase = await createClient();
@@ -34,6 +36,8 @@ export async function updateStaff(id: string, input: StaffFormData) {
     ...parsed.data,
     email: parsed.data.email || null,
     branch_id: parsed.data.branch_id || null,
+    department: parsed.data.department || null,
+    photo_url: parsed.data.photo_url || null,
   };
 
   const supabase = await createClient();

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getFinanceKPIs } from "@/lib/db";
+import { getExpenseTotal, getFinanceKPIs, getPayrollTotals } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
 
@@ -15,41 +15,61 @@ function formatCurrency(value: number) {
 export default async function FinanceDashboard() {
   const t = await getTranslations("finance");
   const profile = await getCurrentProfile();
-  const kpis = await getFinanceKPIs({
+  const scope = {
     schoolId: profile?.school_id ?? undefined,
     branchId: profile?.branch_id ?? undefined,
-  });
+  };
+  const [kpis, payrollTotals, operatingExpenses] = await Promise.all([
+    getFinanceKPIs(scope),
+    getPayrollTotals(scope),
+    getExpenseTotal(scope),
+  ]);
+  const cashAvailable = kpis.collected - payrollTotals.paid - operatingExpenses;
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{t("title")}</h1>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
-          <CardHeader><CardTitle>{t("outstanding")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{formatCurrency(kpis.outstanding)}</p>
-            <p className="text-sm text-stone-500">{t("outstandingSub")}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("collected")}</CardTitle></CardHeader>
+          <CardHeader><CardTitle>School Fees Collected</CardTitle></CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{formatCurrency(kpis.collected)}</p>
-            <p className="text-sm text-stone-500">{t("collectedSub")}</p>
+            <p className="text-sm text-stone-500">Total received</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>{t("overdue")}</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Outstanding School Fees</CardTitle></CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold text-red-600">{formatCurrency(kpis.overdue)}</p>
-            <p className="text-sm text-stone-500">{t("overdueSub")}</p>
+            <p className="text-3xl font-bold">{formatCurrency(kpis.outstanding)}</p>
+            <p className="text-sm text-stone-500">Unpaid balance</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>{t("invoicesKpi")}</CardTitle></CardHeader>
+          <CardHeader><CardTitle>Payroll Required</CardTitle></CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{kpis.invoiceCount}</p>
-            <p className="text-sm text-stone-500">{t("invoicesSub")}</p>
+            <p className="text-3xl font-bold">{formatCurrency(payrollTotals.total)}</p>
+            <p className="text-sm text-stone-500">Total payroll due</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Payroll Paid</CardTitle></CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{formatCurrency(payrollTotals.paid)}</p>
+            <p className="text-sm text-stone-500">Paid salaries</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Operating Expenses</CardTitle></CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{formatCurrency(operatingExpenses)}</p>
+            <p className="text-sm text-stone-500">Non-payroll expenses</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader><CardTitle>Cash Available</CardTitle></CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{formatCurrency(cashAvailable)}</p>
+            <p className="text-sm text-stone-500">Fees collected - payroll paid - operating expenses</p>
           </CardContent>
         </Card>
       </div>

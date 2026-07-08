@@ -18,6 +18,9 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [department, setDepartment] = useState("");
+  const [monthlySalary, setMonthlySalary] = useState("0");
+  const [employmentStatus, setEmploymentStatus] = useState<"active" | "inactive">("active");
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -27,6 +30,9 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
       name,
       email: email || undefined,
       role: role || undefined,
+      department: department || undefined,
+      monthly_salary: Number(monthlySalary || 0),
+      employment_status: employmentStatus,
       school_id: schoolId,
       branch_id: campusId ?? null,
     });
@@ -39,11 +45,14 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
     setName("");
     setEmail("");
     setRole("");
+    setDepartment("");
+    setMonthlySalary("0");
+    setEmploymentStatus("active");
     router.refresh();
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-4">
+    <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-6">
       <div>
         <Label>Name</Label>
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
@@ -55,6 +64,35 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
       <div>
         <Label>Role</Label>
         <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="e.g. Librarian" />
+      </div>
+      <div>
+        <Label>Department</Label>
+        <Input
+          value={department}
+          onChange={(e) => setDepartment(e.target.value)}
+          placeholder="e.g. Academics"
+        />
+      </div>
+      <div>
+        <Label>Monthly Salary</Label>
+        <Input
+          type="number"
+          min="0"
+          step="0.01"
+          value={monthlySalary}
+          onChange={(e) => setMonthlySalary(e.target.value)}
+        />
+      </div>
+      <div>
+        <Label>Employment Status</Label>
+        <select
+          value={employmentStatus}
+          onChange={(e) => setEmploymentStatus(e.target.value as "active" | "inactive")}
+          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
+        >
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
       </div>
       <div className="flex items-end">
         <Button type="submit" disabled={loading} className="w-full">Add staff</Button>
@@ -68,7 +106,15 @@ export function EditStaffButton({
   schoolId,
   campusId,
 }: {
-  member: { id: string; name: string; email: string | null; role: string | null };
+  member: {
+    id: string;
+    name: string;
+    email: string | null;
+    role: string | null;
+    department: string | null;
+    monthly_salary: number;
+    employment_status: "active" | "inactive";
+  };
   schoolId: string;
   campusId?: string;
 }) {
@@ -77,6 +123,11 @@ export function EditStaffButton({
   const [name, setName] = useState(member.name);
   const [email, setEmail] = useState(member.email ?? "");
   const [role, setRole] = useState(member.role ?? "");
+  const [department, setDepartment] = useState(member.department ?? "");
+  const [monthlySalary, setMonthlySalary] = useState(String(member.monthly_salary));
+  const [employmentStatus, setEmploymentStatus] = useState<"active" | "inactive">(
+    member.employment_status
+  );
   const [loading, setLoading] = useState(false);
 
   async function handleSave() {
@@ -85,6 +136,9 @@ export function EditStaffButton({
       name,
       email: email || undefined,
       role: role || undefined,
+      department: department || undefined,
+      monthly_salary: Number(monthlySalary || 0),
+      employment_status: employmentStatus,
       school_id: schoolId,
       branch_id: campusId ?? null,
     });
@@ -121,10 +175,27 @@ export function EditStaffButton({
   }
 
   return (
-    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
       <Input value={name} onChange={(e) => setName(e.target.value)} />
       <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
       <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" />
+      <Input value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="Department" />
+      <Input
+        type="number"
+        min="0"
+        step="0.01"
+        value={monthlySalary}
+        onChange={(e) => setMonthlySalary(e.target.value)}
+        placeholder="Monthly salary"
+      />
+      <select
+        value={employmentStatus}
+        onChange={(e) => setEmploymentStatus(e.target.value as "active" | "inactive")}
+        className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
+      >
+        <option value="active">Active</option>
+        <option value="inactive">Inactive</option>
+      </select>
       <div className="flex gap-2">
         <Button size="sm" onClick={handleSave} disabled={loading}>Save</Button>
         <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>
