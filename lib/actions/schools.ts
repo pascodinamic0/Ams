@@ -13,6 +13,7 @@ import {
   getEmptyWebsiteContent,
   type SchoolWebsiteContent,
 } from "@/lib/schools/website-content";
+import { SCHOOL_CURRENCIES, type SchoolCurrencyCode } from "@/lib/currency";
 
 export type CreateSchoolInput = {
   name: string;
@@ -109,6 +110,7 @@ export async function updateSchool(
     custom_domain: string;
     public_site_enabled: boolean;
     website_content: SchoolWebsiteContent;
+    currency_code: SchoolCurrencyCode;
   }>
 ) {
   const supabase = await createClient();
@@ -162,11 +164,75 @@ export async function updateSchool(
   revalidatePath(`/admin/websites/${id}`);
   revalidatePath(`/admin/schools/${id}`);
   revalidatePath("/academic/website");
+  revalidatePath("/academic/settings");
+  revalidatePath("/finance");
+  revalidatePath("/finance/expenses");
+  revalidatePath("/finance/payroll");
+  revalidatePath("/finance/reports");
   revalidatePath("/schools");
   if (school?.slug) {
     revalidatePath(`/schools/${school.slug}`);
     revalidatePath(`/schools/${school.slug}/admissions`);
   }
+  return {};
+}
+
+const CURRENCY_MANAGERS = new Set([
+  "super_admin",
+  "academic_admin",
+  "finance_officer",
+]);
+
+export async function updateSchoolCurrency(
+  schoolId: string,
+  currencyCode: SchoolCurrencyCode
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, school_id")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || !CURRENCY_MANAGERS.has(profile.role)) {
+    return { error: "Not authorized to update school currency" };
+  }
+
+  if (profile.role !== "super_admin" && profile.school_id !== schoolId) {
+    return { error: "You can only update currency for your own school" };
+  }
+
+  if (!SCHOOL_CURRENCIES.some((currency) => currency.code === currencyCode)) {
+    return { error: "Invalid currency" };
+  }
+
+  const { error } = await supabase
+    .from("schools")
+    .update({ currency_code: currencyCode })
+    .eq("id", schoolId);
+
+  if (error) {
+    console.error("updateSchoolCurrency error:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/admin/schools");
+  revalidatePath(`/admin/schools/${schoolId}`);
+  revalidatePath("/academic/settings");
+  revalidatePath("/finance");
+  revalidatePath("/finance/expenses");
+  revalidatePath("/finance/payroll");
+  revalidatePath("/finance/reports");
+  revalidatePath("/finance/settings");
+  revalidatePath("/finance/fee-reminders");
   return {};
 }
 

@@ -1,22 +1,23 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Chart } from "@/components/ui/chart";
 import { ExportButton } from "@/components/ui/export-button";
-import { getFinanceAnalytics } from "@/lib/db";
+import { getFinanceAnalytics, getSchoolCurrencyForSchool } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
-
-function formatCurrency(value: number) {
-  return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
+import { formatMoney } from "@/lib/currency";
 
 export default async function AnalyticsFinancePage() {
   const t = await getTranslations("analytics");
   const tf = await getTranslations("finance");
   const profile = await getCurrentProfile();
-  const data = await getFinanceAnalytics({
-    schoolId: profile?.school_id ?? undefined,
-    branchId: profile?.branch_id ?? undefined,
-  });
+  const [data, currency] = await Promise.all([
+    getFinanceAnalytics({
+      schoolId: profile?.school_id ?? undefined,
+      branchId: profile?.branch_id ?? undefined,
+    }),
+    getSchoolCurrencyForSchool(profile?.school_id),
+  ]);
+  const formatCurrency = (value: number) => formatMoney(value, currency.code);
 
   const kpis = [
     { label: tf("outstanding"), value: formatCurrency(data.kpis.outstanding) },

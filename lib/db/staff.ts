@@ -5,7 +5,6 @@ export type StaffListItem = {
   name: string;
   email: string | null;
   role: string | null;
-  department: string | null;
   monthly_salary: number;
   employment_status: "active" | "inactive";
   photo_url: string | null;
@@ -23,7 +22,7 @@ export async function getStaff(options?: {
   let query = supabase
     .from("staff")
     .select(
-      "id, name, email, role, department, monthly_salary, employment_status, photo_url, branch_id, branches(name)"
+      "id, name, email, role, monthly_salary, employment_status, photo_url, branch_id, branches(name)"
     )
     .order("name");
 
@@ -48,7 +47,6 @@ export async function getStaff(options?: {
     name: member.name,
     email: member.email,
     role: member.role,
-    department: member.department ?? null,
     monthly_salary: Number(member.monthly_salary ?? 0),
     employment_status: (member.employment_status ?? "active") as
       | "active"

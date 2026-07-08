@@ -64,6 +64,8 @@
   "secondaryColor": "Secondaire",
   "administration": "Administration",
   "administrationDesc": "Approuvez, suspendez ou retirez cette école de la plateforme.",
+  "currencyTitle": "Devise",
+  "currencyDescription": "Choisissez la devise affichée pour les frais, dépenses, paie et paiements des parents. Par défaut : dollar américain.",
   "quickLinks": "Liens rapides",
   "websiteEditor": "Éditeur de site web",
   "templatePreview": "Aperçu du modèle",

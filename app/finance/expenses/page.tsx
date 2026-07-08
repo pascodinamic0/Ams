@@ -1,18 +1,12 @@
 import Link from "next/link";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getExpenses, getExpenseCategories } from "@/lib/db";
+import { getExpenses, getExpenseCategories, getSchoolCurrencyForSchool } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
+import { formatMoney } from "@/lib/currency";
 import { ExpenseForm } from "./expense-form";
 import { ExpenseActions } from "./expense-actions";
-
-function formatCurrency(value: number) {
-  return value.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
 
 export default async function ExpensesPage({
   searchParams,
@@ -29,10 +23,12 @@ export default async function ExpensesPage({
   };
   const branchId = profile?.branch_id ?? "";
 
-  const [expenses, categories] = await Promise.all([
+  const [expenses, categories, currency] = await Promise.all([
     getExpenses({ ...scope, category: params.category }),
     getExpenseCategories(scope),
+    getSchoolCurrencyForSchool(profile?.school_id),
   ]);
+  const formatCurrency = (value: number) => formatMoney(value, currency.code);
 
   const editingExpense = params.edit
     ? expenses.find((e) => e.id === params.edit) ?? null
@@ -66,10 +62,11 @@ export default async function ExpensesPage({
                 branchId={branchId}
                 categories={categories}
                 expense={editingExpense}
+                currencySymbol={currency.symbol}
               />
             </div>
           ) : (
-            <ExpenseForm branchId={branchId} categories={categories} />
+            <ExpenseForm branchId={branchId} categories={categories} currencySymbol={currency.symbol} />
           )}
         </>
       ) : (

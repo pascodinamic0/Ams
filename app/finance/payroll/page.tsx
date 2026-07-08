@@ -2,20 +2,14 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { UserAvatar } from "@/components/layout/user-avatar";
-import { getExpenseTotal, getFinanceKPIs, getPayroll, getPayrollMonths } from "@/lib/db";
+import { getExpenseTotal, getFinanceKPIs, getPayroll, getPayrollMonths, getSchoolCurrencyForSchool } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
+import { formatMoney } from "@/lib/currency";
 import { PayrollGenerateForm } from "./payroll-form";
 import { PayrollFilters } from "./payroll-filters";
 import { PayrollRowActions } from "./payroll-row-actions";
 import { PayrollMonthActions } from "./payroll-month-actions";
-
-function formatCurrency(value: number) {
-  return value.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
 
 type PageProps = {
   searchParams: Promise<{
@@ -37,11 +31,13 @@ export default async function PayrollPage({ searchParams }: PageProps) {
     branchId: profile?.branch_id ?? undefined,
   };
 
-  const [months, financeKpis, operatingExpenses] = await Promise.all([
+  const [months, financeKpis, operatingExpenses, currency] = await Promise.all([
     getPayrollMonths(scope),
     getFinanceKPIs(scope),
     getExpenseTotal(scope),
+    getSchoolCurrencyForSchool(profile?.school_id),
   ]);
+  const formatCurrency = (value: number) => formatMoney(value, currency.code);
   const activeMonth = Number(params.month ?? months[0]?.month ?? new Date().getMonth() + 1);
   const activeYear = Number(params.year ?? months[0]?.year ?? new Date().getFullYear());
   const activeLabel = new Date(Date.UTC(activeYear, activeMonth - 1, 1)).toLocaleDateString(

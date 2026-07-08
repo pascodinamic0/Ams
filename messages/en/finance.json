@@ -81,5 +81,12 @@
   "colNet": "Net",
   "payrollPendingKpi": "Payroll pending",
   "statusPaid": "Paid",
-  "statusPending": "Pending"
+  "statusPending": "Pending",
+  "settingsTitle": "Finance settings",
+  "settingsDescription": "Configure school-wide finance preferences.",
+  "currencyTitle": "Currency",
+  "currencyDescription": "Choose the currency shown on fees, expenses, payroll, and parent payment screens. Defaults to US Dollars.",
+  "noSchoolLinked": "No school linked",
+  "noSchoolLinkedDesc": "Your account is not linked to a school yet.",
+  "schoolNotFound": "School not found"
 }

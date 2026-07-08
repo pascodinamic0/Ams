@@ -11,16 +11,11 @@ import {
   getExpenseTotal,
   getPayrollTotals,
   getExpensesByCategory,
+  getSchoolCurrencyForSchool,
 } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
-
-function formatCurrency(value: number) {
-  return value.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
+import { formatMoney } from "@/lib/currency";
 
 function lastMonths(count: number): string[] {
   const months: string[] = [];
@@ -57,6 +52,7 @@ export default async function FinancialReportsPage() {
     expenseTotal,
     payrollTotals,
     expensesByCategory,
+    currency,
   ] = await Promise.all([
     getFinanceKPIs(scope),
     getInvoices(scope),
@@ -66,7 +62,9 @@ export default async function FinancialReportsPage() {
     getExpenseTotal(scope),
     getPayrollTotals(scope),
     getExpensesByCategory(scope),
+    getSchoolCurrencyForSchool(profile?.school_id),
   ]);
+  const formatCurrency = (value: number) => formatMoney(value, currency.code);
 
   const months = lastMonths(6);
   const trendData = months.map((month) => ({

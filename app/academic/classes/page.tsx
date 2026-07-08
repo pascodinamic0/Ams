@@ -4,6 +4,7 @@ import { getClasses, getSections } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
 import { ClassForm } from "./class-form";
+import { DeleteClassButton } from "./delete-button";
 
 export default async function ClassesPage() {
   const t = await getTranslations("academic");
@@ -14,6 +15,10 @@ export default async function ClassesPage() {
     branchId ? getClasses(branchId) : getClasses(),
     branchId ? getSections(branchId) : getSections(),
   ]);
+  const tableData = classes.map((row) => ({
+    ...row,
+    actions: <DeleteClassButton id={row.id as string} name={String(row.name)} />,
+  }));
 
   return (
     <div className="space-y-6">
@@ -27,12 +32,13 @@ export default async function ClassesPage() {
         <EmptyState title={t("noClassesYet")} description={t("createFirstClass")} />
       ) : (
         <DataTable
-          data={classes}
+          data={tableData}
           columns={[
             { id: "name", header: tc("name"), accessorKey: "name", sortable: true },
             { id: "grade", header: t("grade"), accessorKey: "grade" },
             { id: "section", header: t("sectionsTitle"), accessorKey: "section_name" },
             { id: "capacity", header: t("capacity"), accessorKey: "capacity" },
+            { id: "actions", header: "", accessorKey: "actions" },
           ]}
         />
       )}

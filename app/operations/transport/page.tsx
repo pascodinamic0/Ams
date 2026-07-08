@@ -1,4 +1,3 @@
-import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
   getTransportRoutes,
@@ -12,14 +11,15 @@ import {
   RouteForm,
   VehicleForm,
   StudentMappingForm,
-  DeleteRouteButton,
-  DeleteVehicleButton,
-  UnassignButton,
 } from "./transport-forms";
+import {
+  TransportRoutesTable,
+  TransportVehiclesTable,
+  TransportMappingsTable,
+} from "./transport-tables";
 
 export default async function TransportPage() {
   const t = await getTranslations("operations");
-  const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   const scope = {
     schoolId: profile?.school_id ?? undefined,
@@ -34,18 +34,6 @@ export default async function TransportPage() {
   ]);
 
   const branchId = profile?.branch_id ?? "";
-  const routeTableData = routes.map((row) => ({
-    ...row,
-    actions: <DeleteRouteButton id={String(row.id)} />,
-  }));
-  const vehicleTableData = vehicles.map((row) => ({
-    ...row,
-    actions: <DeleteVehicleButton id={String(row.id)} />,
-  }));
-  const mappingTableData = mappings.map((row) => ({
-    ...row,
-    actions: <UnassignButton mappingId={String(row.id)} />,
-  }));
 
   return (
     <div className="space-y-8">
@@ -61,15 +49,7 @@ export default async function TransportPage() {
         {routes.length === 0 ? (
           <EmptyState title={t("noRoutes")} description={t("noRoutesDesc")} />
         ) : (
-          <DataTable
-            data={routeTableData}
-            columns={[
-              { id: "name", header: t("colRoute"), accessorKey: "name", sortable: true },
-              { id: "description", header: tc("description"), accessorKey: "description" },
-              { id: "vehicle_count", header: t("colVehicles"), accessorKey: "vehicle_count" },
-              { id: "actions", header: "", accessorKey: "actions" },
-            ]}
-          />
+          <TransportRoutesTable routes={routes} />
         )}
       </section>
 
@@ -79,16 +59,7 @@ export default async function TransportPage() {
         {vehicles.length === 0 ? (
           <EmptyState title={t("noVehicles")} description={t("noVehiclesDesc")} />
         ) : (
-          <DataTable
-            data={vehicleTableData}
-            columns={[
-              { id: "route_name", header: t("colRoute"), accessorKey: "route_name", sortable: true },
-              { id: "name", header: t("colVehicle"), accessorKey: "name", sortable: true },
-              { id: "capacity", header: t("colCapacity"), accessorKey: "capacity" },
-              { id: "student_count", header: t("colStudents"), accessorKey: "student_count" },
-              { id: "actions", header: "", accessorKey: "actions" },
-            ]}
-          />
+          <TransportVehiclesTable vehicles={vehicles} />
         )}
       </section>
 
@@ -97,19 +68,12 @@ export default async function TransportPage() {
         <StudentMappingForm
           vehicles={vehicles}
           students={students.map((s) => ({ id: s.id, name: s.name }))}
+          assignedStudentIds={mappings.map((m) => m.student_id)}
         />
         {mappings.length === 0 ? (
           <EmptyState title={t("noAssignments")} description={t("noAssignmentsDesc")} />
         ) : (
-          <DataTable
-            data={mappingTableData}
-            columns={[
-              { id: "student_name", header: t("colStudent"), accessorKey: "student_name", sortable: true },
-              { id: "route_name", header: t("colRoute"), accessorKey: "route_name" },
-              { id: "vehicle_name", header: t("colVehicle"), accessorKey: "vehicle_name" },
-              { id: "actions", header: "", accessorKey: "actions" },
-            ]}
-          />
+          <TransportMappingsTable mappings={mappings} />
         )}
       </section>
     </div>

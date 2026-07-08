@@ -11,12 +11,17 @@ import type { FeeReminderSettings } from "@/lib/db/campaigns";
 interface Props {
   schoolId: string;
   initialSettings: FeeReminderSettings | null;
+  defaultCurrencySymbol?: string;
 }
 
 const DEFAULT_MORNING = "Dear {guardian_name}, this is a reminder that {student_name}'s school fees of {currency}{amount} are due on {due_date}. Kindly make payment to avoid disruption.";
 const DEFAULT_FINAL = "Dear {guardian_name}, your payment grace period has ended. Please do not bring {student_name} to school until the outstanding balance of {currency}{amount} is cleared. Contact the school office for assistance.";
 
-export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
+export function FeeReminderSettingsForm({
+  schoolId,
+  initialSettings,
+  defaultCurrencySymbol = "$",
+}: Props) {
   const s = initialSettings;
   const [enabled, setEnabled] = useState(s?.enabled ?? true);
   const [gracePeriod, setGracePeriod] = useState(String(s?.grace_period_days ?? 7));
@@ -27,7 +32,7 @@ export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
   const [remindOnExpiry, setRemindOnExpiry] = useState(s?.remind_on_grace_expiry ?? true);
   const [morningTemplate, setMorningTemplate] = useState(s?.morning_message_template ?? DEFAULT_MORNING);
   const [finalTemplate, setFinalTemplate] = useState(s?.final_warning_template ?? DEFAULT_FINAL);
-  const [currency, setCurrency] = useState(s?.currency_symbol ?? "GHS");
+  const [currency, setCurrency] = useState(s?.currency_symbol ?? defaultCurrencySymbol);
   const [saving, setSaving] = useState(false);
 
   async function handleSave(e: React.FormEvent) {
@@ -229,7 +234,7 @@ export function FeeReminderSettingsForm({ schoolId, initialSettings }: Props) {
                   .replace(/\{guardian_name\}/g, "Mrs. Ama Asante")
                   .replace(/\{student_name\}/g, "Kwame Asante")
                   .replace(/\{amount\}/g, "250.00")
-                  .replace(/\{currency\}/g, currency || "GHS")
+                  .replace(/\{currency\}/g, currency || defaultCurrencySymbol)
                   .replace(/\{due_date\}/g, "Mar 1, 2026")}
               </p>
             </div>

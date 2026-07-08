@@ -1,7 +1,9 @@
 import { FeeReminderSettingsForm } from "./fee-reminder-settings-form";
 import { getFeeReminderSettings } from "@/lib/db/campaigns";
+import { getSchoolById } from "@/lib/db";
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
+import { getSchoolCurrency } from "@/lib/currency";
 
 export default async function FeeRemindersPage() {
   const t = await getTranslations("finance");
@@ -19,6 +21,8 @@ export default async function FeeRemindersPage() {
   }
 
   const settings = schoolId ? await getFeeReminderSettings(schoolId) : null;
+  const school = schoolId ? await getSchoolById(schoolId) : null;
+  const schoolCurrency = getSchoolCurrency(school?.currency_code);
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -51,7 +55,11 @@ export default async function FeeRemindersPage() {
         </div>
       </div>
 
-      <FeeReminderSettingsForm schoolId={schoolId} initialSettings={settings} />
+      <FeeReminderSettingsForm
+        schoolId={schoolId}
+        initialSettings={settings}
+        defaultCurrencySymbol={schoolCurrency.symbol}
+      />
     </div>
   );
 }

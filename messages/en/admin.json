@@ -64,6 +64,8 @@
   "secondaryColor": "Secondary",
   "administration": "Administration",
   "administrationDesc": "Approve, suspend, or remove this school from the platform.",
+  "currencyTitle": "Currency",
+  "currencyDescription": "Choose the currency shown on fees, expenses, payroll, and parent payment screens. Defaults to US Dollars.",
   "quickLinks": "Quick links",
   "websiteEditor": "Website editor",
   "templatePreview": "Template preview",

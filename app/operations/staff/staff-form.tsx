@@ -18,7 +18,6 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [department, setDepartment] = useState("");
   const [monthlySalary, setMonthlySalary] = useState("0");
   const [employmentStatus, setEmploymentStatus] = useState<"active" | "inactive">("active");
   const [loading, setLoading] = useState(false);
@@ -30,7 +29,6 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
       name,
       email: email || undefined,
       role: role || undefined,
-      department: department || undefined,
       monthly_salary: Number(monthlySalary || 0),
       employment_status: employmentStatus,
       school_id: schoolId,
@@ -38,21 +36,24 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
     });
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to add staff member");
+      const message =
+        typeof result.error === "string"
+          ? result.error
+          : Object.values(result.error).flat().join(", ") || "Failed to add staff member";
+      toast.error(message);
       return;
     }
     toast.success("Staff member added");
     setName("");
     setEmail("");
     setRole("");
-    setDepartment("");
     setMonthlySalary("0");
     setEmploymentStatus("active");
     router.refresh();
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-6">
+    <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-5">
       <div>
         <Label>Name</Label>
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
@@ -64,14 +65,6 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
       <div>
         <Label>Role</Label>
         <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="e.g. Librarian" />
-      </div>
-      <div>
-        <Label>Department</Label>
-        <Input
-          value={department}
-          onChange={(e) => setDepartment(e.target.value)}
-          placeholder="e.g. Academics"
-        />
       </div>
       <div>
         <Label>Monthly Salary</Label>
@@ -111,7 +104,6 @@ export function EditStaffButton({
     name: string;
     email: string | null;
     role: string | null;
-    department: string | null;
     monthly_salary: number;
     employment_status: "active" | "inactive";
   };
@@ -123,7 +115,6 @@ export function EditStaffButton({
   const [name, setName] = useState(member.name);
   const [email, setEmail] = useState(member.email ?? "");
   const [role, setRole] = useState(member.role ?? "");
-  const [department, setDepartment] = useState(member.department ?? "");
   const [monthlySalary, setMonthlySalary] = useState(String(member.monthly_salary));
   const [employmentStatus, setEmploymentStatus] = useState<"active" | "inactive">(
     member.employment_status
@@ -136,7 +127,6 @@ export function EditStaffButton({
       name,
       email: email || undefined,
       role: role || undefined,
-      department: department || undefined,
       monthly_salary: Number(monthlySalary || 0),
       employment_status: employmentStatus,
       school_id: schoolId,
@@ -175,11 +165,10 @@ export function EditStaffButton({
   }
 
   return (
-    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-6">
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
       <Input value={name} onChange={(e) => setName(e.target.value)} />
       <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
       <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" />
-      <Input value={department} onChange={(e) => setDepartment(e.target.value)} placeholder="Department" />
       <Input
         type="number"
         min="0"

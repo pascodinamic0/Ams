@@ -9,6 +9,7 @@ import {
   BookMarked,
   BookOpen,
   Building2,
+  Bus,
   Calendar,
   CheckCircle,
   ClipboardList,
@@ -21,10 +22,10 @@ import {
   Megaphone,
   MessageSquare,
   Puzzle,
+  Settings,
   Shield,
   Sparkles,
   TrendingUp,
-  Truck,
   UserPlus,
   Users,
 } from "lucide-react";
@@ -51,6 +52,7 @@ type NavLabels = {
   outreach: string;
   messages: string;
   publicWebsite: string;
+  schoolSettings: string;
   team: string;
   students: string;
   admissions: string;
@@ -91,6 +93,7 @@ const icon = {
   audit: <ClipboardList className={iconClass} />,
   features: <Puzzle className={iconClass} />,
   website: <Globe className={iconClass} />,
+  settings: <Settings className={iconClass} />,
   students: <GraduationCap className={iconClass} />,
   guardians: <Users className={iconClass} />,
   admissions: <UserPlus className={iconClass} />,
@@ -101,7 +104,7 @@ const icon = {
   finance: <DollarSign className={iconClass} />,
   messages: <MessageSquare className={iconClass} />,
   library: <Library className={iconClass} />,
-  transport: <Truck className={iconClass} />,
+  transport: <Bus className={iconClass} />,
   events: <Sparkles className={iconClass} />,
   staff: <Users className={iconClass} />,
   grades: <BarChart3 className={iconClass} />,
@@ -131,6 +134,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   academic_admin: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/academic/website", labelKey: "publicWebsite", icon: icon.website },
+    { href: "/academic/settings", labelKey: "schoolSettings", icon: icon.settings },
     { href: "/academic/team", labelKey: "team", icon: icon.users },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
@@ -161,6 +165,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/finance/expenses", labelKey: "expenses", icon: icon.finance },
     { href: "/finance/reports", labelKey: "reports", icon: icon.reports },
     { href: "/finance/fee-reminders", labelKey: "feeReminders", icon: icon.reminders },
+    { href: "/finance/settings", labelKey: "schoolSettings", icon: icon.settings },
   ],
   operations_manager: [
     { href: "/operations", labelKey: "dashboard", icon: icon.dashboard },

@@ -18,6 +18,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendWhatsApp, interpolateTemplate } from "@/lib/services/whatsapp";
+import { getSchoolCurrency } from "@/lib/currency";
 import { format, addDays, differenceInDays } from "date-fns";
 
 export const runtime = "nodejs";
@@ -65,6 +66,14 @@ export async function POST(req: NextRequest) {
 
   for (const setting of settings) {
     summary.schools_processed++;
+
+    const { data: school } = await supabase
+      .from("schools")
+      .select("currency_code")
+      .eq("id", setting.school_id)
+      .single();
+
+    const currencySymbol = getSchoolCurrency(school?.currency_code).symbol;
 
     const graceExpiry = addDays(today, -setting.grace_period_days);
 
@@ -122,7 +131,7 @@ export async function POST(req: NextRequest) {
           guardian_name: guardian.name,
           student_name: studentName,
           amount: balance.toFixed(2),
-          currency: setting.currency_symbol,
+          currency: currencySymbol,
           due_date: format(dueDate, "MMM d, yyyy"),
           school_name: "",
         };

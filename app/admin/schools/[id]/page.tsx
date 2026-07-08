@@ -22,6 +22,7 @@ import { getTranslations } from "next-intl/server";
 import { SchoolStatusActions } from "../school-status-actions";
 import { SchoolStatusBadge } from "../school-status-badge";
 import { SchoolEditForm } from "./school-edit-form";
+import { SchoolCurrencyForm } from "@/components/schools/school-currency-form";
 
 export default async function SchoolDetailPage({
   params,
@@ -181,6 +182,13 @@ export default async function SchoolDetailPage({
               <p className="text-sm text-stone-500 dark:text-stone-400">
                 {t("administrationDesc")}
               </p>
+              <SchoolCurrencyForm
+                schoolId={school.id}
+                currencyCode={school.currency_code}
+                title={t("currencyTitle")}
+                description={t("currencyDescription")}
+                compact
+              />
               <SchoolStatusActions
                 schoolId={school.id}
                 schoolName={school.name}

@@ -24,9 +24,10 @@ interface Props {
   branchId: string;
   categories: string[];
   expense?: ExpenseListItem;
+  currencySymbol?: string;
 }
 
-export function ExpenseForm({ branchId, categories, expense }: Props) {
+export function ExpenseForm({ branchId, categories, expense, currencySymbol = "$" }: Props) {
   const router = useRouter();
   const isEdit = Boolean(expense);
 
@@ -60,7 +61,7 @@ export function ExpenseForm({ branchId, categories, expense }: Props) {
       onSubmit={onSubmit}
       className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-6"
     >
-      <ExpenseFields categories={categoryOptions} isEdit={isEdit} />
+      <ExpenseFields categories={categoryOptions} isEdit={isEdit} currencySymbol={currencySymbol} />
     </FormWrapper>
   );
 }
@@ -68,9 +69,11 @@ export function ExpenseForm({ branchId, categories, expense }: Props) {
 function ExpenseFields({
   categories,
   isEdit,
+  currencySymbol,
 }: {
   categories: string[];
   isEdit: boolean;
+  currencySymbol: string;
 }) {
   const { register, formState: { errors } } = useFormContext<ExpenseFormData>();
 
@@ -92,8 +95,8 @@ function ExpenseFields({
         {errors.category && <p className="mt-1 text-sm text-red-500">{errors.category.message}</p>}
       </div>
       <div>
-        <Label htmlFor="amount" required>Amount</Label>
-        <Input id="amount" type="number" step="0.01" {...register("amount")} error={!!errors.amount} />
+        <Label htmlFor="amount" required>Amount ({currencySymbol})</Label>
+        <Input id="amount" type="number" step="0.01" min="0" {...register("amount")} error={!!errors.amount} />
         {errors.amount && <p className="mt-1 text-sm text-red-500">{errors.amount.message}</p>}
       </div>
       <div>

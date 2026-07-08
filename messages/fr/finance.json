@@ -81,5 +81,12 @@
   "colNet": "Net",
   "payrollPendingKpi": "Paie en attente",
   "statusPaid": "Payé",
-  "statusPending": "En attente"
+  "statusPending": "En attente",
+  "settingsTitle": "Paramètres financiers",
+  "settingsDescription": "Configurez les préférences financières de l'école.",
+  "currencyTitle": "Devise",
+  "currencyDescription": "Choisissez la devise affichée pour les frais, dépenses, paie et paiements des parents. Par défaut : dollar américain.",
+  "noSchoolLinked": "Aucune école liée",
+  "noSchoolLinkedDesc": "Votre compte n'est pas encore lié à une école.",
+  "schoolNotFound": "École introuvable"
 }

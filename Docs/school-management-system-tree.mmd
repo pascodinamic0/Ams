@@ -1,0 +1,146 @@
+%%{init: {
+%%  "theme": "base",
+%%  "themeVariables": {
+%%    "primaryColor": "#e6f0ff",
+%%    "primaryTextColor": "#0f172a",
+%%    "primaryBorderColor": "#2563eb",
+%%    "lineColor": "#64748b",
+%%    "fontFamily": "Inter, Segoe UI, Arial"
+%%  },
+%%  "flowchart": { "curve": "basis" }
+%%}}%%
+flowchart TB
+    ROOT["ShuleOS<br/>School Management System"]
+
+    AUTH["Authentication & Access"]
+    PUBLIC["Public Website"]
+    SUPER["Super Admin"]
+    ACADEMIC["Academic Module"]
+    FINANCE["Finance Module"]
+    OPS["Operations Module"]
+    TEACHER["Teacher Portal"]
+    PARENT["Parent Portal"]
+    STUDENT["Student Portal"]
+    ANALYTICS["Analytics"]
+    COMMS["Communication"]
+    SETTINGS["Settings & Onboarding"]
+    BACKEND["Backend & Data Layer"]
+
+    ROOT --> AUTH
+    ROOT --> PUBLIC
+    ROOT --> SUPER
+    ROOT --> ACADEMIC
+    ROOT --> FINANCE
+    ROOT --> OPS
+    ROOT --> TEACHER
+    ROOT --> PARENT
+    ROOT --> STUDENT
+    ROOT --> ANALYTICS
+    ROOT --> COMMS
+    ROOT --> SETTINGS
+    ROOT --> BACKEND
+
+    AUTH --> AUTH1["Login"]
+    AUTH --> AUTH2["Register"]
+    AUTH --> AUTH3["Forgot Password"]
+    AUTH --> AUTH4["Reset Password"]
+    AUTH --> AUTH5["Role-Based Access"]
+    AUTH --> AUTH6["Auth Callback"]
+
+    PUBLIC --> PUB1["Homepage"]
+    PUBLIC --> PUB2["Features"]
+    PUBLIC --> PUB3["Modules"]
+    PUBLIC --> PUB4["Contact"]
+    PUBLIC --> PUB5["Online Admissions"]
+    PUBLIC --> PUB6["Public Events"]
+    PUBLIC --> PUB7["School Pages"]
+
+    SUPER --> SA1["Dashboard"]
+    SUPER --> SA2["Schools"]
+    SUPER --> SA3["Branches"]
+    SUPER --> SA4["Users"]
+    SUPER --> SA5["Roles & Permissions"]
+    SUPER --> SA6["Audit Logs"]
+    SUPER --> SA7["Feature Flags"]
+
+    ACADEMIC --> AC1["Students"]
+    ACADEMIC --> AC2["Guardians"]
+    ACADEMIC --> AC3["Admissions"]
+    ACADEMIC --> AC4["Classes"]
+    ACADEMIC --> AC5["Sections"]
+    ACADEMIC --> AC6["Subjects"]
+    ACADEMIC --> AC7["Timetable"]
+    ACADEMIC --> AC8["Curriculum"]
+    ACADEMIC --> AC9["Attendance"]
+    ACADEMIC --> AC10["Grades"]
+    ACADEMIC --> AC11["Report Cards"]
+    ACADEMIC --> AC12["Academic Team"]
+
+    FINANCE --> FI1["Fee Structure"]
+    FINANCE --> FI2["Invoices"]
+    FINANCE --> FI3["Payments"]
+    FINANCE --> FI4["Payroll"]
+    FINANCE --> FI5["Expenses"]
+    FINANCE --> FI6["Finance Reports"]
+    FINANCE --> FI7["Fee Reminders"]
+
+    OPS --> OP1["Library"]
+    OPS --> OP2["Transport"]
+    OPS --> OP3["Events"]
+    OPS --> OP4["Staff"]
+    OPS --> OP5["Operations Dashboard"]
+
+    TEACHER --> TP1["My Classes"]
+    TEACHER --> TP2["Attendance"]
+    TEACHER --> TP3["Gradebook"]
+    TEACHER --> TP4["Assignments"]
+    TEACHER --> TP5["Exams"]
+    TEACHER --> TP6["Report Cards"]
+    TEACHER --> TP7["Messages"]
+
+    PARENT --> PA1["Fees"]
+    PARENT --> PA2["Payments"]
+    PARENT --> PA3["Timetable"]
+    PARENT --> PA4["Assignments"]
+    PARENT --> PA5["Events"]
+    PARENT --> PA6["Transport"]
+    PARENT --> PA7["Performance"]
+    PARENT --> PA8["Messages"]
+
+    STUDENT --> ST1["Timetable"]
+    STUDENT --> ST2["Assignments"]
+    STUDENT --> ST3["Grades"]
+    STUDENT --> ST4["Library"]
+    STUDENT --> ST5["Events"]
+    STUDENT --> ST6["Messages"]
+
+    ANALYTICS --> AN1["Students Analytics"]
+    ANALYTICS --> AN2["Attendance Analytics"]
+    ANALYTICS --> AN3["Finance Analytics"]
+    ANALYTICS --> AN4["Branch Comparison"]
+
+    COMMS --> CO1["Messaging"]
+    COMMS --> CO2["Notifications"]
+    COMMS --> CO3["Outreach Campaigns"]
+
+    SETTINGS --> SE1["User Settings"]
+    SETTINGS --> SE2["School Setup Guide"]
+    SETTINGS --> SE3["Profile Onboarding"]
+    SETTINGS --> SE4["System Preferences"]
+
+    BACKEND --> BE1["Server Actions"]
+    BACKEND --> BE2["API Routes"]
+    BACKEND --> BE3["Database Layer"]
+    BACKEND --> BE4["Auth Services"]
+    BACKEND --> BE5["Supabase Migrations"]
+    BACKEND --> BE6["Cron Jobs"]
+    BACKEND --> BE7["Webhooks"]
+    BACKEND --> BE8["PWA / Offline"]
+
+    classDef root fill:#0f172a,color:#ffffff,stroke:#0f172a,stroke-width:2px;
+    classDef group fill:#dbeafe,color:#0f172a,stroke:#2563eb,stroke-width:1.5px;
+    classDef leaf fill:#f8fafc,color:#1e293b,stroke:#94a3b8,stroke-width:1px;
+
+    class ROOT root;
+    class AUTH,PUBLIC,SUPER,ACADEMIC,FINANCE,OPS,TEACHER,PARENT,STUDENT,ANALYTICS,COMMS,SETTINGS,BACKEND group;
+    class AUTH1,AUTH2,AUTH3,AUTH4,AUTH5,AUTH6,PUB1,PUB2,PUB3,PUB4,PUB5,PUB6,PUB7,SA1,SA2,SA3,SA4,SA5,SA6,SA7,AC1,AC2,AC3,AC4,AC5,AC6,AC7,AC8,AC9,AC10,AC11,AC12,FI1,FI2,FI3,FI4,FI5,FI6,FI7,OP1,OP2,OP3,OP4,OP5,TP1,TP2,TP3,TP4,TP5,TP6,TP7,PA1,PA2,PA3,PA4,PA5,PA6,PA7,PA8,ST1,ST2,ST3,ST4,ST5,ST6,AN1,AN2,AN3,AN4,CO1,CO2,CO3,SE1,SE2,SE3,SE4,BE1,BE2,BE3,BE4,BE5,BE6,BE7,BE8 leaf;

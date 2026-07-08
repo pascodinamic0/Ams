@@ -3,15 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
-import { getInvoiceById } from "@/lib/db";
+import { getInvoiceById, getSchoolCurrencyForSchool } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
-
-function formatCurrency(value: number) {
-  return value.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
+import { formatMoney, getSchoolCurrency } from "@/lib/currency";
 
 export default async function ParentPayPage({
   searchParams,
@@ -93,9 +87,12 @@ export default async function ParentPayPage({
 
   const { data: school } = await supabase
     .from("schools")
-    .select("name, contact_email, contact_phone, address")
+    .select("name, contact_email, contact_phone, address, currency_code")
     .eq("id", student?.school_id ?? "")
     .single();
+
+  const currency = getSchoolCurrency(school?.currency_code);
+  const formatCurrency = (value: number) => formatMoney(value, currency.code);
 
   const amount = Number(invoice.amount);
   const amountPaid = Number(invoice.amount_paid ?? 0);

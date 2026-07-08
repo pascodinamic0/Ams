@@ -6,9 +6,11 @@ import {
   transportRouteSchema,
   transportVehicleSchema,
   transportMappingSchema,
+  transportBulkMappingSchema,
   type TransportRouteFormData,
   type TransportVehicleFormData,
   type TransportMappingFormData,
+  type TransportBulkMappingFormData,
 } from "@/lib/validations/operations";
 
 export async function createTransportRoute(input: TransportRouteFormData) {
@@ -79,6 +81,25 @@ export async function assignStudentToVehicle(input: TransportMappingFormData) {
   if (error) return { error: error.message };
   revalidatePath("/operations/transport");
   return { data: { id: data.id } };
+}
+
+export async function bulkAssignStudentsToVehicle(input: TransportBulkMappingFormData) {
+  const parsed = transportBulkMappingSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
+
+  const supabase = await createClient();
+  const rows = parsed.data.student_ids.map((student_id) => ({
+    student_id,
+    vehicle_id: parsed.data.vehicle_id,
+  }));
+
+  const { error } = await supabase
+    .from("transport_student_mapping")
+    .upsert(rows, { onConflict: "student_id" });
+
+  if (error) return { error: error.message };
+  revalidatePath("/operations/transport");
+  return { data: { count: rows.length } };
 }
 
 export async function unassignStudentFromVehicle(mappingId: string) {

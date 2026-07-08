@@ -71,6 +71,7 @@ export {
   getSchools,
   getSchoolBySlug,
   getSchoolById,
+  getSchoolCurrencyForSchool,
   type SchoolRow,
   type SchoolListItem,
   type SchoolDirectoryItem,

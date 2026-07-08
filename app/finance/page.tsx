@@ -1,16 +1,10 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getExpenseTotal, getFinanceKPIs, getPayrollTotals } from "@/lib/db";
+import { getExpenseTotal, getFinanceKPIs, getPayrollTotals, getSchoolCurrencyForSchool } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
-
-function formatCurrency(value: number) {
-  return value.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
+import { formatMoney } from "@/lib/currency";
 
 export default async function FinanceDashboard() {
   const t = await getTranslations("finance");
@@ -19,11 +13,13 @@ export default async function FinanceDashboard() {
     schoolId: profile?.school_id ?? undefined,
     branchId: profile?.branch_id ?? undefined,
   };
-  const [kpis, payrollTotals, operatingExpenses] = await Promise.all([
+  const [kpis, payrollTotals, operatingExpenses, currency] = await Promise.all([
     getFinanceKPIs(scope),
     getPayrollTotals(scope),
     getExpenseTotal(scope),
+    getSchoolCurrencyForSchool(profile?.school_id),
   ]);
+  const formatCurrency = (value: number) => formatMoney(value, currency.code);
   const cashAvailable = kpis.collected - payrollTotals.paid - operatingExpenses;
 
   return (

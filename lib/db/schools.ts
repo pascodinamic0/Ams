@@ -1,4 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
+import {
+  DEFAULT_CURRENCY_CODE,
+  getSchoolCurrency,
+  type SchoolCurrency,
+  type SchoolCurrencyCode,
+} from "@/lib/currency";
 
 export type SchoolStatus = "pending" | "approved" | "suspended";
 
@@ -21,6 +27,7 @@ export type SchoolRow = {
   website_content: unknown;
   status: SchoolStatus;
   owner_id: string | null;
+  currency_code: string;
   created_at: string;
   updated_at: string;
 };
@@ -147,4 +154,21 @@ export async function getSchoolById(id: string) {
 
   if (error || !data) return null;
   return data as SchoolRow;
+}
+
+export async function getSchoolCurrencyForSchool(
+  schoolId: string | null | undefined
+): Promise<SchoolCurrency> {
+  if (!schoolId) {
+    return getSchoolCurrency(DEFAULT_CURRENCY_CODE);
+  }
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("schools")
+    .select("currency_code")
+    .eq("id", schoolId)
+    .single();
+
+  return getSchoolCurrency(data?.currency_code ?? DEFAULT_CURRENCY_CODE);
 }
