@@ -47,6 +47,7 @@ export function HomePage() {
   const roles = [
     {
       badge: t("adminBadge"),
+      floatingBadge: t("adminActiveUserPresence"),
       title: t("adminTitle"),
       description: t("adminDescription"),
       features: [t("adminFeature1"), t("adminFeature2"), t("adminFeature3")],
@@ -58,6 +59,7 @@ export function HomePage() {
     },
     {
       badge: t("teacherBadge"),
+      floatingBadge: t("teacherActiveUserPresence"),
       title: t("teacherTitle"),
       description: t("teacherDescription"),
       features: [t("teacherFeature1"), t("teacherFeature2"), t("teacherFeature3")],
@@ -69,6 +71,7 @@ export function HomePage() {
     },
     {
       badge: t("parentBadge"),
+      floatingBadge: t("parentActiveUserPresence"),
       title: t("parentTitle"),
       description: t("parentDescription"),
       features: [t("parentFeature1"), t("parentFeature2"), t("parentFeature3")],
@@ -294,7 +297,7 @@ export function HomePage() {
                     <div className="h-10 w-10 rounded-full bg-primary-light dark:bg-primary-light/50 flex items-center justify-center text-primary dark:text-primary">
                       <CheckCircle2 className="h-6 w-6" />
                     </div>
-                    <p className="text-sm font-bold text-stone-900 dark:text-white">{t("activeUserPresence")}</p>
+                    <p className="text-sm font-bold text-stone-900 dark:text-white">{role.floatingBadge}</p>
                   </div>
                 </div>
 
