@@ -33,15 +33,16 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
-      <div className="hidden flex-col justify-center bg-gradient-to-br from-teal-950 via-teal-900 to-teal-800 p-12 lg:flex lg:w-[45%]">
-        <div>
-          <blockquote className="text-2xl font-semibold leading-snug text-white">
+      <div className="relative hidden flex-col justify-center overflow-hidden border-r border-white/10 bg-black p-12 lg:flex lg:w-[45%]">
+        <div className="pointer-events-none absolute -left-20 top-1/3 h-72 w-72 rounded-full bg-amber-500/10 blur-[120px]" />
+        <div className="relative">
+          <blockquote className="font-display text-2xl leading-snug tracking-wide text-white">
             &ldquo;{t("brandQuote")}&rdquo;
           </blockquote>
           <div className="mt-8 space-y-4">
             {brandFeatures.map((f) => (
-              <div key={f} className="flex items-center gap-3 text-teal-200">
-                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/30">
+              <div key={f} className="flex items-center gap-3 text-white/60">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-amber-500/40 text-amber-500">
                   <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                   </svg>
@@ -56,10 +57,10 @@ export default function LoginPage() {
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
+            <h1 className="font-display text-2xl tracking-wide text-white">
               {t("welcomeBack")}
             </h1>
-            <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+            <p className="mt-2 text-sm text-white/50">
               {t("signInSubtitle", { productName: companyIdentity.productName })}
             </p>
           </div>
@@ -70,12 +71,9 @@ export default function LoginPage() {
             <LoginFormContent />
           </Suspense>
 
-          <p className="mt-6 text-center text-sm text-stone-500 dark:text-stone-400">
+          <p className="mt-6 text-center text-sm text-white/45">
             {t("noAccount")}{" "}
-            <Link
-              href="/get-access"
-              className="font-medium text-primary hover:text-primary-hover dark:text-primary"
-            >
+            <Link href="/get-access" className="font-medium text-amber-500 hover:text-amber-400">
               {t("getAccess")}
             </Link>
           </p>
@@ -108,9 +106,9 @@ function LoginOAuthSection() {
 function LoginSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="h-10 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
-      <div className="h-10 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
-      <div className="h-10 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
+      <div className="h-10 animate-pulse rounded-lg bg-white/10" />
+      <div className="h-10 animate-pulse rounded-lg bg-white/10" />
+      <div className="h-10 animate-pulse rounded-lg bg-white/10" />
     </div>
   );
 }
@@ -195,7 +193,7 @@ function LoginFormFields({ loading }: { loading: boolean }) {
           </Label>
           <Link
             href="/forgot-password"
-            className="text-xs font-medium text-primary hover:text-primary-hover dark:text-primary"
+            className="text-xs font-medium text-amber-500 hover:text-amber-400"
           >
             {t("forgotPassword")}
           </Link>

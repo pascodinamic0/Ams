@@ -41,7 +41,7 @@ export function HeroMobileSubtitle({
       <p
         className={cn(
           className,
-          "text-pretty text-sm leading-snug text-teal-50/90 [text-shadow:0_1px_14px_rgba(0,0,0,0.55)]"
+          "text-pretty text-sm leading-snug text-white/80 [text-shadow:0_1px_14px_rgba(0,0,0,0.55)]"
         )}
       >
         {frags}. {payoff}
@@ -67,8 +67,8 @@ export function HeroMobileSubtitle({
           className={cn(
             "absolute inset-x-0 top-0 block px-1",
             isPayoff
-              ? "text-sm font-medium leading-snug text-teal-50/90"
-              : "text-base font-semibold leading-snug text-white"
+              ? "text-sm font-medium leading-snug text-white/80"
+              : "text-base font-semibold uppercase tracking-[0.08em] leading-snug text-white"
           )}
         >
           {slides[index]}

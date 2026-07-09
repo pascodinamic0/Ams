@@ -53,7 +53,7 @@ export async function getSchoolAccessContext(
 }
 
 export function schoolPortalBlocked(
-  ctx: SchoolAccessContext,
+  ctx: Pick<SchoolAccessContext, "role" | "schoolId" | "schoolStatus">,
   pathname: string
 ): boolean {
   if (ctx.role === "super_admin") return false;

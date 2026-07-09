@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday } from "date-fns";
-import { Chart } from "@/components/ui/chart";
+import { Chart } from "@/components/ui/chart-lazy";
 import { getTranslations } from "next-intl/server";
 
 interface PageProps {

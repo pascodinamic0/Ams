@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Chart } from "@/components/ui/chart";
+import { Chart } from "@/components/ui/chart-lazy";
 import { getAnalyticsOverview, getAdminDashboardData } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 

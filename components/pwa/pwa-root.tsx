@@ -43,24 +43,45 @@ async function syncPendingAttendance() {
 
 function OfflineSyncManager() {
   useEffect(() => {
-    if (!navigator.onLine) return;
+    // Defer offline sync until after first paint so it doesn't compete with hydration.
+    const run = () => {
+      if (!navigator.onLine) return;
+      void syncPendingAttendance();
+      void getPendingAttendanceCount().then((count) => {
+        if (count > 0 && navigator.onLine) {
+          toast.message(`${count} attendance record(s) waiting to sync`);
+        }
+      });
+    };
 
-    void syncPendingAttendance();
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    let idleId: number | undefined;
+    let timeoutId: number | undefined;
+
+    if (typeof win.requestIdleCallback === "function") {
+      idleId = win.requestIdleCallback(run, { timeout: 2500 });
+    } else {
+      timeoutId = window.setTimeout(run, 800);
+    }
 
     async function handleOnline() {
       await syncPendingAttendance();
     }
 
     window.addEventListener("online", handleOnline);
-    return () => window.removeEventListener("online", handleOnline);
-  }, []);
-
-  useEffect(() => {
-    void getPendingAttendanceCount().then((count) => {
-      if (count > 0 && navigator.onLine) {
-        toast.message(`${count} attendance record(s) waiting to sync`);
+    return () => {
+      if (idleId !== undefined) {
+        win.cancelIdleCallback?.(idleId);
       }
-    });
+      if (timeoutId !== undefined) {
+        window.clearTimeout(timeoutId);
+      }
+      window.removeEventListener("online", handleOnline);
+    };
   }, []);
 
   return null;

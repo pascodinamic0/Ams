@@ -9,6 +9,7 @@ import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { LogoutButton } from "@/components/layout/logout-button";
 import { MOBILE_TAB_BAR_HEIGHT, MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { NotificationBell } from "@/components/layout/notification-bell";
+import { ShellBadgesProvider } from "@/components/layout/shell-badges-provider";
 import { UserAvatarMenu } from "@/components/layout/user-avatar-menu";
 import { useIsMobile } from "@/lib/pwa/display-mode";
 import { cn } from "@/lib/utils";
@@ -66,7 +67,7 @@ export function AppShell({
   }, [pathname]);
 
   return (
-    <>
+    <ShellBadgesProvider role={role}>
       {sidebarOpen && sidebar && (
         <div
           className="fixed inset-0 z-40 bg-black/50 md:hidden"
@@ -194,6 +195,6 @@ export function AppShell({
       {showMobileTabs && !sidebarOpen && (
         <MobileTabBar role={role} onMenuOpen={() => setSidebarOpen(true)} />
       )}
-    </>
+    </ShellBadgesProvider>
   );
 }

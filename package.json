@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:pwa": "next dev --webpack",
+    "dev": "node scripts/ensure-dev.mjs",
+    "dev:pwa": "node scripts/ensure-dev.mjs --webpack",
     "build": "next build --webpack",
     "generate:pwa-icons": "node scripts/generate-pwa-icons.mjs",
     "generate:social-banners": "node scripts/generate-social-banners.mjs",

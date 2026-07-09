@@ -1,10 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { headers } from "next/headers";
+import { JetBrains_Mono, Plus_Jakarta_Sans, Silkscreen } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { AppToaster } from "@/components/ui/app-toaster";
 import { PwaRoot } from "@/components/pwa/pwa-root";
 import { companyIdentity } from "@/lib/company/identity";
+import { pickClientMessages } from "@/lib/i18n/client-messages";
 import { pwaBackgroundColor, pwaThemeColor } from "@/lib/pwa/config";
 import "./globals.css";
 
@@ -12,11 +14,20 @@ const jakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta-sans",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const silkscreen = Silkscreen({
+  variable: "--font-silkscreen",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -63,14 +74,23 @@ export default async function RootLayout({
 }>) {
   const locale = await getLocale();
   const messages = await getMessages();
+  const headerStore = await headers();
+  // Prefer proxy-injected path; if missing (build/prerender), keep full messages.
+  const pathname = headerStore.get("x-pathname");
+  const clientMessages = pathname
+    ? pickClientMessages(messages, pathname)
+    : messages;
 
   return (
-    <html lang={locale}>
+    <html
+      lang={locale}
+      className={`${jakartaSans.variable} ${jetbrainsMono.variable} ${silkscreen.variable}`}
+    >
       <body
-        className={`${jakartaSans.variable} ${jetbrainsMono.variable} antialiased`}
+        className="antialiased"
         style={{ backgroundColor: pwaBackgroundColor }}
       >
-        <NextIntlClientProvider locale={locale} messages={messages}>
+        <NextIntlClientProvider locale={locale} messages={clientMessages}>
           <PwaRoot>{children}</PwaRoot>
           <AppToaster />
         </NextIntlClientProvider>

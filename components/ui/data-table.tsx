@@ -30,6 +30,21 @@ function getCellValue<T>(row: T, accessor: keyof T): ReactNode {
   return String(value);
 }
 
+function compareSortValues(aVal: unknown, bVal: unknown): number {
+  if (aVal == null && bVal == null) return 0;
+  if (aVal == null) return 1;
+  if (bVal == null) return -1;
+
+  if (typeof aVal === "number" && typeof bVal === "number") {
+    return aVal - bVal;
+  }
+
+  return String(aVal).localeCompare(String(bVal), undefined, {
+    numeric: true,
+    sensitivity: "base",
+  });
+}
+
 export function DataTable<T extends Record<string, unknown>>({
   data,
   columns,
@@ -52,8 +67,7 @@ export function DataTable<T extends Record<string, unknown>>({
     if (!col) return 0;
     const aVal = (a as Record<string, unknown>)[col.accessorKey as string];
     const bVal = (b as Record<string, unknown>)[col.accessorKey as string];
-    if (aVal === bVal) return 0;
-    const cmp = String(aVal) < String(bVal) ? -1 : 1;
+    const cmp = compareSortValues(aVal, bVal);
     return sortDir === "asc" ? cmp : -cmp;
   });
 
@@ -62,7 +76,8 @@ export function DataTable<T extends Record<string, unknown>>({
   const handleSort = (id: string) => {
     const col = columns.find((c) => c.id === id);
     if (!col?.sortable) return;
-    setSortKey((k) => (k === id ? id : id));
+    setPage(0);
+    setSortKey(id);
     setSortDir((d) => (sortKey === id && d === "asc" ? "desc" : "asc"));
   };
 

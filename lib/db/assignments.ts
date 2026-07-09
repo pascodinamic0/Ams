@@ -14,6 +14,7 @@ export type StudentAssignmentItem = {
 export type AssignmentListItem = StudentAssignmentItem;
 
 export type GuardianAssignmentRow = StudentAssignmentItem & {
+  student_id: string;
   student_name: string;
 };
 
@@ -104,7 +105,7 @@ export async function getAssignmentsForGuardianStudents(
   for (const child of children) {
     const assignments = await getAssignmentsForStudent(child.id);
     for (const a of assignments) {
-      rows.push({ ...a, student_name: child.name });
+      rows.push({ ...a, student_id: child.id, student_name: child.name });
     }
   }
   return rows.sort((a, b) => {

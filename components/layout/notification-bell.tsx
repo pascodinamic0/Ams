@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { fetchUnreadNotificationCount } from "@/app/notifications/actions";
+import { useShellBadges } from "@/components/layout/shell-badges-provider";
 
 interface NotificationBellProps {
   className?: string;
@@ -11,26 +10,9 @@ interface NotificationBellProps {
 }
 
 export function NotificationBell({ className = "", showLabel = false }: NotificationBellProps) {
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { unreadNotifications: unreadCount } = useShellBadges();
   const t = useTranslations("nav");
   const tc = useTranslations("common");
-
-  useEffect(() => {
-    let active = true;
-
-    async function load() {
-      const count = await fetchUnreadNotificationCount();
-      if (active) setUnreadCount(count);
-    }
-
-    load();
-    const interval = setInterval(load, 60_000);
-
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
-  }, []);
 
   return (
     <Link

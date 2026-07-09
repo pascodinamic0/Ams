@@ -13,6 +13,10 @@ import {
   HeadphonesIcon,
   Wallet,
   Wifi,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Youtube,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -53,7 +57,7 @@ export function HomePage() {
       features: [t("adminFeature1"), t("adminFeature2"), t("adminFeature3")],
       cta: t("adminCta"),
       href: "/features#admin",
-      image: "/images/role_admin.png",
+      image: "/images/role_admin.jpg",
       icon: <Users className="h-6 w-6" />,
       color: "teal"
     },
@@ -65,7 +69,7 @@ export function HomePage() {
       features: [t("teacherFeature1"), t("teacherFeature2"), t("teacherFeature3")],
       cta: t("teacherCta"),
       href: "/features#teacher",
-      image: "/images/role_teacher.png",
+      image: "/images/role_teacher.jpg",
       icon: <GraduationCap className="h-6 w-6" />,
       color: "amber"
     },
@@ -77,98 +81,116 @@ export function HomePage() {
       features: [t("parentFeature1"), t("parentFeature2"), t("parentFeature3")],
       cta: t("parentCta"),
       href: "/features#parent",
-      image: "/images/role_parent.png",
+      image: "/images/role_parent.jpg",
       icon: <Users className="h-6 w-6" />,
       color: "teal"
     },
   ];
 
-  const stats = [
-    { value: "8", label: t("statsRoles") },
-    { value: "76+", label: t("statsPages") },
-    { value: "1", label: t("statsPlatform") },
-  ];
-
   return (
-    <div className="flex flex-col min-h-screen bg-white dark:bg-[#0c1222]">
-      {/* Hero Section */}
-      <section className="relative flex min-h-[85dvh] items-center overflow-hidden pt-[calc(env(safe-area-inset-top)+5rem)] pb-20 sm:min-h-0 sm:pb-24 md:pt-24 md:pb-28 lg:pt-28">
+    <div className="flex flex-col min-h-screen bg-black">
+      {/* Hero — full-bleed, one composition */}
+      <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden pt-[calc(env(safe-area-inset-top)+4rem)] pb-20 md:pt-24 md:pb-24">
         <HeroVideoBackground />
 
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Vertical social rail — desktop */}
+        <aside className="pointer-events-none absolute bottom-10 left-5 z-20 hidden flex-col items-center gap-4 lg:flex xl:left-8">
+          <span className="pointer-events-none rotate-180 text-[10px] font-medium uppercase tracking-[0.35em] text-white/50 [writing-mode:vertical-rl]">
+            Follow
+          </span>
+          <span className="h-10 w-px bg-white/25" aria-hidden />
+          <div className="pointer-events-auto flex flex-col items-center gap-3">
+            {(
+              [
+                { label: "LinkedIn", href: companyIdentity.social.linkedin, icon: Linkedin },
+                { label: "Facebook", href: companyIdentity.social.facebook, icon: Facebook },
+                { label: "Instagram", href: companyIdentity.social.instagram, icon: Instagram },
+                { label: "YouTube", href: companyIdentity.social.youtube, icon: Youtube },
+              ] as const
+            ).map(({ label, href, icon: Icon }) => (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="text-white/60 transition-colors hover:text-white"
+              >
+                <Icon className="h-4 w-4" strokeWidth={1.5} />
+              </a>
+            ))}
+          </div>
+        </aside>
+
+        <div className="relative z-10 mx-auto w-full max-w-4xl px-5 sm:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mx-auto max-w-2xl text-center sm:max-w-3xl lg:max-w-4xl"
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            className="mx-auto max-w-3xl text-center"
           >
-            <motion.span
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-teal-100/90 backdrop-blur-sm sm:px-3.5 sm:py-1.5 sm:text-xs"
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.15, duration: 0.6 }}
+              className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-white/70 sm:text-[11px]"
             >
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
               {t("heroBadge")}
-            </motion.span>
-            <h1 className="mt-4 text-[1.75rem] font-bold leading-[1.2] tracking-tight text-white sm:mt-6 sm:text-4xl sm:leading-[1.15] md:text-5xl lg:text-[3.25rem] lg:leading-[1.12]">
-              <span className="block">{t("heroTitleLine1")}</span>
-              <span className="mt-1 block bg-gradient-to-r from-teal-200 via-teal-400 to-teal-200 bg-clip-text text-transparent sm:mt-1.5">
-                {t("heroTitleLine2")}
+            </motion.p>
+
+            <h1 className="mt-5 font-display text-[1.5rem] leading-[1.35] text-white sm:mt-6 sm:text-[2.15rem] sm:leading-[1.3] md:text-[2.65rem] lg:text-[3rem]">
+              <span className="block uppercase tracking-[0.12em]">
+                {companyIdentity.productName}
+                <span className="text-amber-500">.</span>
+              </span>
+              <span className="mt-4 block text-[0.78em] tracking-wide text-white sm:mt-5">
+                {t("heroTitleLine1")}
               </span>
             </h1>
+
+            <p className="mx-auto mt-3 max-w-xl text-base leading-snug text-white/70 sm:mt-4 sm:text-lg">
+              {t("heroTitleLine2")}
+            </p>
+
             <HeroMobileSubtitle
               frags={t("heroSubtitle")}
               payoff={t("heroSubtitleMobilePayoff")}
               className="mt-4 sm:hidden"
             />
-            <p className="mx-auto mt-4 hidden max-w-lg text-sm leading-relaxed text-teal-100/75 sm:mt-6 sm:block sm:max-w-2xl sm:text-base md:text-[1.0625rem]">
-              <span className="block">{t("heroSubtitle")}</span>
-              <span className="mt-1.5 block text-teal-100/65">{t("heroSubtitleBody")}</span>
-              <span className="mt-1.5 block text-xs text-teal-100/55 sm:text-sm">{t("heroSubtitleExtra")}</span>
+
+            <p className="mx-auto mt-4 hidden max-w-lg text-xs font-medium uppercase tracking-[0.2em] text-white/65 sm:mt-5 sm:block sm:text-[13px]">
+              {t("heroSubtitle")}
             </p>
-            <div className="mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-4">
-              <Link
-                href="/get-access"
-                className="group inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-white px-5 py-3 text-sm font-bold text-teal-950 transition-all hover:bg-primary-light hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] sm:w-auto sm:px-7 sm:py-3.5 sm:text-base"
-              >
-                {t("heroCtaPrimary")}
-                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Link>
+
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45, duration: 0.6 }}
+              className="mt-7 flex flex-col items-stretch gap-3 sm:mt-8 sm:flex-row sm:items-center sm:justify-center sm:gap-4"
+            >
               <Link
                 href="/contact"
-                className="inline-flex w-full items-center justify-center rounded-2xl border border-primary-400/40 bg-teal-900/40 px-5 py-3 text-sm font-bold text-white backdrop-blur-md transition-all hover:bg-teal-800/60 sm:w-auto sm:px-7 sm:py-3.5 sm:text-base"
+                className="inline-flex items-center justify-center rounded-full border border-white/35 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-white hover:bg-white/5 sm:px-7 sm:py-3.5 sm:text-xs"
               >
-                {t("heroCtaSecondary")}
+                [ {t("heroCtaSecondary")} ]
               </Link>
-            </div>
-
-            {/* Stats */}
-            <div className="relative z-10 mx-auto mt-8 max-w-md rounded-xl border border-white/10 bg-teal-950/60 px-3 py-4 shadow-lg shadow-teal-950/20 backdrop-blur-md sm:mt-10 sm:max-w-2xl sm:rounded-2xl sm:px-5 sm:py-6">
-              <div className="grid grid-cols-3 gap-2 sm:gap-6">
-                {stats.map((s, i) => (
-                  <motion.div
-                    key={s.label}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.5 + i * 0.1 }}
-                    className="text-center"
-                  >
-                    <p className="text-xl font-bold text-white sm:text-3xl">{s.value}</p>
-                    <p className="mt-0.5 text-[9px] font-medium uppercase leading-tight tracking-wide text-teal-200/80 sm:mt-1 sm:text-xs sm:tracking-wider">
-                      {s.label}
-                    </p>
-                  </motion.div>
-                ))}
-              </div>
-            </div>
+              <Link
+                href="/get-access"
+                className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-transform hover:scale-[1.02] active:scale-[0.98] sm:px-8 sm:py-3.5 sm:text-xs"
+              >
+                {t("heroCtaPrimary")}
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Trust Pillars — local differentiators vs enterprise competitors */}
-      <section className="bg-white py-10 dark:bg-[#0c1222] sm:py-14">
+      {/* Trust Pillars */}
+      <section className="border-t border-white/10 bg-black py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-xl shadow-stone-950/5 dark:border-stone-800 dark:bg-stone-900 sm:grid-cols-2 sm:gap-6 sm:rounded-3xl sm:p-6 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {trustPillars.map((pillar, i) => {
               const Icon = pillar.icon;
               return (
@@ -177,17 +199,15 @@ export function HomePage() {
                   initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="flex items-start gap-3 rounded-2xl p-3 sm:p-4"
+                  transition={{ delay: i * 0.06 }}
+                  className="flex items-start gap-3 border border-white/10 p-4 sm:p-5"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary dark:bg-primary-light/40">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 text-amber-500">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="font-bold text-stone-900 dark:text-white">{pillar.title}</p>
-                    <p className="mt-0.5 text-sm leading-snug text-stone-500 dark:text-stone-400">
-                      {pillar.desc}
-                    </p>
+                    <p className="font-semibold text-white">{pillar.title}</p>
+                    <p className="mt-1 text-sm leading-snug text-white/50">{pillar.desc}</p>
                   </div>
                 </motion.div>
               );
@@ -196,24 +216,24 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Compact Role Cards — Schoolap-style quick scan */}
-      <section className="bg-white py-16 dark:bg-[#0c1222] sm:py-24">
+      {/* Compact Role Cards */}
+      <section className="bg-black py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="mx-auto max-w-2xl text-center text-lg text-stone-500 dark:text-stone-400 sm:text-xl">
+          <p className="mx-auto max-w-2xl text-center text-sm uppercase tracking-[0.16em] text-white/50 sm:text-base">
             {t("audienceIntro")}
           </p>
-          <div className="mt-10 grid gap-6 sm:mt-12 md:grid-cols-3">
+          <div className="mt-10 grid gap-3 sm:mt-12 md:grid-cols-3">
             {roles.map((role, i) => (
               <motion.div
                 key={role.badge}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.08 }}
               >
                 <Link
                   href={role.href}
-                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-stone-50 transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-xl dark:border-stone-800 dark:bg-stone-900/50 sm:rounded-3xl"
+                  className="group flex h-full flex-col overflow-hidden border border-white/10 transition-colors hover:border-white/30"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image
@@ -221,24 +241,22 @@ export function HomePage() {
                       alt={role.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-cover brightness-75 contrast-110 transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-stone-900/70 via-stone-900/20 to-transparent" />
-                    <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-sm">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                    <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white">
                       {role.icon}
                       {role.badge}
                     </div>
                   </div>
                   <div className="flex flex-1 flex-col p-5 sm:p-6">
-                    <h3 className="text-lg font-bold text-stone-900 dark:text-white sm:text-xl">
-                      {role.title}
-                    </h3>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-stone-500 dark:text-stone-400">
+                    <h3 className="text-lg font-semibold text-white sm:text-xl">{role.title}</h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-white/50">
                       {role.description}
                     </p>
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-primary group-hover:gap-2.5 transition-all">
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500 transition-all group-hover:gap-2.5">
                       {role.cta}
-                      <ArrowRight className="h-4 w-4" />
+                      <ArrowRight className="h-3.5 w-3.5" />
                     </span>
                   </div>
                 </Link>
@@ -248,86 +266,83 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Roles Section - Visual Uplift */}
-      <section className="relative overflow-hidden bg-white py-16 dark:bg-[#0c1222] sm:py-32">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/5 rounded-full blur-[120px] -z-10" />
+      {/* Roles Section */}
+      <section className="relative overflow-hidden border-t border-white/10 bg-black py-16 sm:py-28">
+        <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-amber-500/5 blur-[120px]" />
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center sm:mb-24">
-            <h2 className="text-3xl font-bold tracking-tight text-stone-900 dark:text-white sm:text-4xl md:text-6xl">
+          <div className="mb-12 text-center sm:mb-20">
+            <h2 className="font-display text-2xl tracking-wide text-white sm:text-4xl md:text-5xl">
               {t("rolesSectionTitle")}
             </h2>
-            <p className="mt-4 text-base text-stone-500 dark:text-stone-400 max-w-2xl mx-auto sm:mt-6 sm:text-xl">
+            <p className="mx-auto mt-4 max-w-2xl text-sm uppercase tracking-[0.14em] text-white/50 sm:mt-6 sm:text-base">
               {t("rolesSectionSubtitle")}
             </p>
           </div>
 
-          <div className="space-y-16 sm:space-y-32">
+          <div className="space-y-16 sm:space-y-28">
             {roles.map((role, i) => (
               <motion.div
                 key={role.badge}
-                initial={{ opacity: 0, y: 40 }}
+                initial={{ opacity: 0, y: 32 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.7 }}
                 className={cn(
-                  "flex flex-col gap-8 items-center sm:gap-12 lg:gap-20",
+                  "flex flex-col items-center gap-8 sm:gap-12 lg:gap-16",
                   i % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
                 )}
               >
-                {/* Visual Side */}
-                <div className="flex-1 relative group">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-teal-500/20 to-teal-500/20 rounded-[2.5rem] blur-2xl transition-all group-hover:blur-3xl" />
-                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-stone-200 dark:border-stone-800 shadow-2xl sm:rounded-[2rem]">
+                <div className="relative flex-1 group">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden border border-white/10">
                     <Image
                       src={role.image}
                       alt={role.title}
                       fill
                       sizes="(max-width: 1024px) 100vw, 50vw"
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="object-cover brightness-75 contrast-110 transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                   </div>
-
-                  {/* Floating Elements (Decorative) — desktop only */}
-                  <div className={cn(
-                    "absolute -bottom-6 hidden items-center gap-3 rounded-2xl bg-white dark:bg-stone-900 p-4 shadow-xl border border-stone-100 dark:border-stone-800 sm:flex",
-                    i % 2 === 0 ? "-right-6" : "-left-6"
-                  )}>
-                    <div className="h-10 w-10 rounded-full bg-primary-light dark:bg-primary-light/50 flex items-center justify-center text-primary dark:text-primary">
-                      <CheckCircle2 className="h-6 w-6" />
-                    </div>
-                    <p className="text-sm font-bold text-stone-900 dark:text-white">{role.floatingBadge}</p>
+                  <div
+                    className={cn(
+                      "absolute -bottom-4 hidden items-center gap-3 border border-white/15 bg-black/90 px-4 py-3 backdrop-blur-sm sm:flex",
+                      i % 2 === 0 ? "-right-4" : "-left-4"
+                    )}
+                  >
+                    <CheckCircle2 className="h-5 w-5 text-amber-500" />
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-white">
+                      {role.floatingBadge}
+                    </p>
                   </div>
                 </div>
 
-                {/* Content Side */}
-                <div className="flex-1 space-y-5 sm:space-y-8">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-primary-light dark:bg-primary-light/40 px-3 py-1.5 text-primary dark:text-primary font-bold text-xs tracking-wide sm:gap-3 sm:px-4 sm:py-2 sm:text-sm">
+                <div className="flex-1 space-y-5 sm:space-y-6">
+                  <div className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-500">
                     {role.icon}
                     {role.badge}
                   </div>
-                  <h3 className="text-2xl font-extrabold text-stone-900 dark:text-white sm:text-3xl md:text-5xl leading-tight">
+                  <h3 className="font-display text-2xl leading-tight tracking-wide text-white sm:text-3xl md:text-4xl">
                     {role.title}
                   </h3>
-                  <p className="text-base leading-relaxed text-stone-500 dark:text-stone-400 sm:text-lg">
+                  <p className="text-base leading-relaxed text-white/55 sm:text-lg">
                     {role.description}
                   </p>
-                  <ul className="space-y-4">
+                  <ul className="space-y-3">
                     {role.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-3 text-stone-600 dark:text-stone-300">
-                        <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                        <span className="font-medium">{feature}</span>
+                      <li key={feature} className="flex items-center gap-3 text-white/65">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-amber-500" />
+                        <span className="text-sm font-medium sm:text-base">{feature}</span>
                       </li>
                     ))}
                   </ul>
-                  <div className="pt-4">
+                  <div className="pt-2">
                     <Link
                       href={role.href}
-                      className="inline-flex items-center gap-2 text-lg font-bold text-primary hover:text-primary-hover dark:text-primary dark:hover:text-primary group"
+                      className="group inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500 hover:text-amber-400"
                     >
                       {role.cta}
-                      <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                     </Link>
                   </div>
                 </div>
@@ -337,46 +352,46 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Connectivity / PWA — inspired by Schoolap offline messaging, our own angle */}
-      <section className="relative overflow-hidden bg-teal-950 py-16 dark:bg-[#071018] sm:py-24">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-teal-800/30 via-transparent to-transparent" />
+      {/* Connectivity / PWA */}
+      <section className="relative overflow-hidden border-t border-white/10 bg-black py-16 sm:py-24">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <div className="inline-flex items-center gap-2 rounded-full bg-teal-900/80 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-teal-200">
+              <div className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
                 <Wifi className="h-3.5 w-3.5" />
                 {companyIdentity.productName}
               </div>
-              <h2 className="mt-5 text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl">
+              <h2 className="mt-5 font-display text-2xl leading-tight tracking-wide text-white sm:text-4xl md:text-5xl">
                 {t("connectivityTitle")}
               </h2>
-              <p className="mt-4 text-base leading-relaxed text-teal-100/70 sm:text-lg">
+              <p className="mt-4 text-base leading-relaxed text-white/55 sm:text-lg">
                 {t("connectivitySubtitle")}
               </p>
-              <ul className="mt-8 space-y-4">
+              <ul className="mt-8 space-y-3">
                 {connectivityFeatures.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3 text-teal-50">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-teal-400" />
+                  <li key={feature} className="flex items-start gap-3 text-white/70">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
                     <span className="text-sm sm:text-base">{feature}</span>
                   </li>
                 ))}
               </ul>
               <Link
                 href="/get-access"
-                className="group mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-base font-bold text-teal-950 transition-all hover:bg-teal-50"
+                className="group mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-transform hover:scale-[1.02]"
               >
                 {t("connectivityCta")}
-                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.1 }}
@@ -387,61 +402,44 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* Bento Grid Modules */}
-      <section className="py-16 sm:py-32 bg-stone-50 dark:bg-[#0c1222] border-y border-stone-200 dark:border-stone-800">
+      {/* Modules */}
+      <section className="border-y border-white/10 bg-black py-16 sm:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 max-w-3xl sm:mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-stone-900 dark:text-white sm:text-4xl md:text-5xl">
+          <div className="mb-10 max-w-3xl sm:mb-14">
+            <h2 className="font-display text-2xl tracking-wide text-white sm:text-4xl md:text-5xl">
               {t("modulesSectionTitle")}
             </h2>
-            <p className="mt-4 text-base text-stone-500 dark:text-stone-400 sm:mt-6 sm:text-xl">
+            <p className="mt-4 text-sm uppercase tracking-[0.14em] text-white/50 sm:mt-5 sm:text-base">
               {t("modulesSectionSubtitle")}
             </p>
           </div>
 
-          <div className="grid gap-6 grid-cols-1 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             {homepageModuleGrid.map((m, idx) => {
               const Icon = m.icon;
 
               return (
                 <motion.div
                   key={m.slug}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
+                  transition={{ delay: idx * 0.06 }}
                   className={m.span}
                 >
                   <Link
                     href={`/modules/${m.slug}`}
-                    className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-primary-500/50 hover:shadow-2xl dark:border-stone-800 dark:bg-stone-900 sm:rounded-[2rem] sm:p-8"
+                    className="group relative flex h-full flex-col border border-white/10 p-6 transition-colors hover:border-white/30 sm:p-8"
                   >
-                    <div className="relative z-10 flex h-full flex-col justify-between">
-                      <div>
-                        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-stone-50 transition-colors duration-300 group-hover:bg-primary/10 dark:bg-stone-800">
-                          <Icon className={`h-6 w-6 ${m.iconClassName}`} />
-                        </div>
-                        <h3 className="text-2xl font-bold text-stone-900 dark:text-white">
-                          {m.title}
-                        </h3>
-                        <p className="mt-4 font-medium text-stone-500 dark:text-stone-400">
-                          {m.desc}
-                        </p>
-                      </div>
-                      <div className="mt-8">
-                        <div className="flex items-center justify-end gap-2">
-                          <span className="text-sm font-bold text-primary opacity-0 transition-all duration-300 group-hover:opacity-100 dark:text-primary">
-                            {t("learnMore")}
-                          </span>
-                          <ArrowRight className="h-4 w-4 text-primary opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1 dark:text-primary" />
-                        </div>
-                        <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-stone-200/80 dark:bg-stone-700/80">
-                          <div className="h-full w-12 rounded-full bg-primary opacity-40 transition-all duration-500 ease-out group-hover:w-full group-hover:opacity-100" />
-                        </div>
-                      </div>
+                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-white/15 text-white/60 transition-colors group-hover:border-amber-500/50 group-hover:text-amber-500">
+                      <Icon className="h-5 w-5" />
                     </div>
-
-                    <div className="absolute top-0 right-0 -mr-16 -mt-16 h-48 w-48 rounded-full bg-primary/5 opacity-0 blur-3xl transition-opacity duration-300 group-hover:opacity-100" />
+                    <h3 className="text-xl font-semibold text-white">{m.title}</h3>
+                    <p className="mt-3 flex-1 text-sm leading-relaxed text-white/50">{m.desc}</p>
+                    <div className="mt-6 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500 opacity-0 transition-opacity group-hover:opacity-100">
+                      {t("learnMore")}
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </div>
                   </Link>
                 </motion.div>
               );
@@ -451,74 +449,77 @@ export function HomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="relative overflow-hidden bg-white py-20 dark:bg-[#0c1222] sm:py-28 lg:py-32">
-        <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-primary/10 blur-[120px]" />
-        <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-primary/10 blur-[120px]" />
+      <section className="relative overflow-hidden bg-black py-20 sm:py-28">
+        <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-amber-500/10 blur-[120px]" />
+        <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-white/5 blur-[120px]" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
+              initial={{ opacity: 0, x: -16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.6 }}
               className="text-center lg:text-left"
             >
-              <p className="text-sm font-bold uppercase tracking-[0.2em] text-primary dark:text-primary">
+              <p className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-white/60">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
                 {t("heroBadge")}
               </p>
-              <h2 className="mt-4 text-4xl font-black leading-[1.08] tracking-tight text-stone-900 dark:text-white sm:text-5xl lg:text-6xl">
+              <h2 className="mt-4 font-display text-3xl leading-[1.15] tracking-wide text-white sm:text-4xl lg:text-5xl">
                 {t("finalCtaTitleLine1")}
-                <span className="mt-1 block text-primary dark:text-primary sm:mt-2">
-                  {t("finalCtaTitleLine2")}
-                </span>
               </h2>
-              <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-stone-500 dark:text-stone-400 sm:text-lg lg:mx-0">
+              <p className="mx-auto mt-3 max-w-xl text-base leading-snug text-white/70 sm:mt-4 sm:text-lg lg:mx-0">
+                {t("finalCtaTitleLine2")}
+              </p>
+              <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/50 sm:text-lg lg:mx-0">
                 {t("finalCtaSubtitle", { productName: companyIdentity.productName })}
               </p>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 16 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="rounded-3xl bg-primary p-8 shadow-2xl shadow-primary/25 sm:rounded-[2rem] sm:p-10 lg:p-12"
+              className="border border-white/10 p-8 sm:p-10"
             >
               <ul className="space-y-4">
-                {[t("finalCtaHighlight1"), t("finalCtaHighlight2"), t("finalCtaHighlight3")].map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-teal-50">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-teal-200" />
-                    <span className="text-sm leading-relaxed sm:text-base">{item}</span>
-                  </li>
-                ))}
+                {[t("finalCtaHighlight1"), t("finalCtaHighlight2"), t("finalCtaHighlight3")].map(
+                  (item) => (
+                    <li key={item} className="flex items-start gap-3 text-white/70">
+                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+                      <span className="text-sm leading-relaxed sm:text-base">{item}</span>
+                    </li>
+                  )
+                )}
               </ul>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/get-access"
-                  className="group inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-6 py-4 text-base font-bold text-primary-hover transition-all hover:bg-primary-light"
+                  className="group inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-transform hover:scale-[1.02]"
                 >
                   {t("finalCtaButton")}
-                  <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <Link
                   href="/contact"
-                  className="inline-flex flex-1 items-center justify-center rounded-2xl border-2 border-primary-400/60 px-6 py-4 text-base font-bold text-white transition-all hover:bg-white/10"
+                  className="inline-flex flex-1 items-center justify-center rounded-full border border-white/35 px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-white hover:bg-white/5"
                 >
                   {t("finalCtaSecondary")}
                 </Link>
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-primary-500/40 pt-6 sm:justify-start">
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-white/10 pt-6 sm:justify-start">
                 {homepageCtaSections.map((section, index) => (
                   <span key={section.slug} className="inline-flex items-center gap-5">
                     {index > 0 && (
-                      <span className="hidden h-1 w-1 rounded-full bg-primary/60 sm:inline" aria-hidden />
+                      <span className="hidden h-1 w-1 rounded-full bg-amber-500/60 sm:inline" aria-hidden />
                     )}
                     <Link
                       href={`/modules/${section.slug}`}
-                      className="text-sm font-semibold text-teal-100/90 transition-colors hover:text-white"
+                      className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/50 transition-colors hover:text-white"
                     >
                       {section.label}
                     </Link>

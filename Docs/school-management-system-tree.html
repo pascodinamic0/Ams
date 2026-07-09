@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShuleOS System Tree Map</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+      color: #fff;
+      padding: 28px 40px 24px;
+      border-bottom: 4px solid #2563eb;
+    }
+    header h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; }
+    header p { margin-top: 8px; color: #cbd5e1; font-size: 15px; }
+    .wrap { padding: 32px 24px 48px; overflow: auto; }
+    .mermaid { min-width: 3400px; }
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 12px 20px;
+      padding: 16px 40px 24px; background: #fff;
+      border-top: 1px solid #e2e8f0;
+    }
+    .legend span {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 13px; color: #475569;
+    }
+    .swatch {
+      width: 14px; height: 14px; border-radius: 4px; border: 1px solid #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ShuleOS - Complete School Management System Tree</h1>
+    <p>Auto-generated architecture map: modules, portals, roles, and backend layers</p>
+  </header>
+  <div class="wrap">
+    <pre class="mermaid">
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "fontFamily": "Inter, Segoe UI, Arial",
+    "fontSize": "14px",
+    "lineColor": "#64748b"
+  },
+  "flowchart": { "curve": "basis", "padding": 18, "nodeSpacing": 42, "rankSpacing": 70 }
+}}%%
+flowchart TB
+    ROOT["ShuleOS<br/>School Management System"]
+
+    AUTH["Authentication & Access"]
+    PUBLIC["Public Website"]
+    SUPER["Super Admin"]
+    ACADEMIC["Academic Module"]
+    FINANCE["Finance Module"]
+    OPS["Operations Module"]
+    TEACHER["Teacher Portal"]
+    PARENT["Parent Portal"]
+    STUDENT["Student Portal"]
+    ANALYTICS["Analytics"]
+    COMMS["Communication"]
+    SETTINGS["Settings & Onboarding"]
+    BACKEND["Backend & Data Layer"]
+
+    ROOT --> AUTH & PUBLIC & SUPER & ACADEMIC & FINANCE & OPS
+    ROOT --> TEACHER & PARENT & STUDENT & ANALYTICS & COMMS & SETTINGS & BACKEND
+
+    AUTH --> AUTH1["Login"] & AUTH2["Register"] & AUTH3["Forgot Password"]
+    AUTH --> AUTH4["Reset Password"] & AUTH5["Role-Based Access"] & AUTH6["Auth Callback"]
+
+    PUBLIC --> PUB1["Homepage"] & PUB2["Features"] & PUB3["Modules"] & PUB4["Contact"]
+    PUBLIC --> PUB5["Online Admissions"] & PUB6["Public Events"] & PUB7["School Pages"]
+
+    SUPER --> SA1["Dashboard"] & SA2["Schools"] & SA3["Branches"] & SA4["Users"]
+    SUPER --> SA5["Roles & Permissions"] & SA6["Audit Logs"] & SA7["Feature Flags"]
+
+    ACADEMIC --> AC1["Students"] & AC2["Guardians"] & AC3["Admissions"] & AC4["Classes"]
+    ACADEMIC --> AC5["Sections"] & AC6["Subjects"] & AC7["Timetable"] & AC8["Curriculum"]
+    ACADEMIC --> AC9["Attendance"] & AC10["Grades"] & AC11["Report Cards"] & AC12["Academic Team"]
+
+    FINANCE --> FI1["Fee Structure"] & FI2["Invoices"] & FI3["Payments"] & FI4["Payroll"]
+    FINANCE --> FI5["Expenses"] & FI6["Finance Reports"] & FI7["Fee Reminders"]
+
+    OPS --> OP1["Library"] & OP2["Transport"] & OP3["Events"] & OP4["Staff"] & OP5["Operations Dashboard"]
+
+    TEACHER --> TP1["My Classes"] & TP2["Attendance"] & TP3["Gradebook"] & TP4["Assignments"]
+    TEACHER --> TP5["Exams"] & TP6["Report Cards"] & TP7["Messages"]
+
+    PARENT --> PA1["Fees"] & PA2["Payments"] & PA3["Timetable"] & PA4["Assignments"]
+    PARENT --> PA5["Events"] & PA6["Transport"] & PA7["Performance"] & PA8["Messages"]
+
+    STUDENT --> ST1["Timetable"] & ST2["Assignments"] & ST3["Grades"]
+    STUDENT --> ST4["Library"] & ST5["Events"] & ST6["Messages"]
+
+    ANALYTICS --> AN1["Students Analytics"] & AN2["Attendance Analytics"]
+    ANALYTICS --> AN3["Finance Analytics"] & AN4["Branch Comparison"]
+
+    COMMS --> CO1["Messaging"] & CO2["Notifications"] & CO3["Outreach Campaigns"]
+
+    SETTINGS --> SE1["User Settings"] & SE2["School Setup Guide"]
+    SETTINGS --> SE3["Profile Onboarding"] & SE4["System Preferences"]
+
+    BACKEND --> BE1["Server Actions"] & BE2["API Routes"] & BE3["Database Layer"] & BE4["Auth Services"]
+    BACKEND --> BE5["Supabase Migrations"] & BE6["Cron Jobs"] & BE7["Webhooks"] & BE8["PWA / Offline"]
+
+    classDef root fill:#0f172a,color:#ffffff,stroke:#0f172a,stroke-width:2px,rx:12,ry:12;
+    classDef auth fill:#eef2ff,color:#312e81,stroke:#6366f1,stroke-width:1.5px;
+    classDef public fill:#fffbeb,color:#92400e,stroke:#f59e0b,stroke-width:1.5px;
+    classDef super fill:#fef2f2,color:#991b1b,stroke:#ef4444,stroke-width:1.5px;
+    classDef academic fill:#eff6ff,color:#1e40af,stroke:#3b82f6,stroke-width:1.5px;
+    classDef finance fill:#ecfdf5,color:#065f46,stroke:#10b981,stroke-width:1.5px;
+    classDef ops fill:#f8fafc,color:#334155,stroke:#64748b,stroke-width:1.5px;
+    classDef teacher fill:#f5f3ff,color:#5b21b6,stroke:#8b5cf6,stroke-width:1.5px;
+    classDef parent fill:#fdf2f8,color:#9d174d,stroke:#ec4899,stroke-width:1.5px;
+    classDef student fill:#f0f9ff,color:#075985,stroke:#0ea5e9,stroke-width:1.5px;
+    classDef analytics fill:#f0fdfa,color:#115e59,stroke:#14b8a6,stroke-width:1.5px;
+    classDef comms fill:#fff7ed,color:#9a3412,stroke:#f97316,stroke-width:1.5px;
+    classDef settings fill:#faf5ff,color:#6b21a8,stroke:#a855f7,stroke-width:1.5px;
+    classDef backend fill:#f1f5f9,color:#334155,stroke:#475569,stroke-width:1.5px;
+    classDef leaf fill:#ffffff,color:#1e293b,stroke:#cbd5e1,stroke-width:1px;
+
+    class ROOT root;
+    class AUTH auth; class PUBLIC public; class SUPER super; class ACADEMIC academic;
+    class FINANCE finance; class OPS ops; class TEACHER teacher; class PARENT parent;
+    class STUDENT student; class ANALYTICS analytics; class COMMS comms; class SETTINGS settings; class BACKEND backend;
+    class AUTH1,AUTH2,AUTH3,AUTH4,AUTH5,AUTH6 leaf;
+    class PUB1,PUB2,PUB3,PUB4,PUB5,PUB6,PUB7 leaf;
+    class SA1,SA2,SA3,SA4,SA5,SA6,SA7 leaf;
+    class AC1,AC2,AC3,AC4,AC5,AC6,AC7,AC8,AC9,AC10,AC11,AC12 leaf;
+    class FI1,FI2,FI3,FI4,FI5,FI6,FI7 leaf;
+    class OP1,OP2,OP3,OP4,OP5 leaf;
+    class TP1,TP2,TP3,TP4,TP5,TP6,TP7 leaf;
+    class PA1,PA2,PA3,PA4,PA5,PA6,PA7,PA8 leaf;
+    class ST1,ST2,ST3,ST4,ST5,ST6 leaf;
+    class AN1,AN2,AN3,AN4 leaf;
+    class CO1,CO2,CO3 leaf;
+    class SE1,SE2,SE3,SE4 leaf;
+    class BE1,BE2,BE3,BE4,BE5,BE6,BE7,BE8 leaf;
+    </pre>
+  </div>
+  <div class="legend">
+    <span><i class="swatch" style="background:#eef2ff;border-color:#6366f1"></i>Auth</span>
+    <span><i class="swatch" style="background:#fffbeb;border-color:#f59e0b"></i>Public Site</span>
+    <span><i class="swatch" style="background:#fef2f2;border-color:#ef4444"></i>Super Admin</span>
+    <span><i class="swatch" style="background:#eff6ff;border-color:#3b82f6"></i>Academic</span>
+    <span><i class="swatch" style="background:#ecfdf5;border-color:#10b981"></i>Finance</span>
+    <span><i class="swatch" style="background:#f8fafc;border-color:#64748b"></i>Operations</span>
+    <span><i class="swatch" style="background:#f5f3ff;border-color:#8b5cf6"></i>Teacher</span>
+    <span><i class="swatch" style="background:#fdf2f8;border-color:#ec4899"></i>Parent</span>
+    <span><i class="swatch" style="background:#f0f9ff;border-color:#0ea5e9"></i>Student</span>
+    <span><i class="swatch" style="background:#f0fdfa;border-color:#14b8a6"></i>Analytics</span>
+    <span><i class="swatch" style="background:#fff7ed;border-color:#f97316"></i>Communication</span>
+    <span><i class="swatch" style="background:#faf5ff;border-color:#a855f7"></i>Settings</span>
+    <span><i class="swatch" style="background:#f1f5f9;border-color:#475569"></i>Backend</span>
+  </div>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({ startOnLoad: true, securityLevel: "loose" });
+    await mermaid.run();
+    document.body.setAttribute("data-ready", "true");
+  </script>
+</body>
+</html>

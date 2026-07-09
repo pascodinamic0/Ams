@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Chart } from "@/components/ui/chart";
+import { Chart } from "@/components/ui/chart-lazy";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getAttendanceAnalytics } from "@/lib/db";

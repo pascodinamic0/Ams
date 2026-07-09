@@ -2,14 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { fetchUnreadConversationCount } from "@/lib/actions/conversations";
+import { useShellBadges } from "@/components/layout/shell-badges-provider";
 import { getMobileTabs, isTabActive } from "@/lib/layout/mobile-nav";
 import { cn } from "@/lib/utils";
-
-const MESSAGING_ROLES = new Set(["super_admin", "academic_admin", "teacher", "parent"]);
 
 interface MobileTabBarProps {
   role: string;
@@ -22,26 +19,7 @@ export function MobileTabBar({ role, onMenuOpen }: MobileTabBarProps) {
   const tCommon = useTranslations("common");
   const tabs = getMobileTabs(role);
   const tabHrefs = tabs.map((tab) => tab.href);
-  const [unreadMessages, setUnreadMessages] = useState(0);
-
-  useEffect(() => {
-    if (!MESSAGING_ROLES.has(role)) return;
-
-    let active = true;
-
-    async function load() {
-      const count = await fetchUnreadConversationCount();
-      if (active) setUnreadMessages(count);
-    }
-
-    load();
-    const interval = setInterval(load, 60_000);
-
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
-  }, [role, pathname]);
+  const { unreadMessages } = useShellBadges();
 
   return (
     <nav

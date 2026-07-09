@@ -275,7 +275,7 @@ async function seedStudentsAndGuardians(supabase, schoolId, branchId, classIds, 
           gender: s.gender,
           class_id: classIds[s.classKey],
           status: "active",
-          notes: s.key === "demo" ? "Demo account ù no known allergies." : null,
+          notes: s.key === "demo" ? "Demo account ‚Äî no known allergies." : null,
         }
       );
     } else {
@@ -411,7 +411,7 @@ async function seedGrades(supabase, studentIds, classIds, subjectIds) {
 async function seedAssignments(supabase, classIds, subjectIds, teacherId, studentIds) {
   const classId = classIds["9A"];
   const assignments = [
-    { title: "Algebra Problem Set 3", description: "Complete exercises 1ù20 from chapter 5.", dueDays: 7 },
+    { title: "Algebra Problem Set 3", description: "Complete exercises 1-20 from chapter 5.", dueDays: 7 },
     { title: "Essay: My Summer", description: "Write a 500-word essay about your summer break.", dueDays: 14 },
     { title: "Science Lab Report", description: "Document your plant growth experiment results.", dueDays: -3 },
   ];
@@ -475,7 +475,7 @@ async function seedFinance(supabase, branchId, classIds, studentIds, financeUser
   const tuitionId = await upsertByMatch(
     supabase,
     "fee_structures",
-    { branch_id: branchId, name: "Tuition ù Term 1" },
+    { branch_id: branchId, name: "Tuition ‚Äî Term 1" },
     { amount: 2500, class_id: classIds["9A"], description: "Term 1 tuition fees" }
   );
   const transportFeeId = await upsertByMatch(
@@ -549,7 +549,7 @@ async function seedFinance(supabase, branchId, classIds, studentIds, financeUser
   }
 
   const expenses = [
-    { category: "Utilities", amount: 1200, description: "Electricity ù Main Campus", days: 5 },
+    { category: "Utilities", amount: 1200, description: "Electricity ‚Äî Main Campus", days: 5 },
     { category: "Supplies", amount: 450, description: "Classroom supplies", days: 12 },
     { category: "Maintenance", amount: 800, description: "HVAC repair", days: 20 },
   ];
@@ -756,7 +756,7 @@ async function main() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  console.log("Seeding demo dataù\n");
+  console.log("Seeding demo data‚Äî\n");
 
   const school = await ensureSchool(supabase);
   console.log(`? School: ${school.name}`);
@@ -808,7 +808,7 @@ async function main() {
   for (const account of DEMO_USERS) {
     console.log(`${account.role.padEnd(22)} ${account.email}`);
   }
-  console.log("\nLogin at /login ù remove demo data manually when finished.");
+  console.log("\nLogin at /login ‚Äî remove demo data manually when finished.");
   console.log("---\n");
 }
 

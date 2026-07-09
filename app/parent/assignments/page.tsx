@@ -35,6 +35,8 @@ export default async function ParentAssignmentsPage() {
   );
   const tableData = assignments.map((row) => ({
     ...row,
+    // Same assignment can appear for multiple linked students in one class.
+    row_key: `${row.student_id}:${row.id}`,
     due_date_display: row.due_date
       ? format(new Date(row.due_date), "MMM d, yyyy")
       : "—",
@@ -65,6 +67,7 @@ export default async function ParentAssignmentsPage() {
       ) : (
         <DataTable
           data={tableData}
+          keyField="row_key"
           columns={[
             { id: "student", header: t("colStudent"), accessorKey: "student_name", sortable: true },
             { id: "title", header: t("colAssignment"), accessorKey: "title", sortable: true },

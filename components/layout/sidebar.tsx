@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
   BarChart3,
   Bell,
@@ -30,7 +29,7 @@ import {
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { fetchUnreadConversationCount } from "@/lib/actions/conversations";
+import { useShellBadges } from "@/components/layout/shell-badges-provider";
 import { isNavItemActive } from "@/lib/layout/nav-active";
 
 const iconClass = "h-4 w-4";
@@ -205,8 +204,6 @@ function getNavForRole(role: string): NavItem[] {
   return ROLE_NAV[normalized] ?? ROLE_NAV.student;
 }
 
-const MESSAGING_ROLES = new Set(["super_admin", "academic_admin", "teacher", "parent"]);
-
 interface SidebarProps {
   role?: string;
 }
@@ -217,26 +214,7 @@ export function Sidebar({ role = "student" }: SidebarProps) {
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const tMessages = useTranslations("messages");
-  const [unreadMessages, setUnreadMessages] = useState(0);
-
-  useEffect(() => {
-    if (!MESSAGING_ROLES.has(role)) return;
-
-    let active = true;
-
-    async function load() {
-      const count = await fetchUnreadConversationCount();
-      if (active) setUnreadMessages(count);
-    }
-
-    load();
-    const interval = setInterval(load, 60_000);
-
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
-  }, [role, pathname]);
+  const { unreadMessages } = useShellBadges();
 
   const navHrefs = navItems.map((item) => item.href);
 

@@ -9,11 +9,14 @@ import { cn } from "@/lib/utils";
 interface LanguageSwitcherProps {
   className?: string;
   variant?: "select" | "buttons";
+  /** Dark marketing chrome vs in-app light/dark dual-mode */
+  tone?: "default" | "marketing";
 }
 
 export function LanguageSwitcher({
   className,
   variant = "select",
+  tone = "default",
 }: LanguageSwitcherProps) {
   const locale = useLocale() as Locale;
   const [isPending, startTransition] = useTransition();
@@ -27,6 +30,34 @@ export function LanguageSwitcher({
   }
 
   if (variant === "buttons") {
+    if (tone === "marketing") {
+      return (
+        <div
+          className={cn(
+            "flex gap-1 rounded-full border border-white/10 bg-white/5 p-1",
+            className
+          )}
+        >
+          {(Object.keys(localeNames) as Locale[]).map((code) => (
+            <button
+              key={code}
+              type="button"
+              disabled={isPending}
+              onClick={() => handleChange(code)}
+              className={cn(
+                "rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] transition-colors",
+                locale === code
+                  ? "bg-white text-black"
+                  : "text-white/50 hover:text-white"
+              )}
+            >
+              {code.toUpperCase()}
+            </button>
+          ))}
+        </div>
+      );
+    }
+
     return (
       <div className={cn("flex gap-1 rounded-lg bg-stone-100 p-1 dark:bg-stone-800", className)}>
         {(Object.keys(localeNames) as Locale[]).map((code) => (

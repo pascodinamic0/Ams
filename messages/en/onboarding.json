@@ -13,38 +13,50 @@
   "allStepsComplete": "All steps complete!",
   "account": {
     "badge": "Account setup",
-    "title": "Set up your profile",
-    "subtitle": "A quick setup so your team knows who you are across ShuleOS.",
+    "title": "Make yourself findable",
+    "subtitle": "Without a clear name and face, messages and approvals stall while people guess who you are. Two minutes now saves that friction every day.",
     "stepProgress": "Step {current} of {total}: {title}",
-    "welcomeBody": "Welcome! You are signed in as a {role}. We will confirm your name and you can add a profile photo before you continue.",
+    "welcomeBody": "You're in as a {role}. Next we lock in your name and an optional photo so your team stops chasing the wrong person in chat and reports.",
     "signedInAs": "Signed in as {email}",
     "displayName": "Display name",
     "displayNamePlaceholder": "Your full name",
-    "displayNameHint": "This name appears on your profile, messages, and reports.",
+    "displayNameHint": "This is what shows on messages, reports, and approvals — not a nickname people have to decode.",
     "nameRequired": "Please enter your name to continue.",
     "saveFailed": "Could not save your name. Try again.",
-    "uploadPhoto": "Upload profile photo",
-    "photoPrompt": "Optional — tap your photo to upload an image. JPG, PNG, GIF, or WebP up to 5MB.",
+    "uploadPhoto": "Upload photo",
+    "takePhoto": "Take photo",
+    "capturePhoto": "Capture",
+    "usePhoto": "Use this photo",
+    "retakePhoto": "Retake",
+    "switchCamera": "Flip camera",
+    "cameraHint": "Center your face in the frame, then capture. You can retake before saving.",
+    "cameraPreviewAlt": "Captured profile photo preview",
+    "cameraStarting": "Starting camera...",
+    "cameraCapturing": "Capturing...",
+    "cameraUnsupported": "This device or browser does not support camera capture. Upload a photo instead.",
+    "cameraPermissionDenied": "Camera access was denied. Allow camera permission, or upload a photo instead.",
+    "cameraCaptureFailed": "Could not capture the photo. Try again.",
+    "photoPrompt": "Optional — a face beats another anonymous initial in the staff list. JPG, PNG, GIF, or WebP up to 5MB.",
     "photoUploading": "Uploading your photo...",
-    "photoReady": "Photo uploaded. You can tap to change it.",
+    "photoReady": "Photo uploaded. You can upload or take a new one.",
     "photoUploaded": "Profile photo uploaded",
     "photoUploadFailed": "Could not upload your photo. Try again.",
     "photoRequired": "Add a profile photo to finish setup.",
-    "finish": "Finish setup",
+    "finish": "Enter ShuleOS",
     "completeSuccess": "Your profile is ready.",
     "completeFailed": "Could not finish setup. Try again.",
     "steps": {
       "welcome": {
         "title": "Welcome",
-        "description": "A short walkthrough to personalize your account."
+        "description": "A short pass so your account stops looking like a blank seat."
       },
       "profile": {
         "title": "Your name",
-        "description": "Confirm how your name should appear across the platform."
+        "description": "Confirm the name people should trust when they message or approve you."
       },
       "photo": {
         "title": "Profile photo",
-        "description": "Add a photo so teachers, staff, and families can recognize you. You can skip this and add one later in Settings."
+        "description": "Add a photo so staff and families recognize you at a glance. Upload a file or take one with your camera — or skip and add it later in Settings."
       }
     }
   },

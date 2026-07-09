@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Chart } from "@/components/ui/chart";
+import { Chart } from "@/components/ui/chart-lazy";
 import { ExportButton } from "@/components/ui/export-button";
 import { getFinanceAnalytics, getSchoolCurrencyForSchool } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";

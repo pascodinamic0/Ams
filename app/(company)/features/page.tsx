@@ -16,7 +16,6 @@ import {
   BarChart3,
   Globe,
   ArrowRight,
-  Check
 } from "lucide-react";
 
 function scrollToHashTarget() {
@@ -38,55 +37,55 @@ export default function FeaturesPage() {
       {
         slug: "platform-admin",
         title: t("platformAdmin"),
-        icon: <Building2 className="h-6 w-6" />,
+        icon: <Building2 className="h-5 w-5" />,
         items: t.raw("platformAdminItems") as string[],
       },
       {
         slug: "academic",
         title: t("academicModule"),
-        icon: <GraduationCap className="h-6 w-6" />,
+        icon: <GraduationCap className="h-5 w-5" />,
         items: t.raw("academicItems") as string[],
       },
       {
         slug: "teacher",
         title: t("teacherModule"),
-        icon: <Users className="h-6 w-6" />,
+        icon: <Users className="h-5 w-5" />,
         items: t.raw("teacherItems") as string[],
       },
       {
         slug: "finance",
         title: t("financeModule"),
-        icon: <Wallet className="h-6 w-6" />,
+        icon: <Wallet className="h-5 w-5" />,
         items: t.raw("financeItems") as string[],
       },
       {
         slug: "operations",
         title: t("operationsModule"),
-        icon: <Settings className="h-6 w-6" />,
+        icon: <Settings className="h-5 w-5" />,
         items: t.raw("operationsItems") as string[],
       },
       {
         slug: "parent-portal",
         title: t("parentPortal"),
-        icon: <School className="h-6 w-6" />,
+        icon: <School className="h-5 w-5" />,
         items: t.raw("parentItems") as string[],
       },
       {
         slug: "student-portal",
         title: t("studentPortal"),
-        icon: <BookOpen className="h-6 w-6" />,
+        icon: <BookOpen className="h-5 w-5" />,
         items: t.raw("studentItems") as string[],
       },
       {
         slug: "analytics",
         title: t("analyticsModule"),
-        icon: <BarChart3 className="h-6 w-6" />,
+        icon: <BarChart3 className="h-5 w-5" />,
         items: t.raw("analyticsItems") as string[],
       },
       {
         slug: "school-websites",
         title: t("schoolWebsitesModule"),
-        icon: <Globe className="h-6 w-6" />,
+        icon: <Globe className="h-5 w-5" />,
         items: t.raw("schoolWebsitesItems") as string[],
       },
     ],
@@ -104,53 +103,53 @@ export default function FeaturesPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white pb-24 pt-[calc(env(safe-area-inset-top)+7.5rem)] dark:bg-[#0c1222] sm:pt-40 md:pt-44 lg:pt-48">
+    <div className="min-h-screen bg-black pb-24 pt-[calc(env(safe-area-inset-top)+7.5rem)] sm:pt-40 md:pt-44 lg:pt-48">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-3xl"
         >
-          <h1 className="text-4xl font-black tracking-tight text-stone-900 dark:text-white md:text-6xl">
-            {t("heroTitleLine1")} <br />
-            <span className="text-primary dark:text-primary">{t("heroTitleLine2")}</span>
+          <p className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-white/60">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
+            {companyIdentity.productName}
+          </p>
+          <h1 className="mt-5 font-display text-3xl leading-tight tracking-wide text-white sm:text-5xl md:text-6xl">
+            {t("heroTitleLine1")}{" "}
+            <span className="text-white/70">{t("heroTitleLine2")}</span>
           </h1>
-          <p className="mt-8 text-xl text-stone-500 dark:text-stone-400 leading-relaxed">
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-white/55 sm:mt-8 sm:text-lg">
             {t("heroSubtitle", { productName: companyIdentity.productName })}
           </p>
         </motion.div>
 
-        <div className="mt-20 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-16 grid gap-4 sm:mt-20 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, idx) => (
             <motion.div
               key={f.slug}
               id={f.slug}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.05 }}
-              className="group relative scroll-mt-32 rounded-3xl border border-stone-200 bg-white p-8 transition-all hover:shadow-2xl hover:border-primary-500 dark:border-stone-800 dark:bg-stone-900"
+              transition={{ delay: idx * 0.04 }}
+              className="group scroll-mt-32 border border-white/10 bg-transparent p-6 transition-colors hover:border-white/25 sm:p-8"
             >
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-stone-50 text-stone-600 transition-colors group-hover:bg-primary group-hover:text-white dark:bg-stone-800 dark:text-stone-400">
+              <div className="mb-5 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/70 transition-colors group-hover:border-amber-500/50 group-hover:text-amber-500">
                   {f.icon}
                 </div>
-                <h2 className="text-2xl font-bold text-stone-900 dark:text-white">
+                <h2 className="text-lg font-semibold text-white sm:text-xl">
                   {f.title}
                 </h2>
               </div>
               <ul className="space-y-3">
                 {f.items.map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-base text-stone-600 dark:text-stone-400">
-                    <div className="h-1.5 w-1.5 rounded-full bg-primary group-hover:scale-150 transition-transform" />
+                  <li key={item} className="flex items-start gap-3 text-sm text-white/55">
+                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-500" />
                     {item}
                   </li>
                 ))}
               </ul>
-
-              <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                <Check className="h-5 w-5 text-primary" />
-              </div>
             </motion.div>
           ))}
         </div>
@@ -159,23 +158,25 @@ export default function FeaturesPage() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-24 rounded-[3rem] bg-primary p-12 lg:p-20 text-center text-white"
+          className="mt-20 border border-white/10 px-6 py-12 text-center sm:mt-24 sm:px-12 sm:py-16"
         >
-          <h2 className="text-3xl font-bold md:text-5xl">{t("ctaTitle")}</h2>
-          <p className="mt-6 text-xl text-teal-100 max-w-2xl mx-auto">
+          <h2 className="font-display text-2xl tracking-wide text-white sm:text-4xl">
+            {t("ctaTitle")}
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-sm uppercase tracking-[0.16em] text-white/50 sm:mt-6 sm:text-base">
             {t("ctaSubtitle")}
           </p>
-          <div className="mt-12 flex flex-wrap justify-center gap-6">
+          <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4">
             <Link
               href="/get-access"
-              className="group inline-flex items-center gap-2 rounded-2xl bg-white px-8 py-4 text-lg font-bold text-teal-900 transition-all hover:scale-105"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-transform hover:scale-[1.02]"
             >
               {t("ctaPrimary")}
-              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </Link>
             <Link
               href="/login"
-              className="rounded-2xl border-2 border-primary-400 px-8 py-4 text-lg font-bold text-white transition-all hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-full border border-white/35 px-7 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-white hover:bg-white/5"
             >
               {tNav("login")}
             </Link>

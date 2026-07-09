@@ -36,6 +36,7 @@
   --radius: 0.75rem;
   --font-sans: var(--font-jakarta-sans);
   --font-mono: var(--font-jetbrains-mono);
+  --font-display: var(--font-silkscreen);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -95,6 +96,7 @@
 
   --font-sans: var(--font-jakarta-sans);
   --font-mono: var(--font-jetbrains-mono);
+  --font-display: var(--font-silkscreen);
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) * 0.75);
@@ -107,6 +109,34 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.font-display {
+  font-family: var(--font-silkscreen), var(--font-mono), ui-monospace, monospace;
+}
+
+/* Forced dark surface for marketing + auth funnel (independent of OS theme) */
+.marketing-surface {
+  color-scheme: dark;
+  --background: #000000;
+  --foreground: #f5f5f4;
+  --brand-primary: #f59e0b;
+  --brand-primary-hover: #d97706;
+  --brand-primary-light: #451a03;
+  --brand-primary-border: #92400e;
+  --brand-primary-foreground: #000000;
+  --brand-accent: #fbbf24;
+  --brand-accent-hover: #f59e0b;
+  --brand-accent-light: #451a03;
+  --brand-secondary: #171717;
+  --brand-secondary-foreground: #f5f5f4;
+  --brand-surface: #0a0a0a;
+  --brand-surface-raised: #171717;
+  --brand-border: #262626;
+  --brand-muted: #a3a3a3;
+  --brand-muted-foreground: #737373;
+  background: #000000;
+  color: #f5f5f4;
 }
 
 ::selection {

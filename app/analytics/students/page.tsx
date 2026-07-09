@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Chart } from "@/components/ui/chart";
+import { Chart } from "@/components/ui/chart-lazy";
 import { DataTable } from "@/components/ui/data-table";
 import { getStudentAnalytics, getAcademicDashboardData } from "@/lib/db";
 import { getClasses } from "@/lib/db";

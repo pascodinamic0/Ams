@@ -27,7 +27,7 @@ const EXPORT_PATH = join(__dirname, ".migration-export.json");
 const DEMO_PASSWORD = "AMSdemo2026!";
 const MIGRATION_PASSWORD = process.env.MIGRATION_USER_PASSWORD ?? "AMSmigrate2026!";
 
-/** Tables in FK-safe order. roles omitted ù seeded by migrations on target. */
+/** Tables in FK-safe order. roles omitted ‚Äî seeded by migrations on target. */
 const TABLE_ORDER = [
   "schools",
   "branches",

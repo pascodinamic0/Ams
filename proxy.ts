@@ -1,14 +1,9 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
-import {
-  getSchoolAccessContext,
-  schoolPortalBlocked,
-} from "@/lib/auth/school-access";
+import { getProxyAuthContext } from "@/lib/auth/proxy-context";
+import { schoolPortalBlocked } from "@/lib/auth/school-access";
 import { getPostAuthRedirect } from "@/lib/auth/post-auth-redirect";
-import {
-  getProfileOnboardingState,
-  isProfileOnboardingExempt,
-} from "@/lib/auth/profile-onboarding";
+import { isProfileOnboardingExempt } from "@/lib/auth/profile-onboarding";
 import { canAccessPath, getDashboardForRole } from "@/lib/auth/rbac";
 
 const PUBLIC_ROUTES = [
@@ -103,31 +98,25 @@ export async function proxy(request: NextRequest) {
     });
   }
 
-  const access = await getSchoolAccessContext(request, user.id);
+  const access = await getProxyAuthContext(request, user);
   const role = access?.role ?? null;
 
-  if (!isProfileOnboardingExempt(pathname)) {
-    const onboarding = await getProfileOnboardingState(request, user.id);
-    if (onboarding?.needsOnboarding) {
-      if (serverAction) {
-        return supabaseResponse;
-      }
-      return redirectWithCookies(request, supabaseResponse, "/onboarding");
+  if (!isProfileOnboardingExempt(pathname) && access?.needsOnboarding) {
+    if (serverAction) {
+      return supabaseResponse;
     }
+    return redirectWithCookies(request, supabaseResponse, "/onboarding");
   }
 
-  if (pathname === "/onboarding") {
-    const onboarding = await getProfileOnboardingState(request, user.id);
-    if (onboarding && !onboarding.needsOnboarding) {
-      if (serverAction) {
-        return supabaseResponse;
-      }
-      return redirectWithCookies(
-        request,
-        supabaseResponse,
-        getDashboardForRole(onboarding.role)
-      );
+  if (pathname === "/onboarding" && access && !access.needsOnboarding) {
+    if (serverAction) {
+      return supabaseResponse;
     }
+    return redirectWithCookies(
+      request,
+      supabaseResponse,
+      getDashboardForRole(access.role)
+    );
   }
 
   if (role && !canAccessPath(role, pathname)) {
@@ -148,10 +137,7 @@ export async function proxy(request: NextRequest) {
     return redirectWithCookies(request, supabaseResponse, "/pending");
   }
 
-  if (
-    access?.schoolStatus === "approved" &&
-    pathname === "/pending"
-  ) {
+  if (access?.schoolStatus === "approved" && pathname === "/pending") {
     if (serverAction) {
       return supabaseResponse;
     }

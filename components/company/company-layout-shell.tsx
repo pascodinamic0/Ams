@@ -54,41 +54,36 @@ export function CompanyLayoutShell({
     return <>{children}</>;
   }
 
-  const navLinkClass = (href: string) =>
-    cn(
-      "whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold transition-all lg:px-4 lg:py-2.5 lg:text-[0.9375rem]",
-      pathname === href || (href !== "/" && pathname.startsWith(`${href}/`))
-        ? solidHeader
-          ? "bg-primary-light text-primary-hover dark:bg-primary-light/50 dark:text-primary"
-          : "bg-white/15 text-white"
-        : solidHeader
-          ? "text-stone-600 hover:bg-stone-100 hover:text-primary dark:text-stone-400 dark:hover:bg-stone-800 dark:hover:text-primary"
-          : "text-teal-100 hover:bg-white/10 hover:text-white"
+  const navLinkClass = (href: string) => {
+    const active =
+      pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+
+    return cn(
+      "whitespace-nowrap px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors lg:px-4",
+      active ? "text-white" : "text-white/65 hover:text-white"
     );
+  };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0c1222] selection:bg-primary selection:text-white">
+    <div className="marketing-surface min-h-screen selection:bg-amber-500 selection:text-black">
       <header
         className={cn(
           "fixed inset-x-0 top-0 z-50 transition-all duration-500",
           "px-4 pt-[calc(env(safe-area-inset-top)+0.75rem)] md:px-6 md:pt-0 lg:px-8",
           solidHeader
-            ? "pb-3 md:border-b md:border-stone-200/50 md:bg-white/85 md:py-4 md:backdrop-blur-xl md:dark:border-stone-800/50 md:dark:bg-[#0c1222]/85 lg:py-5"
+            ? "pb-3 md:border-b md:border-white/10 md:bg-black/80 md:py-4 md:backdrop-blur-xl lg:py-5"
             : "pb-3 md:bg-transparent md:py-5 lg:py-6"
         )}
       >
         <div
           className={cn(
             "mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 md:min-h-16 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-6 lg:min-h-[4.25rem] lg:gap-10",
-            "max-md:min-h-14 max-md:rounded-2xl max-md:border max-md:px-4 max-md:shadow-lg max-md:backdrop-blur-xl",
-            solidHeader
-              ? "max-md:border-stone-200/70 max-md:bg-white/90 max-md:shadow-stone-950/5 dark:max-md:border-stone-800/70 dark:max-md:bg-[#0a0f1e]/90"
-              : "max-md:border-white/10 max-md:bg-teal-950/25 max-md:shadow-teal-950/20"
+            "max-md:min-h-14 max-md:rounded-2xl max-md:border max-md:border-white/10 max-md:bg-black/85 max-md:px-4 max-md:shadow-lg max-md:shadow-black/30 max-md:backdrop-blur-xl"
           )}
         >
           <Link
             href="/"
-            className="group min-w-0 shrink-0 justify-self-start rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+            className="group min-w-0 shrink-0 justify-self-start rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
             aria-label="ShuleOS home"
           >
             <motion.div
@@ -96,11 +91,7 @@ export function CompanyLayoutShell({
               whileTap={{ scale: 0.98 }}
               transition={{ type: "spring", stiffness: 420, damping: 22 }}
             >
-              <BrandLogo
-                size={38}
-                className="gap-2.5 md:gap-3"
-                variant={solidHeader ? "dark" : "light"}
-              />
+              <BrandLogo size={38} className="gap-2.5 md:gap-3" variant="light" />
             </motion.div>
           </Link>
 
@@ -118,23 +109,13 @@ export function CompanyLayoutShell({
           <div className="flex shrink-0 items-center justify-end gap-2 justify-self-end md:gap-3 lg:gap-4">
             <Link
               href="/login"
-              className={cn(
-                "hidden whitespace-nowrap px-1 text-sm font-semibold transition-all xl:inline-flex",
-                solidHeader
-                  ? "text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white"
-                  : "text-teal-100 hover:text-white"
-              )}
+              className="hidden whitespace-nowrap rounded-full border border-white/30 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white transition-all hover:border-white hover:bg-white/5 xl:inline-flex"
             >
               {labels.login}
             </Link>
             <Link
               href="/get-access"
-              className={cn(
-                "hidden whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-bold shadow-lg transition-all duration-300 hover:scale-[1.02] active:scale-95 md:inline-flex lg:px-5 lg:py-3",
-                solidHeader
-                  ? "bg-primary text-white shadow-primary/20 hover:bg-primary"
-                  : "bg-white text-teal-950 shadow-white/10 hover:bg-primary-light"
-              )}
+              className="hidden whitespace-nowrap rounded-full border border-white/40 px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-white transition-all duration-300 hover:border-white hover:bg-white hover:text-black active:scale-95 md:inline-flex lg:px-6"
             >
               {labels.getStarted}
             </Link>
@@ -143,12 +124,7 @@ export function CompanyLayoutShell({
               aria-label={mobileMenuOpen ? labels.closeMenu : labels.openMenu}
               aria-expanded={mobileMenuOpen}
               onClick={() => setMobileMenuOpen((open) => !open)}
-              className={cn(
-                "inline-flex h-11 w-11 items-center justify-center rounded-xl transition-all active:scale-95 md:hidden",
-                solidHeader
-                  ? "text-stone-700 hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-800"
-                  : "text-white hover:bg-white/10"
-              )}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-white transition-all hover:bg-white/10 active:scale-95 md:hidden"
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
@@ -165,7 +141,7 @@ export function CompanyLayoutShell({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm md:hidden"
               onClick={() => setMobileMenuOpen(false)}
             />
             <motion.nav
@@ -173,17 +149,17 @@ export function CompanyLayoutShell({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 28, stiffness: 320 }}
-              className="fixed bottom-3 right-3 top-[calc(env(safe-area-inset-top)+0.75rem)] z-50 flex w-[calc(100%-1.5rem)] max-w-sm flex-col overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-2xl shadow-stone-950/25 dark:border-stone-800 dark:bg-[#0c1222] md:hidden"
+              className="fixed bottom-3 right-3 top-[calc(env(safe-area-inset-top)+0.75rem)] z-50 flex w-[calc(100%-1.5rem)] max-w-sm flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-black shadow-2xl shadow-black/50 md:hidden"
             >
-              <div className="flex items-center justify-between border-b border-stone-200 px-5 py-4 dark:border-stone-800">
-                <span className="text-lg font-black text-stone-900 dark:text-white">
+              <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white">
                   {labels.menu}
                 </span>
                 <button
                   type="button"
                   aria-label={labels.closeMenu}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-stone-600 transition-all hover:bg-stone-100 active:scale-95 dark:text-stone-300 dark:hover:bg-stone-800"
+                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-white/70 transition-all hover:bg-white/10 hover:text-white active:scale-95"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -195,10 +171,10 @@ export function CompanyLayoutShell({
                     href={link.href}
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
-                      "rounded-2xl px-4 py-3.5 text-base font-bold transition-colors",
+                      "rounded-full px-4 py-3.5 text-[12px] font-semibold uppercase tracking-[0.16em] transition-colors",
                       pathname === link.href
-                        ? "bg-primary-light text-primary dark:bg-primary-light/50 dark:text-primary"
-                        : "text-stone-700 hover:bg-stone-50 dark:text-stone-200 dark:hover:bg-stone-900"
+                        ? "bg-white text-black"
+                        : "text-white/70 hover:bg-white/5 hover:text-white"
                     )}
                   >
                     {link.label}
@@ -207,19 +183,19 @@ export function CompanyLayoutShell({
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="mt-2 rounded-2xl px-4 py-3.5 text-base font-bold text-stone-700 hover:bg-stone-50 dark:text-stone-200 dark:hover:bg-stone-900"
+                  className="mt-2 rounded-full border border-white/20 px-4 py-3.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-white/80 hover:border-white hover:text-white"
                 >
                   {labels.login}
                 </Link>
                 <div className="mt-4 px-2">
-                  <LanguageSwitcher variant="buttons" />
+                  <LanguageSwitcher variant="buttons" tone="marketing" />
                 </div>
               </div>
-              <div className="border-t border-stone-200 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] dark:border-stone-800">
+              <div className="border-t border-white/10 p-4 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
                 <Link
                   href="/get-access"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex w-full items-center justify-center rounded-2xl bg-primary px-4 py-3.5 text-base font-bold text-white shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
+                  className="flex w-full items-center justify-center rounded-full bg-white px-4 py-3.5 text-[12px] font-bold uppercase tracking-[0.16em] text-black transition-all active:scale-[0.98]"
                 >
                   {labels.getStarted}
                 </Link>
@@ -231,7 +207,7 @@ export function CompanyLayoutShell({
 
       <main>{children}</main>
 
-      <SiteFooter className="hidden md:block" labels={footerLabels} />
+      <SiteFooter labels={footerLabels} />
     </div>
   );
 }

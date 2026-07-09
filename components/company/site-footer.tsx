@@ -16,7 +16,7 @@ function FooterLinkList({
 }) {
   return (
     <div className="space-y-5">
-      <p className="text-xs font-black uppercase tracking-[0.2em] text-primary">
+      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
         {title}
       </p>
       <ul className="space-y-3">
@@ -24,7 +24,7 @@ function FooterLinkList({
           <li key={link.href}>
             <Link
               href={link.href}
-              className="text-sm font-medium text-stone-500 transition-colors hover:text-primary dark:text-stone-400 dark:hover:text-primary"
+              className="text-sm font-medium text-white/55 transition-colors hover:text-white"
             >
               {link.label}
             </Link>
@@ -63,37 +63,37 @@ export function SiteFooter({
 
   const socialLinks = [
     { label: "LinkedIn", href: companyIdentity.social.linkedin, icon: Linkedin },
-    { label: "Facebook", href: "https://facebook.com", icon: Facebook },
-    { label: "Instagram", href: "https://instagram.com", icon: Instagram },
-    { label: "YouTube", href: "https://youtube.com", icon: Youtube },
+    { label: "Facebook", href: companyIdentity.social.facebook, icon: Facebook },
+    { label: "Instagram", href: companyIdentity.social.instagram, icon: Instagram },
+    { label: "YouTube", href: companyIdentity.social.youtube, icon: Youtube },
   ];
 
   return (
-    <footer className={`border-t border-stone-200 bg-stone-50 py-16 dark:border-stone-800 dark:bg-[#0c1222] md:py-20 ${className}`}>
+    <footer className={`border-t border-white/10 bg-black py-16 md:py-20 ${className}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
           <div className="space-y-6 lg:col-span-4">
             <Link href="/">
-              <BrandLogo wordmarkClassName="text-stone-900 dark:text-white" />
+              <BrandLogo variant="light" />
             </Link>
-            <p className="max-w-sm text-sm leading-relaxed text-stone-500 dark:text-stone-400">
+            <p className="max-w-sm text-sm leading-relaxed text-white/50">
               {companyIdentity.tagline} — {labels.taglineSuffix} {companyIdentity.origin}.
             </p>
-            <div className="space-y-3 text-sm text-stone-600 dark:text-stone-300">
+            <div className="space-y-3 text-sm text-white/60">
               <p className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
                 <span>{companyIdentity.office.addressFormatted}</span>
               </p>
               <a
                 href={`mailto:${companyIdentity.contact.email}`}
-                className="inline-flex items-center gap-2 font-medium transition-colors hover:text-primary dark:hover:text-primary"
+                className="inline-flex items-center gap-2 font-medium transition-colors hover:text-white"
               >
                 <Mail className="h-4 w-4" />
                 {companyIdentity.contact.email}
               </a>
               <a
                 href={`tel:${companyIdentity.contact.phone}`}
-                className="flex items-center gap-2 font-medium transition-colors hover:text-primary dark:hover:text-primary"
+                className="flex items-center gap-2 font-medium transition-colors hover:text-white"
               >
                 <Phone className="h-4 w-4" />
                 {companyIdentity.contact.phoneDisplay}
@@ -107,7 +107,7 @@ export function SiteFooter({
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex h-10 w-10 items-center justify-center rounded-lg bg-stone-200 text-stone-600 transition-colors hover:bg-primary hover:text-white dark:bg-stone-800 dark:text-stone-400 dark:hover:bg-primary dark:hover:text-white"
+                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/55 transition-colors hover:border-white hover:text-white"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -122,33 +122,33 @@ export function SiteFooter({
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-stone-200 pt-8 dark:border-stone-800 md:flex-row">
-          <p className="text-sm text-stone-500 dark:text-stone-400">
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row">
+          <p className="text-sm text-white/40">
             &copy; {new Date().getFullYear()} {companyIdentity.legalName}. {labels.copyright}{" "}
             {companyIdentity.productName} {labels.productOf}{" "}
             <a
               href={companyIdentity.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-primary hover:text-primary-hover dark:text-primary"
+              className="font-medium text-amber-500 hover:text-amber-400"
             >
               Digni Digital
             </a>
             .
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-stone-500 dark:text-stone-400">
-            <LanguageSwitcher variant="buttons" className="bg-stone-200 dark:bg-stone-800" />
-            <Link href="/privacy" className="transition-colors hover:text-primary dark:hover:text-primary">
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-white/40">
+            <LanguageSwitcher variant="buttons" tone="marketing" />
+            <Link href="/privacy" className="transition-colors hover:text-white">
               {labels.privacy}
             </Link>
-            <Link href="/terms" className="transition-colors hover:text-primary dark:hover:text-primary">
+            <Link href="/terms" className="transition-colors hover:text-white">
               {labels.terms}
             </Link>
-            <Link href="/cookies" className="transition-colors hover:text-primary dark:hover:text-primary">
+            <Link href="/cookies" className="transition-colors hover:text-white">
               {labels.cookies}
             </Link>
             <span className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
               {labels.allSystemsOperational}
             </span>
           </div>

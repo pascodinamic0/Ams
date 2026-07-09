@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   },
+  experimental: {
+    optimizePackageImports: ["lucide-react", "recharts", "date-fns", "framer-motion"],
+  },
 };
 
 function withOptionalSerwist(config: NextConfig): NextConfig {

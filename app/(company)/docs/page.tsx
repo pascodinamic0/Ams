@@ -41,61 +41,63 @@ const guides = [
   {
     icon: Shield,
     title: "Security & privacy",
-    description:
-      `Learn how ${companyIdentity.productName} protects school data and meets compliance requirements.`,
+    description: `Learn how ${companyIdentity.productName} protects school data and meets compliance requirements.`,
     href: "/privacy",
   },
 ];
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-white pb-24 pt-[calc(env(safe-area-inset-top)+7.5rem)] dark:bg-[#0c1222] sm:pt-40 md:pt-44 lg:pt-48">
+    <div className="min-h-screen bg-black pb-24 pt-[calc(env(safe-area-inset-top)+7.5rem)] sm:pt-40 md:pt-44 lg:pt-48">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-black tracking-tight text-stone-900 dark:text-white md:text-5xl">
+        <p className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-white/60">
+          <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
+          Docs
+        </p>
+        <h1 className="mt-5 font-display text-3xl tracking-wide text-white md:text-5xl">
           Documentation
         </h1>
-        <p className="mt-4 text-lg text-stone-500 dark:text-stone-400">
-          Guides and resources to help your school get the most out of {companyIdentity.productName}.
+        <p className="mt-4 text-base leading-relaxed text-white/55 sm:text-lg">
+          Guides and resources to help your school get the most out of{" "}
+          {companyIdentity.productName}.
         </p>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2">
+        <div className="mt-12 grid gap-3 sm:grid-cols-2">
           {guides.map(({ icon: Icon, title, description, href }) => (
             <Link
               key={title}
               href={href}
-              className="group rounded-2xl border border-stone-200 bg-white p-6 transition-all hover:border-primary-300 hover:shadow-lg dark:border-stone-800 dark:bg-stone-900/50 dark:hover:border-primary-700"
+              className="group border border-white/10 p-6 transition-colors hover:border-white/25"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-light text-primary dark:bg-primary-light dark:text-primary">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/60 transition-colors group-hover:border-amber-500/50 group-hover:text-amber-500">
                 <Icon className="h-5 w-5" />
               </div>
-              <h2 className="mt-4 text-lg font-bold text-stone-900 dark:text-white">
-                {title}
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-stone-500 dark:text-stone-400">
+              <h2 className="mt-4 text-lg font-semibold text-white">{title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-white/50">
                 {description}
               </p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary dark:text-primary">
+              <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500">
                 Read guide
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </span>
             </Link>
           ))}
         </div>
 
-        <div className="mt-12 rounded-2xl border border-stone-200 bg-stone-50 p-8 dark:border-stone-800 dark:bg-stone-900/50">
-          <h2 className="text-lg font-bold text-stone-900 dark:text-white">
+        <div className="mt-12 border border-white/10 p-8">
+          <h2 className="font-display text-xl tracking-wide text-white">
             Need more help?
           </h2>
-          <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+          <p className="mt-2 text-sm text-white/50">
             Our team is available to help with onboarding, integrations, and
             school-specific setup.
           </p>
           <Link
             href="/contact"
-            className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary-hover dark:text-primary"
+            className="mt-5 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500 hover:text-amber-400"
           >
             Contact support
-            <ArrowRight className="h-4 w-4" />
+            <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
       </div>

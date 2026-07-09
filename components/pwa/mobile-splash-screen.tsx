@@ -1,31 +1,47 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { BrandLogo } from "@/components/company/brand-logo";
 import { companyIdentity } from "@/lib/company/identity";
 import { useIsMobile } from "@/lib/pwa/display-mode";
 import { cn } from "@/lib/utils";
 
-const SPLASH_MIN_MS = 700;
-const SPLASH_FADE_MS = 280;
+const SPLASH_MIN_MS = 280;
+const SPLASH_FADE_MS = 180;
+const SPLASH_SEEN_KEY = "ams-splash-seen";
 
 type SplashPhase = "show" | "fade" | "hide";
 
+function hasSeenSplash(): boolean {
+  try {
+    return sessionStorage.getItem(SPLASH_SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markSplashSeen() {
+  try {
+    sessionStorage.setItem(SPLASH_SEEN_KEY, "1");
+  } catch {
+    // ignore quota / private mode
+  }
+}
+
 export function MobileSplashScreen() {
-  const pathname = usePathname();
   const isMobile = useIsMobile();
   const t = useTranslations("pwa");
-  const [phase, setPhase] = useState<SplashPhase>("show");
+  const [phase, setPhase] = useState<SplashPhase>("hide");
 
   useEffect(() => {
-    if (!isMobile) {
+    if (!isMobile || hasSeenSplash()) {
       setPhase("hide");
       return;
     }
 
     setPhase("show");
+    markSplashSeen();
 
     const fadeTimer = window.setTimeout(() => setPhase("fade"), SPLASH_MIN_MS);
     const hideTimer = window.setTimeout(
@@ -37,7 +53,7 @@ export function MobileSplashScreen() {
       window.clearTimeout(fadeTimer);
       window.clearTimeout(hideTimer);
     };
-  }, [pathname, isMobile]);
+  }, [isMobile]);
 
   if (phase === "hide") return null;
 

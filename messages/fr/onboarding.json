@@ -13,38 +13,50 @@
   "allStepsComplete": "Toutes les étapes sont terminées !",
   "account": {
     "badge": "Configuration du compte",
-    "title": "Configurez votre profil",
-    "subtitle": "Une configuration rapide pour que votre équipe vous reconnaisse sur ShuleOS.",
+    "title": "Devenez identifiable",
+    "subtitle": "Sans nom ni visage clairs, messages et validations s'enlisent pendant que l'équipe cherche qui vous êtes. Deux minutes maintenant évitent cette friction chaque jour.",
     "stepProgress": "Étape {current} sur {total} : {title}",
-    "welcomeBody": "Bienvenue ! Vous êtes connecté en tant que {role}. Nous confirmerons votre nom et vous pourrez ajouter une photo de profil avant de continuer.",
+    "welcomeBody": "Vous êtes connecté en tant que {role}. Ensuite, on fixe votre nom et une photo optionnelle pour que votre équipe arrête de chercher la mauvaise personne dans le chat et les rapports.",
     "signedInAs": "Connecté en tant que {email}",
     "displayName": "Nom affiché",
     "displayNamePlaceholder": "Votre nom complet",
-    "displayNameHint": "Ce nom apparaît sur votre profil, vos messages et les rapports.",
+    "displayNameHint": "C'est ce qui apparaît sur les messages, rapports et validations — pas un surnom à décoder.",
     "nameRequired": "Veuillez saisir votre nom pour continuer.",
     "saveFailed": "Impossible d'enregistrer votre nom. Réessayez.",
-    "uploadPhoto": "Téléverser la photo de profil",
-    "photoPrompt": "Facultatif — appuyez sur votre photo pour téléverser une image. JPG, PNG, GIF ou WebP, max. 5 Mo.",
+    "uploadPhoto": "Téléverser une photo",
+    "takePhoto": "Prendre une photo",
+    "capturePhoto": "Capturer",
+    "usePhoto": "Utiliser cette photo",
+    "retakePhoto": "Reprendre",
+    "switchCamera": "Changer de caméra",
+    "cameraHint": "Centrez votre visage dans le cadre, puis capturez. Vous pouvez reprendre avant d'enregistrer.",
+    "cameraPreviewAlt": "Aperçu de la photo de profil capturée",
+    "cameraStarting": "Démarrage de la caméra...",
+    "cameraCapturing": "Capture en cours...",
+    "cameraUnsupported": "Cet appareil ou navigateur ne prend pas en charge la capture photo. Téléversez une image à la place.",
+    "cameraPermissionDenied": "L'accès à la caméra a été refusé. Autorisez la caméra, ou téléversez une photo à la place.",
+    "cameraCaptureFailed": "Impossible de capturer la photo. Réessayez.",
+    "photoPrompt": "Facultatif — un visage vaut mieux qu'une initiale anonyme dans la liste. JPG, PNG, GIF ou WebP, max. 5 Mo.",
     "photoUploading": "Téléversement de votre photo...",
-    "photoReady": "Photo téléversée. Appuyez pour la modifier.",
+    "photoReady": "Photo téléversée. Vous pouvez en téléverser ou en prendre une nouvelle.",
     "photoUploaded": "Photo de profil téléversée",
     "photoUploadFailed": "Impossible de téléverser votre photo. Réessayez.",
     "photoRequired": "Ajoutez une photo de profil pour terminer la configuration.",
-    "finish": "Terminer la configuration",
+    "finish": "Entrer dans ShuleOS",
     "completeSuccess": "Votre profil est prêt.",
     "completeFailed": "Impossible de terminer la configuration. Réessayez.",
     "steps": {
       "welcome": {
         "title": "Bienvenue",
-        "description": "Un court parcours pour personnaliser votre compte."
+        "description": "Un court passage pour que votre compte ne ressemble plus à une place vide."
       },
       "profile": {
         "title": "Votre nom",
-        "description": "Confirmez comment votre nom doit apparaître sur la plateforme."
+        "description": "Confirmez le nom auquel on peut se fier quand on vous écrit ou vous valide."
       },
       "photo": {
         "title": "Photo de profil",
-        "description": "Ajoutez une photo pour que enseignants, personnel et familles puissent vous reconnaître. Vous pouvez passer cette étape et en ajouter une plus tard dans Paramètres."
+        "description": "Ajoutez une photo pour que le personnel et les familles vous reconnaissent d'un coup d'œil. Téléversez un fichier ou prenez-en une avec votre caméra — ou passez et ajoutez-la plus tard dans Paramètres."
       }
     }
   },

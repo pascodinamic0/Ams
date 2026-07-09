@@ -11,9 +11,18 @@ Sentry.init({
   tracesSampleRate:
     process.env.NODE_ENV === "development" ? 1.0 : 0.1,
 
-  integrations: [Sentry.replayIntegration()],
+  // Replay is heavy; only attach on errors in production.
+  integrations:
+    process.env.NODE_ENV === "development"
+      ? [Sentry.replayIntegration()]
+      : [
+          Sentry.replayIntegration({
+            maskAllText: true,
+            blockAllMedia: true,
+          }),
+        ],
 
-  replaysSessionSampleRate: 0.1,
+  replaysSessionSampleRate: process.env.NODE_ENV === "development" ? 0.1 : 0,
   replaysOnErrorSampleRate: 1.0,
 });
 
