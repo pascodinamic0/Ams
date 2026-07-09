@@ -1,3 +1,10 @@
+"use client";
+
+import { useState } from "react";
+import { format, isSameDay, startOfDay } from "date-fns";
+import { useTranslations } from "next-intl";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Label } from "@/components/ui/label";
 import { DAY_LABELS, formatTimeRange, type TimetableSlot } from "@/lib/timetable/shared";
 
 const WEEKDAYS = [1, 2, 3, 4, 5] as const;
@@ -25,9 +32,18 @@ function groupSlotsByCell(slots: TimetableSlot[]): Map<string, TimetableSlot[]> 
   return byCell;
 }
 
+function weekdayFromDate(date: Date): number {
+  return date.getDay();
+}
+
 export function TimetableView({ slots, title }: TimetableViewProps) {
+  const t = useTranslations("common");
+  const [selectedDate, setSelectedDate] = useState(() => startOfDay(new Date()));
   const byCell = groupSlotsByCell(slots);
   const maxPeriod = slots.reduce((max, s) => Math.max(max, s.period), 0);
+  const selectedWeekday = weekdayFromDate(selectedDate);
+  const isSchoolDay = selectedWeekday >= 1 && selectedWeekday <= 5;
+  const isToday = isSameDay(selectedDate, new Date());
 
   if (slots.length === 0) {
     return (
@@ -39,19 +55,63 @@ export function TimetableView({ slots, title }: TimetableViewProps) {
 
   return (
     <div className="space-y-3">
-      {title && (
-        <h2 className="text-lg font-semibold text-stone-900 dark:text-white">{title}</h2>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div className="min-w-0">
+          {title && (
+            <h2 className="text-lg font-semibold text-stone-900 dark:text-white">{title}</h2>
+          )}
+          <p className="mt-0.5 text-sm text-stone-500">
+            {isToday
+              ? format(selectedDate, "EEEE, MMMM d")
+              : format(selectedDate, "EEEE, MMMM d, yyyy")}
+            {isSchoolDay ? ` · ${DAY_LABELS[selectedWeekday]}` : ""}
+          </p>
+        </div>
+        <div className="w-full min-w-[200px] max-w-xs sm:w-auto">
+          <Label className="text-xs text-stone-500">{t("date")}</Label>
+          <div className="mt-1">
+            <DatePicker
+              value={selectedDate}
+              onChange={(d) => {
+                if (d) setSelectedDate(startOfDay(d));
+              }}
+              placeholder={t("today")}
+            />
+          </div>
+        </div>
+      </div>
+
+      {!isSchoolDay && (
+        <p className="rounded-lg border border-dashed border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-500 dark:border-stone-700 dark:bg-stone-800/50">
+          {t("noClassesOnSelectedDay")}
+        </p>
       )}
+
       <div className="overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-700">
         <table className="min-w-full text-sm">
           <thead>
             <tr className="border-b border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800/50">
               <th className="px-3 py-2 text-left font-medium text-stone-500">Period</th>
-              {WEEKDAYS.map((day) => (
-                <th key={day} className="px-3 py-2 text-left font-medium text-stone-500">
-                  {DAY_LABELS[day]}
-                </th>
-              ))}
+              {WEEKDAYS.map((day) => {
+                const isSelected = isSchoolDay && day === selectedWeekday;
+                return (
+                  <th
+                    key={day}
+                    className={`px-3 py-2 text-left font-medium ${
+                      isSelected
+                        ? "bg-primary/10 text-primary dark:bg-primary/20"
+                        : "text-stone-500"
+                    }`}
+                  >
+                    {DAY_LABELS[day]}
+                    {isSelected && isToday ? (
+                      <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide">
+                        {t("today")}
+                      </span>
+                    ) : null}
+                  </th>
+                );
+              })}
             </tr>
           </thead>
           <tbody>
@@ -62,8 +122,14 @@ export function TimetableView({ slots, title }: TimetableViewProps) {
                 </td>
                 {WEEKDAYS.map((day) => {
                   const cellSlots = byCell.get(`${day}-${period}`) ?? [];
+                  const isSelected = isSchoolDay && day === selectedWeekday;
                   return (
-                    <td key={day} className="px-3 py-2 align-top">
+                    <td
+                      key={day}
+                      className={`px-3 py-2 align-top ${
+                        isSelected ? "bg-primary/5 dark:bg-primary/10" : ""
+                      }`}
+                    >
                       {cellSlots.length > 0 ? (
                         <div className="space-y-2">
                           {cellSlots.map((slot) => (

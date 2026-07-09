@@ -85,6 +85,7 @@
   "paid": "Payé",
   "overdue": "En retard",
   "today": "Aujourd'hui",
+  "noClassesOnSelectedDay": "Pas de cours ce jour-là. Choisissez un jour de semaine pour voir l'emploi du temps.",
   "yesterday": "Hier",
   "thisWeek": "Cette semaine",
   "thisMonth": "Ce mois-ci",

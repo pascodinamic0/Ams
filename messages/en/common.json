@@ -85,6 +85,7 @@
   "paid": "Paid",
   "overdue": "Overdue",
   "today": "Today",
+  "noClassesOnSelectedDay": "No classes on this day. Pick a weekday to see the schedule.",
   "yesterday": "Yesterday",
   "thisWeek": "This week",
   "thisMonth": "This month",
