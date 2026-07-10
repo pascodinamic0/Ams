@@ -30,6 +30,7 @@ export function createDemoSchool(template: WebsiteTemplateId): SchoolRow {
     public_site_enabled: true,
     status: "approved",
     owner_id: null,
+    currency_code: "USD",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };

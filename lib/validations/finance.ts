@@ -56,7 +56,7 @@ export const payrollPaymentSchema = z.object({
   amount: z.coerce.number().min(0, "Amount must be zero or positive"),
   payment_date: z.string().min(1, "Payment date is required"),
   payment_method: z.enum(["cash", "bank", "mobile_money"], {
-    errorMap: () => ({ message: "Payment method is required" }),
+    message: "Payment method is required",
   }),
   reference_number: z.string().optional(),
   notes: z.string().optional(),
