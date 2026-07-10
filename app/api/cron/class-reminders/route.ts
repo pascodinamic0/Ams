@@ -1,5 +1,5 @@
 /**
- * Class reminder cron ? POST /api/cron/class-reminders
+ * Class reminder cron - POST /api/cron/class-reminders
  *
  * Intended to run every few minutes (Hobby Vercel only allows daily crons,
  * so call this from an external scheduler, e.g. cron-job.org).
@@ -102,9 +102,9 @@ export async function POST(req: NextRequest) {
     errors: 0,
   };
 
-  // Weekend ù no MonùFri timetable
+  // Weekend - no Mon-Fri timetable
   if (day === 0 || day === 6) {
-    return NextResponse.json({ message: "Weekend ù no class reminders", summary });
+    return NextResponse.json({ message: "Weekend - no class reminders", summary });
   }
 
   const { data: slots, error: slotsErr } = await supabase
@@ -202,7 +202,7 @@ export async function POST(req: NextRequest) {
       minutesUntil <= 0
         ? `${subject} is starting now`
         : `${subject} in ${minutesUntil} min`;
-    const body = `${className} ù Period ${slot.period}${startLabel ? ` ù ${startLabel}` : ""}`;
+    const body = `${className} - Period ${slot.period}${startLabel ? ` - ${startLabel}` : ""}`;
 
     const { error: notifError } = await createNotification({
       userId: teacherId,
