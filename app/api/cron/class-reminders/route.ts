@@ -1,8 +1,10 @@
 /**
- * Class reminder cron ù POST /api/cron/class-reminders
+ * Class reminder cron ? POST /api/cron/class-reminders
  *
- * Runs every few minutes. Finds timetable slots starting soon and sends
- * in-app + Web Push alerts to teachers (alarm-style).
+ * Intended to run every few minutes (Hobby Vercel only allows daily crons,
+ * so call this from an external scheduler, e.g. cron-job.org).
+ * Finds timetable slots starting soon and sends in-app + Web Push alerts
+ * to teachers (alarm-style).
  *
  * Security: Authorization: Bearer <CRON_SECRET>
  */
