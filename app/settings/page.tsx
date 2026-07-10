@@ -13,7 +13,9 @@ import { Button } from "@/components/ui/button";
 import { PasswordStrength } from "@/components/ui/password-strength";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { InstallAppButton } from "@/components/pwa/install-app-button";
+import { NotificationSettingsCard } from "@/components/settings/notification-settings-card";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { createClient } from "@/lib/supabase/client";
 import { uploadUserAvatar } from "@/lib/profile/avatar";
@@ -78,6 +80,12 @@ export default function SettingsPage() {
           setProfile((current) => (current ? { ...current, avatarUrl } : current))
         }
       />
+      <NotificationSettingsCard
+        showClassReminders={
+          profile?.role === "teacher" || profile?.role === "academic_admin"
+        }
+      />
+      <AppearanceCard />
       <LanguageCard />
       <AppInstallCard />
       <SecurityCard />
@@ -165,6 +173,24 @@ function AccountCard({
             </p>
           </div>
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function AppearanceCard() {
+  const t = useTranslations("settings");
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("appearance")}</CardTitle>
+        <p className="text-sm text-stone-500 dark:text-stone-400">
+          {t("appearanceDescription")}
+        </p>
+      </CardHeader>
+      <CardContent>
+        <ThemeToggle />
       </CardContent>
     </Card>
   );

@@ -34,7 +34,7 @@ export function LanguageSwitcher({
       return (
         <div
           className={cn(
-            "flex gap-1 rounded-full border border-white/10 bg-white/5 p-1",
+            "flex gap-1 rounded-full border border-stone-200 bg-stone-100 p-1 dark:border-white/10 dark:bg-white/5",
             className
           )}
         >
@@ -47,8 +47,8 @@ export function LanguageSwitcher({
               className={cn(
                 "rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] transition-colors",
                 locale === code
-                  ? "bg-white text-black"
-                  : "text-white/50 hover:text-white"
+                  ? "bg-white text-stone-900 shadow-sm dark:bg-white dark:text-black"
+                  : "text-stone-500 hover:text-stone-900 dark:text-white/50 dark:hover:text-white"
               )}
             >
               {code.toUpperCase()}

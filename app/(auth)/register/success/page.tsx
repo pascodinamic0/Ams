@@ -23,9 +23,9 @@ export default async function RegisterSuccessPage({ searchParams }: PageProps) {
         emailConfirmationNote={emailConfirmationNote}
         showSignOut={false}
       />
-      <p className="mt-6 text-center text-sm text-white/45">
+      <p className="mt-6 text-center text-sm text-stone-400 dark:text-white/45">
         {t("registerWrongEmail")}{" "}
-        <Link href="/register" className="font-medium text-amber-500 hover:text-amber-400">
+        <Link href="/register" className="font-medium text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400">
           {t("registerAgain")}
         </Link>
       </p>

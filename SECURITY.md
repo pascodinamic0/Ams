@@ -11,8 +11,9 @@ All tenant-scoped tables in Supabase use **Row Level Security**. Policies are de
 - **Service role bypass:** `SUPABASE_SERVICE_ROLE_KEY` bypasses RLS. It is used only in trusted server contexts:
   - Seed scripts (`scripts/seed-*.mjs`)
   - Payment webhooks (`/api/webhooks/payments`)
-  - Cron jobs (`/api/cron/fee-reminders`)
+  - Cron jobs (`/api/cron/fee-reminders`, `/api/cron/class-reminders`)
   - Admin utilities in `lib/supabase/admin.ts`
+  - Web Push delivery (`lib/services/web-push.ts`)
 
 Never expose the service role key to the browser or commit it to version control.
 
@@ -21,7 +22,8 @@ Never expose the service role key to the browser or commit it to version control
 | Secret | Where used | Notes |
 |--------|------------|-------|
 | `SUPABASE_SERVICE_ROLE_KEY` | Webhooks, cron, seeds | Full DB access; server-only |
-| `CRON_SECRET` | `/api/cron/fee-reminders` | Random string; reject requests without `Authorization: Bearer <CRON_SECRET>` |
+| `CRON_SECRET` | `/api/cron/fee-reminders`, `/api/cron/class-reminders` | Random string; reject requests without `Authorization: Bearer <CRON_SECRET>` |
+| `VAPID_PRIVATE_KEY` | Web Push send | Server-only; pair with `NEXT_PUBLIC_VAPID_PUBLIC_KEY` |
 | `PAYMENT_WEBHOOK_SECRET` | `/api/webhooks/payments` | Shared with payment provider; used for HMAC signature verification |
 | `TWILIO_AUTH_TOKEN` | WhatsApp / SMS | Server-only; paired with `TWILIO_ACCOUNT_SID` |
 
@@ -29,7 +31,7 @@ Generate strong random values (e.g. `openssl rand -hex 32`) for `CRON_SECRET` an
 
 ### Vercel cron
 
-When `CRON_SECRET` is set in Vercel project settings, scheduled invocations of `/api/cron/fee-reminders` include the bearer token automatically. Without `CRON_SECRET`, the route returns 500 and does not run reminders.
+When `CRON_SECRET` is set in Vercel project settings, scheduled invocations include the bearer token automatically. Without `CRON_SECRET`, cron routes return 500 and do not run.
 
 ### Payment webhooks
 

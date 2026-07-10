@@ -1,10 +1,17 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { sendPushToUser } from "@/lib/services/web-push";
 
 export type CreateNotificationInput = {
   userId: string;
   title: string;
   body?: string | null;
+  /** Deep link opened when the push notification is tapped. */
+  url?: string;
+  tag?: string;
+  requireInteraction?: boolean;
+  /** Skip Web Push (in-app row only). */
+  skipPush?: boolean;
 };
 
 async function getInsertClient() {
@@ -35,6 +42,20 @@ export async function createNotification(
     return { error: error.message };
   }
 
+  if (!input.skipPush) {
+    try {
+      await sendPushToUser(input.userId, {
+        title: input.title,
+        body: input.body,
+        url: input.url,
+        tag: input.tag,
+        requireInteraction: input.requireInteraction,
+      });
+    } catch (err) {
+      console.error("createNotification push error:", err);
+    }
+  }
+
   return { id: data.id };
 }
 
@@ -63,7 +84,27 @@ export async function createNotifications(
     return { created: 0, failed: rows.length };
   }
 
-  return { created: data?.length ?? 0, failed: rows.length - (data?.length ?? 0) };
+  const created = data?.length ?? 0;
+  const failed = rows.length - created;
+
+  // Push after DB insert; await so serverless runtimes don't freeze mid-send
+  await Promise.all(
+    rows
+      .filter((input) => !input.skipPush)
+      .map((input) =>
+        sendPushToUser(input.userId, {
+          title: input.title,
+          body: input.body,
+          url: input.url,
+          tag: input.tag,
+          requireInteraction: input.requireInteraction,
+        }).catch((err) => {
+          console.error("createNotifications push error:", err);
+        })
+      )
+  );
+
+  return { created, failed };
 }
 
 /** Notify all guardians with portal accounts linked to a student. */

@@ -37,12 +37,12 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex flex-1 items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
-        <h1 className="font-display text-2xl tracking-wide text-white">
+        <h1 className="font-display text-2xl tracking-wide text-stone-900 dark:text-white">
           {t("forgotPasswordTitle")}
         </h1>
-        <p className="mt-2 text-white/50">{t("forgotPasswordSubtitle")}</p>
+        <p className="mt-2 text-stone-500 dark:text-white/50">{t("forgotPasswordSubtitle")}</p>
         {sent ? (
-          <p className="mt-8 text-white/55">{t("resetLinkSentMessage")}</p>
+          <p className="mt-8 text-stone-500 dark:text-white/55">{t("resetLinkSentMessage")}</p>
         ) : (
           <form onSubmit={handleSubmit} className="mt-8 space-y-4">
             <div>
@@ -64,7 +64,7 @@ export default function ForgotPasswordPage() {
         )}
         <Link
           href="/login"
-          className="mt-6 block text-center text-sm text-white/45 transition-colors hover:text-white"
+          className="mt-6 block text-center text-sm text-stone-400 dark:text-white/45 transition-colors hover:text-stone-900 dark:hover:text-white"
         >
           {t("backToLogin")}
         </Link>

@@ -88,12 +88,12 @@ export function HomePage() {
   ];
 
   return (
-    <div className="flex flex-col min-h-screen bg-black">
+    <div className="flex flex-col min-h-screen bg-stone-50 dark:bg-black">
       {/* Hero — full-bleed, one composition */}
       <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden pt-[calc(env(safe-area-inset-top)+4rem)] pb-20 md:pt-24 md:pb-24">
         <HeroVideoBackground />
 
-        {/* Vertical social rail — desktop */}
+        {/* Vertical social rail — desktop (always light-on-dark over video) */}
         <aside className="pointer-events-none absolute bottom-10 left-5 z-20 hidden flex-col items-center gap-4 lg:flex xl:left-8">
           <span className="pointer-events-none rotate-180 text-[10px] font-medium uppercase tracking-[0.35em] text-white/50 [writing-mode:vertical-rl]">
             Follow
@@ -188,7 +188,7 @@ export function HomePage() {
       </section>
 
       {/* Trust Pillars */}
-      <section className="border-t border-white/10 bg-black py-12 sm:py-16">
+      <section className="border-t border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-black py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {trustPillars.map((pillar, i) => {
@@ -200,14 +200,14 @@ export function HomePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.06 }}
-                  className="flex items-start gap-3 border border-white/10 p-4 sm:p-5"
+                  className="flex items-start gap-3 border border-stone-200 dark:border-white/10 p-4 sm:p-5"
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/15 text-amber-500">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-stone-200 dark:border-white/15 text-amber-600 dark:text-amber-500">
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="font-semibold text-white">{pillar.title}</p>
-                    <p className="mt-1 text-sm leading-snug text-white/50">{pillar.desc}</p>
+                    <p className="font-semibold text-stone-900 dark:text-white">{pillar.title}</p>
+                    <p className="mt-1 text-sm leading-snug text-stone-500 dark:text-white/50">{pillar.desc}</p>
                   </div>
                 </motion.div>
               );
@@ -217,9 +217,9 @@ export function HomePage() {
       </section>
 
       {/* Compact Role Cards */}
-      <section className="bg-black py-16 sm:py-24">
+      <section className="bg-stone-50 dark:bg-black py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="mx-auto max-w-2xl text-center text-sm uppercase tracking-[0.16em] text-white/50 sm:text-base">
+          <p className="mx-auto max-w-2xl text-center text-sm uppercase tracking-[0.16em] text-stone-500 dark:text-white/50 sm:text-base">
             {t("audienceIntro")}
           </p>
           <div className="mt-10 grid gap-3 sm:mt-12 md:grid-cols-3">
@@ -233,7 +233,7 @@ export function HomePage() {
               >
                 <Link
                   href={role.href}
-                  className="group flex h-full flex-col overflow-hidden border border-white/10 transition-colors hover:border-white/30"
+                  className="group flex h-full flex-col overflow-hidden border border-stone-200 dark:border-white/10 transition-colors hover:border-stone-400 dark:hover:border-white/30"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image
@@ -250,11 +250,11 @@ export function HomePage() {
                     </div>
                   </div>
                   <div className="flex flex-1 flex-col p-5 sm:p-6">
-                    <h3 className="text-lg font-semibold text-white sm:text-xl">{role.title}</h3>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-white/50">
+                    <h3 className="text-lg font-semibold text-stone-900 dark:text-white sm:text-xl">{role.title}</h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-stone-500 dark:text-white/50">
                       {role.description}
                     </p>
-                    <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500 transition-all group-hover:gap-2.5">
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-600 dark:text-amber-500 transition-all group-hover:gap-2.5">
                       {role.cta}
                       <ArrowRight className="h-3.5 w-3.5" />
                     </span>
@@ -267,15 +267,15 @@ export function HomePage() {
       </section>
 
       {/* Roles Section */}
-      <section className="relative overflow-hidden border-t border-white/10 bg-black py-16 sm:py-28">
+      <section className="relative overflow-hidden border-t border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-black py-16 sm:py-28">
         <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-amber-500/5 blur-[120px]" />
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center sm:mb-20">
-            <h2 className="font-display text-2xl tracking-wide text-white sm:text-4xl md:text-5xl">
+            <h2 className="font-display text-2xl tracking-wide text-stone-900 dark:text-white sm:text-4xl md:text-5xl">
               {t("rolesSectionTitle")}
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-sm uppercase tracking-[0.14em] text-white/50 sm:mt-6 sm:text-base">
+            <p className="mx-auto mt-4 max-w-2xl text-sm uppercase tracking-[0.14em] text-stone-500 dark:text-white/50 sm:mt-6 sm:text-base">
               {t("rolesSectionSubtitle")}
             </p>
           </div>
@@ -294,7 +294,7 @@ export function HomePage() {
                 )}
               >
                 <div className="relative flex-1 group">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden border border-white/10">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden border border-stone-200 dark:border-white/10">
                     <Image
                       src={role.image}
                       alt={role.title}
@@ -306,32 +306,32 @@ export function HomePage() {
                   </div>
                   <div
                     className={cn(
-                      "absolute -bottom-4 hidden items-center gap-3 border border-white/15 bg-black/90 px-4 py-3 backdrop-blur-sm sm:flex",
+                      "absolute -bottom-4 hidden items-center gap-3 border border-stone-200 dark:border-white/15 bg-white/95 dark:bg-black/90 px-4 py-3 backdrop-blur-sm sm:flex",
                       i % 2 === 0 ? "-right-4" : "-left-4"
                     )}
                   >
-                    <CheckCircle2 className="h-5 w-5 text-amber-500" />
-                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-white">
+                    <CheckCircle2 className="h-5 w-5 text-amber-600 dark:text-amber-500" />
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-900 dark:text-white">
                       {role.floatingBadge}
                     </p>
                   </div>
                 </div>
 
                 <div className="flex-1 space-y-5 sm:space-y-6">
-                  <div className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-500">
+                  <div className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-600 dark:text-amber-500">
                     {role.icon}
                     {role.badge}
                   </div>
-                  <h3 className="font-display text-2xl leading-tight tracking-wide text-white sm:text-3xl md:text-4xl">
+                  <h3 className="font-display text-2xl leading-tight tracking-wide text-stone-900 dark:text-white sm:text-3xl md:text-4xl">
                     {role.title}
                   </h3>
-                  <p className="text-base leading-relaxed text-white/55 sm:text-lg">
+                  <p className="text-base leading-relaxed text-stone-500 dark:text-white/55 sm:text-lg">
                     {role.description}
                   </p>
                   <ul className="space-y-3">
                     {role.features.map((feature) => (
-                      <li key={feature} className="flex items-center gap-3 text-white/65">
-                        <CheckCircle2 className="h-4 w-4 shrink-0 text-amber-500" />
+                      <li key={feature} className="flex items-center gap-3 text-stone-500 dark:text-white/65">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-500" />
                         <span className="text-sm font-medium sm:text-base">{feature}</span>
                       </li>
                     ))}
@@ -339,7 +339,7 @@ export function HomePage() {
                   <div className="pt-2">
                     <Link
                       href={role.href}
-                      className="group inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500 hover:text-amber-400"
+                      className="group inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400"
                     >
                       {role.cta}
                       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -353,7 +353,7 @@ export function HomePage() {
       </section>
 
       {/* Connectivity / PWA */}
-      <section className="relative overflow-hidden border-t border-white/10 bg-black py-16 sm:py-24">
+      <section className="relative overflow-hidden border-t border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-black py-16 sm:py-24">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-amber-500/10 via-transparent to-transparent" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -363,27 +363,27 @@ export function HomePage() {
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <div className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
+              <div className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-600 dark:text-amber-500">
                 <Wifi className="h-3.5 w-3.5" />
                 {companyIdentity.productName}
               </div>
-              <h2 className="mt-5 font-display text-2xl leading-tight tracking-wide text-white sm:text-4xl md:text-5xl">
+              <h2 className="mt-5 font-display text-2xl leading-tight tracking-wide text-stone-900 dark:text-white sm:text-4xl md:text-5xl">
                 {t("connectivityTitle")}
               </h2>
-              <p className="mt-4 text-base leading-relaxed text-white/55 sm:text-lg">
+              <p className="mt-4 text-base leading-relaxed text-stone-500 dark:text-white/55 sm:text-lg">
                 {t("connectivitySubtitle")}
               </p>
               <ul className="mt-8 space-y-3">
                 {connectivityFeatures.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3 text-white/70">
-                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+                  <li key={feature} className="flex items-start gap-3 text-stone-600 dark:text-white/70">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-500" />
                     <span className="text-sm sm:text-base">{feature}</span>
                   </li>
                 ))}
               </ul>
               <Link
                 href="/get-access"
-                className="group mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-transform hover:scale-[1.02]"
+                className="group mt-8 inline-flex items-center gap-2 rounded-full bg-stone-900 dark:bg-white px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white dark:text-black transition-transform hover:scale-[1.02]"
               >
                 {t("connectivityCta")}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -403,13 +403,13 @@ export function HomePage() {
       </section>
 
       {/* Modules */}
-      <section className="border-y border-white/10 bg-black py-16 sm:py-28">
+      <section className="border-y border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-black py-16 sm:py-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-10 max-w-3xl sm:mb-14">
-            <h2 className="font-display text-2xl tracking-wide text-white sm:text-4xl md:text-5xl">
+            <h2 className="font-display text-2xl tracking-wide text-stone-900 dark:text-white sm:text-4xl md:text-5xl">
               {t("modulesSectionTitle")}
             </h2>
-            <p className="mt-4 text-sm uppercase tracking-[0.14em] text-white/50 sm:mt-5 sm:text-base">
+            <p className="mt-4 text-sm uppercase tracking-[0.14em] text-stone-500 dark:text-white/50 sm:mt-5 sm:text-base">
               {t("modulesSectionSubtitle")}
             </p>
           </div>
@@ -429,14 +429,14 @@ export function HomePage() {
                 >
                   <Link
                     href={`/modules/${m.slug}`}
-                    className="group relative flex h-full flex-col border border-white/10 p-6 transition-colors hover:border-white/30 sm:p-8"
+                    className="group relative flex h-full flex-col border border-stone-200 dark:border-white/10 p-6 transition-colors hover:border-stone-400 dark:hover:border-white/30 sm:p-8"
                   >
-                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-white/15 text-white/60 transition-colors group-hover:border-amber-500/50 group-hover:text-amber-500">
+                    <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-full border border-stone-200 dark:border-white/15 text-stone-600 dark:text-white/60 transition-colors group-hover:border-amber-500/50 group-hover:text-amber-500">
                       <Icon className="h-5 w-5" />
                     </div>
-                    <h3 className="text-xl font-semibold text-white">{m.title}</h3>
-                    <p className="mt-3 flex-1 text-sm leading-relaxed text-white/50">{m.desc}</p>
-                    <div className="mt-6 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500 opacity-0 transition-opacity group-hover:opacity-100">
+                    <h3 className="text-xl font-semibold text-stone-900 dark:text-white">{m.title}</h3>
+                    <p className="mt-3 flex-1 text-sm leading-relaxed text-stone-500 dark:text-white/50">{m.desc}</p>
+                    <div className="mt-6 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-600 dark:text-amber-500 opacity-0 transition-opacity group-hover:opacity-100">
                       {t("learnMore")}
                       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                     </div>
@@ -449,9 +449,9 @@ export function HomePage() {
       </section>
 
       {/* Final CTA */}
-      <section className="relative overflow-hidden bg-black py-20 sm:py-28">
+      <section className="relative overflow-hidden bg-stone-50 dark:bg-black py-20 sm:py-28">
         <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-amber-500/10 blur-[120px]" />
-        <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-white/5 blur-[120px]" />
+        <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-stone-200/70 dark:bg-white/5 blur-[120px]" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
@@ -462,17 +462,17 @@ export function HomePage() {
               transition={{ duration: 0.6 }}
               className="text-center lg:text-left"
             >
-              <p className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-white/60">
+              <p className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-stone-600 dark:text-white/60">
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
                 {t("heroBadge")}
               </p>
-              <h2 className="mt-4 font-display text-3xl leading-[1.15] tracking-wide text-white sm:text-4xl lg:text-5xl">
+              <h2 className="mt-4 font-display text-3xl leading-[1.15] tracking-wide text-stone-900 dark:text-white sm:text-4xl lg:text-5xl">
                 {t("finalCtaTitleLine1")}
               </h2>
-              <p className="mx-auto mt-3 max-w-xl text-base leading-snug text-white/70 sm:mt-4 sm:text-lg lg:mx-0">
+              <p className="mx-auto mt-3 max-w-xl text-base leading-snug text-stone-600 dark:text-white/70 sm:mt-4 sm:text-lg lg:mx-0">
                 {t("finalCtaTitleLine2")}
               </p>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/50 sm:text-lg lg:mx-0">
+              <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-stone-500 dark:text-white/50 sm:text-lg lg:mx-0">
                 {t("finalCtaSubtitle", { productName: companyIdentity.productName })}
               </p>
             </motion.div>
@@ -482,13 +482,13 @@ export function HomePage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="border border-white/10 p-8 sm:p-10"
+              className="border border-stone-200 dark:border-white/10 p-8 sm:p-10"
             >
               <ul className="space-y-4">
                 {[t("finalCtaHighlight1"), t("finalCtaHighlight2"), t("finalCtaHighlight3")].map(
                   (item) => (
-                    <li key={item} className="flex items-start gap-3 text-white/70">
-                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-amber-500" />
+                    <li key={item} className="flex items-start gap-3 text-stone-600 dark:text-white/70">
+                      <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-500" />
                       <span className="text-sm leading-relaxed sm:text-base">{item}</span>
                     </li>
                   )
@@ -498,20 +498,20 @@ export function HomePage() {
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link
                   href="/get-access"
-                  className="group inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-transform hover:scale-[1.02]"
+                  className="group inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-stone-900 dark:bg-white px-6 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-white dark:text-black transition-transform hover:scale-[1.02]"
                 >
                   {t("finalCtaButton")}
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <Link
                   href="/contact"
-                  className="inline-flex flex-1 items-center justify-center rounded-full border border-white/35 px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-white hover:bg-white/5"
+                  className="inline-flex flex-1 items-center justify-center rounded-full border border-stone-300 dark:border-white/35 px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-900 dark:text-white transition-colors hover:border-stone-900 dark:hover:border-white hover:bg-stone-100 dark:hover:bg-white/5"
                 >
                   {t("finalCtaSecondary")}
                 </Link>
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-white/10 pt-6 sm:justify-start">
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 border-t border-stone-200 dark:border-white/10 pt-6 sm:justify-start">
                 {homepageCtaSections.map((section, index) => (
                   <span key={section.slug} className="inline-flex items-center gap-5">
                     {index > 0 && (
@@ -519,7 +519,7 @@ export function HomePage() {
                     )}
                     <Link
                       href={`/modules/${section.slug}`}
-                      className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/50 transition-colors hover:text-white"
+                      className="text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500 dark:text-white/50 transition-colors hover:text-stone-900 dark:hover:text-white"
                     >
                       {section.label}
                     </Link>

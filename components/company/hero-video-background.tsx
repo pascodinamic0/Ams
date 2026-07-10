@@ -85,7 +85,7 @@ export function HeroVideoBackground() {
       <div className="absolute top-1/3 -left-24 h-72 w-72 rounded-full bg-amber-500/15 blur-[120px] sm:h-96 sm:w-96" />
       <div className="absolute bottom-1/4 -right-20 h-64 w-64 rounded-full bg-white/8 blur-[100px] sm:h-80 sm:w-80" />
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-black sm:h-40" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-stone-50 sm:h-40 dark:to-black" />
     </div>
   );
 }

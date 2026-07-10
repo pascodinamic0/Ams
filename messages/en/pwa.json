@@ -11,5 +11,10 @@
   "offlineDescription": "{productName} needs a connection for most features. Cached pages may still open, and attendance you saved offline will sync when you reconnect.",
   "goToLogin": "Go to login",
   "splashTagline": "{tagline}",
-  "splashLoading": "Loading {productName}"
+  "splashLoading": "Loading {productName}",
+  "pushPromptTitle": "Missed periods cost the whole class",
+  "pushPromptDescription": "Turn on alerts so the next period hits your lock screen like an alarm—before students are waiting and you're still in the hallway.",
+  "pushEnable": "Stop missing periods",
+  "pushEnabling": "Enabling…",
+  "pushLater": "Not now"
 }

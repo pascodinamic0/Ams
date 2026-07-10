@@ -5,9 +5,10 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { AppToaster } from "@/components/ui/app-toaster";
 import { PwaRoot } from "@/components/pwa/pwa-root";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import { companyIdentity } from "@/lib/company/identity";
 import { pickClientMessages } from "@/lib/i18n/client-messages";
-import { pwaBackgroundColor, pwaThemeColor } from "@/lib/pwa/config";
+import { pwaThemeColor } from "@/lib/pwa/config";
 import "./globals.css";
 
 const jakartaSans = Plus_Jakarta_Sans({
@@ -85,15 +86,15 @@ export default async function RootLayout({
     <html
       lang={locale}
       className={`${jakartaSans.variable} ${jetbrainsMono.variable} ${silkscreen.variable}`}
+      suppressHydrationWarning
     >
-      <body
-        className="antialiased"
-        style={{ backgroundColor: pwaBackgroundColor }}
-      >
-        <NextIntlClientProvider locale={locale} messages={clientMessages}>
-          <PwaRoot>{children}</PwaRoot>
-          <AppToaster />
-        </NextIntlClientProvider>
+      <body className="bg-background antialiased text-foreground">
+        <ThemeProvider>
+          <NextIntlClientProvider locale={locale} messages={clientMessages}>
+            <PwaRoot>{children}</PwaRoot>
+            <AppToaster />
+          </NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

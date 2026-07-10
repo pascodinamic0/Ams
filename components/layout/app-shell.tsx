@@ -11,6 +11,7 @@ import { MOBILE_TAB_BAR_HEIGHT, MobileTabBar } from "@/components/layout/mobile-
 import { NotificationBell } from "@/components/layout/notification-bell";
 import { ShellBadgesProvider } from "@/components/layout/shell-badges-provider";
 import { UserAvatarMenu } from "@/components/layout/user-avatar-menu";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { useIsMobile } from "@/lib/pwa/display-mode";
 import { cn } from "@/lib/utils";
 
@@ -173,6 +174,7 @@ export function AppShell({
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
+                <ThemeToggle variant="icon" />
                 <NotificationBell />
                 <UserAvatarMenu />
               </div>

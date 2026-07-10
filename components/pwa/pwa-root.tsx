@@ -11,6 +11,7 @@ import {
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { MobileSplashScreen } from "@/components/pwa/mobile-splash-screen";
 import { OfflineBanner } from "@/components/pwa/offline-banner";
+import { PushPermissionPrompt } from "@/components/pwa/push-permission-prompt";
 import { SerwistProvider } from "@/components/pwa/serwist-provider";
 
 async function syncPendingAttendance() {
@@ -88,12 +89,15 @@ function OfflineSyncManager() {
 }
 
 export function PwaRoot({ children }: { children: React.ReactNode }) {
+  const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY?.trim() || null;
+
   return (
     <SerwistProvider>
       <MobileSplashScreen />
       {children}
       <OfflineBanner />
       <InstallPrompt />
+      <PushPermissionPrompt vapidPublicKey={vapidPublicKey} />
       <OfflineSyncManager />
     </SerwistProvider>
   );

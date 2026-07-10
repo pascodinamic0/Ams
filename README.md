@@ -52,7 +52,7 @@ Required for local development:
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only key (seed scripts, webhooks, cron) |
 | `DATABASE_URL` | Postgres connection string for migrations |
 
-See `.env.example` for optional variables (Twilio/WhatsApp, Sentry, payment webhooks, cron secret).
+See `.env.example` for optional variables (Twilio/WhatsApp, Sentry, payment webhooks, cron secret, Web Push VAPID keys).
 
 ### 3. Run database migrations
 
@@ -131,22 +131,18 @@ AMS uses Supabase project **AMC** (`ooheotsnplfrpgblrnot`).
 1. Link the repo to Vercel and set all environment variables from `.env.example` for **Production** (and Preview if needed).
 2. Deploy — `bun run build` runs automatically.
 
-### Cron: fee reminders
+### Cron: fee reminders & class alarms
 
-`vercel.json` schedules a daily cron job:
+`vercel.json` schedules:
 
-```json
-{
-  "crons": [
-    {
-      "path": "/api/cron/fee-reminders",
-      "schedule": "0 6 * * *"
-    }
-  ]
-}
-```
+| Path | Schedule | Purpose |
+|------|----------|---------|
+| `/api/cron/fee-reminders` | `0 6 * * *` (06:00 UTC daily) | WhatsApp fee reminders |
+| `/api/cron/class-reminders` | `*/5 * * * *` (every 5 min) | Teacher class-time push alarms |
 
-This calls `POST /api/cron/fee-reminders` at 06:00 UTC. Set `CRON_SECRET` in Vercel env vars; Vercel sends `Authorization: Bearer <CRON_SECRET>` on cron invocations. The route also requires Twilio credentials if WhatsApp reminders are enabled.
+Set `CRON_SECRET` in Vercel env vars; invocations must send `Authorization: Bearer <CRON_SECRET>`. Class reminders also need VAPID keys (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`) — generate with `npx web-push generate-vapid-keys`.
+
+> **Note:** Vercel Hobby may only allow daily crons. For 5-minute class alarms on Hobby, call `/api/cron/class-reminders` from an external scheduler (cron-job.org, GitHub Actions, etc.) with the same bearer token.
 
 ### Webhooks: payments
 
