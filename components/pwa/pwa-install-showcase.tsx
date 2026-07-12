@@ -74,7 +74,7 @@ export function PwaInstallShowcase({ className }: PwaInstallShowcaseProps) {
         </div>
 
         <div className="relative px-6 pb-6 pt-4 sm:px-8 sm:pb-8">
-          <p className="text-center font-display text-lg tracking-wide text-white">
+          <p className="text-center font-display text-lg tracking-tight text-white">
             {companyIdentity.productName}
           </p>
           <p className="mt-1 text-center text-[10px] font-medium uppercase tracking-[0.18em] text-white/45">

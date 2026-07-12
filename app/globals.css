@@ -39,7 +39,7 @@
   --radius: 0.75rem;
   --font-sans: var(--font-jakarta-sans);
   --font-mono: var(--font-jetbrains-mono);
-  --font-display: var(--font-silkscreen);
+  --font-display: var(--font-jakarta-sans);
   color-scheme: light;
 }
 
@@ -99,7 +99,7 @@ html.dark {
 
   --font-sans: var(--font-jakarta-sans);
   --font-mono: var(--font-jetbrains-mono);
-  --font-display: var(--font-silkscreen);
+  --font-display: var(--font-jakarta-sans);
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) * 0.75);
@@ -115,10 +115,12 @@ body {
 }
 
 .font-display {
-  font-family: var(--font-silkscreen), var(--font-mono), ui-monospace, monospace;
+  font-family: var(--font-jakarta-sans), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.025em;
 }
 
-/* Marketing + auth surface — dark MONAKO by default, light when theme is light */
+/* Forced dark surface for marketing + auth funnel (independent of OS / app theme) */
 .marketing-surface {
   color-scheme: dark;
   --background: #000000;
@@ -142,32 +144,7 @@ body {
   color: #f5f5f4;
 }
 
-/* Light marketing when dark class is absent (next-themes uses class strategy) */
-html:not(.dark) .marketing-surface {
-  color-scheme: light;
-  --background: #fafaf9;
-  --foreground: #1c1917;
-  --brand-primary: #d97706;
-  --brand-primary-hover: #b45309;
-  --brand-primary-light: #fffbeb;
-  --brand-primary-border: #fcd34d;
-  --brand-primary-foreground: #ffffff;
-  --brand-accent: #f59e0b;
-  --brand-accent-hover: #d97706;
-  --brand-accent-light: #fffbeb;
-  --brand-secondary: #f5f5f4;
-  --brand-secondary-foreground: #1c1917;
-  --brand-surface: #ffffff;
-  --brand-surface-raised: #fafaf9;
-  --brand-border: #e7e5e4;
-  --brand-muted: #78716c;
-  --brand-muted-foreground: #a8a29e;
-  background: #fafaf9;
-  color: #1c1917;
-}
-
 ::selection {
   background: var(--brand-primary);
   color: var(--brand-primary-foreground);
 }
-

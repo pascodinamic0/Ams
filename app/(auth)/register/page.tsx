@@ -36,22 +36,22 @@ export default function RegisterPage() {
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
-      <div className="relative hidden flex-col justify-center overflow-hidden border-r border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-black p-12 lg:flex lg:w-[45%]">
+      <div className="relative hidden flex-col justify-center overflow-hidden border-r border-white/10 bg-black p-12 lg:flex lg:w-[45%]">
         <div className="pointer-events-none absolute -left-20 top-1/3 h-72 w-72 rounded-full bg-amber-500/10 blur-[120px]" />
         <div className="relative">
-          <h2 className="font-display text-3xl leading-tight tracking-wide text-stone-900 dark:text-white">
+          <h2 className="font-display text-3xl leading-tight tracking-tight text-white">
             {t("registerBrandTitle")}
           </h2>
-          <p className="mt-4 text-sm uppercase tracking-[0.12em] text-stone-500 dark:text-white/50">
+          <p className="mt-4 text-sm uppercase tracking-[0.12em] text-white/50">
             {t("registerBrandSubtitle", { productName: companyIdentity.productName })}
           </p>
           <div className="mt-8 space-y-3">
             {registerSteps.map((s) => (
               <div key={s.step} className="flex items-center gap-3">
-                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-amber-500/40 text-[10px] font-bold text-amber-600 dark:text-amber-500">
+                <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-amber-500/40 text-[10px] font-bold text-amber-500">
                   {s.step}
                 </div>
-                <span className="text-sm text-stone-600 dark:text-white/60">{s.label}</span>
+                <span className="text-sm text-white/60">{s.label}</span>
               </div>
             ))}
           </div>
@@ -61,10 +61,10 @@ export default function RegisterPage() {
       <div className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <h1 className="font-display text-2xl tracking-wide text-stone-900 dark:text-white">
+            <h1 className="font-display text-2xl tracking-tight text-white">
               {t("registerTitle")}
             </h1>
-            <p className="mt-2 text-sm text-stone-500 dark:text-white/50">
+            <p className="mt-2 text-sm text-white/50">
               {t("registerFormSubtitle", { productName: companyIdentity.productName })}
             </p>
           </div>
@@ -77,9 +77,9 @@ export default function RegisterPage() {
 
           <RegisterForm />
 
-          <p className="mt-6 text-center text-sm text-stone-400 dark:text-white/45">
+          <p className="mt-6 text-center text-sm text-white/45">
             {t("alreadyHaveAccount")}{" "}
-            <Link href="/login" className="font-medium text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400">
+            <Link href="/login" className="font-medium text-amber-500 hover:text-amber-400">
               {t("signInLink")}
             </Link>
           </p>
@@ -176,7 +176,7 @@ function RegisterOAuthSection() {
 
 function RegisterOAuthSkeleton() {
   return (
-    <div className="h-10 animate-pulse rounded-lg bg-stone-200 dark:bg-white/10" />
+    <div className="h-10 animate-pulse rounded-lg bg-white/10" />
   );
 }
 

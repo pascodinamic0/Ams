@@ -22,8 +22,8 @@ export function PendingApprovalCard({
   const t = useTranslations("auth");
 
   return (
-    <div className="w-full max-w-lg border border-stone-200 dark:border-white/10 bg-white dark:bg-black p-8">
-      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-amber-500/40 text-amber-600 dark:text-amber-500">
+    <div className="w-full max-w-lg border border-white/10 bg-black p-8">
+      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full border border-amber-500/40 text-amber-500">
         <svg
           className="h-7 w-7"
           fill="none"
@@ -39,30 +39,30 @@ export function PendingApprovalCard({
         </svg>
       </div>
 
-      <h1 className="font-display text-2xl tracking-wide text-stone-900 dark:text-white">
+      <h1 className="font-display text-2xl tracking-tight text-white">
         {isSuspended ? t("schoolAccessSuspended") : t("awaitingApproval")}
       </h1>
 
-      <p className="mt-3 text-stone-500 dark:text-white/55">
+      <p className="mt-3 text-white/55">
         {isSuspended
           ? t.rich("suspendedMessage", {
-              schoolName: () => <strong className="text-stone-900 dark:text-white">{schoolName}</strong>,
+              schoolName: () => <strong className="text-white">{schoolName}</strong>,
               productName: companyIdentity.productName,
             })
           : t.rich("pendingMessage", {
-              schoolName: () => <strong className="text-stone-900 dark:text-white">{schoolName}</strong>,
+              schoolName: () => <strong className="text-white">{schoolName}</strong>,
               productName: companyIdentity.productName,
             })}
       </p>
 
       {emailConfirmationNote && (
-        <p className="mt-4 border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-stone-600 dark:text-white/70">
+        <p className="mt-4 border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm text-white/70">
           {emailConfirmationNote}
         </p>
       )}
 
       {!isSuspended && (
-        <ul className="mt-6 space-y-2 text-sm text-stone-400 dark:text-white/45">
+        <ul className="mt-6 space-y-2 text-sm text-white/45">
           <li>{t("reviewTimeline")}</li>
           <li>{t("afterApprovalHint")}</li>
         </ul>

@@ -73,10 +73,10 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-8">
-      <h1 className="font-display text-2xl tracking-wide text-stone-900 dark:text-white">
+      <h1 className="font-display text-2xl tracking-tight text-white">
         {t("resetPasswordTitle")}
       </h1>
-      <p className="mt-2 text-stone-500 dark:text-white/50">{t("resetPasswordSubtitle")}</p>
+      <p className="mt-2 text-white/50">{t("resetPasswordSubtitle")}</p>
       <FormWrapper
         schema={resetPasswordSchema}
         onSubmit={onSubmit}
@@ -86,7 +86,7 @@ export default function ResetPasswordPage() {
       </FormWrapper>
       <Link
         href="/login"
-        className="mt-6 block text-center text-sm text-stone-400 dark:text-white/45 transition-colors hover:text-stone-900 dark:hover:text-white"
+        className="mt-6 block text-center text-sm text-white/45 transition-colors hover:text-white"
       >
         {t("backToLogin")}
       </Link>

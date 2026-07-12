@@ -256,7 +256,7 @@ export default function OnboardingPage() {
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-500">
             {t("account.badge")}
           </p>
-          <h1 className="mt-2 font-display text-3xl tracking-wide text-white sm:text-4xl">
+          <h1 className="mt-2 font-display text-3xl tracking-tight text-white sm:text-4xl">
             {t("account.title")}
           </h1>
           <p className="mt-3 max-w-md text-sm leading-relaxed text-white/50">
