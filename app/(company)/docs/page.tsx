@@ -48,16 +48,16 @@ const guides = [
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-black pb-24 pt-[calc(env(safe-area-inset-top)+7.5rem)] sm:pt-40 md:pt-44 lg:pt-48">
+    <div className="min-h-screen bg-mkt-canvas pb-24 pt-[calc(env(safe-area-inset-top)+7.5rem)] sm:pt-40 md:pt-44 lg:pt-48">
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <p className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-white/60">
+        <p className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-mkt-ink/60">
           <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
           Docs
         </p>
-        <h1 className="mt-5 font-display text-3xl tracking-tight text-white md:text-5xl">
+        <h1 className="mt-5 font-display text-3xl tracking-tight text-mkt-ink md:text-5xl">
           Documentation
         </h1>
-        <p className="mt-4 text-base leading-relaxed text-white/55 sm:text-lg">
+        <p className="mt-4 text-base leading-relaxed text-mkt-ink/55 sm:text-lg">
           Guides and resources to help your school get the most out of{" "}
           {companyIdentity.productName}.
         </p>
@@ -67,13 +67,13 @@ export default function DocsPage() {
             <Link
               key={title}
               href={href}
-              className="group border border-white/10 p-6 transition-colors hover:border-white/25"
+              className="group border border-mkt-ink/10 p-6 transition-colors hover:border-mkt-ink/25"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 text-white/60 transition-colors group-hover:border-amber-500/50 group-hover:text-amber-500">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full border border-mkt-ink/15 text-mkt-ink/60 transition-colors group-hover:border-amber-500/50 group-hover:text-amber-500">
                 <Icon className="h-5 w-5" />
               </div>
-              <h2 className="mt-4 text-lg font-semibold text-white">{title}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-white/50">
+              <h2 className="mt-4 text-lg font-semibold text-mkt-ink">{title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-mkt-ink/50">
                 {description}
               </p>
               <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500">
@@ -84,11 +84,11 @@ export default function DocsPage() {
           ))}
         </div>
 
-        <div className="mt-12 border border-white/10 p-8">
-          <h2 className="font-display text-xl tracking-tight text-white">
+        <div className="mt-12 border border-mkt-ink/10 p-8">
+          <h2 className="font-display text-xl tracking-tight text-mkt-ink">
             Need more help?
           </h2>
-          <p className="mt-2 text-sm text-white/50">
+          <p className="mt-2 text-sm text-mkt-ink/50">
             Our team is available to help with onboarding, integrations, and
             school-specific setup.
           </p>

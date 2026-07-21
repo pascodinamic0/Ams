@@ -63,10 +63,10 @@ function OnboardingJourney({ copy }: { copy: GetAccessCopy }) {
     <section className="py-16 sm:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-12 text-center sm:mb-16">
-          <h2 className="font-display text-2xl tracking-tight text-white sm:text-4xl md:text-5xl">
+          <h2 className="font-display text-2xl tracking-tight text-mkt-ink sm:text-4xl md:text-5xl">
             {copy.journeyTitle}
           </h2>
-          <p className="mt-4 text-sm uppercase tracking-[0.16em] text-white/50 sm:mt-5 sm:text-base">
+          <p className="mt-4 text-sm uppercase tracking-[0.16em] text-mkt-ink/50 sm:mt-5 sm:text-base">
             {copy.journeySubtitle}
           </p>
         </div>
@@ -102,8 +102,8 @@ function OnboardingJourney({ copy }: { copy: GetAccessCopy }) {
                     className={cn(
                       "relative z-10 flex h-12 w-12 items-center justify-center rounded-full border text-xs font-bold transition-colors",
                       isActive || isComplete
-                        ? "border-amber-500 bg-amber-500 text-black"
-                        : "border-white/20 bg-black text-white/40"
+                        ? "border-amber-500 bg-amber-500 text-mkt-inverse-ink"
+                        : "border-mkt-ink/20 bg-mkt-canvas text-mkt-ink/40"
                     )}
                   >
                     {step.number}
@@ -133,7 +133,7 @@ function OnboardingJourney({ copy }: { copy: GetAccessCopy }) {
                   "cursor-pointer border p-5 transition-colors sm:p-6",
                   isActive
                     ? "border-amber-500/40 bg-amber-500/5"
-                    : "border-white/10 hover:border-white/25"
+                    : "border-mkt-ink/10 hover:border-mkt-ink/25"
                 )}
               >
                 <div
@@ -141,7 +141,7 @@ function OnboardingJourney({ copy }: { copy: GetAccessCopy }) {
                     "mb-4 flex h-11 w-11 items-center justify-center rounded-full border",
                     isActive
                       ? "border-amber-500/50 text-amber-500"
-                      : "border-white/15 text-white/50"
+                      : "border-mkt-ink/15 text-mkt-ink/50"
                   )}
                 >
                   {step.icon}
@@ -149,10 +149,10 @@ function OnboardingJourney({ copy }: { copy: GetAccessCopy }) {
                 <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-500">
                   {copy.stepLabels[index]}
                 </p>
-                <h3 className="text-lg font-semibold text-white sm:text-xl">
+                <h3 className="text-lg font-semibold text-mkt-ink sm:text-xl">
                   {step.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-white/50">
+                <p className="mt-2 text-sm leading-relaxed text-mkt-ink/50">
                   {step.desc}
                 </p>
               </motion.div>
@@ -166,10 +166,10 @@ function OnboardingJourney({ copy }: { copy: GetAccessCopy }) {
 
 export function GetAccessPageClient({ copy }: { copy: GetAccessCopy }) {
   return (
-    <div className="min-h-screen bg-black">
-      <section className="relative flex min-h-[calc(100dvh-4rem)] items-center overflow-hidden border-b border-white/10 px-4 pb-16 pt-28 sm:min-h-0 sm:block sm:px-0 sm:pb-24 sm:pt-36 md:pt-40">
+    <div className="min-h-screen bg-mkt-canvas">
+      <section className="relative flex min-h-[calc(100dvh-4rem)] items-center overflow-hidden border-b border-mkt-ink/10 px-4 pb-16 pt-28 sm:min-h-0 sm:block sm:px-0 sm:pb-24 sm:pt-36 md:pt-40">
         <div className="absolute top-1/3 -left-24 h-72 w-72 rounded-full bg-amber-500/10 blur-[120px]" />
-        <div className="absolute bottom-1/4 -right-20 h-64 w-64 rounded-full bg-white/5 blur-[100px]" />
+        <div className="absolute bottom-1/4 -right-20 h-64 w-64 rounded-full bg-mkt-ink/5 blur-[100px]" />
 
         <div className="relative z-10 mx-auto w-full max-w-4xl text-center sm:px-4">
           <motion.div
@@ -177,28 +177,28 @@ export function GetAccessPageClient({ copy }: { copy: GetAccessCopy }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-white/60">
+            <span className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-mkt-ink/60">
               <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
               {copy.heroBadge}
             </span>
-            <h1 className="mt-5 font-display text-[1.85rem] leading-[1.2] tracking-tight text-white sm:mt-8 sm:text-5xl md:text-6xl">
+            <h1 className="mt-5 font-display text-[1.85rem] leading-[1.2] tracking-tight text-mkt-ink sm:mt-8 sm:text-5xl md:text-6xl">
               {copy.heroTitle}{" "}
-              <span className="text-white/70">{copy.heroTitleHighlight}</span>
+              <span className="text-mkt-ink/70">{copy.heroTitleHighlight}</span>
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-sm uppercase tracking-[0.14em] text-white/50 sm:mt-8 sm:text-base">
+            <p className="mx-auto mt-5 max-w-2xl text-sm uppercase tracking-[0.14em] text-mkt-ink/50 sm:mt-8 sm:text-base">
               {copy.heroSubtitle}
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4">
               <Link
                 href="/register"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-transform hover:scale-[1.02] active:scale-[0.98] sm:w-auto sm:px-8"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-mkt-inverse-ink transition-transform hover:scale-[1.02] active:scale-[0.98] sm:w-auto sm:px-8"
               >
                 {copy.createSchoolAccount}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <Link
                 href="/login"
-                className="inline-flex w-full items-center justify-center rounded-full border border-white/35 px-7 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-white hover:bg-white/5 sm:w-auto sm:px-8"
+                className="inline-flex w-full items-center justify-center rounded-full border border-mkt-ink/35 px-7 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-mkt-ink transition-colors hover:border-mkt-ink hover:bg-mkt-ink/5 sm:w-auto sm:px-8"
               >
                 {copy.alreadyHaveAccount}
               </Link>
@@ -209,17 +209,17 @@ export function GetAccessPageClient({ copy }: { copy: GetAccessCopy }) {
 
       <OnboardingJourney copy={copy} />
 
-      <section className="border-y border-white/10 py-20 sm:py-28">
+      <section className="border-y border-mkt-ink/10 py-20 sm:py-28">
         <div className="mx-auto max-w-5xl px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="font-display text-2xl tracking-tight text-white sm:text-4xl md:text-5xl">
+            <h2 className="font-display text-2xl tracking-tight text-mkt-ink sm:text-4xl md:text-5xl">
               {copy.includedTitle}
             </h2>
-            <p className="mt-4 text-sm uppercase tracking-[0.16em] text-white/50 sm:mt-6 sm:text-base">
+            <p className="mt-4 text-sm uppercase tracking-[0.16em] text-mkt-ink/50 sm:mt-6 sm:text-base">
               {copy.includedSubtitle}
             </p>
 
@@ -231,10 +231,10 @@ export function GetAccessPageClient({ copy }: { copy: GetAccessCopy }) {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.04 }}
-                  className="flex items-center gap-4 border border-white/10 px-5 py-4 transition-colors hover:border-white/25"
+                  className="flex items-center gap-4 border border-mkt-ink/10 px-5 py-4 transition-colors hover:border-mkt-ink/25"
                 >
                   <CheckCircle2 className="h-5 w-5 shrink-0 text-amber-500" />
-                  <span className="text-sm font-medium text-white/75 sm:text-base">
+                  <span className="text-sm font-medium text-mkt-ink/75 sm:text-base">
                     {item}
                   </span>
                 </motion.div>
@@ -244,12 +244,12 @@ export function GetAccessPageClient({ copy }: { copy: GetAccessCopy }) {
             <div className="mt-14">
               <Link
                 href="/register"
-                className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-[11px] font-bold uppercase tracking-[0.14em] text-black transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-[11px] font-bold uppercase tracking-[0.14em] text-mkt-inverse-ink transition-transform hover:scale-[1.02] active:scale-[0.98]"
               >
                 {copy.createMySchoolAccount}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </Link>
-              <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.2em] text-white/35">
+              <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.2em] text-mkt-ink/35">
                 {copy.joinRevolution}
               </p>
             </div>

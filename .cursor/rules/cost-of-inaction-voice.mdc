@@ -1,0 +1,16 @@
+---
+description: Default cost-of-inaction copy voice for marketing, UI strings, CTAs, and onboarding
+alwaysApply: true
+---
+
+# Cost-of-inaction voice (default for user-facing copy)
+
+When writing or editing **marketing copy, UI strings, CTAs, landing pages, emails, onboarding, empty states, or product descriptions**, use Pascal's cost-of-inaction voice unless he asks for a different tone.
+
+**Core move:** Sell the cost of doing nothing, not the product. Specific loss ? price already paid ? small next step. Pair every loss with hope (no shame, no vague doom).
+
+**CTA defaults:** "Stop the leaks," "See what it's costing you," "Fix it before [milestone]" � not "Get started free" or "Join the revolution."
+
+**Do not apply** to: code, commit messages, API docs, legal/privacy, error messages, or nav labels (keep nav clear).
+
+Full framework: read skill `cost-of-inaction-voice` at `~/.cursor/skills/cost-of-inaction-voice/SKILL.md`.

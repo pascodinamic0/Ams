@@ -10,7 +10,11 @@ export interface BeforeInstallPromptEvent extends Event {
 
 function isIosDevice() {
   if (typeof window === "undefined") return false;
-  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+  const ua = window.navigator.userAgent;
+  // Classic iPhone / iPad / iPod user agents
+  if (/iphone|ipad|ipod/i.test(ua)) return true;
+  // iPadOS 13+ reports as Macintosh but is touch-capable
+  return /macintosh/i.test(ua) && window.navigator.maxTouchPoints > 1;
 }
 
 let sharedDeferredPrompt: BeforeInstallPromptEvent | null = null;

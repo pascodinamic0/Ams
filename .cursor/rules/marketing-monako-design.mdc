@@ -1,0 +1,43 @@
+---
+description: MONAKO design system for ShuleOS marketing, auth funnel, and public company pages (dark default + white theme toggle).
+globs: "{app/(company)/**,app/(auth)/**,app/pending/**,components/company/**,components/auth/**,components/pwa/pwa-install-showcase.tsx,components/i18n/language-switcher.tsx,components/theme/theme-toggle.tsx}"
+alwaysApply: false
+---
+
+# Marketing MONAKO design (ShuleOS public site)
+
+Default visual system for **marketing, company pages, auth funnel, and pending states**. Dark MONAKO black is the brand default; light (white) is available via the header theme toggle. Use `mkt-*` tokens so both modes stay in sync.
+
+## Scope
+
+**In scope:** `/`, `/features`, `/get-access`, `/contact`, `/docs`, `/modules/*`, legal pages, `/schools` directory, auth (`/login`, `/register`, …), `/pending`, and shared chrome in `components/company/*`, `components/auth/*`.
+
+**Out of scope (do not force MONAKO):**
+- Authenticated app dashboards (`/admin`, `/teacher`, `/parent`, `/student`, `/operations`, `/finance`, `/academic`, `/analytics`, `/messages`, `/settings`, …)
+- Per-school public sites (`/schools/[slug]/*`) — keep school theme / templates
+
+## Visual rules
+
+1. **Background:** Theme-aware via `.marketing-surface` + `mkt-*` tokens. Dark = pure black; light = white canvas. Prefer `bg-mkt-canvas` / `text-mkt-ink` over hardcoded `bg-black` / `text-white` (except overlays on photos/video).
+2. **Text:** `text-mkt-ink` primary; `text-mkt-ink/50`–`/70` secondary. Uppercase + wide tracking for labels/nav (`tracking-[0.14em]`–`[0.28em]`).
+3. **Display type:** Major H1/H2 use `font-display` (Plus Jakarta Sans extrabold, tight tracking). Brand name is a hero-level signal on marketing heroes.
+4. **Accent:** Amber sparingly (`text-amber-500`, small dots, progress, check icons). Not teal fills (`bg-primary` bands, `primary-light` icon tiles).
+5. **Buttons:** `rounded-full` pills — outline `border-mkt-ink/30` + solid `bg-mkt-inverse text-mkt-inverse-ink` (or amber when one accent CTA is needed).
+6. **Surfaces:** Prefer thin `border-mkt-ink/10` tiles over cards with shadows/radius. If removing border/shadow/radius does not hurt interaction, remove it.
+7. **Chrome:** Use `CompanyLayoutShell` + `SiteFooter`; language switcher + theme toggle use `tone="marketing"`.
+8. **Tokens:** Wrap marketing/auth roots in `marketing-surface` so form controls and `mkt-*` utilities inherit the active theme.
+9. **Copy:** Cost-of-inaction voice on marketing CTAs/heroes (see `cost-of-inaction-voice` skill). Nav labels stay clear.
+
+## Anti-patterns (reject in PRs / new work)
+
+- Hardcoded `bg-black` / `text-white` on sections that should flip with the theme toggle (photo/video overlays OK)
+- `rounded-2xl bg-primary` / teal CTA bands
+- Heavy `shadow-xl` card grids on marketing
+- Teal glow blobs as the main accent
+- Stats strips / pill clusters cluttering the first viewport of a landing hero
+
+## When adding a new public page
+
+1. Put it under `app/(company)/` (or auth group) so it gets the shell, **or** apply `marketing-surface` + `mkt-*` chrome manually.
+2. Match Features / Get Access / Contact patterns already in the repo.
+3. Keep school microsites on their own template system.

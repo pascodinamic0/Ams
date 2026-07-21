@@ -40,6 +40,11 @@
   --font-sans: var(--font-jakarta-sans);
   --font-mono: var(--font-jetbrains-mono);
   --font-display: var(--font-jakarta-sans);
+  --mkt-canvas: #ffffff;
+  --mkt-ink: #0a0a0a;
+  --mkt-inverse: #0a0a0a;
+  --mkt-inverse-ink: #ffffff;
+  --mkt-header: rgba(255, 255, 255, 0.9);
   color-scheme: light;
 }
 
@@ -66,6 +71,11 @@ html.dark {
   --brand-border: #44403c;
   --brand-muted: #a8a29e;
   --brand-muted-foreground: #78716c;
+  --mkt-canvas: #000000;
+  --mkt-ink: #ffffff;
+  --mkt-inverse: #ffffff;
+  --mkt-inverse-ink: #000000;
+  --mkt-header: rgba(0, 0, 0, 0.8);
   color-scheme: dark;
 }
 
@@ -104,6 +114,13 @@ html.dark {
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) * 0.75);
   --radius-sm: calc(var(--radius) * 0.5);
+
+  /* Marketing theme tokens (resolved inside .marketing-surface) */
+  --color-mkt-canvas: var(--mkt-canvas);
+  --color-mkt-ink: var(--mkt-ink);
+  --color-mkt-inverse: var(--mkt-inverse);
+  --color-mkt-inverse-ink: var(--mkt-inverse-ink);
+  --color-mkt-header: var(--mkt-header);
 }
 
 body {
@@ -120,8 +137,40 @@ body {
   letter-spacing: -0.025em;
 }
 
-/* Forced dark surface for marketing + auth funnel (independent of OS / app theme) */
+/*
+ * Marketing + auth funnel surface.
+ * Respects html.dark from next-themes (light = white canvas, dark = MONAKO black).
+ * Use mkt-* utilities for chrome that should flip with the theme toggle.
+ */
 .marketing-surface {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --brand-primary: #d97706;
+  --brand-primary-hover: #b45309;
+  --brand-primary-light: #fffbeb;
+  --brand-primary-border: #fcd34d;
+  --brand-primary-foreground: #ffffff;
+  --brand-accent: #d97706;
+  --brand-accent-hover: #b45309;
+  --brand-accent-light: #fffbeb;
+  --brand-secondary: #f5f5f4;
+  --brand-secondary-foreground: #0a0a0a;
+  --brand-surface: #ffffff;
+  --brand-surface-raised: #fafaf9;
+  --brand-border: #e7e5e4;
+  --brand-muted: #78716c;
+  --brand-muted-foreground: #a8a29e;
+  --mkt-canvas: #ffffff;
+  --mkt-ink: #0a0a0a;
+  --mkt-inverse: #0a0a0a;
+  --mkt-inverse-ink: #ffffff;
+  --mkt-header: rgba(255, 255, 255, 0.9);
+  background: var(--mkt-canvas);
+  color: var(--mkt-ink);
+}
+
+html.dark .marketing-surface {
   color-scheme: dark;
   --background: #000000;
   --foreground: #f5f5f4;
@@ -140,8 +189,11 @@ body {
   --brand-border: #262626;
   --brand-muted: #a3a3a3;
   --brand-muted-foreground: #737373;
-  background: #000000;
-  color: #f5f5f4;
+  --mkt-canvas: #000000;
+  --mkt-ink: #ffffff;
+  --mkt-inverse: #ffffff;
+  --mkt-inverse-ink: #000000;
+  --mkt-header: rgba(0, 0, 0, 0.8);
 }
 
 ::selection {
