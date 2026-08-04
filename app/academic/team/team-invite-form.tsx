@@ -22,9 +22,20 @@ export function TeamInviteForm() {
 
   const roleLabels: Record<string, string> = {
     academic_admin: t("roleAcademicAdmin"),
+    admin_coordinator: t("roleAdminCoordinator"),
+    registrar: t("roleRegistrar"),
+    admissions_officer: t("roleAdmissionsOfficer"),
+    pedagogy_coordinator: t("rolePedagogyCoordinator"),
+    principal: t("rolePrincipal"),
     teacher: t("roleTeacher"),
     finance_officer: t("roleFinanceOfficer"),
+    cashier: t("roleCashier"),
+    accountant: t("roleAccountant"),
     operations_manager: t("roleOperationsManager"),
+    operations_officer: t("roleOperationsOfficer"),
+    discipline_officer: t("roleDisciplineOfficer"),
+    supervisor: t("roleSupervisor"),
+    pedagogical_council_member: t("rolePedagogicalCouncilMember"),
     analytics: t("roleAnalytics"),
   };
 

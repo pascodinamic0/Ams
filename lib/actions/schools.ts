@@ -181,6 +181,7 @@ const CURRENCY_MANAGERS = new Set([
   "super_admin",
   "academic_admin",
   "finance_officer",
+  "accountant",
 ]);
 
 export async function updateSchoolCurrency(

@@ -2,9 +2,20 @@ import { z } from "zod";
 
 export const INVITABLE_ROLES = [
   "academic_admin",
+  "admin_coordinator",
+  "registrar",
+  "admissions_officer",
+  "pedagogy_coordinator",
+  "principal",
   "teacher",
   "finance_officer",
+  "cashier",
+  "accountant",
   "operations_manager",
+  "operations_officer",
+  "discipline_officer",
+  "supervisor",
+  "pedagogical_council_member",
   "analytics",
 ] as const;
 
@@ -15,9 +26,20 @@ export const inviteUserSchema = z.object({
   name: z.string().min(1, "Name is required"),
   role: z.enum([
     "academic_admin",
+    "admin_coordinator",
+    "registrar",
+    "admissions_officer",
+    "pedagogy_coordinator",
+    "principal",
     "teacher",
     "finance_officer",
+    "cashier",
+    "accountant",
     "operations_manager",
+    "operations_officer",
+    "discipline_officer",
+    "supervisor",
+    "pedagogical_council_member",
     "analytics",
   ]),
 });

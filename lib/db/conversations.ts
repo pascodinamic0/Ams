@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
 
 export type ConversationListItem = {
   id: string;
@@ -397,7 +398,7 @@ export async function getStaffContactsForParent(): Promise<StaffContact[]> {
     .from("profiles")
     .select("id, name, role")
     .eq("school_id", guardian.school_id)
-    .in("role", ["super_admin", "academic_admin", "teacher"])
+    .in("role", MESSAGING_STAFF_ROLES)
     .neq("id", user.id);
 
   for (const profile of staffProfiles ?? []) {

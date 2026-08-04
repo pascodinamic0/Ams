@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { ACADEMIC_PORTAL_ROLES } from "@/lib/auth/rbac";
 import {
   studentOnboardingSchema,
   type GuardianOnboardingData,
@@ -52,6 +53,16 @@ function firstZodIssueMessage(error: z.ZodError): string {
   return `${path}${issue.message}`;
 }
 
+const STUDENT_ONBOARDING_ROLES = new Set([
+  "super_admin",
+  "academic_admin",
+  "admin_coordinator",
+  "registrar",
+  "admissions_officer",
+  "pedagogy_coordinator",
+  "principal",
+].filter((role) => ACADEMIC_PORTAL_ROLES.includes(role as typeof ACADEMIC_PORTAL_ROLES[number])));
+
 export async function createStudentWithGuardians(
   input: StudentOnboardingData & { school_id: string; branch_id: string }
 ) {
@@ -79,7 +90,7 @@ export async function createStudentWithGuardians(
       .single();
 
     const role = profile?.role ?? "";
-    if (role !== "super_admin" && role !== "academic_admin") {
+    if (!STUDENT_ONBOARDING_ROLES.has(role)) {
       return { error: "You do not have permission to onboard students" };
     }
 

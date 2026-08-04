@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
 import { findExistingConversation } from "@/lib/db/conversations";
 import { createNotifications } from "@/lib/services/notifications";
 import { createClient } from "@/lib/supabase/server";
@@ -189,8 +190,8 @@ export async function markConversationRead(conversationId: string): Promise<void
       .eq("id", user.id)
       .single();
 
-    const messagingStaff = ["super_admin", "academic_admin", "teacher"].includes(
-      profile?.role ?? ""
+    const messagingStaff = MESSAGING_STAFF_ROLES.includes(
+      (profile?.role ?? "") as (typeof MESSAGING_STAFF_ROLES)[number]
     );
     if (messagingStaff) {
       await supabase.from("conversation_participants").insert({

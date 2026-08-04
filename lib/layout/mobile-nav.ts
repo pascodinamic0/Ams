@@ -29,6 +29,31 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
     { id: "tab2", href: "/academic/students", labelKey: "students", icon: GraduationCap },
     { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
+  admin_coordinator: [
+    { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/academic/admissions", labelKey: "admissions", icon: GraduationCap },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
+  ],
+  registrar: [
+    { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/academic/students", labelKey: "students", icon: GraduationCap },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
+  ],
+  admissions_officer: [
+    { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/academic/admissions", labelKey: "admissions", icon: GraduationCap },
+    { id: "tab3", href: "/academic/students", labelKey: "students", icon: ClipboardList },
+  ],
+  pedagogy_coordinator: [
+    { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/academic/timetable", labelKey: "timetable", icon: ClipboardList },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
+  ],
+  principal: [
+    { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/analytics", labelKey: "reports", icon: DollarSign },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
+  ],
   teacher: [
     { id: "home", href: "/teacher", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/teacher/attendance", labelKey: "attendance", icon: CheckCircle },
@@ -39,10 +64,40 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
     { id: "tab2", href: "/finance/invoices", labelKey: "invoices", icon: DollarSign },
     { id: "tab3", href: "/finance/payments", labelKey: "payments", icon: ClipboardList },
   ],
+  cashier: [
+    { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/finance/invoices", labelKey: "invoices", icon: DollarSign },
+    { id: "tab3", href: "/finance/payments", labelKey: "payments", icon: ClipboardList },
+  ],
+  accountant: [
+    { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/finance/reports", labelKey: "reports", icon: DollarSign },
+    { id: "tab3", href: "/finance/payroll", labelKey: "payroll", icon: ClipboardList },
+  ],
   operations_manager: [
     { id: "home", href: "/operations", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/operations/events", labelKey: "events", icon: ClipboardList },
     { id: "tab3", href: "/operations/library", labelKey: "library", icon: GraduationCap },
+  ],
+  operations_officer: [
+    { id: "home", href: "/operations", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/operations/events", labelKey: "events", icon: ClipboardList },
+    { id: "tab3", href: "/operations/library", labelKey: "library", icon: GraduationCap },
+  ],
+  discipline_officer: [
+    { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/analytics/attendance", labelKey: "attendance", icon: CheckCircle },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
+  ],
+  supervisor: [
+    { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/academic/timetable", labelKey: "timetable", icon: ClipboardList },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
+  ],
+  pedagogical_council_member: [
+    { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
+    { id: "tab2", href: "/analytics", labelKey: "reports", icon: DollarSign },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   parent: [
     { id: "home", href: "/parent", labelKey: "dashboard", icon: Home },

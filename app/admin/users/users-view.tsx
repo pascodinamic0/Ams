@@ -13,9 +13,20 @@ const ROLE_FILTERS = [
   { id: "all", label: "All users" },
   { id: "super_admin", label: "Super admins" },
   { id: "academic_admin", label: "Academic admins" },
+  { id: "admin_coordinator", label: "Admin coordinators" },
+  { id: "registrar", label: "Registrars" },
+  { id: "admissions_officer", label: "Admissions" },
+  { id: "pedagogy_coordinator", label: "Pedagogy" },
+  { id: "principal", label: "Principals" },
   { id: "teacher", label: "Teachers" },
   { id: "finance_officer", label: "Finance" },
+  { id: "cashier", label: "Cashiers" },
+  { id: "accountant", label: "Accountants" },
   { id: "operations_manager", label: "Operations" },
+  { id: "operations_officer", label: "Operations officers" },
+  { id: "discipline_officer", label: "Discipline" },
+  { id: "supervisor", label: "Supervisors" },
+  { id: "pedagogical_council_member", label: "Pedagogical council" },
   { id: "student", label: "Students" },
   { id: "parent", label: "Parents" },
   { id: "analytics", label: "Analytics" },
@@ -155,12 +166,29 @@ export function UsersView({ users }: { users: UserListItem[] }) {
 
   const stats = useMemo(() => {
     const admins = users.filter((u) =>
-      ["super_admin", "academic_admin"].includes(u.role)
+      [
+        "super_admin",
+        "academic_admin",
+        "admin_coordinator",
+        "registrar",
+        "admissions_officer",
+        "pedagogy_coordinator",
+        "principal",
+      ].includes(u.role)
     ).length;
     const staff = users.filter((u) =>
-      ["teacher", "finance_officer", "operations_manager", "analytics"].includes(
-        u.role
-      )
+      [
+        "teacher",
+        "finance_officer",
+        "cashier",
+        "accountant",
+        "operations_manager",
+        "operations_officer",
+        "discipline_officer",
+        "supervisor",
+        "pedagogical_council_member",
+        "analytics",
+      ].includes(u.role)
     ).length;
     const learners = users.filter((u) => ["student", "parent"].includes(u.role)).length;
     const schools = new Set(

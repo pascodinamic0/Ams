@@ -1,9 +1,20 @@
 export type UserRole =
   | "super_admin"
   | "academic_admin"
+  | "admin_coordinator"
+  | "registrar"
+  | "admissions_officer"
+  | "pedagogy_coordinator"
+  | "principal"
   | "teacher"
   | "finance_officer"
+  | "cashier"
+  | "accountant"
   | "operations_manager"
+  | "operations_officer"
+  | "discipline_officer"
+  | "supervisor"
+  | "pedagogical_council_member"
   | "parent"
   | "student"
   | "analytics";
@@ -11,24 +22,141 @@ export type UserRole =
 export const ROLE_DASHBOARDS: Record<UserRole, string> = {
   super_admin: "/admin",
   academic_admin: "/academic",
+  admin_coordinator: "/academic",
+  registrar: "/academic",
+  admissions_officer: "/academic",
+  pedagogy_coordinator: "/academic",
+  principal: "/academic",
   teacher: "/teacher",
   finance_officer: "/finance",
+  cashier: "/finance",
+  accountant: "/finance",
   operations_manager: "/operations",
+  operations_officer: "/operations",
+  discipline_officer: "/academic",
+  supervisor: "/academic",
+  pedagogical_council_member: "/academic",
   parent: "/parent",
   student: "/student",
   analytics: "/analytics",
 };
 
-/** Path prefixes each role may access. Shared routes are listed separately. */
-export const ROLE_PATH_PREFIXES: Record<UserRole, string[]> = {
-  super_admin: ["/admin"],
-  academic_admin: ["/academic"],
-  teacher: ["/teacher"],
-  finance_officer: ["/finance"],
-  operations_manager: ["/operations"],
-  parent: ["/parent"],
-  student: ["/student"],
-  analytics: ["/analytics"],
+type RouteScope = {
+  path: string;
+  exact?: boolean;
+};
+
+function exact(path: string): RouteScope {
+  return { path, exact: true };
+}
+
+function tree(path: string): RouteScope {
+  return { path };
+}
+
+export const ACADEMIC_PORTAL_ROLES: UserRole[] = [
+  "academic_admin",
+  "admin_coordinator",
+  "registrar",
+  "admissions_officer",
+  "pedagogy_coordinator",
+  "principal",
+  "discipline_officer",
+  "supervisor",
+  "pedagogical_council_member",
+];
+
+export const FINANCE_PORTAL_ROLES: UserRole[] = [
+  "finance_officer",
+  "cashier",
+  "accountant",
+];
+
+export const OPERATIONS_PORTAL_ROLES: UserRole[] = [
+  "operations_manager",
+  "operations_officer",
+];
+
+export const MESSAGING_STAFF_ROLES: UserRole[] = [
+  "super_admin",
+  "academic_admin",
+  "admin_coordinator",
+  "registrar",
+  "admissions_officer",
+  "pedagogy_coordinator",
+  "principal",
+  "teacher",
+  "discipline_officer",
+  "supervisor",
+  "pedagogical_council_member",
+];
+
+/** Route scopes each role may access. Shared routes are listed separately. */
+export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
+  super_admin: [tree("/admin"), tree("/analytics")],
+  academic_admin: [tree("/academic"), tree("/analytics")],
+  admin_coordinator: [
+    exact("/academic"),
+    tree("/academic/team"),
+    tree("/academic/students"),
+    tree("/academic/admissions"),
+    tree("/outreach"),
+  ],
+  registrar: [
+    exact("/academic"),
+    tree("/academic/students"),
+    tree("/academic/guardians"),
+    tree("/academic/admissions"),
+    tree("/academic/team"),
+  ],
+  admissions_officer: [
+    exact("/academic"),
+    tree("/academic/admissions"),
+    tree("/academic/students"),
+  ],
+  pedagogy_coordinator: [
+    exact("/academic"),
+    tree("/academic/team"),
+    tree("/academic/students"),
+    tree("/academic/classes"),
+    tree("/academic/sections"),
+    tree("/academic/subjects"),
+    tree("/academic/timetable"),
+    tree("/academic/curriculum"),
+    tree("/analytics"),
+  ],
+  principal: [tree("/academic"), tree("/analytics")],
+  teacher: [tree("/teacher")],
+  finance_officer: [tree("/finance")],
+  cashier: [
+    exact("/finance"),
+    tree("/finance/invoices"),
+    tree("/finance/payments"),
+  ],
+  accountant: [tree("/finance")],
+  operations_manager: [tree("/operations")],
+  operations_officer: [tree("/operations")],
+  discipline_officer: [
+    exact("/academic"),
+    tree("/academic/students"),
+    tree("/academic/admissions"),
+    tree("/analytics/attendance"),
+  ],
+  supervisor: [
+    exact("/academic"),
+    tree("/academic/students"),
+    tree("/academic/timetable"),
+    tree("/analytics/attendance"),
+  ],
+  pedagogical_council_member: [
+    exact("/academic"),
+    tree("/academic/curriculum"),
+    tree("/academic/timetable"),
+    tree("/analytics"),
+  ],
+  parent: [tree("/parent")],
+  student: [tree("/student")],
+  analytics: [tree("/analytics")],
 };
 
 /** Routes any authenticated user may visit regardless of role. */
@@ -75,8 +203,10 @@ export function canAccessPath(
   // Super admin can access everything
   if (normalized === "super_admin") return true;
 
-  const allowed = ROLE_PATH_PREFIXES[normalized];
-  return allowed.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  const allowed = ROLE_ROUTE_SCOPES[normalized];
+  return allowed.some((scope) =>
+    scope.exact
+      ? pathname === scope.path
+      : pathname === scope.path || pathname.startsWith(`${scope.path}/`)
   );
 }

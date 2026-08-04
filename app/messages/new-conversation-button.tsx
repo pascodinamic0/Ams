@@ -7,9 +7,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createConversation } from "@/lib/actions/conversations";
+import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
 import type { GuardianContact, StaffContact } from "@/lib/db/conversations";
 
-const STAFF_ROLES = new Set(["super_admin", "academic_admin", "teacher"]);
+const STAFF_ROLES = new Set(MESSAGING_STAFF_ROLES);
 
 export function canCreateConversation(role: string): boolean {
   return STAFF_ROLES.has(role) || role === "parent";

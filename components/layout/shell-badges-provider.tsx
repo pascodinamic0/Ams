@@ -11,8 +11,9 @@ import {
 import { usePathname } from "next/navigation";
 import { fetchUnreadNotificationCount } from "@/app/notifications/actions";
 import { fetchUnreadConversationCount } from "@/lib/actions/conversations";
+import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
 
-const MESSAGING_ROLES = new Set(["super_admin", "academic_admin", "teacher", "parent"]);
+const MESSAGING_ROLES = new Set([...MESSAGING_STAFF_ROLES, "parent"]);
 
 type ShellBadgesContextValue = {
   unreadNotifications: number;
