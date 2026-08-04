@@ -54,13 +54,13 @@ export default function LoginPage() {
         </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center px-4 py-12">
+      <div className="flex flex-1 items-center justify-center bg-mkt-canvas px-4 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <h1 className="font-display text-2xl tracking-tight text-white">
+            <h1 className="font-display text-2xl tracking-tight text-mkt-ink">
               {t("welcomeBack")}
             </h1>
-            <p className="mt-2 text-sm text-white/50">
+            <p className="mt-2 text-sm text-muted">
               {t("signInSubtitle", { productName: companyIdentity.productName })}
             </p>
           </div>
@@ -71,9 +71,9 @@ export default function LoginPage() {
             <LoginFormContent />
           </Suspense>
 
-          <p className="mt-6 text-center text-sm text-white/45">
+          <p className="mt-6 text-center text-sm text-muted">
             {t("noAccount")}{" "}
-            <Link href="/get-access" className="font-medium text-amber-500 hover:text-amber-400">
+            <Link href="/get-access" className="font-medium text-primary hover:text-primary-hover">
               {t("getAccess")}
             </Link>
           </p>
@@ -106,9 +106,9 @@ function LoginOAuthSection() {
 function LoginSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="h-10 animate-pulse rounded-lg bg-white/10" />
-      <div className="h-10 animate-pulse rounded-lg bg-white/10" />
-      <div className="h-10 animate-pulse rounded-lg bg-white/10" />
+      <div className="h-10 animate-pulse rounded-lg bg-secondary" />
+      <div className="h-10 animate-pulse rounded-lg bg-secondary" />
+      <div className="h-10 animate-pulse rounded-lg bg-secondary" />
     </div>
   );
 }
@@ -178,6 +178,7 @@ function LoginFormFields({ loading }: { loading: boolean }) {
           id="email"
           type="email"
           placeholder="you@school.com"
+          className="border-border bg-surface text-foreground placeholder:text-muted-foreground"
           error={!!errors.email}
           {...register("email")}
         />
@@ -193,7 +194,7 @@ function LoginFormFields({ loading }: { loading: boolean }) {
           </Label>
           <Link
             href="/forgot-password"
-            className="text-xs font-medium text-amber-500 hover:text-amber-400"
+            className="text-xs font-medium text-primary hover:text-primary-hover"
           >
             {t("forgotPassword")}
           </Link>
@@ -201,6 +202,7 @@ function LoginFormFields({ loading }: { loading: boolean }) {
         <Input
           id="password"
           type="password"
+          className="border-border bg-surface text-foreground placeholder:text-muted-foreground"
           error={!!errors.password}
           {...register("password")}
         />

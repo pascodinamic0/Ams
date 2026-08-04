@@ -78,7 +78,7 @@ export function GoogleAuthButton({
     <Button
       type="button"
       variant="outline"
-      className="w-full gap-3 rounded-full border-white/20 bg-transparent text-white hover:bg-white/5"
+      className="w-full gap-3 rounded-full border-border bg-surface text-foreground hover:bg-secondary"
       size="lg"
       disabled={loading}
       onClick={handleClick}

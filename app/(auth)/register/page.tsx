@@ -58,13 +58,13 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center px-4 py-12">
+      <div className="flex flex-1 items-center justify-center bg-mkt-canvas px-4 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8">
-            <h1 className="font-display text-2xl tracking-tight text-white">
+            <h1 className="font-display text-2xl tracking-tight text-mkt-ink">
               {t("registerTitle")}
             </h1>
-            <p className="mt-2 text-sm text-white/50">
+            <p className="mt-2 text-sm text-muted">
               {t("registerFormSubtitle", { productName: companyIdentity.productName })}
             </p>
           </div>
@@ -77,9 +77,9 @@ export default function RegisterPage() {
 
           <RegisterForm />
 
-          <p className="mt-6 text-center text-sm text-white/45">
+          <p className="mt-6 text-center text-sm text-muted">
             {t("alreadyHaveAccount")}{" "}
-            <Link href="/login" className="font-medium text-amber-500 hover:text-amber-400">
+            <Link href="/login" className="font-medium text-primary hover:text-primary-hover">
               {t("signInLink")}
             </Link>
           </p>
@@ -176,7 +176,7 @@ function RegisterOAuthSection() {
 
 function RegisterOAuthSkeleton() {
   return (
-    <div className="h-10 animate-pulse rounded-lg bg-white/10" />
+    <div className="h-10 animate-pulse rounded-lg bg-secondary" />
   );
 }
 

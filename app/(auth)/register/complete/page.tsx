@@ -107,13 +107,13 @@ export default function RegisterCompletePage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-8">
+    <div className="flex flex-1 items-center justify-center bg-mkt-canvas px-4 py-8">
       <div className="w-full max-w-md">
         <div className="mb-8">
-          <h1 className="font-display text-2xl tracking-tight text-white">
+          <h1 className="font-display text-2xl tracking-tight text-mkt-ink">
             Finish school setup
           </h1>
-          <p className="mt-2 text-sm text-white/50">
+          <p className="mt-2 text-sm text-muted">
             You signed in with Google
             {adminEmail ? ` as ${adminEmail}` : ""}. Enter your school name to
             complete registration.
@@ -128,9 +128,9 @@ export default function RegisterCompletePage() {
           <CompleteFormFields loading={loading} />
         </FormWrapper>
 
-        <p className="mt-6 text-center text-sm text-white/45">
+        <p className="mt-6 text-center text-sm text-muted">
           Wrong account?{" "}
-          <Link href="/login" className="font-medium text-amber-500 hover:text-amber-400">
+          <Link href="/login" className="font-medium text-primary hover:text-primary-hover">
             Sign in with a different account
           </Link>
         </p>
