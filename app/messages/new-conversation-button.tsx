@@ -10,7 +10,7 @@ import { createConversation } from "@/lib/actions/conversations";
 import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
 import type { GuardianContact, StaffContact } from "@/lib/db/conversations";
 
-const STAFF_ROLES = new Set(MESSAGING_STAFF_ROLES);
+const STAFF_ROLES = new Set<string>(MESSAGING_STAFF_ROLES);
 
 export function canCreateConversation(role: string): boolean {
   return STAFF_ROLES.has(role) || role === "parent";
@@ -31,6 +31,7 @@ export function NewConversationButton({
 }: Props) {
   const router = useRouter();
   const t = useTranslations("messages");
+  const canStartConversation = canCreateConversation(role);
   const isParent = role === "parent";
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -38,8 +39,6 @@ export function NewConversationButton({
   const [selectedStaff, setSelectedStaff] = useState<StaffContact | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
-  if (!canCreateConversation(role)) return null;
 
   const guardianGrouped = useMemo(() => {
     const filtered = guardianContacts.filter(
@@ -150,6 +149,8 @@ export function NewConversationButton({
   const selectedName = isParent
     ? selectedStaff?.name
     : selectedGuardian?.name;
+
+  if (!canStartConversation) return null;
 
   return (
     <>
