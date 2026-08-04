@@ -1,19 +1,19 @@
 import type { SchoolRow } from "@/lib/db/schools";
 
 export const DEFAULT_HERO_IMAGE =
-  "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1600&q=80";
+  "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=1600&q=80";
 
 export const DEFAULT_PROGRAM_IMAGES = [
   "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&q=80",
-  "https://images.unsplash.com/photo-1427504494784-3a9ca7044f45?w=800&q=80",
-  "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800&q=80",
+  "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80",
+  "https://images.unsplash.com/photo-1577896851231-70ef18881754?w=800&q=80",
 ];
 
 export const DEFAULT_GALLERY_IMAGES = [
   "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=800&q=80",
-  "https://images.unsplash.com/photo-1571260899304-425eee4c376e?w=800&q=80",
+  "https://images.unsplash.com/photo-1588072432836-e10032774350?w=800&q=80",
   "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=800&q=80",
-  "https://images.unsplash.com/photo-1541339907198-e08756dedf3c?w=800&q=80",
+  "https://images.unsplash.com/photo-1562774053-701939374585?w=800&q=80",
 ];
 
 export type WebsiteProgram = {
