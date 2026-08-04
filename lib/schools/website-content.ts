@@ -84,25 +84,43 @@ export function getPreviewWebsiteContent(schoolName: string): SchoolWebsiteConte
   return {
     hero_title: `A place at ${schoolName} still open — for now`,
     hero_subtitle:
-      "Every week without an application is a week another family can take the seat you wanted. See programs, fees, and events before the term fills.",
+      "For families choosing a trusted school, delay is the costliest option. See programs, campus life, and admissions before seats fill.",
     programs: [
       {
-        title: "STEM & Sciences",
+        title: "Community",
         description:
-          "Hands-on labs, robotics, and inquiry-based learning from early grades through graduation.",
+          "A welcoming campus where students, families, and teachers grow together across cultures and grades.",
         image_url: DEFAULT_PROGRAM_IMAGES[0],
       },
       {
-        title: "Arts & Culture",
+        title: "Early years",
         description:
-          "Music, visual arts, drama, and cultural programs that celebrate creativity and expression.",
+          "Play-based learning that builds curiosity, confidence, and the habits that carry into primary school.",
         image_url: DEFAULT_PROGRAM_IMAGES[1],
       },
       {
-        title: "Sports & Leadership",
+        title: "Primary & middle",
         description:
-          "Competitive athletics, team building, and leadership development on and off the field.",
-        image_url: DEFAULT_PROGRAM_IMAGES[2],
+          "Strong academics with character, inquiry, and support through the years that shape identity.",
+        image_url: DEFAULT_GALLERY_IMAGES[0],
+      },
+      {
+        title: "Secondary",
+        description:
+          "Rigorous pathways that prepare students for university and life beyond the classroom.",
+        image_url: DEFAULT_GALLERY_IMAGES[1],
+      },
+      {
+        title: "Campus",
+        description:
+          "Spaces for learning, sport, arts, and community — the daily environment families come to see.",
+        image_url: DEFAULT_GALLERY_IMAGES[2],
+      },
+      {
+        title: "Student life",
+        description:
+          "Clubs, athletics, and leadership moments that make school more than a timetable.",
+        image_url: DEFAULT_GALLERY_IMAGES[3],
       },
     ],
     stats: [
@@ -115,7 +133,7 @@ export function getPreviewWebsiteContent(schoolName: string): SchoolWebsiteConte
       url,
       caption: ["Campus", "Classroom", "Library", "Sports"][i],
     })),
-    footer_tagline: "Seats fill. Apply while there is still room.",
+    footer_tagline: "Excellence · Integrity · Inclusivity",
   };
 }
 

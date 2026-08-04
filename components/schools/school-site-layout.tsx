@@ -34,9 +34,11 @@ function NavLink({
 function SocialLinks({
   social,
   className = "",
+  light = false,
 }: {
   social: { facebook?: string; instagram?: string; twitter?: string };
   className?: string;
+  light?: boolean;
 }) {
   const links = [
     { href: social.facebook, label: "Facebook" },
@@ -54,7 +56,11 @@ function SocialLinks({
           href={link.href}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-sm text-stone-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+          className={
+            light
+              ? "text-sm text-white/70 hover:text-white"
+              : "text-sm text-stone-500 hover:text-zinc-800"
+          }
         >
           {link.label}
         </a>
@@ -67,20 +73,24 @@ function SchoolFooter({
   school,
   site,
   className = "",
+  light = false,
 }: {
   school: SchoolRow;
   site: ReturnType<typeof resolveSchoolWebsite>;
   className?: string;
+  light?: boolean;
 }) {
   return (
     <div className={className}>
-      <p className="text-sm text-stone-500">
+      <p className={`text-sm ${light ? "text-white/70" : "text-stone-500"}`}>
         &copy; {new Date().getFullYear()} {school.name}
       </p>
       {site.footerTagline && (
-        <p className="mt-1 text-sm text-stone-400">{site.footerTagline}</p>
+        <p className={`mt-1 text-sm ${light ? "text-white/55" : "text-stone-400"}`}>
+          {site.footerTagline}
+        </p>
       )}
-      <SocialLinks social={site.social} className="mt-3" />
+      <SocialLinks social={site.social} className="mt-3" light={light} />
     </div>
   );
 }
@@ -91,40 +101,48 @@ function ModernShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
   const base = isPreview ? "#" : `/schools/${school.slug}`;
 
   return (
-    <div className="min-h-screen bg-[#f4faf9] text-stone-900">
-      <header className="sticky top-0 z-20 border-b border-teal-900/5 bg-[#f4faf9]/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href={base} className="flex items-center gap-3">
-            {school.logo_url ? (
-              <img src={school.logo_url} alt="" className="h-9 w-9 rounded-lg object-cover" />
-            ) : (
-              <div
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold text-white"
-                style={{ backgroundColor: primary }}
-              >
-                {school.name.charAt(0)}
-              </div>
-            )}
-            <span className="text-base font-bold tracking-tight">{school.name}</span>
+    <div className="min-h-screen bg-white text-stone-900">
+      <header className="absolute inset-x-0 top-0 z-30">
+        <div className="h-[3px]" style={{ backgroundColor: primary }} />
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
+          <Link href={base} className="text-white">
+            <span className="block text-lg font-bold tracking-tight drop-shadow">
+              {school.name}
+            </span>
+            <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/80">
+              Excellence · Integrity · Community
+            </span>
           </Link>
-          <nav className="hidden items-center gap-6 sm:flex">
-            <NavLink href={`${base}#programs`}>Programs</NavLink>
-            <NavLink href={`${base}#about`}>About</NavLink>
-            <NavLink href={isPreview ? "#events" : `/schools/${school.slug}/events`}>Events</NavLink>
-            <NavLink href={`${base}#contact`}>Contact</NavLink>
-            <NavLink href="/login">Login</NavLink>
+          <nav className="hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.14em] text-white sm:flex">
+            <NavLink href={`${base}#programs`} className="text-white">
+              Programs
+            </NavLink>
+            <NavLink href={`${base}#about`} className="text-white">
+              About
+            </NavLink>
+            <NavLink
+              href={isPreview ? "#events" : `/schools/${school.slug}/events`}
+              className="text-white"
+            >
+              Events
+            </NavLink>
+            <NavLink href={`${base}#contact`} className="text-white">
+              Contact
+            </NavLink>
+            <NavLink href="/login" className="text-white">
+              Login
+            </NavLink>
             <Link
               href={isPreview ? "#" : `/schools/${school.slug}/enroll`}
-              className="rounded-lg px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
-              style={{ backgroundColor: primary }}
+              className="border border-white px-4 py-2 text-white transition-colors hover:bg-white hover:text-stone-900"
             >
-              Fix enrollment delays
+              Apply now
             </Link>
           </nav>
         </div>
       </header>
       <main>{children}</main>
-      <footer className="border-t border-teal-900/5 bg-white">
+      <footer className="border-t border-stone-200 bg-stone-50">
         <div className="mx-auto max-w-6xl px-6 py-10">
           <SchoolFooter school={school} site={site} />
         </div>
@@ -134,96 +152,125 @@ function ModernShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
 }
 
 function ClassicShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
-  const primary = school.theme_primary_color ?? "#1e3a8a";
+  const primary = school.theme_primary_color ?? "#1a2b56";
+  const accent = school.theme_secondary_color ?? "#c9a227";
   const site = resolveSchoolWebsite(school);
   const base = isPreview ? "#" : `/schools/${school.slug}`;
 
   return (
-    <div
-      className="min-h-screen text-stone-900"
-      style={{
-        background:
-          "linear-gradient(180deg, #f7f8fb 0%, #ffffff 38%, #eef1f7 100%)",
-      }}
-    >
-      <header className="border-b bg-white/90 backdrop-blur-sm" style={{ borderColor: `${primary}33` }}>
-        <div className="mx-auto max-w-5xl px-6 py-6 text-center">
-          <Link href={base} className="inline-flex flex-col items-center">
-            {school.logo_url && (
-              <img
-                src={school.logo_url}
-                alt=""
-                className="mb-3 h-14 w-14 object-cover"
-              />
-            )}
-            <p
-              className="font-serif text-3xl font-bold tracking-[0.04em] md:text-4xl"
-              style={{ color: primary }}
-            >
-              {school.name}
-            </p>
-          </Link>
-          <nav className="mt-5 flex flex-wrap justify-center gap-6 font-serif text-sm text-stone-700">
-            <NavLink href={`${base}#programs`}>Programs</NavLink>
-            <NavLink href={`${base}#about`}>About</NavLink>
-            <NavLink href={isPreview ? "#events" : `/schools/${school.slug}/events`}>Events</NavLink>
-            <NavLink href={`${base}#contact`}>Contact</NavLink>
-            <NavLink href="/login">Login</NavLink>
-            <NavLink
-              href={isPreview ? "#" : `/schools/${school.slug}/enroll`}
-              className="font-semibold"
-              style={{ color: primary }}
-            >
-              Apply before seats fill
-            </NavLink>
-          </nav>
+    <div className="min-h-screen bg-white text-stone-900">
+      <div className="bg-stone-950 text-white">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-2 text-[11px] uppercase tracking-[0.16em] text-white/70">
+          <span>Public school site</span>
+          <SocialLinks social={site.social} light className="gap-3" />
         </div>
-      </header>
-      <main>{children}</main>
-      <footer className="border-t bg-white py-8 text-center" style={{ borderColor: `${primary}22` }}>
-        <SchoolFooter school={school} site={site} className="mx-auto max-w-4xl px-6" />
+      </div>
+      <div className="h-[3px]" style={{ backgroundColor: accent }} />
+      <div className="relative">
+        <header className="absolute inset-x-0 top-0 z-30">
+          <div className="mx-auto flex max-w-6xl items-start justify-between gap-6 px-6 py-5">
+            <Link href={base} className="text-white">
+              <span className="block text-xl font-bold tracking-tight drop-shadow md:text-2xl">
+                {school.name}
+              </span>
+              <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/85">
+                Excellence · Integrity · Inclusivity
+              </span>
+            </Link>
+            <div className="hidden flex-col items-end gap-3 sm:flex">
+              <div className="flex items-center gap-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+                <NavLink href={`${base}#about`} className="text-white">
+                  About
+                </NavLink>
+                <NavLink
+                  href={isPreview ? "#events" : `/schools/${school.slug}/events`}
+                  className="text-white"
+                >
+                  Calendar
+                </NavLink>
+                <NavLink href="/login" className="text-white">
+                  Login
+                </NavLink>
+                <Link
+                  href={isPreview ? "#" : `/schools/${school.slug}/enroll`}
+                  className="border border-white px-4 py-2 text-white transition-colors hover:bg-white hover:text-stone-900"
+                >
+                  Apply now
+                </Link>
+              </div>
+              <nav className="flex items-center gap-6 text-sm font-medium text-white">
+                <NavLink href={`${base}#programs`} className="text-white">
+                  Academics
+                </NavLink>
+                <NavLink href={`${base}#gallery`} className="text-white">
+                  Campus life
+                </NavLink>
+                <NavLink href={`${base}#contact`} className="text-white">
+                  Community
+                </NavLink>
+              </nav>
+            </div>
+          </div>
+        </header>
+        <main>{children}</main>
+      </div>
+      <footer className="py-10 text-white" style={{ backgroundColor: primary }}>
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="mb-6 h-[2px] w-16" style={{ backgroundColor: accent }} />
+          <SchoolFooter school={school} site={site} light />
+        </div>
       </footer>
     </div>
   );
 }
 
 function MinimalShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
-  const primary = school.theme_primary_color ?? "#1f2937";
+  const primary = school.theme_primary_color ?? "#1a2b56";
+  const accent = school.theme_secondary_color ?? "#c9a227";
   const site = resolveSchoolWebsite(school);
   const base = isPreview ? "#" : `/schools/${school.slug}`;
 
   return (
-    <div
-      className="font-editorial min-h-screen text-stone-900"
-      style={{
-        background:
-          "radial-gradient(ellipse at top, #edf2f0 0%, #f8faf9 42%, #e8eee9 100%)",
-      }}
-    >
-      <header className="mx-auto max-w-3xl px-6 pt-10 pb-6">
-        <div className="flex items-center justify-between gap-4">
-          <Link
-            href={base}
-            className="text-lg font-semibold tracking-tight"
-            style={{ color: primary }}
-          >
-            {school.name}
+    <div className="font-editorial min-h-screen bg-white text-stone-900">
+      <header className="absolute inset-x-0 top-0 z-30">
+        <div className="h-px" style={{ backgroundColor: accent }} />
+        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-6">
+          <Link href={base} className="text-white">
+            <span className="block text-base font-semibold tracking-tight drop-shadow">
+              {school.name}
+            </span>
           </Link>
-          <nav className="flex flex-wrap justify-end gap-5 text-xs font-medium uppercase tracking-[0.16em] text-stone-500">
-            <NavLink href={`${base}#programs`}>Programs</NavLink>
-            <NavLink href={`${base}#about`}>About</NavLink>
-            <NavLink href={isPreview ? "#events" : `/schools/${school.slug}/events`}>Events</NavLink>
-            <NavLink href={`${base}#contact`}>Contact</NavLink>
-            <NavLink href="/login">Login</NavLink>
-            <NavLink href={isPreview ? "#" : `/schools/${school.slug}/enroll`}>
-              Enroll now
+          <nav className="flex flex-wrap justify-end gap-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
+            <NavLink href={`${base}#programs`} className="text-white">
+              Programs
             </NavLink>
+            <NavLink href={`${base}#about`} className="text-white">
+              About
+            </NavLink>
+            <NavLink
+              href={isPreview ? "#events" : `/schools/${school.slug}/events`}
+              className="text-white"
+            >
+              Events
+            </NavLink>
+            <NavLink href={`${base}#contact`} className="text-white">
+              Contact
+            </NavLink>
+            <Link
+              href={isPreview ? "#" : `/schools/${school.slug}/enroll`}
+              className="border border-white/80 px-3 py-1.5 text-white"
+            >
+              Apply
+            </Link>
           </nav>
         </div>
       </header>
       <main>{children}</main>
-      <footer className="mx-auto max-w-3xl border-t border-stone-300/60 px-6 py-10">
-        <SchoolFooter school={school} site={site} />
+      <footer className="border-t border-stone-200 px-6 py-10">
+        <div className="mx-auto max-w-3xl">
+          <div className="mb-4 h-px w-12" style={{ backgroundColor: primary }} />
+          <SchoolFooter school={school} site={site} />
+        </div>
       </footer>
     </div>
   );

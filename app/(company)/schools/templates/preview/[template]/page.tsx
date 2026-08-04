@@ -25,7 +25,14 @@ export default async function TemplatePreviewPage({
   return (
     <SchoolSiteLayout school={school} isPreview>
       {!isEmbed && (
-        <div className="border-b border-teal-200 bg-teal-50 px-6 py-3 text-center text-sm text-teal-950">
+        <div
+          className="relative z-40 border-b px-6 py-3 text-center text-sm"
+          style={{
+            backgroundColor: "#f7f4ea",
+            borderColor: "#e7d9a8",
+            color: "#1a2b56",
+          }}
+        >
           Template preview — sample content only.{" "}
           <Link
             href={`/admin/schools/new?template=${template}`}

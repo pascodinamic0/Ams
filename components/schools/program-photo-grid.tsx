@@ -1,0 +1,83 @@
+"use client";
+
+import { useState } from "react";
+
+type Program = {
+  title: string;
+  description: string;
+  image_url: string;
+};
+
+export function ProgramPhotoGrid({
+  programs,
+  accent = "#c9a227",
+}: {
+  programs: Program[];
+  accent?: string;
+}) {
+  const [active, setActive] = useState<string | null>(null);
+
+  if (programs.length === 0) return null;
+
+  return (
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {programs.map((program) => {
+        const isActive = active === program.title;
+        return (
+          <article
+            key={program.title}
+            className="relative aspect-[4/3] overflow-hidden"
+            onMouseEnter={() => setActive(program.title)}
+            onMouseLeave={() => setActive(null)}
+            onFocus={() => setActive(program.title)}
+            onBlur={() => setActive(null)}
+            tabIndex={0}
+          >
+            <img
+              src={program.image_url}
+              alt={program.title}
+              className={`absolute inset-0 h-full w-full object-cover transition-transform duration-700 ${
+                isActive ? "scale-105" : "scale-100"
+              }`}
+            />
+            <div
+              className={`absolute inset-0 transition-colors duration-300 ${
+                isActive ? "bg-black/65" : "bg-gradient-to-t from-black/70 via-black/20 to-transparent"
+              }`}
+            />
+            <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
+              <h3
+                className={`text-lg font-semibold tracking-wide transition-all duration-300 ${
+                  isActive ? "-translate-y-2" : ""
+                }`}
+              >
+                {program.title}
+              </h3>
+              <div
+                className={`overflow-hidden transition-all duration-300 ${
+                  isActive ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+                }`}
+              >
+                <p className="mt-2 text-sm leading-relaxed text-white/90">
+                  {program.description}
+                </p>
+                <a
+                  href="#contact"
+                  className="mt-4 inline-flex border border-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-stone-900"
+                >
+                  Learn more
+                </a>
+              </div>
+            </div>
+            <div
+              className={`absolute bottom-0 left-0 h-[3px] w-full transition-opacity duration-300 ${
+                isActive ? "opacity-100" : "opacity-0"
+              }`}
+              style={{ backgroundColor: accent }}
+            />
+          </article>
+        );
+      })}
+    </div>
+  );
+}
