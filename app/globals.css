@@ -110,6 +110,8 @@ html.dark {
   --font-sans: var(--font-jakarta-sans);
   --font-mono: var(--font-jetbrains-mono);
   --font-display: var(--font-jakarta-sans);
+  --font-serif: var(--font-source-serif), Georgia, "Times New Roman", serif;
+  --font-editorial: var(--font-outfit), system-ui, sans-serif;
 
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) * 0.75);
@@ -135,6 +137,59 @@ body {
   font-family: var(--font-jakarta-sans), system-ui, sans-serif;
   font-weight: 800;
   letter-spacing: -0.025em;
+}
+
+.font-serif {
+  font-family: var(--font-source-serif), Georgia, "Times New Roman", serif;
+}
+
+.font-editorial {
+  font-family: var(--font-outfit), system-ui, sans-serif;
+}
+
+@keyframes school-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes school-soft-zoom {
+  from {
+    transform: scale(1.06);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.school-animate-fade-up {
+  animation: school-fade-up 0.8s ease-out both;
+}
+
+.school-animate-fade-up-delay {
+  animation: school-fade-up 0.9s ease-out 0.12s both;
+}
+
+.school-animate-fade-up-delay-2 {
+  animation: school-fade-up 0.9s ease-out 0.24s both;
+}
+
+.school-animate-hero-image {
+  animation: school-soft-zoom 1.4s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .school-animate-fade-up,
+  .school-animate-fade-up-delay,
+  .school-animate-fade-up-delay-2,
+  .school-animate-hero-image {
+    animation: none;
+  }
 }
 
 /*

@@ -17,9 +17,5 @@ export default async function SchoolHomepage({
 
   const events = await getPublicSchoolEvents(school.id, { limit: 6 });
 
-  return (
-    <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
-      <SchoolHomeTemplate school={school} events={events} />
-    </div>
-  );
+  return <SchoolHomeTemplate school={school} events={events} />;
 }

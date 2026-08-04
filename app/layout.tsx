@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
-import { JetBrains_Mono, Plus_Jakarta_Sans } from "next/font/google";
+import { JetBrains_Mono, Outfit, Plus_Jakarta_Sans, Source_Serif_4 } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { AppToaster } from "@/components/ui/app-toaster";
@@ -21,6 +21,20 @@ const jakartaSans = Plus_Jakarta_Sans({
 const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const sourceSerif = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -78,7 +92,7 @@ export default async function RootLayout({
   return (
     <html
       lang={locale}
-      className={`${jakartaSans.variable} ${jetbrainsMono.variable}`}
+      className={`${jakartaSans.variable} ${jetbrainsMono.variable} ${sourceSerif.variable} ${outfit.variable}`}
       suppressHydrationWarning
     >
       <body className="bg-background antialiased text-foreground">

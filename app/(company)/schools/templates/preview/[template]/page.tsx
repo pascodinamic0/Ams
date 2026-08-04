@@ -25,19 +25,17 @@ export default async function TemplatePreviewPage({
   return (
     <SchoolSiteLayout school={school} isPreview>
       {!isEmbed && (
-        <div className="border-b border-amber-200 bg-amber-50 px-6 py-3 text-center text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200">
-          Template preview - sample content only.{" "}
+        <div className="border-b border-teal-200 bg-teal-50 px-6 py-3 text-center text-sm text-teal-950">
+          Template preview — sample content only.{" "}
           <Link
             href={`/admin/schools/new?template=${template}`}
             className="font-semibold underline underline-offset-2"
           >
-            Start onboarding with this design
+            Use this design before another school claims the look
           </Link>
         </div>
       )}
-      <div className={isEmbed ? "mx-auto max-w-6xl px-4 py-6" : "mx-auto max-w-6xl px-6 py-12"}>
-        <SchoolHomeTemplate school={school} isPreview />
-      </div>
+      <SchoolHomeTemplate school={school} isPreview />
     </SchoolSiteLayout>
   );
 }

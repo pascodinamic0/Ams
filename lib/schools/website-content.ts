@@ -82,9 +82,9 @@ export function getEmptyWebsiteContent(schoolName: string): SchoolWebsiteContent
 /** Rich sample content for template previews and marketing demos only. */
 export function getPreviewWebsiteContent(schoolName: string): SchoolWebsiteContent {
   return {
-    hero_title: `Welcome to ${schoolName}`,
+    hero_title: `A place at ${schoolName} still open — for now`,
     hero_subtitle:
-      "Don't miss enrollment deadlines—apply online in minutes. See fees, events, and contact details without visiting the office.",
+      "Every week without an application is a week another family can take the seat you wanted. See programs, fees, and events before the term fills.",
     programs: [
       {
         title: "STEM & Sciences",
@@ -115,7 +115,7 @@ export function getPreviewWebsiteContent(schoolName: string): SchoolWebsiteConte
       url,
       caption: ["Campus", "Classroom", "Library", "Sports"][i],
     })),
-    footer_tagline: "Shaping tomorrow's leaders today.",
+    footer_tagline: "Seats fill. Apply while there is still room.",
   };
 }
 

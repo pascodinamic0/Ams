@@ -20,10 +20,10 @@ export const WEBSITE_TEMPLATES: WebsiteTemplate[] = [
   {
     id: "modern",
     name: "Modern",
-    tagline: "Bold & contemporary",
+    tagline: "Bold campus presence",
     description:
-      "Large hero, gradient accents, and card-based sections. Ideal for progressive schools that want a confident digital presence.",
-    features: ["Gradient hero", "Feature cards", "Strong CTAs"],
+      "Full-bleed hero, strong school branding, and clear enrollment pressure. Built for schools that need parents to act before seats disappear.",
+    features: ["Full-bleed hero", "Brand-first landing", "Enrollment CTAs"],
     defaultPrimary: "#0d9488",
     defaultSecondary: "#0f766e",
     previewPath: "/schools/templates/preview/modern",
@@ -32,10 +32,10 @@ export const WEBSITE_TEMPLATES: WebsiteTemplate[] = [
   {
     id: "classic",
     name: "Classic",
-    tagline: "Timeless & trusted",
+    tagline: "Trusted institution",
     description:
-      "Structured layout with serif headings and formal borders. Perfect for established institutions with a heritage brand.",
-    features: ["Serif typography", "Formal grid", "Centered header"],
+      "Serif typography and formal structure without looking dated. Ideal for established schools that still need parents to apply this term.",
+    features: ["Real serif type", "Formal layout", "Heritage feel"],
     defaultPrimary: "#1e3a8a",
     defaultSecondary: "#1e40af",
     previewPath: "/schools/templates/preview/classic",
@@ -44,12 +44,12 @@ export const WEBSITE_TEMPLATES: WebsiteTemplate[] = [
   {
     id: "minimal",
     name: "Minimal",
-    tagline: "Clean & focused",
+    tagline: "Quiet and decisive",
     description:
-      "Whitespace-first design with subtle typography. Best for boutique academies and schools that value clarity over clutter.",
-    features: ["Whitespace", "Light typography", "Single-column flow"],
-    defaultPrimary: "#18181b",
-    defaultSecondary: "#3f3f46",
+      "Editorial whitespace with a full-bleed hero and focused actions. Best for boutique schools that want clarity without clutter.",
+    features: ["Editorial type", "Atmospheric hero", "Focused pages"],
+    defaultPrimary: "#1f2937",
+    defaultSecondary: "#4b5563",
     previewPath: "/schools/templates/preview/minimal",
     onboardingPath: "/admin/schools/new?template=minimal",
   },
