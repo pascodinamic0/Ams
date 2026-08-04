@@ -52,5 +52,7 @@
   "teacher": "Teacher",
   "parent": "Parent",
   "student": "Student",
-  "analytics": "Analytics"
+  "analytics": "Analytics",
+  "tasks": "Tasks",
+  "discipline": "Discipline"
 }

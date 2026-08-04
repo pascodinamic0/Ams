@@ -5,6 +5,14 @@ export {
   type OperationsKPIs,
 } from "./dashboard";
 export {
+  getSchoolTasks,
+  getDisciplineIncidents,
+  getSchoolTaskStats,
+  getDisciplineStats,
+  type SchoolTask,
+  type DisciplineIncident,
+} from "./workspaces";
+export {
   getBooks,
   getBookIssues,
   getBookIssuesForStudent,

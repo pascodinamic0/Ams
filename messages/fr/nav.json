@@ -52,5 +52,7 @@
   "teacher": "Enseignant",
   "parent": "Espace parent",
   "student": "Élève",
-  "analytics": "Analytique"
+  "analytics": "Analytique",
+  "tasks": "Tâches",
+  "discipline": "Discipline"
 }

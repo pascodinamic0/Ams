@@ -3,40 +3,103 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getAcademicDashboardData } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { getRoleWorkspace } from "@/lib/auth/role-workspaces";
+import { getDisciplineStats, getSchoolTaskStats } from "@/lib/db/workspaces";
 import { getTranslations } from "next-intl/server";
 
 export default async function AcademicDashboard() {
   const t = await getTranslations("academic");
   const profile = await getCurrentProfile();
-  const data = await getAcademicDashboardData(profile?.school_id ?? undefined);
+  const workspace = getRoleWorkspace(profile?.role);
+  const schoolId = profile?.school_id ?? undefined;
+
+  const [data, taskStats, disciplineStats] = await Promise.all([
+    getAcademicDashboardData(schoolId),
+    getSchoolTaskStats(schoolId),
+    getDisciplineStats(schoolId),
+  ]);
+
+  const metrics = [
+    {
+      key: "students",
+      label: t("studentsTitle"),
+      value: data.totalStudents,
+      hint: t("activeStudents", { count: data.activeStudents }),
+    },
+    {
+      key: "classes",
+      label: t("classesTitle"),
+      value: data.classes,
+      hint: "Configured classes",
+    },
+    {
+      key: "admissions",
+      label: t("pendingAdmissions"),
+      value: data.pendingAdmissions,
+      hint: "Awaiting decision",
+    },
+    {
+      key: "openTasks",
+      label: "Open tasks",
+      value: taskStats.openTasks,
+      hint: `${taskStats.overdueTasks} overdue`,
+    },
+    {
+      key: "overdueTasks",
+      label: "Overdue tasks",
+      value: taskStats.overdueTasks,
+      hint: "Need follow-up",
+    },
+    {
+      key: "openIncidents",
+      label: "Open discipline cases",
+      value: disciplineStats.openIncidents,
+      hint: "Open / monitoring / escalated",
+    },
+  ].filter((metric) => workspace.metricHints.includes(metric.key));
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{t("title")}</h1>
+      <div>
+        <h1 className="text-2xl font-bold">{workspace.title}</h1>
+        <p className="mt-1 text-sm text-stone-500">{workspace.subtitle}</p>
+        <p className="mt-3 text-sm font-medium text-stone-700 dark:text-stone-300">
+          {workspace.focusQuestion}
+        </p>
+      </div>
+
       {data.totalStudents === 0 && data.classes === 0 && (
         <p className="text-sm text-stone-500">{t("emptySchoolHint")}</p>
       )}
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {metrics.map((metric) => (
+          <Card key={metric.key}>
+            <CardHeader>
+              <CardTitle>{metric.label}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{metric.value}</p>
+              <p className="text-sm text-stone-500">{metric.hint}</p>
+            </CardContent>
+          </Card>
+        ))}
         <Card>
-          <CardHeader><CardTitle>{t("studentsTitle")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{data.totalStudents}</p>
-            <p className="text-sm text-stone-500">{t("activeStudents", { count: data.activeStudents })}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("classesTitle")}</CardTitle></CardHeader>
-          <CardContent><p className="text-3xl font-bold">{data.classes}</p></CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("pendingAdmissions")}</CardTitle></CardHeader>
-          <CardContent><p className="text-3xl font-bold">{data.pendingAdmissions}</p></CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("quickActions")}</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle>{t("quickActions")}</CardTitle>
+          </CardHeader>
           <CardContent className="flex flex-col gap-2">
-            <Link href="/academic/students/new"><Button size="sm" className="w-full">{t("addStudent")}</Button></Link>
-            <Link href="/academic/admissions"><Button size="sm" variant="ghost" className="w-full">{t("reviewAdmissions")}</Button></Link>
+            {workspace.quickActions.map((action) => (
+              <Link key={action.href + action.label} href={action.href}>
+                <Button
+                  size="sm"
+                  variant={action.variant ?? "primary"}
+                  className="w-full"
+                >
+                  {action.label}
+                </Button>
+              </Link>
+            ))}
           </CardContent>
         </Card>
       </div>

@@ -31,7 +31,7 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   ],
   admin_coordinator: [
     { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
-    { id: "tab2", href: "/academic/admissions", labelKey: "admissions", icon: GraduationCap },
+    { id: "tab2", href: "/academic/tasks", labelKey: "tasks", icon: ClipboardList },
     { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   registrar: [
@@ -42,7 +42,7 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   admissions_officer: [
     { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/academic/admissions", labelKey: "admissions", icon: GraduationCap },
-    { id: "tab3", href: "/academic/students", labelKey: "students", icon: ClipboardList },
+    { id: "tab3", href: "/academic/tasks", labelKey: "tasks", icon: ClipboardList },
   ],
   pedagogy_coordinator: [
     { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
@@ -51,7 +51,7 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   ],
   principal: [
     { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
-    { id: "tab2", href: "/analytics", labelKey: "reports", icon: DollarSign },
+    { id: "tab2", href: "/academic/tasks", labelKey: "tasks", icon: ClipboardList },
     { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   teacher: [
@@ -86,12 +86,12 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   ],
   discipline_officer: [
     { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
-    { id: "tab2", href: "/analytics/attendance", labelKey: "attendance", icon: CheckCircle },
+    { id: "tab2", href: "/academic/discipline", labelKey: "discipline", icon: CheckCircle },
     { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   supervisor: [
     { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
-    { id: "tab2", href: "/academic/timetable", labelKey: "timetable", icon: ClipboardList },
+    { id: "tab2", href: "/academic/discipline", labelKey: "discipline", icon: CheckCircle },
     { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   pedagogical_council_member: [

@@ -81,6 +81,8 @@ type NavLabels = {
   performance: string;
   grades: string;
   finance: string;
+  tasks: string;
+  discipline: string;
 };
 
 const icon = {
@@ -135,6 +137,8 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic/website", labelKey: "publicWebsite", icon: icon.website },
     { href: "/academic/settings", labelKey: "schoolSettings", icon: icon.settings },
     { href: "/academic/team", labelKey: "team", icon: icon.users },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
+    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
@@ -147,9 +151,11 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   ],
   admin_coordinator: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
     { href: "/academic/team", labelKey: "team", icon: icon.users },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
+    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
     { href: "/outreach", labelKey: "outreach", icon: icon.outreach },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
@@ -157,6 +163,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
     { href: "/academic/team", labelKey: "team", icon: icon.users },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
@@ -164,6 +171,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   pedagogy_coordinator: [
@@ -175,11 +183,14 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic/subjects", labelKey: "subjects", icon: icon.subjects },
     { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
     { href: "/academic/curriculum", labelKey: "curriculum", icon: icon.curriculum },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
     { href: "/analytics", labelKey: "reports", icon: icon.reports },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   principal: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
+    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
     { href: "/academic/team", labelKey: "team", icon: icon.users },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
@@ -242,13 +253,14 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   ],
   discipline_officer: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
-    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/analytics/attendance", labelKey: "attendance", icon: icon.attendance },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   supervisor: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
     { href: "/analytics/attendance", labelKey: "attendance", icon: icon.attendance },

@@ -100,6 +100,8 @@ export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
     tree("/academic/team"),
     tree("/academic/students"),
     tree("/academic/admissions"),
+    tree("/academic/tasks"),
+    tree("/academic/discipline"),
     tree("/outreach"),
   ],
   registrar: [
@@ -108,11 +110,13 @@ export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
     tree("/academic/guardians"),
     tree("/academic/admissions"),
     tree("/academic/team"),
+    tree("/academic/tasks"),
   ],
   admissions_officer: [
     exact("/academic"),
     tree("/academic/admissions"),
     tree("/academic/students"),
+    tree("/academic/tasks"),
   ],
   pedagogy_coordinator: [
     exact("/academic"),
@@ -123,6 +127,7 @@ export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
     tree("/academic/subjects"),
     tree("/academic/timetable"),
     tree("/academic/curriculum"),
+    tree("/academic/tasks"),
     tree("/analytics"),
   ],
   principal: [tree("/academic"), tree("/analytics")],
@@ -139,13 +144,14 @@ export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
   discipline_officer: [
     exact("/academic"),
     tree("/academic/students"),
-    tree("/academic/admissions"),
+    tree("/academic/discipline"),
     tree("/analytics/attendance"),
   ],
   supervisor: [
     exact("/academic"),
     tree("/academic/students"),
     tree("/academic/timetable"),
+    tree("/academic/discipline"),
     tree("/analytics/attendance"),
   ],
   pedagogical_council_member: [
