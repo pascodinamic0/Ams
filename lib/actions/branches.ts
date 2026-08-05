@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { assertRole } from "@/lib/auth/assert";
 import { createClient } from "@/lib/supabase/server";
 import { branchSchema, type BranchFormData } from "@/lib/validations/academic";
@@ -39,6 +40,45 @@ export async function createBranch(input: BranchFormData) {
   if (error) return { error: error.message };
   revalidatePath("/admin/schools");
   return { data: { id: data.id } };
+}
+
+const updateBranchSchema = branchSchema.extend({
+  id: z.string().uuid(),
+});
+
+export async function updateBranch(input: BranchFormData & { id: string }) {
+  const parsed = updateBranchSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
+
+  const access = await assertRole(["super_admin"]);
+  if (!access.ok) {
+    return { error: "Only platform administrators can manage branches" };
+  }
+
+  const supabase = await createClient();
+  const { data: existing } = await supabase
+    .from("branches")
+    .select("id, school_id")
+    .eq("id", parsed.data.id)
+    .maybeSingle();
+
+  if (!existing) return { error: "Campus not found" };
+  if (existing.school_id !== parsed.data.school_id) {
+    return { error: "Campus does not belong to this school" };
+  }
+
+  const { error } = await supabase
+    .from("branches")
+    .update({
+      name: parsed.data.name,
+      address: parsed.data.address || null,
+    })
+    .eq("id", parsed.data.id);
+
+  if (error) return { error: error.message };
+  revalidatePath("/admin/schools");
+  revalidatePath(`/admin/schools/${parsed.data.school_id}`);
+  return {};
 }
 
 export async function deleteBranch(id: string) {

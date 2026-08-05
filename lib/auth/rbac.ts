@@ -201,13 +201,6 @@ export function canAccessPath(
 ): boolean {
   const normalized = normalizeRole(role);
 
-  if (
-    (pathname === "/messages" || pathname.startsWith("/messages/")) &&
-    normalized === "student"
-  ) {
-    return false;
-  }
-
   if (SHARED_AUTH_ROUTES.some((r) => pathname === r || pathname.startsWith(`${r}/`))) {
     return true;
   }

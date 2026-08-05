@@ -93,5 +93,14 @@
   "themeNavy": "Navy",
   "themeBurgundy": "Burgundy",
   "themeAmber": "Amber",
-  "schoolCreatedToast": "School created. Enable their public site from the academic dashboard when ready."
+  "schoolCreatedToast": "School created. Enable their public site from the academic dashboard when ready.",
+  "campusTitle": "Campus",
+  "campusDesc": "Each school has one campus. Update the name or address shown across academic and finance modules.",
+  "campusNameLabel": "Campus name",
+  "campusAddressLabel": "Address",
+  "campusSave": "Save campus",
+  "campusSaved": "Campus updated",
+  "campusSaveFailed": "Could not update campus",
+  "noCampusYet": "No campus yet",
+  "noCampusDesc": "A campus is created when the school is onboarded."
 }

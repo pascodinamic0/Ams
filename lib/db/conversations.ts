@@ -414,3 +414,50 @@ export async function getStaffContactsForParent(): Promise<StaffContact[]> {
 
   return contacts.sort((a, b) => a.name.localeCompare(b.name));
 }
+
+/** Class teachers a student can message directly. */
+export async function getTeacherContactsForStudent(): Promise<StaffContact[]> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, first_name, last_name, class_id, classes(name)")
+    .eq("auth_user_id", user.id)
+    .maybeSingle();
+
+  if (!student?.class_id) return [];
+
+  const studentName = `${student.first_name} ${student.last_name}`.trim();
+  const className =
+    (student.classes as { name?: string } | null)?.name ?? "Class";
+
+  const { data: slots } = await supabase
+    .from("timetable_slots")
+    .select(`teacher_id, profiles(name, role)`)
+    .eq("class_id", student.class_id)
+    .not("teacher_id", "is", null);
+
+  const contacts: StaffContact[] = [];
+  const seen = new Set<string>();
+
+  for (const slot of slots ?? []) {
+    const teacherId = slot.teacher_id as string;
+    if (!teacherId || teacherId === user.id || seen.has(teacherId)) continue;
+    seen.add(teacherId);
+    const profile = slot.profiles as { name?: string; role?: string } | null;
+    contacts.push({
+      profile_id: teacherId,
+      name: profile?.name ?? "Teacher",
+      role: profile?.role ?? "teacher",
+      student_id: student.id,
+      student_name: studentName,
+      context: className,
+    });
+  }
+
+  return contacts.sort((a, b) => a.name.localeCompare(b.name));
+}

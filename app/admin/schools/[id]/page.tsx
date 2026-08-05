@@ -16,11 +16,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { CopyableBadge } from "@/components/ui/copyable-badge";
-import { getSchoolById } from "@/lib/db";
+import { getBranches, getSchoolById } from "@/lib/db";
 import { getWebsiteTemplate } from "@/lib/schools/website-templates";
 import { getTranslations } from "next-intl/server";
 import { SchoolStatusActions } from "../school-status-actions";
 import { SchoolStatusBadge } from "../school-status-badge";
+import { CampusForm } from "./campus-form";
 import { SchoolEditForm } from "./school-edit-form";
 import { SchoolCurrencyForm } from "@/components/schools/school-currency-form";
 
@@ -33,6 +34,9 @@ export default async function SchoolDetailPage({
   const { id } = await params;
   const school = await getSchoolById(id);
   if (!school) notFound();
+
+  const campuses = await getBranches(school.id);
+  const campus = campuses[0] ?? null;
 
   const template = getWebsiteTemplate(school.website_template ?? "modern");
   const publicUrl = `/schools/${school.slug}`;
@@ -171,6 +175,32 @@ export default async function SchoolDetailPage({
         </div>
 
         <div className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("campusTitle")}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-stone-500 dark:text-stone-400">
+                {t("campusDesc")}
+              </p>
+              {campus ? (
+                <CampusForm
+                  branchId={campus.id}
+                  schoolId={school.id}
+                  initialName={campus.name}
+                  initialAddress={campus.address}
+                />
+              ) : (
+                <div>
+                  <p className="text-sm font-medium text-stone-900 dark:text-white">
+                    {t("noCampusYet")}
+                  </p>
+                  <p className="mt-1 text-sm text-stone-500">{t("noCampusDesc")}</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">

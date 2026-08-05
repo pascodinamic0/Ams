@@ -292,7 +292,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/student/assignments", labelKey: "assignments", icon: icon.assignments },
     { href: "/student/grades", labelKey: "grades", icon: icon.grades },
     { href: "/student/library", labelKey: "library", icon: icon.library },
-    { href: "/student/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
     { href: "/student/events", labelKey: "events", icon: icon.events },
   ],
   analytics: [

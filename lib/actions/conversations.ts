@@ -44,8 +44,9 @@ export async function createConversation(
   }
 
   const isParent = profile.role === "parent";
+  const isStudent = profile.role === "student";
   const isStaff = MESSAGING_STAFF_ROLES.includes(profile.role);
-  if (!isParent && !isStaff) {
+  if (!isParent && !isStaff && !isStudent) {
     return { error: "Not authorized to start conversations" };
   }
 
@@ -72,15 +73,23 @@ export async function createConversation(
     }
   }
 
+  let studentAuthUserId: string | null = null;
   if (parsed.data.student_id) {
     const { data: student } = await supabase
       .from("students")
-      .select("id, school_id")
+      .select("id, school_id, auth_user_id")
       .eq("id", parsed.data.student_id)
       .maybeSingle();
     if (!student || student.school_id !== schoolId) {
       return { error: "Student not found in this school" };
     }
+    studentAuthUserId = student.auth_user_id ?? null;
+
+    if (isStudent && student.auth_user_id !== profile.id) {
+      return { error: "Students can only start conversations about themselves" };
+    }
+  } else if (isStudent) {
+    return { error: "Student conversations must include the student record" };
   }
 
   const existingId = await findExistingConversation(
@@ -114,7 +123,13 @@ export async function createConversation(
     return { error: convErr?.message ?? "Failed to create conversation" };
   }
 
-  const allParticipants = Array.from(new Set([profile.id, ...parsed.data.participant_profile_ids]));
+  const allParticipants = Array.from(
+    new Set([
+      profile.id,
+      ...parsed.data.participant_profile_ids,
+      ...(studentAuthUserId ? [studentAuthUserId] : []),
+    ])
+  );
 
   const { error: partErr } = await supabase.from("conversation_participants").insert(
     allParticipants.map((pid) => ({

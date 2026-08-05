@@ -122,7 +122,7 @@
   "labelReference": "Reference:",
   "howToPay": "How to pay",
   "payStep1": "Pay {amount} via bank transfer or mobile money.",
-  "payStep2": "Use reference {ref} and student name {name} in the payment description.",
+  "payStep2": "Use the full invoice reference {ref} and student name {name} in the payment description.",
   "payStep3Prefix": "Send proof of payment to",
   "payStep3OrCall": "or call {phone}",
   "financeOffice": "the school finance office",

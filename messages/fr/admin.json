@@ -93,5 +93,14 @@
   "themeNavy": "Marine",
   "themeBurgundy": "Bordeaux",
   "themeAmber": "Ambre",
-  "schoolCreatedToast": "École créée. Activez son site public depuis le tableau de bord académique lorsque vous serez prêt."
+  "schoolCreatedToast": "École créée. Activez son site public depuis le tableau de bord académique lorsque vous serez prêt.",
+  "campusTitle": "Campus",
+  "campusDesc": "Chaque école a un campus. Mettez à jour le nom ou l'adresse utilisés dans les modules académiques et financiers.",
+  "campusNameLabel": "Nom du campus",
+  "campusAddressLabel": "Adresse",
+  "campusSave": "Enregistrer le campus",
+  "campusSaved": "Campus mis à jour",
+  "campusSaveFailed": "Impossible de mettre à jour le campus",
+  "noCampusYet": "Aucun campus pour le moment",
+  "noCampusDesc": "Un campus est créé lors de l'intégration de l'école."
 }

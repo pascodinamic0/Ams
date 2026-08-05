@@ -13,7 +13,7 @@ import type { GuardianContact, StaffContact } from "@/lib/db/conversations";
 const STAFF_ROLES = new Set<string>(MESSAGING_STAFF_ROLES);
 
 export function canCreateConversation(role: string): boolean {
-  return STAFF_ROLES.has(role) || role === "parent";
+  return STAFF_ROLES.has(role) || role === "parent" || role === "student";
 }
 
 interface Props {
@@ -33,6 +33,8 @@ export function NewConversationButton({
   const t = useTranslations("messages");
   const canStartConversation = canCreateConversation(role);
   const isParent = role === "parent";
+  const isStudent = role === "student";
+  const usesStaffPicker = isParent || isStudent;
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [selectedGuardian, setSelectedGuardian] = useState<GuardianContact | null>(null);
@@ -75,7 +77,7 @@ export function NewConversationButton({
   }
 
   async function handleStart() {
-    if (isParent) {
+    if (usesStaffPicker) {
       if (!selectedStaff || !message.trim()) {
         toast.error(t("selectContactAndMessage"));
         return;
@@ -145,8 +147,8 @@ export function NewConversationButton({
     }
   }
 
-  const selected = isParent ? selectedStaff : selectedGuardian;
-  const selectedName = isParent
+  const selected = usesStaffPicker ? selectedStaff : selectedGuardian;
+  const selectedName = usesStaffPicker
     ? selectedStaff?.name
     : selectedGuardian?.name;
 
@@ -185,7 +187,7 @@ export function NewConversationButton({
             <div className="max-h-[60vh] flex-1 space-y-4 overflow-y-auto p-5">
               <div>
                 <p className="mb-2 text-sm font-medium text-stone-700 dark:text-stone-300">
-                  {selected ? t("contact") : isParent ? t("selectStaffContact") : t("selectParentContact")}
+                  {selected ? t("contact") : usesStaffPicker ? t("selectStaffContact") : t("selectParentContact")}
                 </p>
                 {selected ? (
                   <div className="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-light px-3 py-2.5 dark:border-primary-800 dark:bg-primary-light/40">
@@ -194,7 +196,7 @@ export function NewConversationButton({
                         {selectedName}
                       </p>
                       <p className="text-xs text-primary dark:text-primary">
-                        {isParent && selectedStaff
+                        {usesStaffPicker && selectedStaff
                           ? selectedStaff.context
                           : selectedGuardian
                             ? `${selectedGuardian.student_name} · ${selectedGuardian.class_name}`
@@ -212,7 +214,7 @@ export function NewConversationButton({
                       {t("change")}
                     </button>
                   </div>
-                ) : isParent ? (
+                ) : usesStaffPicker ? (
                   <>
                     <Input
                       placeholder={t("searchStaffPlaceholder")}

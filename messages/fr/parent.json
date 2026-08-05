@@ -122,7 +122,7 @@
   "labelReference": "Référence :",
   "howToPay": "Comment payer",
   "payStep1": "Payez {amount} par virement bancaire ou mobile money.",
-  "payStep2": "Indiquez la référence {ref} et le nom de l'élève {name} dans la description du paiement.",
+  "payStep2": "Indiquez la référence complète de la facture {ref} et le nom de l'élève {name} dans la description du paiement.",
   "payStep3Prefix": "Envoyez la preuve de paiement à",
   "payStep3OrCall": "ou appelez le {phone}",
   "financeOffice": "le service financier de l'école",

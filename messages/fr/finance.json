@@ -3,6 +3,8 @@
   "feeStructureTitle": "Structure des frais",
   "invoicesTitle": "Factures",
   "exportCsv": "Exporter CSV",
+  "printInvoices": "Imprimer",
+  "invoicePrintTitle": "Liste des factures",
   "paymentsTitle": "Paiements",
   "payrollTitle": "Paie",
   "expensesTitle": "Dépenses",

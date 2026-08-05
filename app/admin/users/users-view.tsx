@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { ExportButton } from "@/components/ui/export-button";
 import { SearchInput } from "@/components/ui/search-input";
 import type { UserListItem } from "@/lib/db/users";
+import { UserActions } from "./user-actions";
 import { UserRoleBadge } from "./user-role-badge";
 
 const ROLE_FILTERS = [
@@ -230,6 +231,13 @@ export function UsersView({ users }: { users: UserListItem[] }) {
         school_display: (
           <SchoolCell schoolName={user.school_name} role={user.role} />
         ),
+        actions: (
+          <UserActions
+            userId={user.id}
+            currentRole={user.role}
+            userName={user.name ?? user.email}
+          />
+        ),
       })),
     [filteredUsers]
   );
@@ -426,6 +434,11 @@ export function UsersView({ users }: { users: UserListItem[] }) {
                   id: "school",
                   header: "School",
                   accessorKey: "school_display",
+                },
+                {
+                  id: "actions",
+                  header: "Actions",
+                  accessorKey: "actions",
                 },
               ]}
               emptyMessage="No users found"

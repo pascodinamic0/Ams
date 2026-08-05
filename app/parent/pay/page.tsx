@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CopyableBadge } from "@/components/ui/copyable-badge";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { getInvoiceById } from "@/lib/db";
@@ -137,7 +138,10 @@ export default async function ParentPayPage({
           <p className="text-lg font-semibold">
             <span className="text-stone-500 font-normal">{t("labelAmountDue")}</span> {formatCurrency(balance)}
           </p>
-          <p className="text-stone-500">{t("labelReference")} <span className="font-mono text-stone-900 dark:text-white">{invoice.id.slice(0, 8).toUpperCase()}</span></p>
+          <div className="flex flex-wrap items-center gap-2 text-stone-500">
+            <span>{t("labelReference")}</span>
+            <CopyableBadge value={invoice.id} label={invoice.id} />
+          </div>
         </CardContent>
       </Card>
 
@@ -150,7 +154,7 @@ export default async function ParentPayPage({
             <li>{t("payStep1", { amount: formatCurrency(balance) })}</li>
             <li>
               {t("payStep2", {
-                ref: invoice.id.slice(0, 8).toUpperCase(),
+                ref: invoice.id,
                 name: studentName,
               })}
             </li>
