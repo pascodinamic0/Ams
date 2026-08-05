@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { BrandLogo } from "@/components/company/brand-logo";
+import { AppIntlProvider } from "@/components/i18n/app-intl-provider";
 
 export default async function OnboardingLayout({
   children,
@@ -12,7 +12,7 @@ export default async function OnboardingLayout({
   const messages = await getMessages();
 
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <AppIntlProvider locale={locale} messages={messages}>
       <div className="marketing-surface flex min-h-[100dvh] flex-col">
         <header className="relative z-10 shrink-0 px-4 pt-[calc(env(safe-area-inset-top)+1rem)] pb-2 md:px-6">
           <Link href="/" className="inline-flex">
@@ -23,6 +23,6 @@ export default async function OnboardingLayout({
           <div className="w-full max-w-lg">{children}</div>
         </main>
       </div>
-    </NextIntlClientProvider>
+    </AppIntlProvider>
   );
 }

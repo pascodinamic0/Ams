@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { JetBrains_Mono, Outfit, Plus_Jakarta_Sans, Source_Serif_4 } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { AppIntlProvider } from "@/components/i18n/app-intl-provider";
 import { AppToaster } from "@/components/ui/app-toaster";
 import { PwaRoot } from "@/components/pwa/pwa-root";
 import { ThemeProvider } from "@/components/theme/theme-provider";
@@ -96,12 +96,12 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="bg-background antialiased text-foreground">
-        <ThemeProvider>
-          <NextIntlClientProvider locale={locale} messages={clientMessages}>
+        <AppIntlProvider locale={locale} messages={clientMessages}>
+          <ThemeProvider>
             <PwaRoot>{children}</PwaRoot>
             <AppToaster />
-          </NextIntlClientProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </AppIntlProvider>
       </body>
     </html>
   );
