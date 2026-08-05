@@ -7,15 +7,23 @@ import { Button } from "@/components/ui/button";
 import { getInvoiceById } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 import { formatMoney, getSchoolCurrency } from "@/lib/currency";
+import { isStripeConfigured } from "@/lib/stripe/server";
+import { StripePayButton } from "./stripe-pay-button";
 
 export default async function ParentPayPage({
   searchParams,
 }: {
-  searchParams: Promise<{ invoice?: string }>;
+  searchParams: Promise<{
+    invoice?: string;
+    checkout?: string;
+    session_id?: string;
+  }>;
 }) {
   const t = await getTranslations("parent");
   const params = await searchParams;
   const invoiceId = params.invoice;
+  const checkoutState = params.checkout;
+  const stripeEnabled = isStripeConfigured();
 
   if (!invoiceId) {
     return (
@@ -108,7 +116,11 @@ export default async function ParentPayPage({
         <h1 className="text-2xl font-bold">{t("payment")}</h1>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-stone-600">{t("invoiceFullyPaid")}</p>
+            <p className="text-stone-600">
+              {checkoutState === "success"
+                ? t("stripePaymentSuccess")
+                : t("invoiceFullyPaid")}
+            </p>
             <Link href="/parent/fees" className="mt-4 inline-block">
               <Button variant="ghost">{t("backToFees")}</Button>
             </Link>
@@ -122,8 +134,22 @@ export default async function ParentPayPage({
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">{t("payFees")}</h1>
-        <p className="mt-1 text-sm text-stone-500">{t("manualPaymentNote")}</p>
+        <p className="mt-1 text-sm text-stone-500">
+          {stripeEnabled ? t("stripePaymentNote") : t("manualPaymentNote")}
+        </p>
       </div>
+
+      {checkoutState === "success" ? (
+        <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-200">
+          {t("stripePaymentProcessing")}
+        </div>
+      ) : null}
+
+      {checkoutState === "cancel" ? (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">
+          {t("stripePaymentCancelled")}
+        </div>
+      ) : null}
 
       <Card>
         <CardHeader>
@@ -144,6 +170,20 @@ export default async function ParentPayPage({
           </div>
         </CardContent>
       </Card>
+
+      {stripeEnabled ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("payOnlineTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <p className="text-sm text-stone-600 dark:text-stone-400">
+              {t("payOnlineDesc", { amount: formatCurrency(balance) })}
+            </p>
+            <StripePayButton invoiceId={invoice.id} />
+          </CardContent>
+        </Card>
+      ) : null}
 
       <Card>
         <CardHeader>

@@ -143,15 +143,31 @@ Set `CRON_SECRET` in Vercel env vars; invocations must send `Authorization: Bear
 
 Class-time push alarms live at `/api/cron/class-reminders` but are **not** scheduled in `vercel.json` (Hobby plans only allow daily crons). Call that route from an external scheduler (cron-job.org, GitHub Actions, etc.) every few minutes with the same bearer token. Class reminders also need VAPID keys (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`) — generate with `npx web-push generate-vapid-keys`.
 
-### Webhooks: payments
+### Payments: Stripe Checkout
 
-Configure your payment provider (Paystack, Flutterwave, etc.) to POST to:
+Parent fee payments use **Stripe Checkout Sessions**.
+
+1. Set in Vercel / `.env.local`:
+   - `STRIPE_SECRET_KEY` — secret or restricted key
+   - `STRIPE_WEBHOOK_SECRET` — signing secret for the Stripe endpoint
+2. In Stripe Dashboard → Developers → Webhooks, add:
+   ```
+   https://your-domain.com/api/webhooks/stripe
+   ```
+   Events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`
+3. Parents open **Pay fees** on an unpaid invoice → **Pay with card**.
+
+Local testing: `stripe listen --forward-to localhost:3000/api/webhooks/stripe`
+
+### Webhooks: generic providers
+
+Optional adapters (Paystack/Flutterwave-style) POST to:
 
 ```
 https://your-domain.com/api/webhooks/payments
 ```
 
-Set `PAYMENT_WEBHOOK_SECRET` in Vercel. The handler verifies HMAC-SHA256 signatures via `x-payment-signature`, `x-webhook-signature`, or `stripe-signature` headers.
+Set `PAYMENT_WEBHOOK_SECRET`. Signatures use HMAC-SHA256 via `x-payment-signature` or `x-webhook-signature`.
 
 ## Security
 

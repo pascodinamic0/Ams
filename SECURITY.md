@@ -35,13 +35,19 @@ When `CRON_SECRET` is set in Vercel project settings, scheduled invocations incl
 
 ### Payment webhooks
 
-The webhook handler:
+**Stripe** (`/api/webhooks/stripe`):
 
-1. Requires `PAYMENT_WEBHOOK_SECRET` to be configured.
-2. Verifies the request body signature before any database write.
+1. Requires `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`.
+2. Verifies `stripe-signature` with `stripe.webhooks.constructEvent` before any DB write.
+3. Records payments idempotently via `fee_payments.reference` (PaymentIntent or session id).
+
+**Generic providers** (`/api/webhooks/payments`):
+
+1. Requires `PAYMENT_WEBHOOK_SECRET`.
+2. Verifies HMAC-SHA256 via `x-payment-signature` or `x-webhook-signature`.
 3. Uses the service role client only after verification succeeds.
 
-Configure your provider to send signatures in one of: `x-payment-signature`, `x-webhook-signature`, or `stripe-signature`.
+Never put Stripe secret keys in client bundles (`NEXT_PUBLIC_*`).
 
 ## Client vs server boundaries
 
