@@ -52,45 +52,52 @@ export function TaskBoard({ tasks }: { tasks: SchoolTask[] }) {
     <div className="space-y-6">
       <form
         onSubmit={handleCreate}
-        className="grid grid-cols-1 gap-3 rounded-xl border border-stone-200 p-4 dark:border-stone-800 sm:grid-cols-2 lg:grid-cols-6"
+        className="overflow-hidden rounded-xl border border-stone-200 p-4 dark:border-stone-800"
       >
-        <div className="min-w-0 sm:col-span-2 lg:col-span-2">
-          <Label>Task</Label>
-          <Input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Follow up unpaid fees for Nursery 1"
-            required
-          />
-        </div>
-        <div className="min-w-0">
-          <Label>Department</Label>
-          <Input
-            value={department}
-            onChange={(e) => setDepartment(e.target.value)}
-            placeholder="admissions"
-          />
-        </div>
-        <div className="min-w-0">
-          <Label>Priority</Label>
-          <select
-            className="mt-1 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
-            value={priority}
-            onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
-        <div className="min-w-0">
-          <Label>Due</Label>
-          <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-        </div>
-        <div className="flex items-end sm:col-span-2 lg:col-span-1">
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Adding..." : "Add"}
-          </Button>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.1fr)_auto]">
+          <div className="min-w-0 sm:col-span-2 xl:col-span-1">
+            <Label>Task</Label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Follow up unpaid fees for Nursery 1"
+              required
+            />
+          </div>
+          <div className="min-w-0">
+            <Label>Department</Label>
+            <Input
+              value={department}
+              onChange={(e) => setDepartment(e.target.value)}
+              placeholder="admissions"
+            />
+          </div>
+          <div className="min-w-0">
+            <Label>Priority</Label>
+            <select
+              className="mt-1 w-full min-w-0 rounded-md border border-stone-300 bg-white px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
+            >
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </select>
+          </div>
+          <div className="min-w-0">
+            <Label>Due</Label>
+            <Input
+              type="date"
+              className="min-w-0"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+            />
+          </div>
+          <div className="flex items-end sm:col-span-2 xl:col-span-1">
+            <Button type="submit" disabled={loading} className="w-full shrink-0 xl:w-auto">
+              {loading ? "Adding..." : "Add"}
+            </Button>
+          </div>
         </div>
       </form>
 
