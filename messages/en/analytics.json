@@ -44,5 +44,8 @@
   "chartRevenueOutstanding": "Revenue vs outstanding (6 months)",
   "chartFeeStatus": "Fee status breakdown",
   "chartCollectionTrend": "Fee collection trend",
-  "noData": "No data"
+  "noData": "No data",
+  "branchesExplainerTitle": "Campus comparison is not used",
+  "branchesExplainerDesc": "Each school has one campus. Platform KPIs and school-level student, attendance, and finance reports cover the same metrics without a multi-campus matrix.",
+  "branchesGoToDashboard": "Back to analytics"
 }

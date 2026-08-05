@@ -2,9 +2,10 @@ import { Suspense } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ExportButton } from "@/components/ui/export-button";
-import { getInvoices, getStudents, getFeeStructures } from "@/lib/db";
+import { getClasses, getInvoices, getStudents, getFeeStructures } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
+import { BulkInvoiceForm } from "./bulk-invoice-form";
 import { InvoiceForm } from "./invoice-form";
 import { InvoiceFilters } from "./invoice-filters";
 import { InvoicePrintButton } from "./invoice-print-button";
@@ -23,7 +24,7 @@ export default async function InvoicesPage({
     branchId: profile?.branch_id ?? undefined,
   };
 
-  const [invoices, students, feeStructures] = await Promise.all([
+  const [invoices, students, feeStructures, classes] = await Promise.all([
     getInvoices({
       ...scope,
       status: params.status,
@@ -31,6 +32,7 @@ export default async function InvoicesPage({
     }),
     getStudents(scope),
     scope.branchId ? getFeeStructures(scope.branchId) : getFeeStructures(),
+    getClasses(scope.branchId),
   ]);
 
   const exportRows = invoices.map((row) => ({
@@ -72,7 +74,7 @@ export default async function InvoicesPage({
         </div>
       </div>
 
-      <div className="print:hidden">
+      <div className="space-y-4 print:hidden">
         <InvoiceForm
           students={students.map((s) => ({
             id: s.id,
@@ -84,6 +86,15 @@ export default async function InvoicesPage({
             name: f.name,
             amount: f.amount,
           }))}
+        />
+        <BulkInvoiceForm
+          feeStructures={feeStructures.map((f) => ({
+            id: f.id,
+            name: f.name,
+            amount: f.amount,
+            class_id: f.class_id,
+          }))}
+          classes={classes.map((c) => ({ id: c.id, name: c.name }))}
         />
       </div>
 

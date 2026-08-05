@@ -44,5 +44,8 @@
   "chartRevenueOutstanding": "Revenus vs impayés (6 mois)",
   "chartFeeStatus": "Répartition des statuts de frais",
   "chartCollectionTrend": "Tendance de recouvrement des frais",
-  "noData": "Aucune donnée"
+  "noData": "Aucune donnée",
+  "branchesExplainerTitle": "La comparaison de campus n'est pas utilisée",
+  "branchesExplainerDesc": "Chaque école a un campus. Les KPI plateforme et les rapports élèves, présences et finance couvrent les mêmes indicateurs sans matrice multi-campus.",
+  "branchesGoToDashboard": "Retour aux analyses"
 }

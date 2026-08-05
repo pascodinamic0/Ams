@@ -93,6 +93,14 @@ export async function inviteSchoolUser(input: {
   const branchId =
     input.branchId && auth.isSuperAdmin ? input.branchId : auth.branchId;
 
+  if (!schoolId || !branchId) {
+    return {
+      error: auth.isSuperAdmin
+        ? "Select a school and campus before inviting"
+        : "Your account is not linked to a school campus",
+    };
+  }
+
   const adminResult = requireAdminClient();
   if ("error" in adminResult) return { error: adminResult.error };
   const admin = adminResult.client;
