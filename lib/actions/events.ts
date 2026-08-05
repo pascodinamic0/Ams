@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { assertBranchAccess } from "@/lib/auth/assert";
+import { OPERATIONS_PORTAL_ROLES } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 import { eventSchema, type EventFormData } from "@/lib/validations/operations";
 import { revalidateSchoolWebsiteByBranch } from "@/lib/schools/revalidate-website";
@@ -8,6 +10,12 @@ import { revalidateSchoolWebsiteByBranch } from "@/lib/schools/revalidate-websit
 export async function createEvent(input: EventFormData) {
   const parsed = eventSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
+
+  const access = await assertBranchAccess(
+    parsed.data.branch_id,
+    OPERATIONS_PORTAL_ROLES
+  );
+  if (!access.ok) return { error: access.error };
 
   const supabase = await createClient();
   const isCampusVisit = parsed.data.purpose === "campus_visit";
@@ -49,6 +57,24 @@ export async function updateEvent(id: string, input: EventFormData) {
     .select("branch_id")
     .eq("id", id)
     .single();
+  if (!existing) return { error: "Event not found" };
+
+  const access = await assertBranchAccess(
+    existing.branch_id,
+    OPERATIONS_PORTAL_ROLES
+  );
+  if (!access.ok) return { error: access.error };
+
+  if (parsed.data.branch_id !== existing.branch_id) {
+    const nextAccess = await assertBranchAccess(
+      parsed.data.branch_id,
+      OPERATIONS_PORTAL_ROLES
+    );
+    if (!nextAccess.ok) return { error: nextAccess.error };
+    if (nextAccess.schoolId !== access.schoolId) {
+      return { error: "Cannot move event to another school" };
+    }
+  }
 
   const isCampusVisit = parsed.data.purpose === "campus_visit";
   const payload = {
@@ -58,7 +84,11 @@ export async function updateEvent(id: string, input: EventFormData) {
       parsed.data.type === "holiday" ? false : isCampusVisit ? true : parsed.data.booking_enabled,
   };
 
-  const { error } = await supabase.from("events").update(payload).eq("id", id);
+  const { error } = await supabase
+    .from("events")
+    .update(payload)
+    .eq("id", id)
+    .eq("branch_id", existing.branch_id);
   if (error) return { error: error.message };
   revalidatePath("/operations/events");
   if (existing?.branch_id) {
@@ -74,8 +104,19 @@ export async function deleteEvent(id: string) {
     .select("branch_id")
     .eq("id", id)
     .single();
+  if (!existing) return { error: "Event not found" };
 
-  const { error } = await supabase.from("events").delete().eq("id", id);
+  const access = await assertBranchAccess(
+    existing.branch_id,
+    OPERATIONS_PORTAL_ROLES
+  );
+  if (!access.ok) return { error: access.error };
+
+  const { error } = await supabase
+    .from("events")
+    .delete()
+    .eq("id", id)
+    .eq("branch_id", existing.branch_id);
   if (error) return { error: error.message };
   revalidatePath("/operations/events");
   if (existing?.branch_id) {

@@ -8,6 +8,30 @@ interface PageProps {
   params: Promise<{ studentId: string }>;
 }
 
+async function assertParentLinkedToStudent(studentId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { data: guardian } = await supabase
+    .from("guardians")
+    .select("id")
+    .eq("auth_user_id", user.id)
+    .maybeSingle();
+  if (!guardian) return false;
+
+  const { data: link } = await supabase
+    .from("guardian_students")
+    .select("student_id")
+    .eq("guardian_id", guardian.id)
+    .eq("student_id", studentId)
+    .maybeSingle();
+
+  return Boolean(link);
+}
+
 async function getStudentPerformanceData(studentId: string) {
   const supabase = await createClient();
 
@@ -78,6 +102,10 @@ export default async function ChildPerformancePage({ params }: PageProps) {
   const t = await getTranslations("parent");
   const tc = await getTranslations("common");
   const { studentId } = await params;
+
+  const linked = await assertParentLinkedToStudent(studentId);
+  if (!linked) notFound();
+
   const { student, grades, attendance, assignments } = await getStudentPerformanceData(studentId);
 
   if (!student) notFound();

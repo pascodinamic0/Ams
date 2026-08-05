@@ -33,6 +33,19 @@ async function requireSchoolAdmin(): Promise<InviteAuth> {
     return { ok: false, error: "You do not have permission to invite team members" };
   }
 
+  const isSuperAdmin = profile.role === "super_admin";
+
+  // Super admins may invite into any school via explicit schoolId/branchId.
+  if (isSuperAdmin) {
+    return {
+      ok: true,
+      user,
+      schoolId: profile.school_id ?? "",
+      branchId: profile.branch_id ?? "",
+      isSuperAdmin: true,
+    };
+  }
+
   if (!profile.school_id || !profile.branch_id) {
     return { ok: false, error: "Your account is not linked to a school" };
   }
@@ -43,7 +56,7 @@ async function requireSchoolAdmin(): Promise<InviteAuth> {
     .eq("id", profile.school_id)
     .single();
 
-  if (school?.status !== "approved" && profile.role !== "super_admin") {
+  if (school?.status !== "approved") {
     return {
       ok: false,
       error: "Your school must be approved before you can invite team members",
@@ -55,7 +68,7 @@ async function requireSchoolAdmin(): Promise<InviteAuth> {
     user,
     schoolId: profile.school_id,
     branchId: profile.branch_id,
-    isSuperAdmin: profile.role === "super_admin",
+    isSuperAdmin: false,
   };
 }
 
@@ -79,6 +92,14 @@ export async function inviteSchoolUser(input: {
     input.schoolId && auth.isSuperAdmin ? input.schoolId : auth.schoolId;
   const branchId =
     input.branchId && auth.isSuperAdmin ? input.branchId : auth.branchId;
+
+  if (!schoolId || !branchId) {
+    return {
+      error: auth.isSuperAdmin
+        ? "Select a school and campus before inviting"
+        : "Your account is not linked to a school campus",
+    };
+  }
 
   const adminResult = requireAdminClient();
   if ("error" in adminResult) return { error: adminResult.error };

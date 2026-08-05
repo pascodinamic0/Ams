@@ -1,6 +1,7 @@
 "use server";
 
 import { requireAdminClient } from "@/lib/supabase/admin";
+import { createClient } from "@/lib/supabase/server";
 import {
   DEFAULT_BRANCH_NAME,
   resolveUniqueSchoolCode,
@@ -18,6 +19,14 @@ export type RegisterSchoolInput = {
 };
 
 export async function registerSchoolOrganization(input: RegisterSchoolInput) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user || user.id !== input.userId) {
+    return { error: "Not authenticated" };
+  }
+
   const adminResult = requireAdminClient();
   if ("error" in adminResult) return { error: adminResult.error };
   const admin = adminResult.client;

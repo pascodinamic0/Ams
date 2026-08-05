@@ -1,6 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import {
+  assertRoleAndSchool,
+  assertSchoolAccess,
+  getAuthedProfile,
+} from "@/lib/auth/assert";
+import { ACADEMIC_PORTAL_ROLES } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 import { guardianSchema, type GuardianFormData } from "@/lib/validations";
 
@@ -12,11 +18,11 @@ export async function createGuardian(
     return { error: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const access = await assertRoleAndSchool(ACADEMIC_PORTAL_ROLES, input.school_id);
+  if (!access.ok) return { error: access.error };
 
   const phone = parsed.data.whatsapp || parsed.data.phone || null;
+  const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("guardians")
@@ -42,6 +48,29 @@ export async function createGuardian(
   return { data: { id: data.id } };
 }
 
+async function assertGuardianAccess(id: string) {
+  const profile = await getAuthedProfile();
+  if (!profile) return { ok: false as const, error: "Not authenticated" };
+  if (
+    profile.role !== "super_admin" &&
+    !ACADEMIC_PORTAL_ROLES.includes(profile.role)
+  ) {
+    return { ok: false as const, error: "Not authorized" };
+  }
+
+  const supabase = await createClient();
+  const { data: guardian } = await supabase
+    .from("guardians")
+    .select("id, school_id")
+    .eq("id", id)
+    .maybeSingle();
+  if (!guardian) return { ok: false as const, error: "Guardian not found" };
+
+  const school = await assertSchoolAccess(guardian.school_id);
+  if (!school.ok) return school;
+  return { ok: true as const, schoolId: guardian.school_id };
+}
+
 export async function updateGuardian(
   id: string,
   updates: Partial<GuardianFormData>
@@ -51,10 +80,10 @@ export async function updateGuardian(
     return { error: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const access = await assertGuardianAccess(id);
+  if (!access.ok) return { error: access.error };
 
+  const supabase = await createClient();
   const { whatsapp, phone, ...rest } = parsed.data;
   const row = {
     ...rest,
@@ -66,7 +95,8 @@ export async function updateGuardian(
   const { error } = await supabase
     .from("guardians")
     .update(row)
-    .eq("id", id);
+    .eq("id", id)
+    .eq("school_id", access.schoolId!);
 
   if (error) {
     console.error("updateGuardian error:", error);
@@ -75,15 +105,20 @@ export async function updateGuardian(
 
   revalidatePath("/academic");
   revalidatePath("/academic/students");
+  revalidatePath("/academic/guardians");
   return {};
 }
 
 export async function deleteGuardian(id: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const access = await assertGuardianAccess(id);
+  if (!access.ok) return { error: access.error };
 
-  const { error } = await supabase.from("guardians").delete().eq("id", id);
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("guardians")
+    .delete()
+    .eq("id", id)
+    .eq("school_id", access.schoolId!);
 
   if (error) {
     console.error("deleteGuardian error:", error);

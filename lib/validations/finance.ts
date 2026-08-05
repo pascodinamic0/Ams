@@ -16,6 +16,15 @@ export const invoiceSchema = z.object({
   description: z.string().optional(),
 });
 
+export const bulkInvoiceSchema = z.object({
+  fee_structure_id: z.string().uuid("Fee structure is required"),
+  class_id: z.string().uuid("Class is required"),
+  due_date: z.string().min(1, "Due date is required"),
+  description: z.string().optional(),
+});
+
+export type BulkInvoiceFormData = z.infer<typeof bulkInvoiceSchema>;
+
 export const paymentSchema = z.object({
   invoice_id: z.string().uuid("Invoice is required"),
   amount: z.coerce.number().positive("Amount must be greater than zero"),

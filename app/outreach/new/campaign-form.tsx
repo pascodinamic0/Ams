@@ -15,7 +15,7 @@ const CHANNEL_OPTIONS = [
 
 const TARGET_OPTIONS = [
   { id: "all_parents", label: "All Parents", description: "Every guardian in the school" },
-  { id: "class", label: "Specific Class", description: "Enter a class ID to target" },
+  { id: "class", label: "Specific Class", description: "Parents of students in one class" },
 ];
 
 const VARIABLE_HINTS = [
@@ -27,9 +27,10 @@ const VARIABLE_HINTS = [
 
 interface Props {
   schoolId: string;
+  classes: { id: string; name: string }[];
 }
 
-export function CampaignForm({ schoolId }: Props) {
+export function CampaignForm({ schoolId, classes }: Props) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -47,6 +48,10 @@ export function CampaignForm({ schoolId }: Props) {
     }
     if (!title.trim() || !body.trim()) {
       toast.error("Title and message are required");
+      return;
+    }
+    if (targetType === "class" && !classId) {
+      toast.error("Select a class to target");
       return;
     }
 
@@ -136,11 +141,19 @@ export function CampaignForm({ schoolId }: Props) {
           ))}
         </div>
         {targetType === "class" && (
-          <Input
-            placeholder="Enter class ID"
+          <select
             value={classId}
             onChange={(e) => setClassId(e.target.value)}
-          />
+            className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm dark:border-stone-700 dark:bg-stone-900 dark:text-white"
+            required
+          >
+            <option value="">Select a class</option>
+            {classes.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
         )}
       </div>
 

@@ -1,6 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import {
+  assertFinanceRole,
+  assertRoleAndSchool,
+  getAuthedProfile,
+} from "@/lib/auth/assert";
+import { FINANCE_PORTAL_ROLES } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 import { getStaff } from "@/lib/db/staff";
 import {
@@ -10,7 +16,30 @@ import {
   type PayrollPaymentFormData,
 } from "@/lib/validations/finance";
 
+async function assertPayrollRowAccess(id: string) {
+  const supabase = await createClient();
+  const { data: row } = await supabase
+    .from("payroll")
+    .select("id, staff_id, staff(school_id, branch_id)")
+    .eq("id", id)
+    .maybeSingle();
+  if (!row) return { ok: false as const, error: "Payroll record not found" };
+  const schoolId =
+    (row.staff as { school_id?: string } | null)?.school_id ?? null;
+  const access = await assertRoleAndSchool(FINANCE_PORTAL_ROLES, schoolId);
+  if (!access.ok) return access;
+  return {
+    ok: true as const,
+    profile: access.profile,
+    schoolId: schoolId!,
+    branchId: (row.staff as { branch_id?: string | null } | null)?.branch_id ?? null,
+  };
+}
+
 export async function deletePayroll(id: string) {
+  const access = await assertPayrollRowAccess(id);
+  if (!access.ok) return { error: access.error };
+
   const supabase = await createClient();
   const { error } = await supabase.from("payroll").delete().eq("id", id);
   if (error) return { error: error.message };
@@ -27,13 +56,26 @@ export async function generatePayroll(
   const parsed = payrollGenerateSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const profile = await getAuthedProfile();
+  if (!profile) return { error: "Not authenticated" };
+  const finance = await assertFinanceRole();
+  if (!finance.ok) return { error: finance.error };
+
+  const schoolId =
+    profile.role === "super_admin" ? input.schoolId : profile.school_id;
+  if (!schoolId) return { error: "School is required" };
+  if (profile.role !== "super_admin" && schoolId !== profile.school_id) {
+    return { error: "Not authorized for this school" };
+  }
+
+  const branchId =
+    profile.role === "super_admin"
+      ? input.branchId
+      : input.branchId ?? profile.branch_id ?? undefined;
 
   const staff = await getStaff({
-    schoolId: input.schoolId,
-    branchId: input.branchId,
+    schoolId,
+    branchId,
     activeOnly: true,
   });
 
@@ -41,11 +83,14 @@ export async function generatePayroll(
     return { error: "No active staff members found for payroll generation" };
   }
 
+  const supabase = await createClient();
+  const staffIds = staff.map((s) => s.id);
   const { data: existing } = await supabase
     .from("payroll")
-    .select("id")
+    .select("id, staff_id")
     .eq("payroll_month", parsed.data.month)
     .eq("payroll_year", parsed.data.year)
+    .in("staff_id", staffIds)
     .limit(1);
 
   if ((existing ?? []).length > 0) {
@@ -96,10 +141,10 @@ export async function markPayrollPaid(
   const parsed = payrollPaymentSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
-  const supabase = await createClient();
-  const { data: authData } = await supabase.auth.getUser();
-  if (!authData.user) return { error: "Not authenticated" };
+  const access = await assertPayrollRowAccess(id);
+  if (!access.ok) return { error: access.error };
 
+  const supabase = await createClient();
   const { data: payrollRow, error: payrollError } = await supabase
     .from("payroll")
     .select(
@@ -128,16 +173,10 @@ export async function markPayrollPaid(
 
   if (error) return { error: error.message };
 
-  const rowStaff = payrollRow.staff as { branch_id?: string | null } | null;
-  let branchId = rowStaff?.branch_id ?? null;
-  if (!branchId) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("branch_id")
-      .eq("id", authData.user.id)
-      .single();
-    branchId = profile?.branch_id ?? null;
-  }
+  const branchId =
+    access.branchId ??
+    (payrollRow.staff as { branch_id?: string | null } | null)?.branch_id ??
+    null;
 
   if (branchId) {
     const periodLabel = new Date(
@@ -170,6 +209,23 @@ export async function deletePayrollPeriod(input: {
   });
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
+  const profile = await getAuthedProfile();
+  if (!profile) return { error: "Not authenticated" };
+  const finance = await assertFinanceRole();
+  if (!finance.ok) return { error: finance.error };
+
+  const schoolId =
+    profile.role === "super_admin" ? input.schoolId : profile.school_id;
+  if (!schoolId) return { error: "School is required" };
+  if (profile.role !== "super_admin" && schoolId !== profile.school_id) {
+    return { error: "Not authorized for this school" };
+  }
+
+  const branchId =
+    profile.role === "super_admin"
+      ? input.branchId
+      : input.branchId ?? profile.branch_id ?? undefined;
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("payroll")
@@ -182,8 +238,8 @@ export async function deletePayrollPeriod(input: {
   const toDelete = (data ?? [])
     .filter((row) => {
       const staff = row.staff as { school_id?: string; branch_id?: string | null } | null;
-      if (input.schoolId && staff?.school_id !== input.schoolId) return false;
-      if (input.branchId && staff?.branch_id !== input.branchId) return false;
+      if (staff?.school_id !== schoolId) return false;
+      if (branchId && staff?.branch_id !== branchId) return false;
       return true;
     })
     .map((row) => row.id);

@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { assertRoleAndSchool, getBranchSchoolId } from "@/lib/auth/assert";
+import { ACADEMIC_PORTAL_ROLES } from "@/lib/auth/rbac";
 import {
   admissionSchema,
   onlineEnrollmentSchema,
@@ -12,6 +14,16 @@ import { revalidateSchoolWebsiteBySchoolId } from "@/lib/schools/revalidate-webs
 import { createNotification } from "@/lib/services/notifications";
 import { createStudentWithGuardians } from "./student-onboarding";
 
+async function schoolExists(schoolId: string) {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("schools")
+    .select("id")
+    .eq("id", schoolId)
+    .maybeSingle();
+  return Boolean(data);
+}
+
 export async function createAdmission(
   schoolId: string,
   input: AdmissionFormData & { source?: "online" | "manual" }
@@ -19,15 +31,25 @@ export async function createAdmission(
   const parsed = admissionSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
+  const source = input.source ?? "manual";
+  if (!(await schoolExists(schoolId))) {
+    return { error: "School not found" };
+  }
+
+  if (source !== "online") {
+    const access = await assertRoleAndSchool(ACADEMIC_PORTAL_ROLES, schoolId);
+    if (!access.ok) return { error: access.error };
+  }
+
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("admission_applications")
     .insert({
       school_id: schoolId,
       ...parsed.data,
-      source: input.source ?? "manual",
+      source,
       status: "pending",
-      requires_campus_visit: input.source === "online",
+      requires_campus_visit: source === "online",
     })
     .select("id")
     .single();
@@ -78,17 +100,18 @@ export async function updateAdmissionStatus(
   status: "pending" | "approved" | "rejected"
 ) {
   const supabase = await createClient();
+  const { data: app } = await supabase
+    .from("admission_applications")
+    .select("school_id, guardian_email, student_name")
+    .eq("id", id)
+    .single();
+  if (!app) return { error: "Application not found" };
+
+  const access = await assertRoleAndSchool(ACADEMIC_PORTAL_ROLES, app.school_id);
+  if (!access.ok) return { error: access.error };
 
   if (status === "approved") {
-    const { data: app } = await supabase
-      .from("admission_applications")
-      .select("school_id, guardian_email, student_name")
-      .eq("id", id)
-      .single();
-
-    if (app) {
-      await notifyAdmissionApproved(app.school_id, app.guardian_email, app.student_name);
-    }
+    await notifyAdmissionApproved(app.school_id, app.guardian_email, app.student_name);
   }
 
   const { error } = await supabase
@@ -114,6 +137,14 @@ export async function convertAdmissionToStudent(
     .single();
 
   if (error || !app) return { error: "Application not found" };
+
+  const access = await assertRoleAndSchool(ACADEMIC_PORTAL_ROLES, app.school_id);
+  if (!access.ok) return { error: access.error };
+
+  const branchSchoolId = await getBranchSchoolId(branchId);
+  if (!branchSchoolId || branchSchoolId !== app.school_id) {
+    return { error: "Branch does not belong to this school" };
+  }
 
   const nameParts = app.student_name.trim().split(/\s+/);
   const firstName = nameParts[0] ?? app.student_name;

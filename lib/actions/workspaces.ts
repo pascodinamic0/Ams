@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { assertAcademicRole, canAccessSchool } from "@/lib/auth/assert";
+import { normalizeRole } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 
 const taskSchema = z.object({
@@ -21,33 +23,37 @@ const incidentSchema = z.object({
 });
 
 async function requireSchoolProfile() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" as const };
+  const role = await assertAcademicRole();
+  if (!role.ok) return { error: role.error };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id, role, school_id")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile?.school_id) {
+  if (!role.profile.school_id && role.profile.role !== "super_admin") {
     return { error: "Your account is not linked to a school" as const };
   }
 
-  return { supabase, profile };
+  const supabase = await createClient();
+  return {
+    supabase,
+    profile: {
+      id: role.profile.id,
+      role: normalizeRole(role.profile.role),
+      school_id: role.profile.school_id,
+    },
+  };
 }
 
-export async function createSchoolTask(input: z.infer<typeof taskSchema>) {
+export async function createSchoolTask(
+  input: z.infer<typeof taskSchema>
+): Promise<{ error?: string }> {
   const parsed = taskSchema.safeParse(input);
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid task" };
   }
 
   const auth = await requireSchoolProfile();
-  if ("error" in auth) return auth;
+  if ("error" in auth) return { error: auth.error };
+  if (!auth.profile.school_id) {
+    return { error: "Your account is not linked to a school" };
+  }
 
   const { error } = await auth.supabase.from("school_tasks").insert({
     school_id: auth.profile.school_id,
@@ -69,9 +75,12 @@ export async function createSchoolTask(input: z.infer<typeof taskSchema>) {
 export async function updateSchoolTaskStatus(
   id: string,
   status: "todo" | "in_progress" | "blocked" | "done"
-) {
+): Promise<{ error?: string }> {
   const auth = await requireSchoolProfile();
-  if ("error" in auth) return auth;
+  if ("error" in auth) return { error: auth.error };
+  if (!auth.profile.school_id) {
+    return { error: "Your account is not linked to a school" };
+  }
 
   const { error } = await auth.supabase
     .from("school_tasks")
@@ -88,14 +97,39 @@ export async function updateSchoolTaskStatus(
 
 export async function createDisciplineIncident(
   input: z.infer<typeof incidentSchema>
-) {
+): Promise<{ error?: string }> {
   const parsed = incidentSchema.safeParse(input);
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid incident" };
   }
 
   const auth = await requireSchoolProfile();
-  if ("error" in auth) return auth;
+  if ("error" in auth) return { error: auth.error };
+  if (!auth.profile.school_id) {
+    return { error: "Your account is not linked to a school" };
+  }
+
+  if (parsed.data.student_id) {
+    const { data: student } = await auth.supabase
+      .from("students")
+      .select("id, school_id")
+      .eq("id", parsed.data.student_id)
+      .maybeSingle();
+    if (
+      !student ||
+      !canAccessSchool(
+        {
+          id: auth.profile.id,
+          role: auth.profile.role,
+          school_id: auth.profile.school_id,
+          branch_id: null,
+        },
+        student.school_id
+      )
+    ) {
+      return { error: "Student not found in your school" };
+    }
+  }
 
   const { error } = await auth.supabase.from("discipline_incidents").insert({
     school_id: auth.profile.school_id,
@@ -117,9 +151,12 @@ export async function createDisciplineIncident(
 export async function updateDisciplineStatus(
   id: string,
   status: "open" | "monitoring" | "resolved" | "escalated"
-) {
+): Promise<{ error?: string }> {
   const auth = await requireSchoolProfile();
-  if ("error" in auth) return auth;
+  if ("error" in auth) return { error: auth.error };
+  if (!auth.profile.school_id) {
+    return { error: "Your account is not linked to a school" };
+  }
 
   const { error } = await auth.supabase
     .from("discipline_incidents")

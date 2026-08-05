@@ -54,6 +54,7 @@ type NavLabels = {
   schoolSettings: string;
   team: string;
   students: string;
+  guardians: string;
   admissions: string;
   classes: string;
   sections: string;
@@ -140,6 +141,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
     { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
+    { href: "/academic/guardians", labelKey: "guardians", icon: icon.guardians },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
     { href: "/academic/sections", labelKey: "sections", icon: icon.sections },
@@ -162,6 +164,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   registrar: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
+    { href: "/academic/guardians", labelKey: "guardians", icon: icon.guardians },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
     { href: "/academic/team", labelKey: "team", icon: icon.users },
@@ -289,6 +292,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/student/assignments", labelKey: "assignments", icon: icon.assignments },
     { href: "/student/grades", labelKey: "grades", icon: icon.grades },
     { href: "/student/library", labelKey: "library", icon: icon.library },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
     { href: "/student/events", labelKey: "events", icon: icon.events },
   ],
   analytics: [

@@ -1,19 +1,31 @@
 import { createClient } from "@/lib/supabase/server";
+import { getBranches, getClasses } from "@/lib/db";
 import { CampaignForm } from "./campaign-form";
 
 export default async function NewCampaignPage() {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   let schoolId = "";
+  let branchId: string | undefined;
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("school_id")
+      .select("school_id, branch_id")
       .eq("id", user.id)
       .single();
     schoolId = profile?.school_id ?? "";
+    branchId = profile?.branch_id ?? undefined;
   }
+
+  if (!branchId && schoolId) {
+    const campuses = await getBranches(schoolId);
+    branchId = campuses[0]?.id;
+  }
+
+  const classes = branchId ? await getClasses(branchId) : [];
 
   return (
     <div className="mx-auto max-w-2xl space-y-6">
@@ -23,7 +35,7 @@ export default async function NewCampaignPage() {
           Compose a message and send it to parents via WhatsApp, SMS, or in-app notification.
         </p>
       </div>
-      <CampaignForm schoolId={schoolId} />
+      <CampaignForm schoolId={schoolId} classes={classes.map((c) => ({ id: c.id, name: c.name }))} />
     </div>
   );
 }

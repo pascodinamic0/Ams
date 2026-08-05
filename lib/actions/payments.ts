@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { assertRoleAndSchool } from "@/lib/auth/assert";
+import { FINANCE_PORTAL_ROLES } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 import { notifyStudentGuardians } from "@/lib/services/notifications";
 import { paymentSchema, type PaymentFormData } from "@/lib/validations/finance";
@@ -16,18 +18,20 @@ export async function recordPayment(input: PaymentFormData) {
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
-
   const { data: invoice, error: fetchError } = await supabase
     .from("fee_invoices")
-    .select("id, amount, amount_paid, due_date, student_id")
+    .select("id, amount, amount_paid, due_date, student_id, students(school_id)")
     .eq("id", parsed.data.invoice_id)
     .single();
 
   if (fetchError || !invoice) {
     return { error: "Invoice not found" };
   }
+
+  const schoolId =
+    (invoice.students as { school_id?: string } | null)?.school_id ?? null;
+  const access = await assertRoleAndSchool(FINANCE_PORTAL_ROLES, schoolId);
+  if (!access.ok) return { error: access.error };
 
   const currentPaid = Number(invoice.amount_paid ?? 0);
   const invoiceAmount = Number(invoice.amount);
@@ -50,7 +54,7 @@ export async function recordPayment(input: PaymentFormData) {
     method: parsed.data.method,
     reference: parsed.data.reference || null,
     paid_at: parsed.data.paid_at || new Date().toISOString(),
-    recorded_by: user.id,
+    recorded_by: access.profile.id,
   });
 
   if (paymentError) return { error: paymentError.message };

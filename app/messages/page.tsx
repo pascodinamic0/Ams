@@ -1,4 +1,10 @@
-import { getConversations, getGuardianContacts, getStaffContactsForParent } from "@/lib/db/conversations";
+import {
+  getConversations,
+  getGuardianContacts,
+  getStaffContactsForParent,
+  getTeacherContactsForStudent,
+} from "@/lib/db/conversations";
+import { MESSAGING_STAFF_ROLES, normalizeRole } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { ConversationList } from "./conversation-list";
@@ -24,13 +30,26 @@ export default async function MessagesPage() {
     if (profile?.role) role = profile.role;
   }
 
-  const isParent = role === "parent";
+  const normalizedRole = normalizeRole(role);
+  const isParent = normalizedRole === "parent";
+  const isStudent = normalizedRole === "student";
+  const canMessageGuardians = MESSAGING_STAFF_ROLES.includes(normalizedRole);
 
   const [conversations, guardianContacts, staffContacts] = await Promise.all([
     getConversations(),
-    isParent ? Promise.resolve([]) : getGuardianContacts(),
-    isParent ? getStaffContactsForParent() : Promise.resolve([]),
+    canMessageGuardians ? getGuardianContacts() : Promise.resolve([]),
+    isParent
+      ? getStaffContactsForParent()
+      : isStudent
+        ? getTeacherContactsForStudent()
+        : Promise.resolve([]),
   ]);
+
+  const emptyHint = isStudent
+    ? t("startNewWithTeacher")
+    : isParent
+      ? t("startNewWithStaff")
+      : t("startNewWithParent");
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-0 overflow-hidden md:gap-4 md:h-[calc(100vh-8rem)] md:flex-row">
@@ -68,9 +87,7 @@ export default async function MessagesPage() {
           <h3 className="text-base font-semibold text-stone-700 dark:text-stone-300">
             {t("selectConversation")}
           </h3>
-          <p className="mt-1 text-sm text-stone-400">
-            {isParent ? t("startNewWithStaff") : t("startNewWithParent")}
-          </p>
+          <p className="mt-1 text-sm text-stone-400">{emptyHint}</p>
         </div>
       </div>
     </div>

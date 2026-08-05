@@ -1,20 +1,19 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { recordOnlinePayment } from "@/lib/payments/record-online-payment";
 
 /**
- * Payment webhook handler for payment providers (Paystack, Flutterwave, etc.)
- * Verify signature, find invoice by reference, record payment, update invoice.
+ * Generic payment webhook for providers that send HMAC-SHA256 signatures
+ * (Paystack-style adapters, custom gateways).
  *
- * Configure in your payment provider dashboard to send POST to:
- *   https://your-domain.com/api/webhooks/payments
+ * For Stripe, use `/api/webhooks/stripe` instead.
  *
- * Expected payload (generic):
- *   { reference: string, amount: number, status: string, ... }
+ * Expected payload:
+ *   { reference: string, amount: number, status: string, event_id?: string }
  *
  * Environment:
- *   PAYMENT_WEBHOOK_SECRET - shared secret for signature verification
- *   SUPABASE_SERVICE_ROLE_KEY - for server-side DB writes (bypass RLS)
+ *   PAYMENT_WEBHOOK_SECRET
+ *   SUPABASE_SERVICE_ROLE_KEY
  */
 
 function verifySignature(
@@ -23,12 +22,21 @@ function verifySignature(
   secret: string
 ): boolean {
   if (!signature || !secret) return false;
+
+  // Stripe uses stripe-signature with t=/v1= format — reject here.
+  if (signature.includes("t=") && signature.includes("v1=")) {
+    console.error(
+      "Stripe signature received on generic payment webhook; use /api/webhooks/stripe"
+    );
+    return false;
+  }
+
   const expected = createHmac("sha256", secret).update(payload).digest("hex");
   try {
-    return timingSafeEqual(
-      Buffer.from(signature, "utf8"),
-      Buffer.from(expected, "utf8")
-    );
+    const sigBuf = Buffer.from(signature, "utf8");
+    const expBuf = Buffer.from(expected, "utf8");
+    if (sigBuf.length !== expBuf.length) return false;
+    return timingSafeEqual(sigBuf, expBuf);
   } catch {
     return false;
   }
@@ -44,38 +52,32 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl || !serviceKey) {
-    console.error("Supabase credentials not configured for webhook");
-    return NextResponse.json(
-      { error: "Server configuration error" },
-      { status: 500 }
-    );
-  }
-
   const rawBody = await request.text();
   const signature =
     request.headers.get("x-payment-signature") ??
-    request.headers.get("x-webhook-signature") ??
-    request.headers.get("stripe-signature");
+    request.headers.get("x-webhook-signature");
 
   if (!verifySignature(rawBody, signature, secret)) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
-  let body: { reference?: string; amount?: number; status?: string };
+  let body: {
+    reference?: string;
+    amount?: number;
+    status?: string;
+    event_id?: string;
+    id?: string;
+  };
   try {
     body = JSON.parse(rawBody);
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const reference = body.reference ?? (body as Record<string, unknown>).reference;
-  const amount = body.amount ?? (body as Record<string, unknown>).amount;
-  const status = (body.status ?? (body as Record<string, unknown>).status) as
-    | string
-    | undefined;
+  const reference = body.reference;
+  const amount = body.amount;
+  const status = body.status;
+  const eventId = body.event_id ?? body.id;
 
   if (!reference || typeof amount !== "number" || amount <= 0) {
     return NextResponse.json(
@@ -84,7 +86,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Provider-specific: e.g. Paystack uses "success", Stripe uses "payment_intent.succeeded"
   const isSuccess =
     status === "success" ||
     status === "completed" ||
@@ -95,52 +96,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true }, { status: 200 });
   }
 
-  const supabase = createClient(supabaseUrl, serviceKey);
-
-  // Find invoice by reference (store provider reference in payments or fee_invoices)
-  const { data: invoice } = await supabase
-    .from("fee_invoices")
-    .select("id, amount, amount_paid, status")
-    .eq("id", reference)
-    .single();
-
-  if (!invoice) {
-    // Try payments.reference as fallback - some providers use custom reference
-    const { data: existingPayment } = await supabase
-      .from("fee_payments")
-      .select("invoice_id")
-      .eq("reference", reference)
-      .maybeSingle();
-
-    if (existingPayment) {
-      return NextResponse.json({ received: true, duplicate: true }, { status: 200 });
-    }
-    return NextResponse.json(
-      { error: "Invoice not found for reference" },
-      { status: 404 }
-    );
-  }
-
-  const newAmountPaid = Number(invoice.amount_paid ?? 0) + amount;
-  const invoiceAmount = Number(invoice.amount);
-  const newStatus = newAmountPaid >= invoiceAmount ? "paid" : "pending";
-
-  await supabase.from("fee_payments").insert({
-    invoice_id: invoice.id,
+  const result = await recordOnlinePayment({
+    invoiceId: reference,
     amount,
+    reference: String(eventId ?? reference),
     method: "online",
-    reference: String(reference),
-    paid_at: new Date().toISOString(),
   });
 
-  await supabase
-    .from("fee_invoices")
-    .update({
-      amount_paid: newAmountPaid,
-      status: newStatus,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", invoice.id);
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error }, { status: result.status });
+  }
 
-  return NextResponse.json({ received: true }, { status: 200 });
+  return NextResponse.json({
+    received: true,
+    duplicate: result.duplicate ?? false,
+  });
 }

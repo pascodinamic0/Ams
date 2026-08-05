@@ -42,7 +42,7 @@ export default async function SchoolEventsPage({
 
       {events.length === 0 ? (
         <p className="mt-10 rounded-xl border border-dashed border-stone-300 p-8 text-center text-stone-500 dark:border-stone-700">
-          No upcoming public events right now. Check back soon.
+          No upcoming public events listed. Ask the school office about the next open day or visit day.
         </p>
       ) : (
         <div className="mt-10 space-y-10">

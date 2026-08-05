@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { OUTREACH_ROLES, normalizeRole } from "@/lib/auth/rbac";
 import { getCampaignTargetGuardians } from "@/lib/db/campaigns";
 import { createNotifications } from "@/lib/services/notifications";
 import { sendWhatsAppBulk, interpolateTemplate } from "@/lib/services/whatsapp";
@@ -16,6 +17,33 @@ const campaignSchema = z.object({
 
 export type CampaignFormData = z.infer<typeof campaignSchema>;
 
+async function assertCanManageOutreach(
+  schoolId: string
+): Promise<{ ok: true; userId: string } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, error: "Not authenticated" };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, school_id")
+    .eq("id", user.id)
+    .single();
+
+  const role = normalizeRole(profile?.role);
+  if (!OUTREACH_ROLES.includes(role)) {
+    return { ok: false, error: "You do not have permission to manage outreach campaigns" };
+  }
+
+  if (role !== "super_admin" && profile?.school_id !== schoolId) {
+    return { ok: false, error: "You can only create campaigns for your school" };
+  }
+
+  return { ok: true, userId: user.id };
+}
+
 export async function createCampaign(
   schoolId: string,
   input: CampaignFormData
@@ -27,15 +55,15 @@ export async function createCampaign(
     return { error: "SMS campaigns are not available yet. Use WhatsApp or in-app alerts." };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const access = await assertCanManageOutreach(schoolId);
+  if (!access.ok) return { error: access.error };
 
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("campaigns")
     .insert({
       school_id: schoolId,
-      created_by: user.id,
+      created_by: access.userId,
       title: parsed.data.title,
       body: parsed.data.body,
       channel: parsed.data.channel,
@@ -73,6 +101,9 @@ export async function sendCampaign(
 
   if (campErr || !campaign) return { error: "Campaign not found" };
   if (campaign.status === "sent") return { error: "Campaign already sent" };
+
+  const access = await assertCanManageOutreach(campaign.school_id);
+  if (!access.ok) return { error: access.error };
 
   if (campaign.channel === "sms") {
     return { error: "SMS campaigns are not available yet. Use WhatsApp or in-app alerts." };

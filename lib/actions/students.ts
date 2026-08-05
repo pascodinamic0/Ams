@@ -1,6 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import {
+  assertRoleAndSchool,
+  assertStudentAccess,
+  getBranchSchoolId,
+} from "@/lib/auth/assert";
+import { ACADEMIC_PORTAL_ROLES } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 import { studentSchema, type StudentFormData } from "@/lib/validations";
 
@@ -12,10 +18,30 @@ export async function createStudent(
     return { error: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const schoolCheck = await assertRoleAndSchool(
+    ACADEMIC_PORTAL_ROLES,
+    input.school_id
+  );
+  if (!schoolCheck.ok) return { error: schoolCheck.error };
 
+  const branchSchoolId = await getBranchSchoolId(input.branch_id);
+  if (!branchSchoolId || branchSchoolId !== input.school_id) {
+    return { error: "Branch does not belong to this school" };
+  }
+
+  if (parsed.data.class_id) {
+    const supabase = await createClient();
+    const { data: cls } = await supabase
+      .from("classes")
+      .select("id, branch_id")
+      .eq("id", parsed.data.class_id)
+      .maybeSingle();
+    if (!cls || cls.branch_id !== input.branch_id) {
+      return { error: "Class does not belong to this branch" };
+    }
+  }
+
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("students")
     .insert({
@@ -52,14 +78,15 @@ export async function updateStudent(
     return { error: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const access = await assertStudentAccess(id, ACADEMIC_PORTAL_ROLES);
+  if (!access.ok) return { error: access.error };
 
+  const supabase = await createClient();
   const { error } = await supabase
     .from("students")
     .update(parsed.data)
-    .eq("id", id);
+    .eq("id", id)
+    .eq("school_id", access.schoolId!);
 
   if (error) {
     console.error("updateStudent error:", error);
@@ -73,11 +100,15 @@ export async function updateStudent(
 }
 
 export async function deleteStudent(id: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const access = await assertStudentAccess(id, ACADEMIC_PORTAL_ROLES);
+  if (!access.ok) return { error: access.error };
 
-  const { error } = await supabase.from("students").delete().eq("id", id);
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("students")
+    .delete()
+    .eq("id", id)
+    .eq("school_id", access.schoolId!);
 
   if (error) {
     console.error("deleteStudent error:", error);
