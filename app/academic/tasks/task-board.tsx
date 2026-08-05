@@ -52,9 +52,9 @@ export function TaskBoard({ tasks }: { tasks: SchoolTask[] }) {
     <div className="space-y-6">
       <form
         onSubmit={handleCreate}
-        className="grid gap-3 rounded-xl border border-stone-200 p-4 dark:border-stone-800 sm:grid-cols-2 lg:grid-cols-5"
+        className="grid grid-cols-1 gap-3 rounded-xl border border-stone-200 p-4 dark:border-stone-800 sm:grid-cols-2 lg:grid-cols-6"
       >
-        <div className="lg:col-span-2">
+        <div className="min-w-0 sm:col-span-2 lg:col-span-2">
           <Label>Task</Label>
           <Input
             value={title}
@@ -63,7 +63,7 @@ export function TaskBoard({ tasks }: { tasks: SchoolTask[] }) {
             required
           />
         </div>
-        <div>
+        <div className="min-w-0">
           <Label>Department</Label>
           <Input
             value={department}
@@ -71,7 +71,7 @@ export function TaskBoard({ tasks }: { tasks: SchoolTask[] }) {
             placeholder="admissions"
           />
         </div>
-        <div>
+        <div className="min-w-0">
           <Label>Priority</Label>
           <select
             className="mt-1 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
@@ -83,12 +83,12 @@ export function TaskBoard({ tasks }: { tasks: SchoolTask[] }) {
             <option value="high">High</option>
           </select>
         </div>
-        <div className="flex items-end gap-2">
-          <div className="flex-1">
-            <Label>Due</Label>
-            <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-          </div>
-          <Button type="submit" disabled={loading}>
+        <div className="min-w-0">
+          <Label>Due</Label>
+          <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+        </div>
+        <div className="flex items-end sm:col-span-2 lg:col-span-1">
+          <Button type="submit" disabled={loading} className="w-full">
             {loading ? "Adding..." : "Add"}
           </Button>
         </div>
