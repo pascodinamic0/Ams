@@ -33,10 +33,7 @@ export const companyIdentity = {
   },
 
   social: {
-    linkedin: "https://www.linkedin.com/company/digni-digital-kenya",
-    facebook: "https://www.facebook.com/dignidigital",
-    instagram: "https://www.instagram.com/dignidigital",
-    youtube: "https://www.youtube.com/@dignidigital",
+    linkedin: "https://www.linkedin.com/company/shuleos/",
   },
 
   brand: {

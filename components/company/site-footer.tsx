@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
+import { Linkedin, Mail, MapPin, Phone } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { BrandLogo } from "@/components/company/brand-logo";
@@ -75,9 +75,6 @@ export function SiteFooter({
 
   const socialLinks = [
     { label: "LinkedIn", href: companyIdentity.social.linkedin, icon: Linkedin },
-    { label: "Facebook", href: companyIdentity.social.facebook, icon: Facebook },
-    { label: "Instagram", href: companyIdentity.social.instagram, icon: Instagram },
-    { label: "YouTube", href: companyIdentity.social.youtube, icon: Youtube },
   ];
 
   return (

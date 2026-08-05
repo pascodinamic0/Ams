@@ -13,10 +13,7 @@ import {
   HeadphonesIcon,
   Wallet,
   Wifi,
-  Facebook,
-  Instagram,
   Linkedin,
-  Youtube,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
@@ -103,9 +100,6 @@ export function HomePage() {
             {(
               [
                 { label: "LinkedIn", href: companyIdentity.social.linkedin, icon: Linkedin },
-                { label: "Facebook", href: companyIdentity.social.facebook, icon: Facebook },
-                { label: "Instagram", href: companyIdentity.social.instagram, icon: Instagram },
-                { label: "YouTube", href: companyIdentity.social.youtube, icon: Youtube },
               ] as const
             ).map(({ label, href, icon: Icon }) => (
               <a
