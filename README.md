@@ -108,13 +108,14 @@ AMS uses Supabase project **AMC** (`ooheotsnplfrpgblrnot`).
    - `https://ooheotsnplfrpgblrnot.supabase.co/auth/v1/callback`
 2. **Supabase Dashboard** → **Authentication** → **Providers** → **Google** — Enable with Client ID and Secret.
 3. **Supabase Dashboard** → **Authentication** → **URL Configuration**:
-   - **Site URL:** `https://shuleos.app`
+   - **Site URL:** `https://www.shuleos.app` (Vercel redirects apex → www; use www as canonical)
    - **Redirect URLs:**
      - `http://localhost:3000/auth/callback` (or `http://localhost:3000/**`)
-     - `https://shuleos.app/auth/callback`
-     - `https://shuleos.app/auth/callback?intent=register`
-     - `https://shuleos.app/**` (covers other query params)
-4. Set `NEXT_PUBLIC_APP_URL=https://shuleos.app` in Vercel Production (used for email and OAuth callbacks).
+     - `https://www.shuleos.app/auth/callback`
+     - `https://www.shuleos.app/auth/callback?intent=register`
+     - `https://www.shuleos.app/**`
+     - Optional apex mirrors: `https://shuleos.app/auth/callback`, `https://shuleos.app/**`
+4. Set `NEXT_PUBLIC_APP_URL=https://www.shuleos.app` in Vercel Production (used for email and OAuth callbacks).
 
 ## Scripts
 
@@ -153,7 +154,7 @@ Set `CRON_SECRET` in Vercel env vars; invocations must send `Authorization: Bear
 Configure your payment provider (Paystack, Flutterwave, etc.) to POST to:
 
 ```
-https://shuleos.app/api/webhooks/payments
+https://www.shuleos.app/api/webhooks/payments
 ```
 
 Set `PAYMENT_WEBHOOK_SECRET` in Vercel. The handler verifies HMAC-SHA256 signatures via `x-payment-signature`, `x-webhook-signature`, or `stripe-signature` headers.
