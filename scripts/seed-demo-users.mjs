@@ -5,6 +5,8 @@
  * Usage: npm run seed:demo-users
  *
  * Requires: SUPABASE_SERVICE_ROLE_KEY and NEXT_PUBLIC_SUPABASE_URL in .env
+ * Targets school code GREENWOOD by default (override with DEMO_SCHOOL_CODE).
+ * Never attaches demo users to the first arbitrary school in the database.
  */
 
 import { config } from "dotenv";
@@ -151,16 +153,22 @@ async function main() {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
+  // Never attach demo accounts to an arbitrary first school — that polluted
+  // production tenants (e.g. newly registered schools). Target GREENWOOD only
+  // unless DEMO_SCHOOL_CODE is set explicitly.
+  const schoolCode = process.env.DEMO_SCHOOL_CODE ?? "GREENWOOD";
   const { data: school, error: schoolError } = await supabase
     .from("schools")
-    .select("id, name")
-    .order("created_at", { ascending: true })
-    .limit(1)
+    .select("id, name, code")
+    .eq("code", schoolCode)
     .maybeSingle();
 
   if (schoolError) throw schoolError;
   if (!school) {
-    console.error("No school found. Create a school in /admin/schools first.");
+    console.error(
+      `No demo school found with code "${schoolCode}". ` +
+        `Run seed:demo-data first, or set DEMO_SCHOOL_CODE to an explicit demo school.`
+    );
     process.exit(1);
   }
 

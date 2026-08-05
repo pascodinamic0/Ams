@@ -11,6 +11,7 @@
  *  - bun scripts/seed-nursery-1-full.mjs
  *
  * Optional env overrides:
+ *  - DEMO_SCHOOL_CODE (default: "GREENWOOD") — never seeds the first arbitrary school
  *  - TARGET_CLASS_NAME (default: "Nursery 1")
  *  - STUDENTS_COUNT (default: "20")
  *  - TEACHER_EMAIL (default: "teacher@ams.demo")
@@ -45,16 +46,23 @@ function dobForIndex(i) {
 }
 
 async function ensureSchoolAndBranch(supabase) {
-  // Keep it deterministic but safe: pick first approved school, then first branch in it.
-  const { data: schools, error: schoolsError } = await supabase
+  // Never seed nursery demo students onto an arbitrary first school.
+  // Target GREENWOOD (or DEMO_SCHOOL_CODE) so production tenants stay empty.
+  const schoolCode = process.env.DEMO_SCHOOL_CODE ?? "GREENWOOD";
+  const { data: school, error: schoolsError } = await supabase
     .from("schools")
-    .select("id")
-    .order("created_at", { ascending: true })
-    .limit(1);
+    .select("id, code")
+    .eq("code", schoolCode)
+    .maybeSingle();
 
   if (schoolsError) throw new Error(`Failed to load school: ${schoolsError.message}`);
-  const schoolId = schools?.[0]?.id;
-  if (!schoolId) throw new Error("No school found. Create a school first.");
+  const schoolId = school?.id;
+  if (!schoolId) {
+    throw new Error(
+      `No demo school found with code "${schoolCode}". ` +
+        `Run seed:demo-data first, or set DEMO_SCHOOL_CODE explicitly.`
+    );
+  }
 
   const { data: branches, error: branchesError } = await supabase
     .from("branches")
