@@ -16,6 +16,17 @@ export const invoiceSchema = z.object({
   description: z.string().optional(),
 });
 
+/** Account-level fee demands: one invoice per selected student account. */
+export const bulkDemandSchema = z.object({
+  student_ids: z
+    .array(z.string().uuid("Student is required"))
+    .min(1, "Select at least one student account"),
+  fee_structure_id: z.string().uuid("Fee structure is required"),
+  due_date: z.string().min(1, "Due date is required"),
+  description: z.string().optional(),
+  skip_existing: z.boolean().optional().default(true),
+});
+
 export const paymentSchema = z.object({
   invoice_id: z.string().uuid("Invoice is required"),
   amount: z.coerce.number().positive("Amount must be greater than zero"),
@@ -64,6 +75,7 @@ export const payrollPaymentSchema = z.object({
 
 export type FeeStructureFormData = z.infer<typeof feeStructureSchema>;
 export type InvoiceFormData = z.infer<typeof invoiceSchema>;
+export type BulkDemandFormData = z.infer<typeof bulkDemandSchema>;
 export type PaymentFormData = z.infer<typeof paymentSchema>;
 export type ExpenseFormData = z.infer<typeof expenseSchema>;
 export type PayrollFormData = z.infer<typeof payrollSchema>;

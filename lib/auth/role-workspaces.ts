@@ -137,6 +137,7 @@ const WORKSPACES: Partial<Record<UserRole, RoleWorkspace>> = {
     quickActions: [
       { href: "/finance/payments", label: "Record payment" },
       { href: "/finance/invoices", label: "Find invoice", variant: "ghost" },
+      { href: "/finance/invoices/bulk", label: "Account demands", variant: "outline" },
     ],
     metricHints: ["collected", "outstanding"],
   },
@@ -160,7 +161,7 @@ const WORKSPACES: Partial<Record<UserRole, RoleWorkspace>> = {
     focusQuestion: "What finance work is unfinished?",
     quickActions: [
       { href: "/finance/payments", label: "Record payment" },
-      { href: "/finance/invoices", label: "Create invoice", variant: "ghost" },
+      { href: "/finance/invoices/bulk", label: "Account demands", variant: "ghost" },
       { href: "/finance/reports", label: "Reports", variant: "outline" },
     ],
     metricHints: ["collected", "outstanding", "payroll", "expenses"],

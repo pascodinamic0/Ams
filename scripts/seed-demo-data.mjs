@@ -137,21 +137,45 @@ async function ensureSchool(supabase) {
   const { data: existing } = await supabase
     .from("schools")
     .select("id, name")
-    .eq("code", "GREENWOOD")
+    .eq("code", "GREENFIELD")
     .maybeSingle();
 
   if (existing) return existing;
 
+  // Migrate legacy demo school code if present
+  const { data: legacy } = await supabase
+    .from("schools")
+    .select("id, name")
+    .eq("code", "GREENWOOD")
+    .maybeSingle();
+
+  if (legacy) {
+    const { data: updated, error } = await supabase
+      .from("schools")
+      .update({
+        name: "Greenfield Academy",
+        code: "GREENFIELD",
+        slug: "greenfield-academy",
+        about: "A demo school for exploring AMS features.",
+        contact_email: "info@greenfield-academy.demo",
+      })
+      .eq("id", legacy.id)
+      .select("id, name")
+      .single();
+    if (error) throw error;
+    return updated;
+  }
+
   const { data, error } = await supabase
     .from("schools")
     .insert({
-      name: "Greenwood Academy",
-      code: "GREENWOOD",
-      slug: "greenwood-academy",
+      name: "Greenfield Academy",
+      code: "GREENFIELD",
+      slug: "greenfield-academy",
       about: "A demo school for exploring AMS features.",
-      contact_email: "info@greenwood-academy.demo",
+      contact_email: "info@greenfield-academy.demo",
       contact_phone: "+1-555-0100",
-      address: "123 Education Lane, Demo City",
+      address: "42 Learning Lane, Greenfield",
       public_site_enabled: true,
       website_template: "modern",
       status: "approved",
@@ -489,7 +513,14 @@ async function seedFinance(supabase, branchId, classIds, studentIds, financeUser
     { studentKey: "demo", feeId: tuitionId, amount: 2500, paid: 2500, dueDays: -30, status: "paid" },
     { studentKey: "emma", feeId: tuitionId, amount: 2500, paid: 1000, dueDays: -5, status: "pending" },
     { studentKey: "liam", feeId: tuitionId, amount: 2500, paid: 0, dueDays: -20, status: "overdue" },
+    { studentKey: "sophia", feeId: tuitionId, amount: 2500, paid: 0, dueDays: 14, status: "pending" },
+    { studentKey: "noah", feeId: tuitionId, amount: 2500, paid: 500, dueDays: 7, status: "pending" },
+    { studentKey: "ava", feeId: tuitionId, amount: 2500, paid: 0, dueDays: 14, status: "pending" },
+    { studentKey: "ethan", feeId: tuitionId, amount: 2500, paid: 0, dueDays: 21, status: "pending" },
+    { studentKey: "mia", feeId: tuitionId, amount: 2500, paid: 1250, dueDays: 10, status: "pending" },
     { studentKey: "sophia", feeId: transportFeeId, amount: 350, paid: 350, dueDays: -10, status: "paid" },
+    { studentKey: "noah", feeId: transportFeeId, amount: 350, paid: 0, dueDays: 5, status: "pending" },
+    { studentKey: "ava", feeId: transportFeeId, amount: 350, paid: 0, dueDays: 5, status: "pending" },
   ];
 
   for (const inv of invoiceSpecs) {
@@ -801,7 +832,7 @@ async function main() {
   console.log("? Outreach campaign draft");
 
   console.log("\n--- Demo data ready ---");
-  console.log(`School: ${school.name} (/schools/greenwood-academy)`);
+  console.log(`School: ${school.name} (/schools/greenfield-academy)`);
   console.log(`Password (all @ams.demo accounts): ${DEMO_PASSWORD}`);
   console.log(`Report card term: ${REPORT_TERM} | Exam term example: Midterm Exam`);
   console.log("");

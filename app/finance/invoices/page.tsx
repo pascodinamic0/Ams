@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getInvoices, getStudents, getFeeStructures } from "@/lib/db";
@@ -33,7 +34,15 @@ export default async function InvoicesPage({
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{t("invoicesTitle")}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold">{t("invoicesTitle")}</h1>
+        <Link
+          href="/finance/invoices/bulk"
+          className="rounded-lg bg-teal-700 px-3 py-2 text-sm font-medium text-white hover:bg-teal-800 dark:bg-teal-600 dark:hover:bg-teal-500"
+        >
+          {t("bulkDemandCta")}
+        </Link>
+      </div>
       <InvoiceForm
         students={students.map((s) => ({
           id: s.id,
