@@ -16,6 +16,7 @@ import {
   completeProfileOnboarding,
   updateProfileName,
 } from "@/lib/actions/profile-onboarding";
+import { resolvePostAuthDestination } from "@/lib/actions/post-auth-redirect";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
@@ -74,7 +75,10 @@ export default function OnboardingPage() {
         .single();
 
       if (profile?.onboarding_completed_at) {
-        router.replace("/");
+        const destination = await resolvePostAuthDestination({
+          userId: user.id,
+        });
+        window.location.assign(destination);
         return;
       }
 

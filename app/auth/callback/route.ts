@@ -4,6 +4,7 @@ import {
   resolveCallbackErrorMessage,
 } from "@/lib/auth/callback-errors";
 import { getPostAuthRedirect } from "@/lib/auth/post-auth-redirect";
+import { prepareOAuthProfile } from "@/lib/auth/prepare-oauth-profile";
 import { createRouteHandlerClient } from "@/lib/supabase/route-handler";
 
 function resolveRedirectOrigin(request: Request): string {
@@ -78,10 +79,15 @@ export async function GET(request: Request) {
     );
   }
 
+  // Sync Google name/avatar and finish onboarding when the account is portal-ready
+  // so the browser lands on the role dashboard in one redirect.
+  await prepareOAuthProfile(supabase, user);
+
   const destination = await getPostAuthRedirect({
     userId: user.id,
     redirect,
     intent,
+    supabase,
   });
 
   return redirectWithCookies(sessionResponse, `${origin}${destination}`);
