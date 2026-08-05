@@ -2,6 +2,7 @@
   "nav": {
     "home": "Accueil",
     "features": "Fonctionnalités",
+    "blog": "Blog",
     "getAccess": "Obtenir l'accès",
     "contact": "Contact",
     "login": "Connexion",
@@ -16,6 +17,7 @@
     "termsOfService": "Conditions d'utilisation",
     "cookiePolicy": "Politique de cookies",
     "documentation": "Documentation",
+    "blog": "Blog",
     "contact": "Contact",
     "forgotPassword": "Mot de passe oublié",
     "taglineSuffix": "une plateforme pour les frais, les notes et la communication parentale dans les écoles de RDC.",

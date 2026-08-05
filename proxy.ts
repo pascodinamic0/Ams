@@ -20,6 +20,7 @@ const PUBLIC_ROUTES = [
   "/schools",
   "/contact",
   "/docs",
+  "/blog",
   "/privacy",
   "/terms",
   "/cookies",
@@ -29,6 +30,7 @@ function isPublicRoute(pathname: string): boolean {
   if (PUBLIC_ROUTES.includes(pathname)) return true;
   if (pathname.startsWith("/schools/")) return true;
   if (pathname.startsWith("/modules/")) return true;
+  if (pathname.startsWith("/blog/")) return true;
   return false;
 }
 

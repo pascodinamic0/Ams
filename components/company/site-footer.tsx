@@ -56,6 +56,7 @@ export function SiteFooter({
 
   const platformLinks = [
     { label: labels.features, href: "/features" },
+    { label: labels.blog, href: "/blog" },
     { label: labels.getAccess, href: "/get-access" },
     { label: labels.login, href: "/login" },
     { label: labels.register, href: "/register" },

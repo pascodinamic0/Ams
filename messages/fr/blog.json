@@ -1,0 +1,130 @@
+{
+  "index": {
+    "eyebrow": "Blog",
+    "title": "Ce que votre école perd déjà",
+    "subtitle": "Notes pratiques sur les frais, les notes, les parents, et le coût d'un trimestre de plus sur des cahiers et WhatsApp.",
+    "readArticle": "Lire l'article",
+    "backToBlog": "Retour au blog"
+  },
+  "posts": {
+    "every-way-shuleos-stops-the-leaks": {
+      "title": "Toutes les façons dont ShuleOS arrête ce que votre école perd déjà",
+      "excerpt": "Fuites de frais, chaos des bulletins, parents informés trop tard, absences hors ligne — et ce qui bouche chaque fuite pour les écoles de RDC.",
+      "date": "2026-08-05",
+      "readTime": "10 min de lecture",
+      "metaDescription": "Comment ShuleOS bouche les fuites de frais, le chaos des bulletins, les retards d'information aux parents et les absences hors ligne pour les écoles de RDC — sur une seule plateforme.",
+      "intro": [
+        "Votre école a déjà un système. Ce sont des cahiers, des fils WhatsApp, des soldes dans des tableurs, et une file à la direction qui ne raccourcit jamais.",
+        "Ce système a un prix : des frais qui n'arrivent jamais, des parents qui apprennent trop tard, des enseignants qui recopient des listes le soir, et une semaine de bulletins qui ferme le bureau. ShuleOS n'ajoute pas une autre application sur ce chaos — il remplace les fuites par un système d'exploitation conçu pour les écoles congolaises.",
+        "Voici chaque endroit où la perte apparaît, et ce qui l'arrête."
+      ],
+      "sections": [
+        {
+          "title": "Les frais cessent de disparaître dans « on va vérifier »",
+          "costLabel": "Ce que ça coûte",
+          "cost": "Les soldes vivent à trois endroits. Les parents disputent à la porte. Les encaissements semblent corrects jusqu'à la réconciliation — trop tard.",
+          "fixLabel": "Ce que ShuleOS corrige",
+          "fix": "Structures de frais, factures, paiements, dépenses, paie et rapports financiers au même endroit. Les parents voient le solde exact et paient via mobile money. Les rappels WhatsApp partent avant que le trimestre ne glisse — pas après la file.",
+          "whoLabel": "Qui respire mieux",
+          "who": "Les caissiers, les comptables et les directeurs qui ont besoin de chiffres fiables avant le prochain conseil."
+        },
+        {
+          "title": "La saison des bulletins cesse de fermer le bureau",
+          "costLabel": "Ce que ça coûte",
+          "cost": "Les notes s'éparpillent entre registres et discussions. La semaine d'impression devient des nuits blanches. Les erreurs deviennent des conflits avec les parents.",
+          "fixLabel": "Ce que ShuleOS corrige",
+          "fix": "Présences, carnet de notes, devoirs, examens et bulletins Programme National dans le flux enseignant — pour que le trimestre se termine par des bulletins imprimables, pas par une panique.",
+          "whoLabel": "Qui respire mieux",
+          "who": "Les enseignants qui veulent récupérer leurs soirées ; les responsables pédagogiques qui veulent de la cohérence entre les classes."
+        },
+        {
+          "title": "Les parents cessent d'apprendre par accident",
+          "costLabel": "Ce que ça coûte",
+          "cost": "« Venez au bureau » devient la réponse par défaut. La confiance s'érode quand les frais et les notes arrivent en retard — ou faux.",
+          "fixLabel": "Ce que ShuleOS corrige",
+          "fix": "Portail parent pour les résultats, frais et paiements, emploi du temps, messages et événements. Portail élève pour devoirs, notes, bibliothèque et emploi du temps. Campagnes WhatsApp, SMS et in-app avec une trace — pour que les chats non consignés cessent de devenir des litiges sans preuve.",
+          "whoLabel": "Qui respire mieux",
+          "who": "Les parents qui ne devraient pas se déplacer pour un solde ; les bureaux qui ne devraient pas être un centre d'appels pour chaque question."
+        },
+        {
+          "title": "Les présences survivent quand internet disparaît",
+          "costLabel": "Ce que ça coûte",
+          "cost": "Une connexion morte tue l'appel du jour. Les enseignants retombent sur le papier, puis ressaisissent le soir — s'ils s'en souviennent.",
+          "fixLabel": "Ce que ShuleOS corrige",
+          "fix": "PWA installable avec synchro des présences hors ligne. La journée compte encore quand le signal ne passe pas.",
+          "whoLabel": "Qui respire mieux",
+          "who": "Les enseignants dans des salles où la connexion est optionnelle ; les directeurs qui veulent des présences réelles, pas des reconstructions."
+        },
+        {
+          "title": "L'académique cesse de vivre dans des dossiers éparpillés",
+          "costLabel": "Ce que ça coûte",
+          "cost": "Élèves, tuteurs, admissions, classes, sections, matières, emploi du temps et curriculum ont chacun leur cahier — et personne n'a la vue d'ensemble.",
+          "fixLabel": "Ce que ShuleOS corrige",
+          "fix": "Un noyau académique unique : inscriptions, tuteurs, file d'admissions, classes et sections, emploi du temps, curriculum, équipe et paramètres — avec un tableau de tâches pour le travail en retard et un bureau de discipline pour les incidents qui disparaissaient dans WhatsApp.",
+          "whoLabel": "Qui respire mieux",
+          "who": "Les registraires, les coordinateurs pédagogiques et les directeurs qui ont besoin de suivis qui ne meurent pas dans un chat."
+        },
+        {
+          "title": "Les opérations cessent de vivre sur des post-its",
+          "costLabel": "Ce que ça coûte",
+          "cost": "Prêts de bibliothèque, trajets de transport, événements et dossiers du personnel disparaissent dans le papier. Quand quelque chose tourne mal, il n'y a pas de trace.",
+          "fixLabel": "Ce que ShuleOS corrige",
+          "fix": "Bibliothèque, transport, événements et RH dans une couche opérations — visible pour ceux qui en ont besoin, y compris les parents quand c'est pertinent.",
+          "whoLabel": "Qui respire mieux",
+          "who": "Les responsables opérations qui ne devraient pas gérer la logistique de mémoire."
+        },
+        {
+          "title": "La prochaine rentrée cesse de passer à côté d'une mauvaise première impression",
+          "costLabel": "Ce que ça coûte",
+          "cost": "Pas de site professionnel, c'est des inscriptions perdues. Les admissions papier, c'est des retards, des formulaires perdus, et des familles qui n'arrivent jamais au bout.",
+          "fixLabel": "Ce que ShuleOS corrige",
+          "fix": "Sites publics d'école avec admissions en ligne qui alimentent votre file admin — pour qu'un intérêt devienne un dossier, pas un peut-être.",
+          "whoLabel": "Qui respire mieux",
+          "who": "Les écoles qui concurrencent pour des familles qui décident sur un écran de téléphone."
+        },
+        {
+          "title": "Les directeurs cessent de décider à l'aveugle en fin de trimestre",
+          "costLabel": "Ce que ça coûte",
+          "cost": "Quand le tableur est « terminé », le trimestre est fini. Écarts entre branches, baisses de présence et manques d'encaissement restent invisibles jusqu'à ce que ce soit cher.",
+          "fixLabel": "Ce que ShuleOS corrige",
+          "fix": "Tableaux de bord élèves, présences, finances et performance par branche — pour agir en milieu de trimestre, pas après les dégâts.",
+          "whoLabel": "Qui respire mieux",
+          "who": "Les proviseurs et opérateurs multi-branches qui ont besoin d'une vue, pas de cinq réconciliations."
+        },
+        {
+          "title": "Accès et responsabilité collent au fonctionnement d'une vraie école",
+          "costLabel": "Ce que ça coûte",
+          "cost": "Tout le monde a le même login — ou pire, des mots de passe partagés — et personne ne sait qui a changé quoi.",
+          "fixLabel": "Ce que ShuleOS corrige",
+          "fix": "Écoles et branches multi-tenant, utilisateurs et rôles, journaux d'audit et activations de modules — pour que les bonnes personnes voient le bon travail, avec une trace.",
+          "whoLabel": "Qui respire mieux",
+          "who": "Les admins plateforme et les dirigeants d'école qui veulent du contrôle sans chaos."
+        },
+        {
+          "title": "Conçu pour la réalité RDC — pas un SIS étranger avec une couche de traduction",
+          "costLabel": "Ce que ça coûte",
+          "cost": "Les outils pensés pour d'autres systèmes ignorent les bulletins Programme National, les habitudes CDF/USD, le français d'abord, les parents sur WhatsApp, et les horaires de support à Kinshasa.",
+          "fixLabel": "Ce que ShuleOS corrige",
+          "fix": "Français et anglais, flux locaux de frais et de curriculum, rappels et campagnes WhatsApp, paiements mobile money, présences hors ligne, et support depuis Kinshasa.",
+          "whoLabel": "Qui respire mieux",
+          "who": "Les écoles fatiguées de tordre un logiciel étranger jusqu'à ce qu'il tienne presque."
+        }
+      ],
+      "midCtaTitle": "La saison des frais et des bulletins n'attend pas",
+      "midCtaBody": "Chaque semaine hors plateforme, c'est une file de plus, un litige de plus, une soirée perdue à ressaisir. Un après-midi pour démarrer bat un autre trimestre de fuites.",
+      "midCtaPrimary": "Arrêter les fuites",
+      "midCtaSecondary": "Voir ce que ça vous coûte",
+      "closing": [
+        "Un autre trimestre sur cahiers et WhatsApp a un prix que vous connaissez déjà — vous ne l'avez juste pas encore chiffré.",
+        "ShuleOS, c'est le petit pas suivant : un après-midi pour démarrer, frais, notes et parents au même endroit, avant que le prochain trimestre ne verrouille les mêmes fuites."
+      ],
+      "ctaPrimary": "Arrêter les fuites",
+      "ctaSecondary": "Voir ce que ça vous coûte",
+      "ctaTertiary": "Corriger avant le prochain trimestre",
+      "relatedLabel": "Explorer les modules liés",
+      "relatedFinance": "Finance",
+      "relatedAcademic": "Académique",
+      "relatedPortals": "Portails parents & élèves"
+    }
+  }
+}

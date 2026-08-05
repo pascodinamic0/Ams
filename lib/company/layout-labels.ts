@@ -4,6 +4,7 @@ export type CompanyNavLabels = {
   closeMenu: string;
   home: string;
   features: string;
+  blog: string;
   getAccess: string;
   contact: string;
   login: string;
@@ -16,6 +17,7 @@ export type CompanyFooterLabels = {
   legal: string;
   support: string;
   features: string;
+  blog: string;
   getAccess: string;
   login: string;
   register: string;

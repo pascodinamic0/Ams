@@ -2,6 +2,7 @@
   "nav": {
     "home": "Home",
     "features": "Features",
+    "blog": "Blog",
     "getAccess": "Get Access",
     "contact": "Contact",
     "login": "Login",
@@ -16,6 +17,7 @@
     "termsOfService": "Terms of Service",
     "cookiePolicy": "Cookie Policy",
     "documentation": "Documentation",
+    "blog": "Blog",
     "contact": "Contact",
     "forgotPassword": "Forgot Password",
     "taglineSuffix": "one platform for fees, grades, and parent communication in DRC schools.",

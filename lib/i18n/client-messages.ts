@@ -16,7 +16,7 @@ const CORE_NAMESPACES = [
 ] as const;
 
 /** Public marketing site — always hydrated (soft nav keeps the first payload). */
-const MARKETING_NAMESPACES = ["marketing", "modules", "schools"] as const;
+const MARKETING_NAMESPACES = ["marketing", "modules", "blog", "schools"] as const;
 
 /**
  * App namespaces for authenticated areas. Sent together so client navigations
@@ -41,6 +41,7 @@ const MARKETING_PREFIXES = [
   "/schools",
   "/contact",
   "/docs",
+  "/blog",
   "/privacy",
   "/terms",
   "/cookies",
@@ -51,6 +52,7 @@ function isMarketingPath(pathname: string): boolean {
   if (MARKETING_PREFIXES.includes(pathname)) return true;
   if (pathname.startsWith("/schools/")) return true;
   if (pathname.startsWith("/modules/")) return true;
+  if (pathname.startsWith("/blog/")) return true;
   return false;
 }
 

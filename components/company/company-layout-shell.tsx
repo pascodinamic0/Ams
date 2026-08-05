@@ -34,6 +34,7 @@ export function CompanyLayoutShell({
   const navLinks = [
     { label: labels.home, href: "/" },
     { label: labels.features, href: "/features" },
+    { label: labels.blog, href: "/blog" },
     { label: labels.getAccess, href: "/get-access" },
     { label: labels.contact, href: "/contact" },
   ];

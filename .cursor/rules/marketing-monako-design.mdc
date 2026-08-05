@@ -10,7 +10,7 @@ Default visual system for **marketing, company pages, auth funnel, and pending s
 
 ## Scope
 
-**In scope:** `/`, `/features`, `/get-access`, `/contact`, `/docs`, `/modules/*`, legal pages, `/schools` directory, auth (`/login`, `/register`, …), `/pending`, and shared chrome in `components/company/*`, `components/auth/*`.
+**In scope:** `/`, `/features`, `/get-access`, `/contact`, `/docs`, `/blog`, `/blog/*`, `/modules/*`, legal pages, `/schools` directory, auth (`/login`, `/register`, …), `/pending`, and shared chrome in `components/company/*`, `components/auth/*`.
 
 **Out of scope (do not force MONAKO):**
 - Authenticated app dashboards (`/admin`, `/teacher`, `/parent`, `/student`, `/operations`, `/finance`, `/academic`, `/analytics`, `/messages`, `/settings`, …)
