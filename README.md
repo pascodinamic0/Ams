@@ -107,10 +107,14 @@ AMS uses Supabase project **AMC** (`ooheotsnplfrpgblrnot`).
 1. **Google Cloud Console** — OAuth 2.0 Client ID redirect URI:
    - `https://ooheotsnplfrpgblrnot.supabase.co/auth/v1/callback`
 2. **Supabase Dashboard** → **Authentication** → **Providers** → **Google** — Enable with Client ID and Secret.
-3. **Supabase Dashboard** → **Authentication** → **URL Configuration** — Redirect URLs:
-   - `http://localhost:3000/auth/callback` (or `http://localhost:3000/**`)
-   - `https://ams-xi-two.vercel.app/auth/callback` (or `https://ams-xi-two.vercel.app/**` for register with `?intent=register`)
-4. Set `NEXT_PUBLIC_APP_URL` in Vercel to your production origin (used for email and OAuth callbacks).
+3. **Supabase Dashboard** → **Authentication** → **URL Configuration**:
+   - **Site URL:** `https://shuleos.app`
+   - **Redirect URLs:**
+     - `http://localhost:3000/auth/callback` (or `http://localhost:3000/**`)
+     - `https://shuleos.app/auth/callback`
+     - `https://shuleos.app/auth/callback?intent=register`
+     - `https://shuleos.app/**` (covers other query params)
+4. Set `NEXT_PUBLIC_APP_URL=https://shuleos.app` in Vercel Production (used for email and OAuth callbacks).
 
 ## Scripts
 
@@ -149,7 +153,7 @@ Set `CRON_SECRET` in Vercel env vars; invocations must send `Authorization: Bear
 Configure your payment provider (Paystack, Flutterwave, etc.) to POST to:
 
 ```
-https://your-domain.com/api/webhooks/payments
+https://shuleos.app/api/webhooks/payments
 ```
 
 Set `PAYMENT_WEBHOOK_SECRET` in Vercel. The handler verifies HMAC-SHA256 signatures via `x-payment-signature`, `x-webhook-signature`, or `stripe-signature` headers.
