@@ -9,22 +9,22 @@
   "posts": {
     "every-way-shuleos-stops-the-leaks": {
       "title": "Every way ShuleOS stops what your school is already losing",
-      "excerpt": "Fee leaks, report-card chaos, late parent updates, offline attendance gaps — and what plugs each one for DRC schools.",
+      "excerpt": "Fee leaks, report-card chaos, late parent updates, offline attendance gaps â€” and what plugs each one for DRC schools.",
       "date": "2026-08-05",
       "readTime": "10 min read",
-      "metaDescription": "How ShuleOS plugs fee leaks, report-card chaos, late parent updates, and offline attendance gaps for DRC schools — in one platform.",
+      "metaDescription": "How ShuleOS plugs fee leaks, report-card chaos, late parent updates, and offline attendance gaps for DRC schools â€” in one platform.",
       "intro": [
         "Your school already runs a system. It's notebooks, WhatsApp threads, spreadsheet balances, and an office queue that never shortens.",
-        "That system has a price: fees that never land, parents who find out late, teachers rewriting lists at night, and report-card week that shuts the office down. ShuleOS doesn't add another app on top of that chaos — it replaces the leaks with one operating system built for Congolese schools.",
+        "That system has a price: fees that never land, parents who find out late, teachers rewriting lists at night, and report-card week that shuts the office down. ShuleOS doesn't add another app on top of that chaos â€” it replaces the leaks with one operating system built for Congolese schools.",
         "Here's every place the loss shows up, and what stops it."
       ],
       "sections": [
         {
           "title": "Fees stop disappearing into \"we'll check\"",
           "costLabel": "What it costs",
-          "cost": "Balances live in three places. Parents dispute at the gate. Collections look fine until someone reconciles — too late.",
+          "cost": "Balances live in three places. Parents dispute at the gate. Collections look fine until someone reconciles â€” too late.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Fee structures, invoices, payments, expenses, payroll, and finance reports in one place. Parents see exact balances and pay with mobile money. WhatsApp fee reminders go out before the term slips away — not after the queue forms.",
+          "fix": "Fee structures, invoices, payments, expenses, payroll, and finance reports in one place. Parents see exact balances and pay with mobile money. WhatsApp fee reminders go out before the term slips away â€” not after the queue forms.",
           "whoLabel": "Who breathes easier",
           "who": "Bursars, cashiers, and directors who need numbers they can trust before the next board meeting."
         },
@@ -33,23 +33,23 @@
           "costLabel": "What it costs",
           "cost": "Grades scatter across registers and chats. Printing week becomes all-nighters. Errors become parent fights.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Attendance, gradebook, assignments, exams, and Programme National report cards in the teacher workflow — so the term ends with printable cards, not a scramble.",
+          "fix": "Attendance, gradebook, assignments, exams, and Programme National report cards in the teacher workflow â€” so the term ends with printable cards, not a scramble.",
           "whoLabel": "Who breathes easier",
           "who": "Teachers who want evenings back; academic admins who need consistency across classes."
         },
         {
           "title": "Parents stop learning by accident",
           "costLabel": "What it costs",
-          "cost": "\"Come to the office\" becomes the default answer. Trust erodes when fees and grades arrive late — or wrong.",
+          "cost": "\"Come to the office\" becomes the default answer. Trust erodes when fees and grades arrive late â€” or wrong.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Parent portal for performance, fees and payments, timetable, messages, and events. Student portal for assignments, grades, library, and timetable. Mass WhatsApp, SMS, and in-app outreach with a trail — so unlogged chats stop becoming disputes with no proof.",
+          "fix": "Parent portal for performance, fees and payments, timetable, messages, and events. Student portal for assignments, grades, library, and timetable. Mass WhatsApp, SMS, and in-app outreach with a trail â€” so unlogged chats stop becoming disputes with no proof.",
           "whoLabel": "Who breathes easier",
           "who": "Parents who shouldn't need a trip for a balance; offices that shouldn't be a helpdesk for every question."
         },
         {
           "title": "Attendance survives when the internet doesn't",
           "costLabel": "What it costs",
-          "cost": "A dead connection kills the day's roll. Teachers fall back to paper, then double-enter at night — if they remember.",
+          "cost": "A dead connection kills the day's roll. Teachers fall back to paper, then double-enter at night â€” if they remember.",
           "fixLabel": "What ShuleOS fixes",
           "fix": "Installable PWA with offline attendance sync. The day still counts when the signal doesn't.",
           "whoLabel": "Who breathes easier",
@@ -58,9 +58,9 @@
         {
           "title": "Academics stop living in scattered files",
           "costLabel": "What it costs",
-          "cost": "Students, guardians, admissions, classes, sections, subjects, timetable, and curriculum each have their own notebook — and nobody has the full picture.",
+          "cost": "Students, guardians, admissions, classes, sections, subjects, timetable, and curriculum each have their own notebook â€” and nobody has the full picture.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "One academic core: enrollments, guardians, admissions queue, classes and sections, timetable, curriculum, team, and school settings — including a task board for unfinished work and a discipline desk for incidents that used to vanish in WhatsApp.",
+          "fix": "One academic core: enrollments, guardians, admissions queue, classes and sections, timetable, curriculum, team, and school settings â€” including a task board for unfinished work and a discipline desk for incidents that used to vanish in WhatsApp.",
           "whoLabel": "Who breathes easier",
           "who": "Registrars, pedagogy leads, and directors who need follow-ups that don't die in a chat."
         },
@@ -69,7 +69,7 @@
           "costLabel": "What it costs",
           "cost": "Library loans, transport routes, events, and staff records disappear into paper. When something goes wrong, there's no trail.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Library, transport, events, and staff/HR in one operations layer — visible to the people who need them, including parents where it matters.",
+          "fix": "Library, transport, events, and staff/HR in one operations layer â€” visible to the people who need them, including parents where it matters.",
           "whoLabel": "Who breathes easier",
           "who": "Ops managers who shouldn't run logistics from memory."
         },
@@ -78,7 +78,7 @@
           "costLabel": "What it costs",
           "cost": "No professional site means lost enrollments. Paper admissions mean delays, lost forms, and families who never finish.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Branded public school websites with online admissions that feed your admin queue — so interest becomes a file, not a maybe.",
+          "fix": "Branded public school websites with online admissions that feed your admin queue â€” so interest becomes a file, not a maybe.",
           "whoLabel": "Who breathes easier",
           "who": "Schools competing for families who decide on a phone screen."
         },
@@ -87,21 +87,21 @@
           "costLabel": "What it costs",
           "cost": "By the time the spreadsheet is \"done,\" the term is over. Branch gaps, attendance dips, and collection shortfalls stay invisible until it's expensive.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Dashboards for students, attendance, finance, and branch performance — so you act mid-term, not after the damage.",
+          "fix": "Dashboards for students, attendance, finance, and branch performance â€” so you act mid-term, not after the damage.",
           "whoLabel": "Who breathes easier",
           "who": "Principals and multi-branch operators who need one view, not five reconciliations."
         },
         {
           "title": "Access and accountability match how a real school runs",
           "costLabel": "What it costs",
-          "cost": "Everyone gets the same login — or worse, shared passwords — and nobody knows who changed what.",
+          "cost": "Everyone gets the same login â€” or worse, shared passwords â€” and nobody knows who changed what.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Multi-tenant schools and branches, users and roles, audit logs, and feature toggles — so the right people see the right work, with a trail.",
+          "fix": "Multi-tenant schools and branches, users and roles, audit logs, and feature toggles â€” so the right people see the right work, with a trail.",
           "whoLabel": "Who breathes easier",
           "who": "Platform admins and school leaders who need control without chaos."
         },
         {
-          "title": "Built for DRC reality — not a foreign SIS with a translation layer",
+          "title": "Built for DRC reality â€” not a foreign SIS with a translation layer",
           "costLabel": "What it costs",
           "cost": "Tools built for other systems ignore Programme National report cards, CDF/USD fee habits, French-first staff, WhatsApp-heavy parents, and Kinshasa support hours.",
           "fixLabel": "What ShuleOS fixes",
@@ -115,7 +115,7 @@
       "midCtaPrimary": "Stop the leaks",
       "midCtaSecondary": "See what it's costing you",
       "closing": [
-        "Another term on notebooks and WhatsApp has a price you already know — you just haven't put one number on it yet.",
+        "Another term on notebooks and WhatsApp has a price you already know â€” you just haven't put one number on it yet.",
         "ShuleOS is the small next step: one afternoon to go live, fees and grades and parents in one place, before the next term locks in the same leaks."
       ],
       "ctaPrimary": "Stop the leaks",

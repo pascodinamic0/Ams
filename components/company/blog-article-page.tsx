@@ -27,7 +27,7 @@ export async function BlogArticlePage({ post }: { post: BlogPost }) {
               {formatBlogDate(post.date, locale)}
             </time>
             <span aria-hidden className="text-mkt-ink/20">
-              ·
+              Â·
             </span>
             <span>{post.readTime}</span>
           </div>
