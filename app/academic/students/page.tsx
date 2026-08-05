@@ -1,21 +1,30 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
+import { getCurrentProfile } from "@/lib/auth/session";
 import { getStudents } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
+import { StudentsTable } from "./students-table";
 
 export default async function StudentsPage() {
   const t = await getTranslations("academic");
-  const tc = await getTranslations("common");
-  const students = await getStudents();
+  const profile = await getCurrentProfile();
+  const schoolId =
+    profile?.role === "super_admin" ? undefined : profile?.school_id ?? undefined;
+
+  const students = schoolId
+    ? await getStudents({ schoolId })
+    : profile?.role === "super_admin"
+      ? await getStudents()
+      : [];
+
   const tableData = students.map((row) => ({
-    ...row,
-    name_link: (
-      <Link href={`/academic/students/${row.id}`} className="font-medium text-primary hover:underline">
-        {String(row.name)}
-      </Link>
-    ),
+    id: row.id,
+    student_id: row.student_id,
+    name: row.name,
+    class_name: row.class_name,
+    guardian_name: row.guardian_name,
+    status: row.status,
   }));
 
   return (
@@ -42,16 +51,7 @@ export default async function StudentsPage() {
           }
         />
       ) : (
-        <DataTable
-          data={tableData}
-          columns={[
-            { id: "student_id", header: t("studentId"), accessorKey: "student_id", sortable: true },
-            { id: "name", header: tc("name"), accessorKey: "name_link", sortable: true },
-            { id: "class_name", header: t("class"), accessorKey: "class_name" },
-            { id: "guardian_name", header: t("guardian"), accessorKey: "guardian_name" },
-            { id: "status", header: tc("status"), accessorKey: "status" },
-          ]}
-        />
+        <StudentsTable students={tableData} />
       )}
     </div>
   );

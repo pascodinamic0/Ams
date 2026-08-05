@@ -2,7 +2,23 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentProfile } from "@/lib/auth/session";
 import { studentSchema, type StudentFormData } from "@/lib/validations";
+
+async function requireSchoolScopedActor() {
+  const profile = await getCurrentProfile();
+  if (!profile) return { error: "Not authenticated" as const };
+
+  if (profile.role === "super_admin") {
+    return { profile, schoolId: null as string | null };
+  }
+
+  if (!profile.school_id) {
+    return { error: "No school linked to your account" as const };
+  }
+
+  return { profile, schoolId: profile.school_id };
+}
 
 export async function createStudent(
   input: StudentFormData & { school_id: string; branch_id: string }
@@ -12,10 +28,14 @@ export async function createStudent(
     return { error: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const actor = await requireSchoolScopedActor();
+  if ("error" in actor) return { error: actor.error };
 
+  if (actor.schoolId && input.school_id !== actor.schoolId) {
+    return { error: "You can only create students for your school" };
+  }
+
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("students")
     .insert({
@@ -52,18 +72,24 @@ export async function updateStudent(
     return { error: parsed.error.flatten().fieldErrors };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const actor = await requireSchoolScopedActor();
+  if ("error" in actor) return { error: actor.error };
 
-  const { error } = await supabase
-    .from("students")
-    .update(parsed.data)
-    .eq("id", id);
+  const supabase = await createClient();
+
+  let query = supabase.from("students").update(parsed.data).eq("id", id);
+  if (actor.schoolId) {
+    query = query.eq("school_id", actor.schoolId);
+  }
+
+  const { data, error } = await query.select("id").maybeSingle();
 
   if (error) {
     console.error("updateStudent error:", error);
     return { error: error.message };
+  }
+  if (!data) {
+    return { error: "Student not found in your school" };
   }
 
   revalidatePath("/academic");
@@ -73,18 +99,60 @@ export async function updateStudent(
 }
 
 export async function deleteStudent(id: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const actor = await requireSchoolScopedActor();
+  if ("error" in actor) return { error: actor.error };
 
-  const { error } = await supabase.from("students").delete().eq("id", id);
+  const supabase = await createClient();
+
+  let query = supabase.from("students").delete().eq("id", id);
+  if (actor.schoolId) {
+    query = query.eq("school_id", actor.schoolId);
+  }
+
+  const { data, error } = await query.select("id").maybeSingle();
 
   if (error) {
     console.error("deleteStudent error:", error);
     return { error: error.message };
   }
+  if (!data) {
+    return { error: "Student not found in your school" };
+  }
 
   revalidatePath("/academic");
   revalidatePath("/academic/students");
   return {};
+}
+
+export async function deleteStudents(ids: string[]) {
+  const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
+  if (uniqueIds.length === 0) {
+    return { error: "No students selected" };
+  }
+
+  const actor = await requireSchoolScopedActor();
+  if ("error" in actor) return { error: actor.error };
+
+  const supabase = await createClient();
+
+  let query = supabase.from("students").delete().in("id", uniqueIds);
+  if (actor.schoolId) {
+    query = query.eq("school_id", actor.schoolId);
+  }
+
+  const { data, error } = await query.select("id");
+
+  if (error) {
+    console.error("deleteStudents error:", error);
+    return { error: error.message };
+  }
+
+  const deletedCount = data?.length ?? 0;
+  if (deletedCount === 0) {
+    return { error: "No matching students found in your school" };
+  }
+
+  revalidatePath("/academic");
+  revalidatePath("/academic/students");
+  return { data: { deletedCount } };
 }

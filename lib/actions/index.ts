@@ -8,6 +8,7 @@ export {
   createStudent,
   updateStudent,
   deleteStudent,
+  deleteStudents,
 } from "./students";
 export {
   createGuardian,
