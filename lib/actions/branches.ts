@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { assertRole } from "@/lib/auth/assert";
 import { createClient } from "@/lib/supabase/server";
 import { branchSchema, type BranchFormData } from "@/lib/validations/academic";
 
@@ -8,22 +9,12 @@ export async function createBranch(input: BranchFormData) {
   const parsed = branchSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "super_admin") {
+  const access = await assertRole(["super_admin"]);
+  if (!access.ok) {
     return { error: "Only platform administrators can manage branches" };
   }
 
+  const supabase = await createClient();
   const { count } = await supabase
     .from("branches")
     .select("id", { count: "exact", head: true })
@@ -51,6 +42,9 @@ export async function createBranch(input: BranchFormData) {
 }
 
 export async function deleteBranch(id: string) {
+  const access = await assertRole(["super_admin"]);
+  if (!access.ok) return { error: "Only platform administrators can manage branches" };
+
   const supabase = await createClient();
   const { error } = await supabase.from("branches").delete().eq("id", id);
   if (error) return { error: error.message };

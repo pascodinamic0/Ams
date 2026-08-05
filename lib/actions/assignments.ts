@@ -1,10 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { assertClassAccess } from "@/lib/auth/assert";
+import { ACADEMIC_PORTAL_ROLES } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 import { createNotification, notifyStudentGuardians } from "@/lib/services/notifications";
 import { assignmentSchema, type AssignmentFormData } from "@/lib/validations/teacher";
 import { z } from "zod";
+
+const ASSIGNMENT_CREATE_ROLES = [...ACADEMIC_PORTAL_ROLES, "teacher"] as const;
 
 const gradeSubmissionSchema = z.object({
   submissionId: z.string().uuid(),
@@ -15,15 +19,18 @@ export async function createAssignment(input: AssignmentFormData) {
   const parsed = assignmentSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const access = await assertClassAccess(
+    parsed.data.class_id,
+    ASSIGNMENT_CREATE_ROLES
+  );
+  if (!access.ok) return { error: access.error };
 
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("assignments")
     .insert({
       class_id: parsed.data.class_id,
-      teacher_id: user.id,
+      teacher_id: access.profile.id,
       title: parsed.data.title,
       description: parsed.data.description || null,
       due_date: parsed.data.due_date || null,

@@ -2,6 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import {
+  assertRoleAndSchool,
+  assertStudentAccess,
+  getBranchSchoolId,
+} from "@/lib/auth/assert";
 import { createClient } from "@/lib/supabase/server";
 import { ACADEMIC_PORTAL_ROLES } from "@/lib/auth/rbac";
 import {
@@ -53,15 +58,18 @@ function firstZodIssueMessage(error: z.ZodError): string {
   return `${path}${issue.message}`;
 }
 
-const STUDENT_ONBOARDING_ROLES = new Set([
-  "super_admin",
+const STUDENT_ONBOARDING_ROLE_NAMES = new Set([
   "academic_admin",
   "admin_coordinator",
   "registrar",
   "admissions_officer",
   "pedagogy_coordinator",
   "principal",
-].filter((role) => ACADEMIC_PORTAL_ROLES.includes(role as typeof ACADEMIC_PORTAL_ROLES[number])));
+]);
+
+const STUDENT_ONBOARDING_ROLES = ACADEMIC_PORTAL_ROLES.filter((role) =>
+  STUDENT_ONBOARDING_ROLE_NAMES.has(role)
+);
 
 export async function createStudentWithGuardians(
   input: StudentOnboardingData & { school_id: string; branch_id: string }
@@ -79,22 +87,43 @@ export async function createStudentWithGuardians(
       return { error: firstZodIssueMessage(parsed.error) };
     }
 
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { error: "Not authenticated" };
+    const access = await assertRoleAndSchool(
+      STUDENT_ONBOARDING_ROLES,
+      input.school_id
+    );
+    if (!access.ok) {
+      return { error: access.error };
+    }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    const role = profile?.role ?? "";
-    if (!STUDENT_ONBOARDING_ROLES.has(role)) {
-      return { error: "You do not have permission to onboard students" };
+    const branchSchoolId = await getBranchSchoolId(input.branch_id);
+    if (!branchSchoolId || branchSchoolId !== input.school_id) {
+      return { error: "Branch does not belong to this school" };
     }
 
     const data = parsed.data;
+    const supabase = await createClient();
+
+    if (data.class_id) {
+      const { data: cls } = await supabase
+        .from("classes")
+        .select("branch_id")
+        .eq("id", data.class_id)
+        .maybeSingle();
+      if (!cls || cls.branch_id !== input.branch_id) {
+        return { error: "Class does not belong to this branch" };
+      }
+    }
+
+    if (data.existing_guardian_id) {
+      const { data: guardian } = await supabase
+        .from("guardians")
+        .select("school_id")
+        .eq("id", data.existing_guardian_id)
+        .maybeSingle();
+      if (!guardian || guardian.school_id !== input.school_id) {
+        return { error: "Guardian does not belong to this school" };
+      }
+    }
 
     const { data: student, error: studentError } = await supabase
       .from("students")
@@ -164,9 +193,13 @@ export async function addGuardianToStudent(
   schoolId: string,
   guardian: GuardianOnboardingData
 ) {
+  const access = await assertStudentAccess(studentId, STUDENT_ONBOARDING_ROLES);
+  if (!access.ok) return { error: access.error };
+  if (access.schoolId !== schoolId) {
+    return { error: "Student does not belong to this school" };
+  }
+
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
 
   const result = await insertGuardian(supabase, schoolId, guardian);
   if (result.error || !result.data) return { error: result.error ?? "Failed to create guardian" };

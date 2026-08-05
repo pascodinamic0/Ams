@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { assertRoleAndSchool } from "@/lib/auth/assert";
+import { FINANCE_PORTAL_ROLES } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 
@@ -27,10 +29,10 @@ export async function saveReminderSettings(
     return { error: firstError ?? "Invalid settings" };
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const access = await assertRoleAndSchool(FINANCE_PORTAL_ROLES, schoolId);
+  if (!access.ok) return { error: access.error };
 
+  const supabase = await createClient();
   const { error } = await supabase
     .from("fee_reminder_settings")
     .upsert(

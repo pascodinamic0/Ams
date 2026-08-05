@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { assertRole, assertRoleAndSchool } from "@/lib/auth/assert";
 import { createClient } from "@/lib/supabase/server";
 import { SCHOOL_FEATURE_KEYS, schoolFeatureKey } from "@/lib/db/features";
 
-export async function toggleFeature(key: string, enabled: boolean) {
+async function upsertFeatureToggle(key: string, enabled: boolean) {
   const supabase = await createClient();
 
   const { data: existing } = await supabase
@@ -32,6 +33,13 @@ export async function toggleFeature(key: string, enabled: boolean) {
   return {};
 }
 
+export async function toggleFeature(key: string, enabled: boolean) {
+  const access = await assertRole(["super_admin"]);
+  if (!access.ok) return { error: access.error };
+
+  return upsertFeatureToggle(key, enabled);
+}
+
 export async function toggleSchoolFeature(
   schoolId: string,
   featureKey: string,
@@ -46,26 +54,9 @@ export async function toggleSchoolFeature(
     return { error: "Unknown feature" };
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return { error: "Not authenticated" };
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, school_id")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "super_admin") {
-    if (profile?.role !== "academic_admin" || profile.school_id !== schoolId) {
-      return { error: "Not authorized to manage features for this school" };
-    }
-  }
+  const access = await assertRoleAndSchool(["academic_admin"], schoolId);
+  if (!access.ok) return { error: "Not authorized to manage features for this school" };
 
   const key = schoolFeatureKey(schoolId, featureKey);
-  return toggleFeature(key, enabled);
+  return upsertFeatureToggle(key, enabled);
 }
