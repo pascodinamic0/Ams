@@ -141,8 +141,11 @@ export async function getGuardians(options?: {
     .order("name");
 
   if (options?.search) {
-    const term = `%${options.search}%`;
-    query = query.or(`name.ilike.${term},email.ilike.${term},phone.ilike.${term}`);
+    const safe = options.search.replace(/[%_,]/g, " ").trim();
+    if (safe) {
+      const term = `%${safe}%`;
+      query = query.or(`name.ilike.${term},email.ilike.${term},phone.ilike.${term}`);
+    }
   }
 
   const { data, error } = await query;

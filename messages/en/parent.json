@@ -111,7 +111,7 @@
   "payment": "Payment",
   "invoiceFullyPaid": "This invoice is already fully paid. Thank you!",
   "backToFees": "Back to fees",
-  "manualPaymentNote": "Manual payment instructions — online card payments are not enabled yet.",
+  "manualPaymentNote": "Pay at the school office or by mobile money using the steps below — card checkout is not enabled yet.",
   "invoiceSummary": "Invoice summary",
   "labelStudent": "Student:",
   "labelDescription": "Description:",

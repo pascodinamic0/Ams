@@ -36,7 +36,7 @@ export default async function ParentFeesPage() {
     pay_action:
       Number(row.balance) > 0 ? (
         <Link href={`/parent/pay?invoice=${row.id}`}>
-          <Button size="sm">{t("pay")}</Button>
+          <Button size="sm" variant="outline">{t("howToPay")}</Button>
         </Link>
       ) : (
         "—"

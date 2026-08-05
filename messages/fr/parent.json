@@ -111,7 +111,7 @@
   "payment": "Paiement",
   "invoiceFullyPaid": "Cette facture est déjà entièrement payée. Merci !",
   "backToFees": "Retour aux frais",
-  "manualPaymentNote": "Instructions de paiement manuel — les paiements par carte en ligne ne sont pas encore disponibles.",
+  "manualPaymentNote": "Payez au bureau de l'école ou par mobile money avec les étapes ci-dessous — le paiement par carte n'est pas encore activé.",
   "invoiceSummary": "Récapitulatif de la facture",
   "labelStudent": "Élève :",
   "labelDescription": "Description :",

@@ -77,6 +77,69 @@ export async function deleteAssignment(id: string) {
   return {};
 }
 
+export async function submitAssignment(input: {
+  assignmentId: string;
+  textResponse: string;
+}): Promise<{ error?: unknown }> {
+  const parsed = z
+    .object({
+      assignmentId: z.string().uuid(),
+      textResponse: z.string().trim().min(1, "Write a response before submitting"),
+    })
+    .safeParse(input);
+  if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, class_id")
+    .eq("auth_user_id", user.id)
+    .maybeSingle();
+  if (!student?.class_id) return { error: "No student profile linked to your account" };
+
+  const { data: assignment } = await supabase
+    .from("assignments")
+    .select("id, class_id, title, teacher_id")
+    .eq("id", parsed.data.assignmentId)
+    .maybeSingle();
+  if (!assignment || assignment.class_id !== student.class_id) {
+    return { error: "Assignment not found for your class" };
+  }
+
+  const now = new Date().toISOString();
+  const { error } = await supabase.from("assignment_submissions").upsert(
+    {
+      assignment_id: assignment.id,
+      student_id: student.id,
+      text_response: parsed.data.textResponse,
+      submitted_at: now,
+      updated_at: now,
+    },
+    { onConflict: "assignment_id,student_id" }
+  );
+
+  if (error) return { error: error.message };
+
+  if (assignment.teacher_id) {
+    await createNotification({
+      userId: assignment.teacher_id,
+      title: "Assignment submitted",
+      body: `A student submitted "${assignment.title}".`,
+    });
+  }
+
+  revalidatePath("/student/assignments");
+  revalidatePath("/teacher/assignments");
+  revalidatePath("/parent/assignments");
+  revalidatePath("/notifications");
+  return {};
+}
+
 export async function gradeSubmission(input: { submissionId: string; grade: number }) {
   const parsed = gradeSubmissionSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };

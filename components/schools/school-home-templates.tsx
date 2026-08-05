@@ -477,10 +477,16 @@ function MinimalTemplate({
       </section>
 
       <section className="px-6 py-16 text-center" style={{ backgroundColor: primary }}>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
-          Excellence · Integrity · Inclusivity
-        </p>
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/90">
+        {site.footerTagline ? (
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
+            {site.footerTagline}
+          </p>
+        ) : null}
+        <p
+          className={`mx-auto max-w-2xl text-base leading-relaxed text-white/90 ${
+            site.footerTagline ? "mt-5" : ""
+          }`}
+        >
           {site.about ||
             `${school.name} keeps learning personal — but seats are not unlimited.`}
         </p>

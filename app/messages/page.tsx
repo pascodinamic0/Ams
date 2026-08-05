@@ -1,4 +1,5 @@
 import { getConversations, getGuardianContacts, getStaffContactsForParent } from "@/lib/db/conversations";
+import { MESSAGING_STAFF_ROLES, normalizeRole } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { ConversationList } from "./conversation-list";
@@ -24,11 +25,13 @@ export default async function MessagesPage() {
     if (profile?.role) role = profile.role;
   }
 
-  const isParent = role === "parent";
+  const normalizedRole = normalizeRole(role);
+  const isParent = normalizedRole === "parent";
+  const canMessageGuardians = MESSAGING_STAFF_ROLES.includes(normalizedRole);
 
   const [conversations, guardianContacts, staffContacts] = await Promise.all([
     getConversations(),
-    isParent ? Promise.resolve([]) : getGuardianContacts(),
+    canMessageGuardians ? getGuardianContacts() : Promise.resolve([]),
     isParent ? getStaffContactsForParent() : Promise.resolve([]),
   ]);
 

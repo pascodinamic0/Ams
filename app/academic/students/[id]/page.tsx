@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CopyableBadge } from "@/components/ui/copyable-badge";
 import { getStudentById } from "@/lib/db/students";
 import { getTranslations } from "next-intl/server";
 import { DeleteStudentButton } from "./delete-button";
@@ -36,7 +37,14 @@ export default async function StudentDetailPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">{student.first_name} {student.last_name}</h1>
-          <p className="text-sm text-stone-500">{t("studentId")}: {student.student_id}</p>
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-sm text-stone-500">
+            <span>{t("studentId")}:</span>
+            {student.student_id ? (
+              <CopyableBadge value={student.student_id} />
+            ) : (
+              <span>—</span>
+            )}
+          </div>
         </div>
         <div className="flex gap-2">
           <Link href="/academic/students"><Button variant="ghost">{tc("back")}</Button></Link>

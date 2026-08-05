@@ -3,6 +3,7 @@ import { getCurrentProfile } from "@/lib/auth/session";
 import { getStudentByAuthUserId, getAssignmentsForStudent } from "@/lib/db";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getTranslations } from "next-intl/server";
+import { StudentAssignmentSubmitForm } from "./submit-form";
 
 export default async function StudentAssignmentsPage() {
   const t = await getTranslations("student");
@@ -89,6 +90,14 @@ export default async function StudentAssignmentsPage() {
                     )}
                   </div>
                 </div>
+                {!isSubmitted && (
+                  <StudentAssignmentSubmitForm
+                    assignmentId={a.id}
+                    submitLabel={t("submitAssignment")}
+                    placeholder={t("responsePlaceholder")}
+                    submittingLabel={t("submitting")}
+                  />
+                )}
               </div>
             );
           })}
