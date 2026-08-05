@@ -1,6 +1,6 @@
 -- Scope academic portal manage policies to the caller's school.
 -- Previous FOR ALL policies checked role only, so academic admins could see
--- and manage students (and related academic rows) across every school —
+-- and manage students (and related academic rows) across every school â€”
 -- which made demo/template rosters appear on newly registered schools.
 
 -- Students

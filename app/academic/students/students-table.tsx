@@ -150,7 +150,7 @@ export function StudentsTable({ students }: { students: StudentsTableRow[] }) {
                     onChange={() => toggleRow(row.id)}
                   />
                 </td>
-                <td className="px-6 py-4 text-foreground">{row.student_id ?? "—"}</td>
+                <td className="px-6 py-4 text-foreground">{row.student_id ?? "â€”"}</td>
                 <td className="px-6 py-4 text-foreground">
                   <Link
                     href={`/academic/students/${row.id}`}
@@ -159,8 +159,8 @@ export function StudentsTable({ students }: { students: StudentsTableRow[] }) {
                     {row.name}
                   </Link>
                 </td>
-                <td className="px-6 py-4 text-foreground">{row.class_name ?? "—"}</td>
-                <td className="px-6 py-4 text-foreground">{row.guardian_name ?? "—"}</td>
+                <td className="px-6 py-4 text-foreground">{row.class_name ?? "â€”"}</td>
+                <td className="px-6 py-4 text-foreground">{row.guardian_name ?? "â€”"}</td>
                 <td className="px-6 py-4 text-foreground">{row.status}</td>
               </tr>
             ))}
