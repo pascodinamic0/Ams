@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -25,16 +26,17 @@ export function PayrollGenerateForm({
   defaultMonth = new Date().getMonth() + 1,
   defaultYear = new Date().getFullYear(),
 }: GenerateProps) {
+  const t = useTranslations("finance");
   const router = useRouter();
 
   async function onSubmit(data: PayrollGenerateFormData) {
     const result = await generatePayroll({ ...data, schoolId, branchId });
     if (result.error) {
-      toast.error(typeof result.error === "string" ? result.error : "Failed to generate payroll");
+      toast.error(typeof result.error === "string" ? result.error : t("generatePayrollFailed"));
       return;
     }
     const created = result.data?.created ?? 0;
-    toast.success(`Generated payroll for ${created} staff members`);
+    toast.success(t("payrollGenerated", { count: created }));
     router.refresh();
   }
 
@@ -51,6 +53,8 @@ export function PayrollGenerateForm({
 }
 
 function GenerateFields() {
+  const t = useTranslations("finance");
+  const locale = useLocale();
   const { register, formState: { errors } } = useFormContext<PayrollGenerateFormData>();
   const years = Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - 3 + i);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -58,7 +62,7 @@ function GenerateFields() {
   return (
     <>
       <div>
-        <Label htmlFor="gen_month" required>Month</Label>
+        <Label htmlFor="gen_month" required>{t("colMonth")}</Label>
         <select
           id="gen_month"
           {...register("month", { valueAsNumber: true })}
@@ -66,7 +70,7 @@ function GenerateFields() {
         >
           {months.map((month) => (
             <option key={month} value={month}>
-              {new Date(Date.UTC(2026, month - 1, 1)).toLocaleDateString(undefined, {
+              {new Date(Date.UTC(2026, month - 1, 1)).toLocaleDateString(locale, {
                 month: "long",
               })}
             </option>
@@ -75,7 +79,7 @@ function GenerateFields() {
         {errors.month && <p className="mt-1 text-sm text-red-500">{errors.month.message}</p>}
       </div>
       <div>
-        <Label htmlFor="gen_year" required>Year</Label>
+        <Label htmlFor="gen_year" required>{t("yearLabel")}</Label>
         <select
           id="gen_year"
           {...register("year", { valueAsNumber: true })}
@@ -90,7 +94,7 @@ function GenerateFields() {
         {errors.year && <p className="mt-1 text-sm text-red-500">{errors.year.message}</p>}
       </div>
       <div className="flex items-end">
-        <Button type="submit" className="w-full">Generate payroll</Button>
+        <Button type="submit" className="w-full">{t("generatePayroll")}</Button>
       </div>
     </>
   );

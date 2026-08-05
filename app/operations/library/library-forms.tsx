@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +14,7 @@ interface BookFormProps {
 }
 
 export function BookForm({ branchId }: BookFormProps) {
+  const t = useTranslations("operations");
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
@@ -32,10 +34,10 @@ export function BookForm({ branchId }: BookFormProps) {
     });
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to add book");
+      toast.error(t("bookAddFailed"));
       return;
     }
-    toast.success("Book added");
+    toast.success(t("bookAdded"));
     setTitle("");
     setAuthor("");
     setIsbn("");
@@ -46,23 +48,23 @@ export function BookForm({ branchId }: BookFormProps) {
   return (
     <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-5">
       <div>
-        <Label>Title</Label>
+        <Label>{t("colTitle")}</Label>
         <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
       </div>
       <div>
-        <Label>Author</Label>
+        <Label>{t("colAuthor")}</Label>
         <Input value={author} onChange={(e) => setAuthor(e.target.value)} />
       </div>
       <div>
-        <Label>ISBN</Label>
+        <Label>{t("colIsbn")}</Label>
         <Input value={isbn} onChange={(e) => setIsbn(e.target.value)} />
       </div>
       <div>
-        <Label>Quantity</Label>
+        <Label>{t("quantityLabel")}</Label>
         <Input type="number" min={0} value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
       </div>
       <div className="flex items-end">
-        <Button type="submit" disabled={loading} className="w-full">Add book</Button>
+        <Button type="submit" disabled={loading} className="w-full">{t("addBook")}</Button>
       </div>
     </form>
   );
@@ -74,6 +76,7 @@ interface IssueFormProps {
 }
 
 export function IssueBookForm({ books, students }: IssueFormProps) {
+  const t = useTranslations("operations");
   const router = useRouter();
   const [bookId, setBookId] = useState(books[0]?.id ?? "");
   const [studentId, setStudentId] = useState(students[0]?.id ?? "");
@@ -85,17 +88,17 @@ export function IssueBookForm({ books, students }: IssueFormProps) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!bookId || !studentId || !dueAt) {
-      toast.error("Fill in all fields");
+      toast.error(t("fillAllFields"));
       return;
     }
     setLoading(true);
     const result = await issueBook({ book_id: bookId, student_id: studentId, due_at: dueAt });
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to issue book");
+      toast.error(t("bookIssueFailed"));
       return;
     }
-    toast.success("Book issued");
+    toast.success(t("bookIssued"));
     setDueAt("");
     router.refresh();
   }
@@ -103,7 +106,7 @@ export function IssueBookForm({ books, students }: IssueFormProps) {
   if (availableBooks.length === 0 || students.length === 0) {
     return (
       <p className="text-sm text-stone-500">
-        Add books with available copies and students before issuing.
+        {t("issuePrerequisites")}
       </p>
     );
   }
@@ -111,7 +114,7 @@ export function IssueBookForm({ books, students }: IssueFormProps) {
   return (
     <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-4">
       <div>
-        <Label>Book</Label>
+        <Label>{t("colBook")}</Label>
         <select
           value={bookId}
           onChange={(e) => setBookId(e.target.value)}
@@ -120,13 +123,13 @@ export function IssueBookForm({ books, students }: IssueFormProps) {
         >
           {availableBooks.map((b) => (
             <option key={b.id} value={b.id}>
-              {b.title} ({b.available} available)
+              {t("bookOptionAvailable", { title: b.title, count: b.available })}
             </option>
           ))}
         </select>
       </div>
       <div>
-        <Label>Student</Label>
+        <Label>{t("colStudent")}</Label>
         <select
           value={studentId}
           onChange={(e) => setStudentId(e.target.value)}
@@ -139,17 +142,18 @@ export function IssueBookForm({ books, students }: IssueFormProps) {
         </select>
       </div>
       <div>
-        <Label>Due date</Label>
+        <Label>{t("colDueDate")}</Label>
         <Input type="date" value={dueAt} onChange={(e) => setDueAt(e.target.value)} required />
       </div>
       <div className="flex items-end">
-        <Button type="submit" disabled={loading} className="w-full">Issue book</Button>
+        <Button type="submit" disabled={loading} className="w-full">{t("lendBook")}</Button>
       </div>
     </form>
   );
 }
 
 export function ReturnBookButton({ issueId }: { issueId: string }) {
+  const t = useTranslations("operations");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -158,16 +162,16 @@ export function ReturnBookButton({ issueId }: { issueId: string }) {
     const result = await returnBook(issueId);
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to return book");
+      toast.error(t("bookReturnFailed"));
       return;
     }
-    toast.success("Book returned");
+    toast.success(t("bookReturned"));
     router.refresh();
   }
 
   return (
     <Button size="sm" variant="ghost" onClick={handleReturn} disabled={loading}>
-      Return
+      {t("returnBook")}
     </Button>
   );
 }
