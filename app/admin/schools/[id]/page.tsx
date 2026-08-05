@@ -253,7 +253,7 @@ export default async function SchoolDetailPage({
                 </a>
               )}
               <Link
-                href="/admin/schools/templates"
+                href="/admin/websites"
                 className="flex items-center justify-between rounded-lg border border-stone-200 px-4 py-3 text-sm font-medium text-stone-700 transition-colors hover:bg-stone-50 dark:border-stone-800 dark:text-stone-300 dark:hover:bg-stone-900"
               >
                 {t("browseTemplates")}

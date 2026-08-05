@@ -181,5 +181,12 @@
   "importResult": "Created {created}, failed {failed}",
   "noValidRows": "No valid rows to import",
   "importedStudents": "Imported {count} student(s)",
-  "importFailedRows": "{count} row(s) failed"
+  "importFailedRows": "{count} row(s) failed",
+  "tasksTitle": "Task board",
+  "tasksSubtitle": "Track unfinished school work, assign follow-ups, and clear blockers.",
+  "disciplineTitle": "Discipline desk",
+  "disciplineSubtitle": "Log incidents, track open cases, and escalate what needs leadership attention.",
+  "accessDeniedTitle": "You don’t have access",
+  "accessDeniedDesc": "This area is limited to roles that manage school operations. Ask an academic admin if you need it.",
+  "backToAcademic": "Back to academic dashboard"
 }

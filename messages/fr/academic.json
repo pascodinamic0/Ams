@@ -181,5 +181,12 @@
   "importResult": "Créés {created}, échoués {failed}",
   "noValidRows": "Aucune ligne valide à importer",
   "importedStudents": "{count} élève(s) importé(s)",
-  "importFailedRows": "{count} ligne(s) en échec"
+  "importFailedRows": "{count} ligne(s) en échec",
+  "tasksTitle": "Tableau des tâches",
+  "tasksSubtitle": "Suivez le travail scolaire en cours, assignez des suivis et levez les blocages.",
+  "disciplineTitle": "Bureau de discipline",
+  "disciplineSubtitle": "Enregistrez les incidents, suivez les dossiers ouverts et escaladez ce qui nécessite la direction.",
+  "accessDeniedTitle": "Accès refusé",
+  "accessDeniedDesc": "Cet espace est réservé aux rôles qui gèrent les opérations scolaires. Demandez à un administrateur académique si vous en avez besoin.",
+  "backToAcademic": "Retour au tableau de bord académique"
 }

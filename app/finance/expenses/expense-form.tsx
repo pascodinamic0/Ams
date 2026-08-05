@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useFormContext } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export function ExpenseForm({ branchId, categories, expense, currencySymbol = "$" }: Props) {
+  const t = useTranslations("finance");
   const router = useRouter();
   const isEdit = Boolean(expense);
 
@@ -38,11 +40,13 @@ export function ExpenseForm({ branchId, categories, expense, currencySymbol = "$
       : await createExpense(payload);
 
     if (result.error) {
-      toast.error(typeof result.error === "string" ? result.error : "Failed to save expense");
+      toast.error(
+        typeof result.error === "string" ? result.error : t("expenseSaveFailed")
+      );
       return;
     }
 
-    toast.success(isEdit ? "Expense updated" : "Expense recorded");
+    toast.success(isEdit ? t("expenseUpdated") : t("expenseRecorded"));
     router.refresh();
   }
 
@@ -75,12 +79,14 @@ function ExpenseFields({
   isEdit: boolean;
   currencySymbol: string;
 }) {
+  const t = useTranslations("finance");
+  const tc = useTranslations("common");
   const { register, formState: { errors } } = useFormContext<ExpenseFormData>();
 
   return (
     <>
       <div>
-        <Label htmlFor="category" required>Category</Label>
+        <Label htmlFor="category" required>{t("categoryLabel")}</Label>
         <Input
           id="category"
           list="expense-categories"
@@ -95,22 +101,24 @@ function ExpenseFields({
         {errors.category && <p className="mt-1 text-sm text-red-500">{errors.category.message}</p>}
       </div>
       <div>
-        <Label htmlFor="amount" required>Amount ({currencySymbol})</Label>
+        <Label htmlFor="amount" required>
+          {tc("amount")} ({currencySymbol})
+        </Label>
         <Input id="amount" type="number" step="0.01" min="0" {...register("amount")} error={!!errors.amount} />
         {errors.amount && <p className="mt-1 text-sm text-red-500">{errors.amount.message}</p>}
       </div>
       <div>
-        <Label htmlFor="date" required>Date</Label>
+        <Label htmlFor="date" required>{tc("date")}</Label>
         <Input id="date" type="date" {...register("date")} error={!!errors.date} />
         {errors.date && <p className="mt-1 text-sm text-red-500">{errors.date.message}</p>}
       </div>
       <div className="sm:col-span-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">{t("descriptionLabel")}</Label>
         <Input id="description" {...register("description")} />
       </div>
       <div className="flex items-end">
         <Button type="submit" className="w-full">
-          {isEdit ? "Update expense" : "Add expense"}
+          {isEdit ? t("editExpense") : t("addExpense")}
         </Button>
       </div>
     </>
