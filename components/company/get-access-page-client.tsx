@@ -191,7 +191,7 @@ export function GetAccessPageClient({ copy }: { copy: GetAccessCopy }) {
             <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4">
               <Link
                 href="/register"
-                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-white px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-mkt-inverse-ink transition-transform hover:scale-[1.02] active:scale-[0.98] sm:w-auto sm:px-8"
+                className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-mkt-inverse px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.14em] text-mkt-inverse-ink transition-transform hover:scale-[1.02] active:scale-[0.98] sm:w-auto sm:px-8"
               >
                 {copy.createSchoolAccount}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -244,7 +244,7 @@ export function GetAccessPageClient({ copy }: { copy: GetAccessCopy }) {
             <div className="mt-14">
               <Link
                 href="/register"
-                className="group inline-flex items-center gap-2 rounded-full bg-white px-8 py-4 text-[11px] font-bold uppercase tracking-[0.14em] text-mkt-inverse-ink transition-transform hover:scale-[1.02] active:scale-[0.98]"
+                className="group inline-flex items-center gap-2 rounded-full bg-mkt-inverse px-8 py-4 text-[11px] font-bold uppercase tracking-[0.14em] text-mkt-inverse-ink transition-transform hover:scale-[1.02] active:scale-[0.98]"
               >
                 {copy.createMySchoolAccount}
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />

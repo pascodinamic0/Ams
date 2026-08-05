@@ -5,7 +5,7 @@
     "getAccess": "Obtenir l'accès",
     "contact": "Contact",
     "login": "Connexion",
-    "getStarted": "Commencer",
+    "getStarted": "Stoppez les fuites",
     "register": "S'inscrire"
   },
   "footer": {
@@ -36,6 +36,7 @@
     "heroSubtitleExtra": "Sans frais d'installation. Vrai support WhatsApp quand vous en avez besoin.",
     "heroCtaPrimary": "Stopper les fuites",
     "heroCtaSecondary": "Voir ce que ça vous coûte",
+    "follow": "Suivre",
     "trustLocal": "Conçu pour les écoles congolaises",
     "trustLocalDesc": "Programme National, frais locaux, français d'abord—pas un logiciel étranger à adapter",
     "trustSimple": "En ligne en un jour",

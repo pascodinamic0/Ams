@@ -13,7 +13,7 @@ export function getVapidSubject(): string {
   return (
     process.env.VAPID_SUBJECT?.trim() ||
     process.env.NEXT_PUBLIC_APP_URL?.trim() ||
-    "mailto:support@shuleos.app"
+    "mailto:support@digni-digital-llc.com"
   );
 }
 

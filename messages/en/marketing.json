@@ -5,7 +5,7 @@
     "getAccess": "Get Access",
     "contact": "Contact",
     "login": "Login",
-    "getStarted": "Get Started",
+    "getStarted": "Stop the leaks",
     "register": "Register"
   },
   "footer": {
@@ -36,6 +36,7 @@
     "heroSubtitleExtra": "No setup fees. Real support on WhatsApp when you need it.",
     "heroCtaPrimary": "Stop the leaks",
     "heroCtaSecondary": "See what it's costing you",
+    "follow": "Follow",
     "trustLocal": "Built for Congolese schools",
     "trustLocalDesc": "Programme National report cards, local fees, French-first—not foreign software you have to reshape",
     "trustSimple": "Go live in one day",

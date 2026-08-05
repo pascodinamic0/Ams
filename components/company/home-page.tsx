@@ -56,7 +56,7 @@ export function HomePage() {
       description: t("adminDescription"),
       features: [t("adminFeature1"), t("adminFeature2"), t("adminFeature3")],
       cta: t("adminCta"),
-      href: "/features#admin",
+      href: "/features#platform-admin",
       image: "/images/role_admin.jpg",
       icon: <Users className="h-6 w-6" />,
       color: "teal"
@@ -80,7 +80,7 @@ export function HomePage() {
       description: t("parentDescription"),
       features: [t("parentFeature1"), t("parentFeature2"), t("parentFeature3")],
       cta: t("parentCta"),
-      href: "/features#parent",
+      href: "/features#parent-portal",
       image: "/images/role_parent.jpg",
       icon: <Users className="h-6 w-6" />,
       color: "teal"
@@ -96,7 +96,7 @@ export function HomePage() {
         {/* Vertical social rail — desktop */}
         <aside className="pointer-events-none absolute bottom-10 left-5 z-20 hidden flex-col items-center gap-4 lg:flex xl:left-8">
           <span className="pointer-events-none rotate-180 text-[10px] font-medium uppercase tracking-[0.35em] text-white/50 [writing-mode:vertical-rl]">
-            Follow
+            {t("follow")}
           </span>
           <span className="h-10 w-px bg-white/25" aria-hidden />
           <div className="pointer-events-auto flex flex-col items-center gap-3">
@@ -170,7 +170,7 @@ export function HomePage() {
               className="mt-7 flex flex-col items-stretch gap-3 sm:mt-8 sm:flex-row sm:items-center sm:justify-center sm:gap-4"
             >
               <Link
-                href="/contact"
+                href="/features"
                 className="inline-flex items-center justify-center rounded-full border border-white/35 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-white hover:bg-white/5 sm:px-7 sm:py-3.5 sm:text-xs"
               >
                 [ {t("heroCtaSecondary")} ]

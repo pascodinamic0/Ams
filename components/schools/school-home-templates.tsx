@@ -51,7 +51,9 @@ function ContactBlock({ school }: { school: SchoolRow }) {
       )}
       {school.address && <p>{school.address}</p>}
       {!school.contact_email && !school.contact_phone && !school.address && (
-        <p className="text-stone-500">Contact details coming soon.</p>
+        <p className="text-stone-500">
+          Reach the school through the admissions form — contact details are added by the school office.
+        </p>
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
-import { getInvoiceById, getSchoolCurrencyForSchool } from "@/lib/db";
+import { getInvoiceById } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 import { formatMoney, getSchoolCurrency } from "@/lib/currency";
 

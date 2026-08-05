@@ -109,9 +109,11 @@ function ModernShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
             <span className="block text-lg font-bold tracking-tight drop-shadow">
               {school.name}
             </span>
-            <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/80">
-              Excellence · Integrity · Community
-            </span>
+            {site.footerTagline ? (
+              <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/80">
+                {site.footerTagline}
+              </span>
+            ) : null}
           </Link>
           <nav className="hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.14em] text-white sm:flex">
             <NavLink href={`${base}#programs`} className="text-white">
@@ -173,9 +175,11 @@ function ClassicShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
               <span className="block text-xl font-bold tracking-tight drop-shadow md:text-2xl">
                 {school.name}
               </span>
-              <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/85">
-                Excellence · Integrity · Inclusivity
-              </span>
+              {site.footerTagline ? (
+                <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/85">
+                  {site.footerTagline}
+                </span>
+              ) : null}
             </Link>
             <div className="hidden flex-col items-end gap-3 sm:flex">
               <div className="flex items-center gap-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">

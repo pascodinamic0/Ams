@@ -1,6 +1,6 @@
 # Security
 
-This document covers how AMS protects data and sensitive endpoints.
+This document covers how ShuleOS protects data and sensitive endpoints.
 
 ## Row Level Security (RLS)
 

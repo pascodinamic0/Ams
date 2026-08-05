@@ -8,20 +8,20 @@ import {
 
 export function createDemoSchool(template: WebsiteTemplateId): SchoolRow {
   const meta = getWebsiteTemplate(template)!;
-  const content = getPreviewWebsiteContent("Greenfield Academy");
+  const content = getPreviewWebsiteContent("École Horizon Kinshasa");
 
   return {
     id: "00000000-0000-0000-0000-000000000000",
-    name: "Greenfield Academy",
-    slug: "greenfield-academy",
+    name: "École Horizon Kinshasa",
+    slug: "ecole-horizon-kinshasa",
     code: "DEMO",
     logo_url: null,
     cover_image_url: DEFAULT_HERO_IMAGE,
     about:
-      "Greenfield Academy nurtures curious minds through rigorous academics, creative arts, and community service. Our graduates are prepared for university and life beyond the classroom.",
-    contact_email: "hello@greenfield.edu",
-    contact_phone: "+1 (555) 012-3456",
-    address: "42 Learning Lane, Greenfield",
+      "École Horizon Kinshasa serves families across Gombe and Lingwala with Programme National academics, French-first communication, and clear fee tracking for every term.",
+    contact_email: "accueil@ecolehorizon.cd",
+    contact_phone: "+243 822 378 097",
+    address: "Avenue Batetela, Gombe, Kinshasa, RDC",
     theme_primary_color: meta.defaultPrimary,
     theme_secondary_color: meta.defaultSecondary,
     website_template: template,
@@ -30,7 +30,7 @@ export function createDemoSchool(template: WebsiteTemplateId): SchoolRow {
     public_site_enabled: true,
     status: "approved",
     owner_id: null,
-    currency_code: "USD",
+    currency_code: "CDF",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };

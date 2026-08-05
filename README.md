@@ -1,6 +1,6 @@
-# AMS — Academic Management System
+# ShuleOS — School Management Platform
 
-Multi-tenant school management platform built with Next.js and Supabase. AMS covers academic operations (students, classes, timetable, admissions), finance (invoices, payments, fee reminders), operations (library, transport, events, staff), teacher workflows (attendance, gradebook, assignments), and role-based portals for admins, teachers, parents, and students.
+Multi-tenant school management platform (product name: **ShuleOS**) built with Next.js and Supabase. ShuleOS covers academic operations (students, classes, timetable, admissions), finance (invoices, payments, fee reminders), operations (library, transport, events, staff), teacher workflows (attendance, gradebook, assignments), and role-based portals for admins, teachers, parents, and students.
 
 Public school websites with online admissions are served under `/schools/[slug]`.
 
@@ -88,7 +88,7 @@ Lightweight demo accounts only (no academic/finance sample rows):
 bun run seed:demo-users
 ```
 
-All `@ams.demo` accounts use password `AMSdemo2026!`. Demo rows are safe to delete manually later.
+All `@ams.demo` accounts use password `AMSdemo2026!` (legacy demo domain; safe to delete later).
 
 ### 5. Start the dev server
 
@@ -102,14 +102,14 @@ Open [http://localhost:3000](http://localhost:3000).
 
 Login and registration support **Sign in with Google** via Supabase Auth.
 
-AMS uses Supabase project **AMC** (`ooheotsnplfrpgblrnot`).
+ShuleOS uses Supabase project **AMC** (`ooheotsnplfrpgblrnot`).
 
 1. **Google Cloud Console** — OAuth 2.0 Client ID redirect URI:
    - `https://ooheotsnplfrpgblrnot.supabase.co/auth/v1/callback`
 2. **Supabase Dashboard** → **Authentication** → **Providers** → **Google** — Enable with Client ID and Secret.
 3. **Supabase Dashboard** → **Authentication** → **URL Configuration** — Redirect URLs:
    - `http://localhost:3000/auth/callback` (or `http://localhost:3000/**`)
-   - `https://ams-xi-two.vercel.app/auth/callback` (or `https://ams-xi-two.vercel.app/**` for register with `?intent=register`)
+   - `https://your-production-domain/auth/callback` (or `https://your-production-domain/**` for register with `?intent=register`)
 4. Set `NEXT_PUBLIC_APP_URL` in Vercel to your production origin (used for email and OAuth callbacks).
 
 ## Scripts
@@ -138,11 +138,10 @@ AMS uses Supabase project **AMC** (`ooheotsnplfrpgblrnot`).
 | Path | Schedule | Purpose |
 |------|----------|---------|
 | `/api/cron/fee-reminders` | `0 6 * * *` (06:00 UTC daily) | WhatsApp fee reminders |
-| `/api/cron/class-reminders` | `*/5 * * * *` (every 5 min) | Teacher class-time push alarms |
 
-Set `CRON_SECRET` in Vercel env vars; invocations must send `Authorization: Bearer <CRON_SECRET>`. Class reminders also need VAPID keys (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`) — generate with `npx web-push generate-vapid-keys`.
+Set `CRON_SECRET` in Vercel env vars; invocations must send `Authorization: Bearer <CRON_SECRET>`.
 
-> **Note:** Vercel Hobby may only allow daily crons. For 5-minute class alarms on Hobby, call `/api/cron/class-reminders` from an external scheduler (cron-job.org, GitHub Actions, etc.) with the same bearer token.
+Class-time push alarms live at `/api/cron/class-reminders` but are **not** scheduled in `vercel.json` (Hobby plans only allow daily crons). Call that route from an external scheduler (cron-job.org, GitHub Actions, etc.) every few minutes with the same bearer token. Class reminders also need VAPID keys (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`) — generate with `npx web-push generate-vapid-keys`.
 
 ### Webhooks: payments
 

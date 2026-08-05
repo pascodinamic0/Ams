@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 const SPLASH_MIN_MS = 280;
 const SPLASH_FADE_MS = 180;
-const SPLASH_SEEN_KEY = "ams-splash-seen";
+const SPLASH_SEEN_KEY = "shuleos-splash-seen";
 
 type SplashPhase = "show" | "fade" | "hide";
 

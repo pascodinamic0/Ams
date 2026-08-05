@@ -91,10 +91,17 @@ export const MESSAGING_STAFF_ROLES: UserRole[] = [
   "pedagogical_council_member",
 ];
 
+/** Roles that may create and send parent outreach campaigns. */
+export const OUTREACH_ROLES: UserRole[] = [
+  "super_admin",
+  "academic_admin",
+  "admin_coordinator",
+];
+
 /** Route scopes each role may access. Shared routes are listed separately. */
 export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
-  super_admin: [tree("/admin"), tree("/analytics")],
-  academic_admin: [tree("/academic"), tree("/analytics")],
+  super_admin: [tree("/admin"), tree("/analytics"), tree("/outreach")],
+  academic_admin: [tree("/academic"), tree("/analytics"), tree("/outreach")],
   admin_coordinator: [
     exact("/academic"),
     tree("/academic/team"),
@@ -170,7 +177,6 @@ export const SHARED_AUTH_ROUTES = [
   "/messages",
   "/notifications",
   "/settings",
-  "/outreach",
   "/register/complete",
   "/onboarding",
   "/pending",

@@ -35,7 +35,7 @@ export default async function TemplatePreviewPage({
         >
           Template preview — sample content only.{" "}
           <Link
-            href={`/admin/schools/new?template=${template}`}
+            href="/get-access"
             className="font-semibold underline underline-offset-2"
           >
             Use this design before another school claims the look
