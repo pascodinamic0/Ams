@@ -2,6 +2,7 @@
   "title": "Tableau de bord finance",
   "feeStructureTitle": "Structure des frais",
   "invoicesTitle": "Factures",
+  "exportCsv": "Exporter CSV",
   "paymentsTitle": "Paiements",
   "payrollTitle": "Paie",
   "expensesTitle": "Dépenses",

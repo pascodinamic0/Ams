@@ -1,17 +1,30 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { assertBranchAccess, getBranchSchoolId } from "@/lib/auth/assert";
+import { ACADEMIC_PORTAL_ROLES } from "@/lib/auth/rbac";
 import { createClient } from "@/lib/supabase/server";
 import { classSchema, type ClassFormData } from "@/lib/validations/academic";
+
+async function assertClassRowAccess(id: string) {
+  const supabase = await createClient();
+  const { data: cls } = await supabase
+    .from("classes")
+    .select("id, branch_id")
+    .eq("id", id)
+    .maybeSingle();
+  if (!cls) return { ok: false as const, error: "Class not found" };
+  return assertBranchAccess(cls.branch_id, ACADEMIC_PORTAL_ROLES);
+}
 
 export async function createClass(input: ClassFormData) {
   const parsed = classSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  const access = await assertBranchAccess(parsed.data.branch_id, ACADEMIC_PORTAL_ROLES);
+  if (!access.ok) return { error: access.error };
 
+  const supabase = await createClient();
   const { data, error } = await supabase
     .from("classes")
     .insert({
@@ -33,6 +46,16 @@ export async function updateClass(id: string, updates: Partial<ClassFormData>) {
   const parsed = classSchema.partial().safeParse(updates);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
+  const access = await assertClassRowAccess(id);
+  if (!access.ok) return { error: access.error };
+
+  if (parsed.data.branch_id) {
+    const nextSchool = await getBranchSchoolId(parsed.data.branch_id);
+    if (nextSchool !== access.schoolId) {
+      return { error: "Cannot move class to another school" };
+    }
+  }
+
   const supabase = await createClient();
   const { error } = await supabase.from("classes").update(parsed.data).eq("id", id);
   if (error) return { error: error.message };
@@ -41,6 +64,9 @@ export async function updateClass(id: string, updates: Partial<ClassFormData>) {
 }
 
 export async function deleteClass(id: string) {
+  const access = await assertClassRowAccess(id);
+  if (!access.ok) return { error: access.error };
+
   const supabase = await createClient();
   const { error } = await supabase.from("classes").delete().eq("id", id);
   if (error) return { error: error.message };

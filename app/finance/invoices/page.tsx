@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ExportButton } from "@/components/ui/export-button";
 import { getInvoices, getStudents, getFeeStructures } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
@@ -31,9 +32,39 @@ export default async function InvoicesPage({
     scope.branchId ? getFeeStructures(scope.branchId) : getFeeStructures(),
   ]);
 
+  const exportRows = invoices.map((row) => ({
+    student_id: row.student_id ?? "",
+    student_name: row.student_name ?? "",
+    fee_type: row.fee_structure_name ?? "",
+    amount: row.amount,
+    amount_paid: row.amount_paid,
+    balance: row.balance,
+    due_date: row.due_date ?? "",
+    status: row.status ?? "",
+  }));
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{t("invoicesTitle")}</h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold">{t("invoicesTitle")}</h1>
+        {exportRows.length > 0 ? (
+          <ExportButton
+            data={exportRows}
+            filename="invoices.csv"
+            label={t("exportCsv")}
+            columns={[
+              { key: "student_id", label: t("colStudentId") },
+              { key: "student_name", label: t("colStudent") },
+              { key: "fee_type", label: t("colFeeType") },
+              { key: "amount", label: tc("amount") },
+              { key: "amount_paid", label: tc("paid") },
+              { key: "balance", label: tc("balance") },
+              { key: "due_date", label: t("colDueDate") },
+              { key: "status", label: tc("status") },
+            ]}
+          />
+        ) : null}
+      </div>
       <InvoiceForm
         students={students.map((s) => ({
           id: s.id,

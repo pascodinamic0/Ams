@@ -2,6 +2,7 @@
   "title": "Finance Dashboard",
   "feeStructureTitle": "Fee Structure",
   "invoicesTitle": "Invoices",
+  "exportCsv": "Export CSV",
   "paymentsTitle": "Payments",
   "payrollTitle": "Payroll",
   "expensesTitle": "Expenses",

@@ -1,6 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
 import {
+  ACADEMIC_PORTAL_ROLES,
+  FINANCE_PORTAL_ROLES,
   MESSAGING_STAFF_ROLES,
+  OPERATIONS_PORTAL_ROLES,
   normalizeRole,
   type UserRole,
 } from "@/lib/auth/rbac";
@@ -11,6 +14,10 @@ export type AuthedProfile = {
   school_id: string | null;
   branch_id: string | null;
 };
+
+type AssertOk = { ok: true; profile: AuthedProfile };
+type AssertErr = { ok: false; error: string };
+export type AssertResult = AssertOk | AssertErr;
 
 export async function getAuthedProfile(): Promise<AuthedProfile | null> {
   const supabase = await createClient();
@@ -45,9 +52,128 @@ export function canAccessSchool(
   return profile.school_id === schoolId;
 }
 
-export async function assertMessagingStaff(): Promise<
-  { ok: true; profile: AuthedProfile } | { ok: false; error: string }
-> {
+export async function assertAuthenticated(): Promise<AssertResult> {
+  const profile = await getAuthedProfile();
+  if (!profile) return { ok: false, error: "Not authenticated" };
+  return { ok: true, profile };
+}
+
+export async function assertRole(
+  allowed: readonly UserRole[]
+): Promise<AssertResult> {
+  const auth = await assertAuthenticated();
+  if (!auth.ok) return auth;
+  if (auth.profile.role === "super_admin") return auth;
+  if (!allowed.includes(auth.profile.role)) {
+    return { ok: false, error: "Not authorized" };
+  }
+  return auth;
+}
+
+export async function assertAcademicRole(): Promise<AssertResult> {
+  return assertRole(ACADEMIC_PORTAL_ROLES);
+}
+
+export async function assertFinanceRole(): Promise<AssertResult> {
+  return assertRole(FINANCE_PORTAL_ROLES);
+}
+
+export async function assertOperationsRole(): Promise<AssertResult> {
+  return assertRole(OPERATIONS_PORTAL_ROLES);
+}
+
+export async function assertTeacherOrAcademic(): Promise<AssertResult> {
+  return assertRole([...ACADEMIC_PORTAL_ROLES, "teacher"]);
+}
+
+export async function assertSchoolAccess(
+  schoolId: string | null | undefined
+): Promise<AssertResult> {
+  const auth = await assertAuthenticated();
+  if (!auth.ok) return auth;
+  if (!canAccessSchool(auth.profile, schoolId)) {
+    return { ok: false, error: "Not authorized for this school" };
+  }
+  return auth;
+}
+
+export async function assertRoleAndSchool(
+  allowed: readonly UserRole[],
+  schoolId: string | null | undefined
+): Promise<AssertResult> {
+  const auth = await assertRole(allowed);
+  if (!auth.ok) return auth;
+  if (!canAccessSchool(auth.profile, schoolId)) {
+    return { ok: false, error: "Not authorized for this school" };
+  }
+  return auth;
+}
+
+export async function getBranchSchoolId(
+  branchId: string
+): Promise<string | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("branches")
+    .select("school_id")
+    .eq("id", branchId)
+    .maybeSingle();
+  return data?.school_id ?? null;
+}
+
+export async function assertBranchAccess(
+  branchId: string,
+  allowed?: readonly UserRole[]
+): Promise<AssertResult & { schoolId?: string }> {
+  const schoolId = await getBranchSchoolId(branchId);
+  if (!schoolId) return { ok: false, error: "Branch not found" };
+  const auth = allowed
+    ? await assertRoleAndSchool(allowed, schoolId)
+    : await assertSchoolAccess(schoolId);
+  if (!auth.ok) return auth;
+  return { ...auth, schoolId };
+}
+
+export async function assertStudentAccess(
+  studentId: string,
+  allowed?: readonly UserRole[]
+): Promise<AssertResult & { schoolId?: string }> {
+  const supabase = await createClient();
+  const { data: student } = await supabase
+    .from("students")
+    .select("id, school_id")
+    .eq("id", studentId)
+    .maybeSingle();
+  if (!student) return { ok: false, error: "Student not found" };
+  const auth = allowed
+    ? await assertRoleAndSchool(allowed, student.school_id)
+    : await assertSchoolAccess(student.school_id);
+  if (!auth.ok) return auth;
+  return { ...auth, schoolId: student.school_id };
+}
+
+export async function assertClassAccess(
+  classId: string,
+  allowed?: readonly UserRole[]
+): Promise<AssertResult & { schoolId?: string; branchId?: string }> {
+  const supabase = await createClient();
+  const { data: cls } = await supabase
+    .from("classes")
+    .select("id, branch_id, branches(school_id)")
+    .eq("id", classId)
+    .maybeSingle();
+  if (!cls) return { ok: false, error: "Class not found" };
+  const schoolId =
+    (cls.branches as { school_id?: string } | null)?.school_id ?? null;
+  if (!schoolId) return { ok: false, error: "Class school not found" };
+  const auth = allowed
+    ? await assertRoleAndSchool(allowed, schoolId)
+    : await assertSchoolAccess(schoolId);
+  if (!auth.ok) return auth;
+  return { ...auth, schoolId, branchId: cls.branch_id };
+}
+
+export async function assertMessagingStaff(): Promise<AssertResult> {
   const profile = await getAuthedProfile();
   if (!profile) return { ok: false, error: "Not authenticated" };
   if (!MESSAGING_STAFF_ROLES.includes(profile.role) && profile.role !== "parent") {
@@ -94,7 +220,6 @@ export async function assertConversationParticipant(
     return { ok: false, error: "Not a participant in this conversation" };
   }
 
-  // Parents must already be participants — do not auto-join.
   if (!participant && profile.role === "parent") {
     return { ok: false, error: "Not a participant in this conversation" };
   }
