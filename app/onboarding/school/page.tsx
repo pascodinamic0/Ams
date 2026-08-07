@@ -564,7 +564,7 @@ export default function SchoolStructureOnboardingPage() {
                             onClick={() => removeCustomGrade(grade)}
                             className="rounded-full border border-amber-500/50 bg-amber-500/15 px-3 py-1 text-sm text-amber-100"
                           >
-                            {grade} ù
+                            {grade} √ó
                           </button>
                         ))}
                       </div>

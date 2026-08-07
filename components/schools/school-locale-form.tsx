@@ -26,7 +26,7 @@ export function SchoolLocaleForm({
   schoolId,
   locale,
   title = "System language",
-  description = "This language is locked for everyone in your school—staff, teachers, parents, and students. The app will not switch to another language.",
+  description = "This language is locked for everyone in your schoolâ€”staff, teachers, parents, and students. The app will not switch to another language.",
 }: Props) {
   const router = useRouter();
   const initialLocale = (locale === "fr" ? "fr" : "en") as Locale;
