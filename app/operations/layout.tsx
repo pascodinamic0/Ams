@@ -10,6 +10,7 @@ export default async function OperationsLayout({ children }: { children: React.R
 
   return (
     <AppShell
+      localeLocked={Boolean(profile?.school_id)}
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("operations")}</span>}
       dashboardHref="/operations"

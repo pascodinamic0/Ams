@@ -1,6 +1,7 @@
 import { getRequestConfig } from "next-intl/server";
 import { cookies, headers } from "next/headers";
-import { defaultLocale, isValidLocale, LOCALE_COOKIE, locales } from "./config";
+import { createClient } from "@/lib/supabase/server";
+import { defaultLocale, isValidLocale, LOCALE_COOKIE, locales, type Locale } from "./config";
 
 async function loadMessages(locale: string) {
   const [
@@ -83,24 +84,57 @@ async function loadMessages(locale: string) {
   };
 }
 
-export default getRequestConfig(async () => {
-  const cookieStore = await cookies();
-  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
+async function resolveSchoolLocale(): Promise<Locale | null> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return null;
 
-  let locale = isValidLocale(cookieLocale) ? cookieLocale : defaultLocale;
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("school_id, schools(locale)")
+      .eq("id", user.id)
+      .maybeSingle();
 
-  if (!isValidLocale(cookieLocale)) {
-    const acceptLanguage = (await headers()).get("accept-language");
-    if (acceptLanguage) {
-      const preferred = acceptLanguage
-        .split(",")
-        .map((part) => part.split(";")[0]?.trim().slice(0, 2).toLowerCase())
-        .find((code) => locales.includes(code as (typeof locales)[number]));
-      if (preferred && isValidLocale(preferred)) {
-        locale = preferred;
-      }
+    const school = profile?.schools as { locale?: string } | { locale?: string }[] | null;
+    const localeValue = Array.isArray(school) ? school[0]?.locale : school?.locale;
+    return isValidLocale(localeValue) ? localeValue : null;
+  } catch {
+    return null;
+  }
+}
+
+function resolveVisitorLocale(cookieLocale: string | undefined, acceptLanguage: string | null): Locale {
+  if (isValidLocale(cookieLocale)) return cookieLocale;
+
+  if (acceptLanguage) {
+    const preferred = acceptLanguage
+      .split(",")
+      .map((part) => part.split(";")[0]?.trim().slice(0, 2).toLowerCase())
+      .find((code) => locales.includes(code as (typeof locales)[number]));
+    if (preferred && isValidLocale(preferred)) {
+      return preferred;
     }
   }
+
+  return defaultLocale;
+}
+
+export default getRequestConfig(async () => {
+  const schoolLocale = await resolveSchoolLocale();
+  if (schoolLocale) {
+    return {
+      locale: schoolLocale,
+      messages: await loadMessages(schoolLocale),
+    };
+  }
+
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
+  const acceptLanguage = (await headers()).get("accept-language");
+  const locale = resolveVisitorLocale(cookieLocale, acceptLanguage);
 
   return {
     locale,

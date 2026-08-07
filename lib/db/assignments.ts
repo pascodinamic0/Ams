@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { formatPersonName } from "@/lib/utils";
 
 /** Student/parent portal assignment row */
 export type StudentAssignmentItem = {
@@ -176,7 +177,7 @@ export async function getAssignmentSubmissions(
 
   const { data: students, error: studentsError } = await supabase
     .from("students")
-    .select("id, first_name, last_name")
+    .select("id, first_name, middle_name, last_name")
     .eq("class_id", assignment.class_id)
     .eq("status", "active")
     .order("last_name");
@@ -202,7 +203,7 @@ export async function getAssignmentSubmissions(
     return {
       id: sub?.id ?? "",
       student_id: s.id,
-      student_name: `${s.first_name} ${s.last_name}`,
+      student_name: formatPersonName(s),
       submitted_at: sub?.submitted_at ?? null,
       grade: sub?.grade !== null && sub?.grade !== undefined ? Number(sub.grade) : null,
       text_response: sub?.text_response ?? null,

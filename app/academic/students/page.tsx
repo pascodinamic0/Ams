@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
+import { UserAvatar } from "@/components/layout/user-avatar";
 import { getStudents } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 
@@ -12,8 +13,9 @@ export default async function StudentsPage() {
   const tableData = students.map((row) => ({
     ...row,
     name_link: (
-      <Link href={`/academic/students/${row.id}`} className="font-medium text-primary hover:underline">
-        {String(row.name)}
+      <Link href={`/academic/students/${row.id}`} className="flex items-center gap-3 font-medium text-primary hover:underline">
+        <UserAvatar name={row.name} avatarUrl={row.photo_url} size="sm" />
+        <span>{String(row.name)}</span>
       </Link>
     ),
   }));

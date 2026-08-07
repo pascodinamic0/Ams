@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
+import { formatPersonName } from "@/lib/utils";
 
 export type LinkedStudent = {
   id: string;
   first_name: string;
+  middle_name: string | null;
   last_name: string;
   name: string;
   student_id: string | null;
@@ -22,6 +24,9 @@ export type GuardianProfile = {
 export type GuardianRecord = {
   id: string;
   name: string;
+  first_name: string | null;
+  middle_name: string | null;
+  last_name: string | null;
   email: string;
   phone: string | null;
   relation: string;
@@ -34,7 +39,7 @@ export async function getGuardianById(id: string): Promise<GuardianRecord | null
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("guardians")
-    .select("id, name, email, phone, relation, address, workplace, school_id")
+    .select("id, name, first_name, middle_name, last_name, email, phone, relation, address, workplace, school_id")
     .eq("id", id)
     .maybeSingle();
 
@@ -73,6 +78,7 @@ export async function getLinkedStudentsForGuardian(
       students(
         id,
         first_name,
+        middle_name,
         last_name,
         student_id,
         class_id,
@@ -93,6 +99,7 @@ export async function getLinkedStudentsForGuardian(
       const s = link.students as unknown as {
         id: string;
         first_name: string;
+        middle_name: string | null;
         last_name: string;
         student_id: string | null;
         class_id: string | null;
@@ -104,8 +111,9 @@ export async function getLinkedStudentsForGuardian(
       return {
         id: s.id,
         first_name: s.first_name,
+        middle_name: s.middle_name ?? null,
         last_name: s.last_name,
-        name: `${s.first_name} ${s.last_name}`,
+        name: formatPersonName(s),
         student_id: s.student_id,
         class_id: s.class_id,
         class_name: s.classes?.name ?? null,
@@ -142,7 +150,9 @@ export async function getGuardians(options?: {
 
   if (options?.search) {
     const term = `%${options.search}%`;
-    query = query.or(`name.ilike.${term},email.ilike.${term},phone.ilike.${term}`);
+    query = query.or(
+      `name.ilike.${term},first_name.ilike.${term},middle_name.ilike.${term},last_name.ilike.${term},email.ilike.${term},phone.ilike.${term}`
+    );
   }
 
   const { data, error } = await query;
@@ -159,11 +169,17 @@ export async function getGuardians(options?: {
   for (const g of guardians) {
     const { data: links } = await supabase
       .from("guardian_students")
-      .select("students(first_name, last_name)")
+      .select("students(first_name, middle_name, last_name)")
       .eq("guardian_id", g.id);
     const studentNames = (links ?? []).map((l: unknown) => {
-      const s = (l as { students?: { first_name?: string; last_name?: string } }).students;
-      return s ? `${s.first_name ?? ""} ${s.last_name ?? ""}`.trim() : "";
+      const s = (l as {
+        students?: {
+          first_name?: string;
+          middle_name?: string | null;
+          last_name?: string;
+        };
+      }).students;
+      return s ? formatPersonName(s) : "";
     }).filter(Boolean);
     result.push({
       id: g.id,

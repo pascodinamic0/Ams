@@ -16,7 +16,7 @@ const STEP_HREFS: Record<SetupGuideStepId, string> = {
   website: "/academic/website",
   team: "/academic/team",
   subjects: "/academic/subjects",
-  classes: "/academic/classes",
+  classes: "/onboarding/school",
   students: "/academic/students/new",
   timetable: "/academic/timetable",
   publish: "/academic/website",

@@ -63,6 +63,7 @@ export function schoolPortalBlocked(
   const allowed =
     pathname === "/pending" ||
     pathname === "/onboarding" ||
+    pathname.startsWith("/onboarding/") ||
     pathname.startsWith("/settings") ||
     pathname === "/login";
 

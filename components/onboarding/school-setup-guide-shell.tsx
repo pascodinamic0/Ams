@@ -17,5 +17,5 @@ export async function SchoolSetupGuideShell() {
   const t = await getTranslations("onboarding");
   const steps = getSetupGuideSteps((key) => t(key));
 
-  return <SchoolSetupGuide progress={{ ...progress, steps }} />;
+  return <SchoolSetupGuide progress={{ ...progress, steps }} schoolId={profile.school_id} />;
 }

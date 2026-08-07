@@ -22,6 +22,7 @@ export async function createStudent(
       school_id: input.school_id,
       branch_id: input.branch_id,
       first_name: parsed.data.first_name,
+      middle_name: parsed.data.middle_name?.trim() || null,
       last_name: parsed.data.last_name,
       date_of_birth: parsed.data.date_of_birth,
       gender: parsed.data.gender || null,
@@ -29,6 +30,7 @@ export async function createStudent(
       status: parsed.data.status,
       home_address: parsed.data.home_address || null,
       notes: parsed.data.notes || null,
+      photo_url: parsed.data.photo_url?.trim() || null,
     })
     .select("id, student_id")
     .single();
@@ -58,7 +60,15 @@ export async function updateStudent(
 
   const { error } = await supabase
     .from("students")
-    .update(parsed.data)
+    .update({
+      ...parsed.data,
+      ...(parsed.data.middle_name !== undefined
+        ? { middle_name: parsed.data.middle_name.trim() || null }
+        : {}),
+      ...(parsed.data.photo_url !== undefined
+        ? { photo_url: parsed.data.photo_url.trim() || null }
+        : {}),
+    })
     .eq("id", id);
 
   if (error) {

@@ -2,12 +2,14 @@ import { createServerClient } from "@supabase/ssr";
 import { type User } from "@supabase/supabase-js";
 import { type NextRequest } from "next/server";
 import { normalizeRole, type UserRole } from "./rbac";
+import { shouldNeedStructureSetup } from "./structure-setup";
 
 export type ProxyAuthContext = {
   role: UserRole;
   schoolId: string | null;
   schoolStatus: "pending" | "approved" | "suspended" | null;
   needsOnboarding: boolean;
+  needsStructureSetup: boolean;
   name: string;
   email: string;
   avatarUrl: string | null;
@@ -44,14 +46,16 @@ export async function getProxyAuthContext(
 
   const role = normalizeRole(profile.role);
   let schoolStatus: ProxyAuthContext["schoolStatus"] = null;
+  let structureSetupCompletedAt: string | null = null;
 
   if (profile.school_id) {
     const { data: school } = await supabase
       .from("schools")
-      .select("status")
+      .select("status, structure_setup_completed_at")
       .eq("id", profile.school_id)
       .single();
     schoolStatus = (school?.status as ProxyAuthContext["schoolStatus"]) ?? null;
+    structureSetupCompletedAt = school?.structure_setup_completed_at ?? null;
   }
 
   const name =
@@ -62,6 +66,11 @@ export async function getProxyAuthContext(
     schoolId: profile.school_id,
     schoolStatus,
     needsOnboarding: !profile.onboarding_completed_at,
+    needsStructureSetup: shouldNeedStructureSetup({
+      role,
+      schoolStatus,
+      structureSetupCompletedAt,
+    }),
     name,
     email: user.email ?? "",
     avatarUrl: profile.avatar_url ?? null,

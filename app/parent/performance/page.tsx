@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getTranslations } from "next-intl/server";
+import { formatPersonName } from "@/lib/utils";
 
 export default async function ParentPerformancePage() {
   const t = await getTranslations("parent");
@@ -41,7 +42,7 @@ export default async function ParentPerformancePage() {
 
   const { data: linksRaw } = await supabase
     .from("guardian_students")
-    .select("student_id, students(id, first_name, last_name, student_id, classes(name))")
+    .select("student_id, students(id, first_name, middle_name, last_name, student_id, classes(name))")
     .eq("guardian_id", guardian.id);
 
   const links = (linksRaw ?? []) as unknown as StudentLink[];
@@ -75,7 +76,7 @@ export default async function ParentPerformancePage() {
                 </div>
                 <div>
                   <p className="font-semibold text-stone-900 dark:text-white">
-                    {s!.first_name} {s!.last_name}
+                    {formatPersonName(s!)}
                   </p>
                   <p className="text-xs text-stone-500">
                     {(s!.classes as { name: string } | null)?.name ?? t("noClass")} · {s!.student_id}

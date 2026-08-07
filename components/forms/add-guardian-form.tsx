@@ -42,7 +42,7 @@ export function AddGuardianForm({ studentId, schoolId }: Props) {
   return (
     <FormWrapper
       schema={guardianOnboardingSchema}
-      defaultValues={{ relation: "guardian" }}
+      defaultValues={{ relation: "guardian", first_name: "", middle_name: "", last_name: "" }}
       onSubmit={onSubmit}
     >
       <Card>
@@ -76,10 +76,22 @@ function AddGuardianFields() {
 
   return (
     <>
-      <div className="space-y-1.5">
-        <Label htmlFor="name" required>Full name</Label>
-        <Input id="name" {...register("name")} error={!!errors.name} />
-        {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="first_name" required>First name</Label>
+          <Input id="first_name" {...register("first_name")} error={!!errors.first_name} />
+          {errors.first_name && <p className="text-sm text-red-500">{errors.first_name.message}</p>}
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="middle_name">Middle name</Label>
+          <Input id="middle_name" {...register("middle_name")} error={!!errors.middle_name} />
+          {errors.middle_name && <p className="text-sm text-red-500">{errors.middle_name.message}</p>}
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="last_name" required>Last name</Label>
+          <Input id="last_name" {...register("last_name")} error={!!errors.last_name} />
+          {errors.last_name && <p className="text-sm text-red-500">{errors.last_name.message}</p>}
+        </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">

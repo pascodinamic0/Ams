@@ -1,9 +1,11 @@
 import { createClient } from "@/lib/supabase/server";
+import { formatPersonName } from "@/lib/utils";
 
 export type StudentPortalProfile = {
   id: string;
   student_id: string | null;
   first_name: string;
+  middle_name: string | null;
   last_name: string;
   name: string;
   class_id: string | null;
@@ -23,6 +25,7 @@ export async function getStudentByAuthUserId(
       id,
       student_id,
       first_name,
+      middle_name,
       last_name,
       class_id,
       branch_id,
@@ -42,8 +45,9 @@ export async function getStudentByAuthUserId(
     id: data.id,
     student_id: data.student_id,
     first_name: data.first_name,
+    middle_name: data.middle_name ?? null,
     last_name: data.last_name,
-    name: `${data.first_name} ${data.last_name}`,
+    name: formatPersonName(data),
     class_id: data.class_id,
     class_name: (data.classes as { name?: string } | null)?.name ?? null,
     branch_id: data.branch_id,
@@ -56,8 +60,10 @@ export type StudentListItem = {
   id: string;
   student_id: string | null;
   first_name: string;
+  middle_name: string | null;
   last_name: string;
   name: string;
+  photo_url: string | null;
   class_id: string | null;
   class_name: string | null;
   guardian_name: string | null;
@@ -78,7 +84,9 @@ export async function getStudents(options?: {
       id,
       student_id,
       first_name,
+      middle_name,
       last_name,
+      photo_url,
       status,
       class_id,
       classes(name),
@@ -101,7 +109,7 @@ export async function getStudents(options?: {
   if (options?.search) {
     const term = `%${options.search}%`;
     query = query.or(
-      `first_name.ilike.${term},last_name.ilike.${term},student_id.ilike.${term}`
+      `first_name.ilike.${term},middle_name.ilike.${term},last_name.ilike.${term},student_id.ilike.${term}`
     );
   }
 
@@ -119,8 +127,10 @@ export async function getStudents(options?: {
       id: s.id,
       student_id: s.student_id,
       first_name: s.first_name,
+      middle_name: s.middle_name ?? null,
       last_name: s.last_name,
-      name: `${s.first_name} ${s.last_name}`,
+      name: formatPersonName(s),
+      photo_url: s.photo_url ?? null,
       class_id: s.class_id,
       class_name: (s.classes as { name?: string } | null)?.name ?? null,
       guardian_name: guardianName,
@@ -138,7 +148,7 @@ export async function getStudentById(id: string) {
       *,
       classes(name, grade),
       guardian_students(
-        guardians(id, name, email, phone, relation, address, workplace)
+        guardians(id, name, first_name, middle_name, last_name, email, phone, relation, address, workplace)
       )
     `
     )

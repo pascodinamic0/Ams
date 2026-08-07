@@ -17,7 +17,8 @@ interface Props {
   classes: ClassOption[];
 }
 
-const EXPECTED_HEADERS = ["first_name", "last_name", "date_of_birth", "class", "status"] as const;
+const EXPECTED_HEADERS = ["first_name", "middle_name", "last_name", "date_of_birth", "class", "status"] as const;
+const REQUIRED_HEADERS = ["first_name", "last_name", "date_of_birth", "class"] as const;
 
 function parseCsv(text: string): string[][] {
   const rows: string[][] = [];
@@ -131,7 +132,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
       }
 
       const headers = rows[0].map(normalizeHeader);
-      const missing = EXPECTED_HEADERS.filter((h) => !headers.includes(h));
+      const missing = REQUIRED_HEADERS.filter((h) => !headers.includes(h));
       if (missing.length > 0) {
         setParseErrors([`Missing required columns: ${missing.join(", ")}`]);
         return;
@@ -145,6 +146,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
         const cells = rows[i];
         const rowNumber = i + 1;
         const firstName = cells[index.first_name] ?? "";
+        const middleName = index.middle_name !== undefined ? (cells[index.middle_name] ?? "") : "";
         const lastName = cells[index.last_name] ?? "";
         const dob = cells[index.date_of_birth] ?? "";
         const classValue = cells[index.class] ?? "";
@@ -170,6 +172,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
 
         parsed.push({
           first_name: firstName,
+          middle_name: middleName || undefined,
           last_name: lastName,
           date_of_birth: dob,
           class_id: classId,
@@ -217,7 +220,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
 
   function downloadTemplate() {
     const header = EXPECTED_HEADERS.join(",");
-    const example = `Jane,Doe,2015-03-12,${classes[0]?.name ?? "Grade 1"},active`;
+    const example = `Jane,Marie,Doe,2015-03-12,${classes[0]?.name ?? "Grade 1"},active`;
     const blob = new Blob([`${header}\n${example}\n`], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
@@ -232,10 +235,11 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
       <div className="rounded-lg border border-stone-200 p-4 dark:border-stone-700">
         <h2 className="font-semibold">CSV format</h2>
         <p className="mt-1 text-sm text-stone-500">
-          Required columns: <code className="text-xs">first_name, last_name, date_of_birth, class, status</code>
+          Columns: <code className="text-xs">first_name, middle_name, last_name, date_of_birth, class, status</code>
         </p>
         <p className="mt-2 text-sm text-stone-500">
-          <code className="text-xs">class</code> can be a class name or UUID.
+          <code className="text-xs">middle_name</code> and <code className="text-xs">status</code> are optional.
+          <code className="ml-2 text-xs">class</code> can be a class name or UUID.
           {classNames ? ` Available classes: ${classNames}.` : " No classes configured yet."}
         </p>
         <p className="mt-2 text-sm text-stone-500">
@@ -282,6 +286,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
               <thead className="bg-stone-100 dark:bg-stone-800">
                 <tr>
                   <th className="px-3 py-2 text-left font-medium">First name</th>
+                  <th className="px-3 py-2 text-left font-medium">Middle name</th>
                   <th className="px-3 py-2 text-left font-medium">Last name</th>
                   <th className="px-3 py-2 text-left font-medium">DOB</th>
                   <th className="px-3 py-2 text-left font-medium">Class</th>
@@ -292,6 +297,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
                 {preview.slice(0, 10).map((row, i) => (
                   <tr key={`${row.first_name}-${row.last_name}-${i}`} className="border-t border-stone-200 dark:border-stone-700">
                     <td className="px-3 py-2">{row.first_name}</td>
+                    <td className="px-3 py-2">{row.middle_name || "—"}</td>
                     <td className="px-3 py-2">{row.last_name}</td>
                     <td className="px-3 py-2">{row.date_of_birth}</td>
                     <td className="px-3 py-2">

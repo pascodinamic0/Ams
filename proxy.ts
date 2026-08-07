@@ -4,6 +4,7 @@ import { getProxyAuthContext } from "@/lib/auth/proxy-context";
 import { schoolPortalBlocked } from "@/lib/auth/school-access";
 import { getPostAuthRedirect } from "@/lib/auth/post-auth-redirect";
 import { isProfileOnboardingExempt } from "@/lib/auth/profile-onboarding";
+import { isStructureSetupExempt } from "@/lib/auth/structure-setup";
 import { canAccessPath, getDashboardForRole } from "@/lib/auth/rbac";
 
 const PUBLIC_ROUTES = [
@@ -117,8 +118,21 @@ export async function proxy(request: NextRequest) {
     return redirectWithCookies(
       request,
       supabaseResponse,
-      getDashboardForRole(access.role)
+      access.needsStructureSetup
+        ? "/onboarding/school"
+        : getDashboardForRole(access.role)
     );
+  }
+
+  if (
+    access?.needsStructureSetup &&
+    !access.needsOnboarding &&
+    !isStructureSetupExempt(pathname)
+  ) {
+    if (serverAction) {
+      return supabaseResponse;
+    }
+    return redirectWithCookies(request, supabaseResponse, "/onboarding/school");
   }
 
   if (role && !canAccessPath(role, pathname)) {
@@ -146,7 +160,9 @@ export async function proxy(request: NextRequest) {
     return redirectWithCookies(
       request,
       supabaseResponse,
-      getDashboardForRole(access.role)
+      access.needsStructureSetup
+        ? "/onboarding/school"
+        : getDashboardForRole(access.role)
     );
   }
 

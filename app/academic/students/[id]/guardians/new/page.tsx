@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AddGuardianForm } from "@/components/forms/add-guardian-form";
 import { getStudentById } from "@/lib/db/students";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { formatPersonName } from "@/lib/utils";
 
 export default async function AddStudentGuardianPage({
   params,
@@ -24,7 +25,7 @@ export default async function AddStudentGuardianPage({
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <p className="text-sm text-stone-500">
-          {student.first_name} {student.last_name}
+          {formatPersonName(student)}
         </p>
         <h1 className="text-2xl font-bold">Add guardian</h1>
       </div>

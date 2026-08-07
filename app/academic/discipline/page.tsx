@@ -4,6 +4,7 @@ import { canAccessPath } from "@/lib/auth/rbac";
 import { getStudents } from "@/lib/db";
 import { getDisciplineIncidents } from "@/lib/db/workspaces";
 import { DisciplineBoard } from "./discipline-board";
+import { formatPersonName } from "@/lib/utils";
 
 export default async function AcademicDisciplinePage() {
   const profile = await getCurrentProfile();
@@ -27,7 +28,7 @@ export default async function AcademicDisciplinePage() {
         incidents={incidents}
         students={students.map((student) => ({
           id: student.id,
-          name: `${student.first_name} ${student.last_name}`.trim(),
+          name: formatPersonName(student),
         }))}
       />
     </div>

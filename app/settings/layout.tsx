@@ -1,6 +1,7 @@
 import { AppShell } from "@/components/layout/app-shell";
 import { Sidebar } from "@/components/layout/sidebar";
 import { getDashboardForRole } from "@/lib/auth/rbac";
+import { getCurrentProfile } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 
@@ -9,6 +10,7 @@ export default async function SettingsLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const currentProfile = await getCurrentProfile();
   const supabase = await createClient();
   const {
     data: { user },
@@ -27,6 +29,7 @@ export default async function SettingsLayout({
 
   return (
     <AppShell
+      localeLocked={Boolean(currentProfile?.school_id)}
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("settings")}</span>}
       dashboardHref={getDashboardForRole(role)}

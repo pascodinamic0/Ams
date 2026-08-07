@@ -28,6 +28,7 @@ export type SchoolRow = {
   status: SchoolStatus;
   owner_id: string | null;
   currency_code: string;
+  locale: string;
   created_at: string;
   updated_at: string;
 };
@@ -171,4 +172,19 @@ export async function getSchoolCurrencyForSchool(
     .single();
 
   return getSchoolCurrency(data?.currency_code ?? DEFAULT_CURRENCY_CODE);
+}
+
+export async function getSchoolLocaleForSchool(
+  schoolId: string | null | undefined
+): Promise<string | null> {
+  if (!schoolId) return null;
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("schools")
+    .select("locale")
+    .eq("id", schoolId)
+    .maybeSingle();
+
+  return data?.locale ?? null;
 }

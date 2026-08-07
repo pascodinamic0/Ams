@@ -9,12 +9,15 @@ import {
 import {
   getEmptyWebsiteContent,
 } from "@/lib/schools/website-content";
+import { isValidLocale, type Locale } from "@/i18n/config";
+import { setLocale } from "@/lib/i18n/actions";
 
 export type RegisterSchoolInput = {
   userId: string;
   schoolName: string;
   adminEmail: string;
   adminName?: string;
+  locale?: string;
 };
 
 export async function registerSchoolOrganization(input: RegisterSchoolInput) {
@@ -23,6 +26,7 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
   const admin = adminResult.client;
 
   const { userId, schoolName, adminEmail, adminName } = input;
+  const locale: Locale = isValidLocale(input.locale) ? input.locale : "en";
 
   const { data: authUser, error: authUserError } =
     await admin.auth.admin.getUserById(userId);
@@ -74,6 +78,7 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
       website_content: websiteContent,
       cover_image_url: null,
       about: null,
+      locale,
     })
     .select("id, slug")
     .single();
@@ -121,12 +126,19 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
     return { error: profileError.message };
   }
 
+  try {
+    await setLocale(locale);
+  } catch (err) {
+    console.error("registerSchoolOrganization setLocale error:", err);
+  }
+
   return {
     data: {
       schoolId: school.id,
       branchId: branch.id,
       slug: school.slug,
       status: "pending" as const,
+      locale,
     },
   };
 }

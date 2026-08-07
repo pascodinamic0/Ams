@@ -39,7 +39,7 @@ export const SETUP_GUIDE_STEPS: SetupGuideStep[] = [
     id: "classes",
     title: "Create classes",
     description: "Organize students into grade levels or homerooms.",
-    href: "/academic/classes",
+    href: "/onboarding/school",
   },
   {
     id: "students",

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { formatPersonName } from "@/lib/utils";
 
 export type SchoolTask = {
   id: string;
@@ -111,7 +112,7 @@ export async function getDisciplineIncidents(
     .select(`
       id, title, description, severity, status, incident_date,
       student_id, reported_by, assigned_to, created_at,
-      students(first_name, last_name)
+      students(first_name, middle_name, last_name)
     `)
     .eq("school_id", schoolId)
     .order("updated_at", { ascending: false });
@@ -122,7 +123,7 @@ export async function getDisciplineIncidents(
   }
 
   return (data ?? []).map((row) => {
-    const student = row.students as { first_name?: string; last_name?: string } | null;
+    const student = row.students as { first_name?: string; middle_name?: string | null; last_name?: string } | null;
     return {
       id: row.id,
       title: row.title,
@@ -132,7 +133,7 @@ export async function getDisciplineIncidents(
       incident_date: row.incident_date,
       student_id: row.student_id,
       student_name: student
-        ? `${student.first_name ?? ""} ${student.last_name ?? ""}`.trim()
+        ? formatPersonName(student)
         : null,
       reported_by: row.reported_by,
       assigned_to: row.assigned_to,

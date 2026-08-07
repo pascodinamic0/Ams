@@ -20,6 +20,7 @@ import { createClient } from "@supabase/supabase-js";
 import { sendWhatsApp, interpolateTemplate } from "@/lib/services/whatsapp";
 import { getSchoolCurrency } from "@/lib/currency";
 import { format, addDays, differenceInDays } from "date-fns";
+import { formatPersonName } from "@/lib/utils";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -83,7 +84,7 @@ export async function POST(req: NextRequest) {
       .select(`
         id, amount, amount_paid, due_date, status,
         students(
-          id, first_name, last_name, school_id,
+          id, first_name, middle_name, last_name, school_id,
           guardian_students(
             guardians(name, phone)
           )
@@ -114,7 +115,7 @@ export async function POST(req: NextRequest) {
 
       if (!student) continue;
 
-      const studentName = `${student.first_name} ${student.last_name}`.trim();
+      const studentName = formatPersonName(student);
       const dueDate = new Date(invoice.due_date);
       const daysUntilDue = differenceInDays(dueDate, today);
       const daysOverdue = differenceInDays(today, dueDate);

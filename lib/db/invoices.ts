@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { formatPersonName } from "@/lib/utils";
 
 export type InvoiceListItem = {
   id: string;
@@ -37,6 +38,7 @@ function mapInvoiceRow(inv: {
     id?: string;
     student_id?: string;
     first_name?: string;
+    middle_name?: string | null;
     last_name?: string;
     school_id?: string;
     branch_id?: string;
@@ -50,7 +52,7 @@ function mapInvoiceRow(inv: {
     id: inv.id,
     student_uuid: s?.id ?? "",
     student_id: s?.student_id ?? "",
-    student_name: s ? `${s.first_name ?? ""} ${s.last_name ?? ""}`.trim() : "—",
+    student_name: s ? formatPersonName(s) : "—",
     amount,
     amount_paid: amountPaid,
     balance: Math.max(0, amount - amountPaid),
@@ -132,7 +134,7 @@ export async function getInvoiceById(id: string) {
     .from("fee_invoices")
     .select(`
       *,
-      students(id, student_id, first_name, last_name, school_id, branch_id),
+      students(id, student_id, first_name, middle_name, last_name, school_id, branch_id),
       fee_structures(name)
     `)
     .eq("id", id)

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { GuardianEditForm } from "@/components/forms/guardian-edit-form";
 import { getGuardianById } from "@/lib/db/guardians";
 import { getStudentById } from "@/lib/db/students";
+import { formatPersonName, splitPersonName } from "@/lib/utils";
 
 export default async function StudentGuardianPage({
   params,
@@ -24,19 +25,30 @@ export default async function StudentGuardianPage({
 
   if (!isLinked) notFound();
 
+  const nameParts =
+    guardian.first_name || guardian.last_name
+      ? {
+          first_name: guardian.first_name ?? "",
+          middle_name: guardian.middle_name ?? "",
+          last_name: guardian.last_name ?? "",
+        }
+      : splitPersonName(guardian.name);
+
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <p className="text-sm text-stone-500">
-          Guardian for {student.first_name} {student.last_name}
+          Guardian for {formatPersonName(student)}
         </p>
-        <h1 className="text-2xl font-bold">{guardian.name}</h1>
+        <h1 className="text-2xl font-bold">{formatPersonName(guardian) || guardian.name}</h1>
       </div>
       <GuardianEditForm
         guardianId={guardianId}
         studentId={studentId}
         defaultValues={{
-          name: guardian.name,
+          first_name: nameParts.first_name,
+          middle_name: nameParts.middle_name ?? "",
+          last_name: nameParts.last_name,
           email: guardian.email,
           whatsapp: guardian.phone ?? "",
           relation: (guardian.relation as "father" | "mother" | "guardian" | "other") ?? "guardian",

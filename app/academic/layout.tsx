@@ -11,6 +11,7 @@ export default async function AcademicLayout({ children }: { children: React.Rea
 
   return (
     <AppShell
+      localeLocked={Boolean(profile?.school_id)}
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("academic")}</span>}
       dashboardHref="/academic"

@@ -12,9 +12,12 @@ import { Button } from "@/components/ui/button";
 import { registerSchoolOrganization } from "@/lib/actions/school-registration";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
+import { localeNames, type Locale } from "@/i18n/config";
+import { Select } from "@/components/ui/select";
 
 const completeSchema = z.object({
   school_name: z.string().min(2, "School name is required"),
+  locale: z.enum(["en", "fr"]),
 });
 
 type CompleteFormData = z.infer<typeof completeSchema>;
@@ -83,6 +86,7 @@ export default function RegisterCompletePage() {
         schoolName: data.school_name,
         adminEmail: user.email,
         adminName: adminName ?? undefined,
+        locale: data.locale,
       });
 
       if (org.error) {
@@ -122,6 +126,7 @@ export default function RegisterCompletePage() {
 
         <FormWrapper
           schema={completeSchema}
+          defaultValues={{ locale: "fr" }}
           onSubmit={onSubmit}
           className="space-y-5"
         >
@@ -162,6 +167,23 @@ function CompleteFormFields({ loading }: { loading: boolean }) {
             {errors.school_name.message}
           </p>
         )}
+      </div>
+
+      <div>
+        <Label htmlFor="locale" required>
+          System language
+        </Label>
+        <Select
+          id="locale"
+          options={(Object.entries(localeNames) as [Locale, string][]).map(
+            ([code, name]) => ({ value: code, label: name })
+          )}
+          error={!!errors.locale}
+          {...register("locale")}
+        />
+        <p className="mt-1.5 text-xs text-muted">
+          Everyone in your school will only see the app in this language.
+        </p>
       </div>
 
       <Button type="submit" className="w-full" size="lg" disabled={loading}>

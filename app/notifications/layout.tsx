@@ -15,6 +15,7 @@ export default async function NotificationsLayout({
 
   return (
     <AppShell
+      localeLocked={Boolean(profile?.school_id)}
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("notifications")}</span>}
       dashboardHref={getDashboardForRole(role)}

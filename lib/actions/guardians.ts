@@ -3,6 +3,26 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { guardianSchema, type GuardianFormData } from "@/lib/validations";
+import { formatPersonName } from "@/lib/utils";
+
+function guardianRowFromForm(data: GuardianFormData) {
+  const first_name = data.first_name.trim();
+  const middle_name = data.middle_name?.trim() || null;
+  const last_name = data.last_name.trim();
+  const phone = data.whatsapp || data.phone || null;
+
+  return {
+    name: formatPersonName({ first_name, middle_name, last_name }),
+    first_name,
+    middle_name,
+    last_name,
+    email: data.email,
+    phone,
+    relation: data.relation,
+    address: data.address || null,
+    workplace: data.workplace || null,
+  };
+}
 
 export async function createGuardian(
   input: GuardianFormData & { school_id: string }
@@ -16,18 +36,11 @@ export async function createGuardian(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  const phone = parsed.data.whatsapp || parsed.data.phone || null;
-
   const { data, error } = await supabase
     .from("guardians")
     .insert({
       school_id: input.school_id,
-      name: parsed.data.name,
-      email: parsed.data.email,
-      phone,
-      relation: parsed.data.relation,
-      address: parsed.data.address || null,
-      workplace: parsed.data.workplace || null,
+      ...guardianRowFromForm(parsed.data),
     })
     .select("id")
     .single();
@@ -55,13 +68,37 @@ export async function updateGuardian(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  const { whatsapp, phone, ...rest } = parsed.data;
-  const row = {
-    ...rest,
-    ...(whatsapp !== undefined || phone !== undefined
-      ? { phone: whatsapp ?? phone ?? null }
-      : {}),
-  };
+  const data = parsed.data;
+  const row: Record<string, unknown> = {};
+
+  if (data.first_name !== undefined) row.first_name = data.first_name.trim();
+  if (data.middle_name !== undefined) row.middle_name = data.middle_name.trim() || null;
+  if (data.last_name !== undefined) row.last_name = data.last_name.trim();
+  if (data.email !== undefined) row.email = data.email;
+  if (data.relation !== undefined) row.relation = data.relation;
+  if (data.address !== undefined) row.address = data.address || null;
+  if (data.workplace !== undefined) row.workplace = data.workplace || null;
+  if (data.whatsapp !== undefined || data.phone !== undefined) {
+    row.phone = data.whatsapp ?? data.phone ?? null;
+  }
+
+  if (
+    data.first_name !== undefined ||
+    data.middle_name !== undefined ||
+    data.last_name !== undefined
+  ) {
+    const { data: existing } = await supabase
+      .from("guardians")
+      .select("first_name, middle_name, last_name")
+      .eq("id", id)
+      .single();
+
+    row.name = formatPersonName({
+      first_name: (row.first_name as string | undefined) ?? existing?.first_name,
+      middle_name: (row.middle_name as string | null | undefined) ?? existing?.middle_name,
+      last_name: (row.last_name as string | undefined) ?? existing?.last_name,
+    });
+  }
 
   const { error } = await supabase
     .from("guardians")

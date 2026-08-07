@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { formatPersonName } from "@/lib/utils";
 
 export type TeacherClassItem = {
   id: string;
@@ -110,7 +111,7 @@ export async function getAttendanceForClass(
 
   const { data: students, error: studentsError } = await supabase
     .from("students")
-    .select("id, first_name, last_name, student_id")
+    .select("id, first_name, middle_name, last_name, student_id")
     .eq("class_id", classId)
     .eq("status", "active")
     .order("last_name");
@@ -140,7 +141,7 @@ export async function getAttendanceForClass(
     return {
       id: existing?.id ?? null,
       student_id: s.id,
-      student_name: `${s.first_name} ${s.last_name}`,
+      student_name: formatPersonName(s),
       student_number: s.student_id,
       status: existing?.status ?? "present",
     };

@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isToday } from "date-fns";
 import { Chart } from "@/components/ui/chart-lazy";
 import { getTranslations } from "next-intl/server";
+import { formatPersonName } from "@/lib/utils";
 
 interface PageProps {
   params: Promise<{ studentId: string }>;
@@ -28,7 +29,7 @@ async function getStudentPerformanceData(studentId: string) {
   ] = await Promise.all([
     supabase
       .from("students")
-      .select("id, first_name, last_name, student_id, class_id, classes(name)")
+      .select("id, first_name, middle_name, last_name, student_id, class_id, classes(name)")
       .eq("id", studentId)
       .single(),
     supabase
@@ -136,7 +137,7 @@ export default async function ChildPerformancePage({ params }: PageProps) {
         )
       : null;
 
-  const studentName = `${student.first_name} ${student.last_name}`;
+  const studentName = formatPersonName(student);
 
   const kpiCards = [
     {

@@ -80,6 +80,7 @@ export {
   getSchoolBySlug,
   getSchoolById,
   getSchoolCurrencyForSchool,
+  getSchoolLocaleForSchool,
   type SchoolRow,
   type SchoolListItem,
   type SchoolDirectoryItem,

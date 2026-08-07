@@ -9,17 +9,22 @@ import {
   type GuardianOnboardingData,
   type StudentOnboardingData,
 } from "@/lib/validations/student-onboarding";
+import { formatPersonName } from "@/lib/utils";
 
 async function insertGuardian(
   supabase: Awaited<ReturnType<typeof createClient>>,
   schoolId: string,
   guardian: GuardianOnboardingData
 ) {
+  const fullName = formatPersonName(guardian);
   const { data, error } = await supabase
     .from("guardians")
     .insert({
       school_id: schoolId,
-      name: guardian.name,
+      name: fullName,
+      first_name: guardian.first_name.trim(),
+      middle_name: guardian.middle_name?.trim() || null,
+      last_name: guardian.last_name.trim(),
       email: guardian.email,
       phone: guardian.whatsapp || null,
       relation: guardian.relation,
@@ -102,6 +107,7 @@ export async function createStudentWithGuardians(
         school_id: input.school_id,
         branch_id: input.branch_id,
         first_name: data.first_name,
+        middle_name: data.middle_name?.trim() || null,
         last_name: data.last_name,
         date_of_birth: data.date_of_birth,
         gender: data.gender || null,
@@ -109,6 +115,7 @@ export async function createStudentWithGuardians(
         status: data.status,
         home_address: data.home_address || null,
         notes: data.notes || null,
+        photo_url: data.photo_url?.trim() || null,
       })
       .select("id, student_id")
       .single();

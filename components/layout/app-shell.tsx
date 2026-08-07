@@ -24,6 +24,8 @@ interface AppShellProps {
   dashboardHref?: string;
   role?: string;
   mobileMode?: AppShellMobileMode;
+  /** When true, hide personal language switcher (school locale is locked). */
+  localeLocked?: boolean;
 }
 
 function resolveMobileMode(pathname: string, mobileMode?: AppShellMobileMode): AppShellMobileMode {
@@ -39,6 +41,7 @@ export function AppShell({
   dashboardHref = "/",
   role = "student",
   mobileMode,
+  localeLocked = false,
 }: AppShellProps) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
@@ -123,7 +126,7 @@ export function AppShell({
                 </svg>
                 {t("settings")}
               </Link>
-              <LanguageSwitcher className="mx-3 mb-2" />
+              {!localeLocked && <LanguageSwitcher className="mx-3 mb-2" />}
               <LogoutButton />
             </div>
           </aside>

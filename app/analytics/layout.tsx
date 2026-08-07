@@ -10,6 +10,7 @@ export default async function AnalyticsLayout({ children }: { children: React.Re
 
   return (
     <AppShell
+      localeLocked={Boolean(profile?.school_id)}
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("analytics")}</span>}
       dashboardHref="/analytics"

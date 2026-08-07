@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { formatPersonName } from "@/lib/utils";
 
 export type TransportRouteListItem = {
   id: string;
@@ -133,7 +134,7 @@ export async function getTransportStudentMappings(options?: {
       id,
       student_id,
       vehicle_id,
-      students(first_name, last_name)
+      students(first_name, middle_name, last_name)
     `)
     .in("vehicle_id", vehicleIds)
     .order("created_at", { ascending: false });
@@ -144,13 +145,13 @@ export async function getTransportStudentMappings(options?: {
   }
 
   return (data ?? []).map((mapping) => {
-    const student = mapping.students as { first_name?: string; last_name?: string } | null;
+    const student = mapping.students as { first_name?: string; middle_name?: string | null; last_name?: string } | null;
     const vehicle = vehicleById.get(mapping.vehicle_id);
     return {
       id: mapping.id,
       student_id: mapping.student_id,
       student_name: student
-        ? `${student.first_name ?? ""} ${student.last_name ?? ""}`.trim()
+        ? formatPersonName(student)
         : "Unknown",
       vehicle_id: mapping.vehicle_id,
       vehicle_name: vehicle?.name ?? "Unknown",

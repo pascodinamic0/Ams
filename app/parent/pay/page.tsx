@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { getInvoiceById, getSchoolCurrencyForSchool } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 import { formatMoney, getSchoolCurrency } from "@/lib/currency";
+import { formatPersonName } from "@/lib/utils";
 
 export default async function ParentPayPage({
   searchParams,
@@ -64,6 +65,7 @@ export default async function ParentPayPage({
   const student = invoice.students as {
     id: string;
     first_name: string;
+    middle_name?: string | null;
     last_name: string;
     student_id: string | null;
     school_id: string;
@@ -98,7 +100,7 @@ export default async function ParentPayPage({
   const amountPaid = Number(invoice.amount_paid ?? 0);
   const balance = Math.max(0, amount - amountPaid);
   const studentName = student
-    ? `${student.first_name} ${student.last_name}`.trim()
+    ? formatPersonName(student)
     : t("studentFallback");
 
   if (balance <= 0) {

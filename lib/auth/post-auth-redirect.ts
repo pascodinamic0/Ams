@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { resolveLoginDestination } from "@/lib/auth/login-redirect";
+import { shouldNeedStructureSetup } from "@/lib/auth/structure-setup";
 
 type SchoolStatus = "pending" | "approved" | "suspended" | null;
 
@@ -37,13 +38,25 @@ export async function getPostAuthRedirect(options: {
   }
 
   let schoolStatus: SchoolStatus = null;
+  let structureSetupCompletedAt: string | null = null;
   if (profile?.school_id) {
     const { data: school } = await supabase
       .from("schools")
-      .select("status")
+      .select("status, structure_setup_completed_at")
       .eq("id", profile.school_id)
       .single();
     schoolStatus = (school?.status as SchoolStatus) ?? null;
+    structureSetupCompletedAt = school?.structure_setup_completed_at ?? null;
+  }
+
+  if (
+    shouldNeedStructureSetup({
+      role,
+      schoolStatus,
+      structureSetupCompletedAt,
+    })
+  ) {
+    return "/onboarding/school";
   }
 
   return resolveLoginDestination({

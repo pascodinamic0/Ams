@@ -5,7 +5,9 @@ import { studentSchema } from "./student";
 const optionalUuid = z.union([z.string().uuid(), z.literal("")]).optional();
 
 export const guardianOnboardingSchema = z.object({
-  name: z.string().min(1, "Guardian name is required"),
+  first_name: z.string().min(1, "First name is required"),
+  middle_name: z.string().optional(),
+  last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email"),
   whatsapp: z.string().optional(),
   relation: z.enum(["father", "mother", "guardian", "other"]).default("guardian"),
@@ -24,19 +26,22 @@ export const studentOnboardingSchema = studentSchema.extend({
 }).superRefine((data, ctx) => {
   const hasPrimary =
     Boolean(data.existing_guardian_id) ||
-    Boolean(data.primary_guardian?.name?.trim());
+    Boolean(data.primary_guardian?.first_name?.trim() && data.primary_guardian?.last_name?.trim());
   if (!hasPrimary) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: "Primary guardian details are required",
-      path: ["primary_guardian", "name"],
+      path: ["primary_guardian", "first_name"],
     });
   }
-  if (data.add_secondary_guardian && !data.secondary_guardian?.name?.trim()) {
+  if (
+    data.add_secondary_guardian &&
+    !(data.secondary_guardian?.first_name?.trim() && data.secondary_guardian?.last_name?.trim())
+  ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: "Secondary guardian details are required",
-      path: ["secondary_guardian", "name"],
+      path: ["secondary_guardian", "first_name"],
     });
   }
 });

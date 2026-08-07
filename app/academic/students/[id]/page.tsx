@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { UserAvatar } from "@/components/layout/user-avatar";
 import { getStudentById } from "@/lib/db/students";
+import { formatPersonName } from "@/lib/utils";
 import { getTranslations } from "next-intl/server";
 import { DeleteStudentButton } from "./delete-button";
 
@@ -30,13 +32,17 @@ export default async function StudentDetailPage({
   if (!student) notFound();
 
   const guardians = (student.guardian_students as GuardianLink[] | null) ?? [];
+  const fullName = formatPersonName(student);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">{student.first_name} {student.last_name}</h1>
-          <p className="text-sm text-stone-500">{t("studentId")}: {student.student_id}</p>
+        <div className="flex items-center gap-4">
+          <UserAvatar name={fullName} avatarUrl={student.photo_url} size="lg" />
+          <div>
+            <h1 className="text-2xl font-bold">{fullName}</h1>
+            <p className="text-sm text-stone-500">{t("studentId")}: {student.student_id}</p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Link href="/academic/students"><Button variant="ghost">{tc("back")}</Button></Link>

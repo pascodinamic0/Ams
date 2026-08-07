@@ -11,6 +11,7 @@ export default async function OutreachLayout({ children }: { children: React.Rea
 
   return (
     <AppShell
+      localeLocked={Boolean(profile?.school_id)}
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("outreach")}</span>}
       dashboardHref={getDashboardForRole(role)}

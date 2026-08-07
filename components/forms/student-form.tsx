@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormContext, useWatch, type FieldErrors } from "react-hook-form";
+import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,9 +11,13 @@ import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { FormWrapper } from "@/components/forms/form-wrapper";
+import { FileUpload } from "@/components/ui/file-upload";
+import { CameraCaptureModal } from "@/components/profile/camera-capture-modal";
 import { createStudentWithGuardians } from "@/lib/actions/student-onboarding";
 import { studentOnboardingSchema, type StudentOnboardingData } from "@/lib/validations/student-onboarding";
 import { toast } from "@/lib/toast";
+
+const STUDENT_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 
 interface Props {
   schoolId: string;
@@ -22,7 +27,9 @@ interface Props {
 }
 
 const defaultPrimaryGuardian = {
-  name: "",
+  first_name: "",
+  middle_name: "",
+  last_name: "",
   email: "",
   whatsapp: "",
   relation: "guardian" as const,
@@ -98,6 +105,7 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
       defaultValues={{
         status: "active",
         add_secondary_guardian: false,
+        photo_url: "",
         primary_guardian: defaultPrimaryGuardian,
       }}
       onSubmit={onSubmit}
@@ -111,7 +119,11 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
           </p>
         </CardHeader>
         <CardContent className="space-y-8">
-          <StudentFormFields classes={classes} existingGuardians={existingGuardians} />
+          <StudentFormFields
+            schoolId={schoolId}
+            classes={classes}
+            existingGuardians={existingGuardians}
+          />
         </CardContent>
         <CardFooter className="justify-end gap-3">
           <Button
@@ -201,9 +213,17 @@ function GuardianFields({
 
   return (
     <>
-      <Field label="Full name" htmlFor={`${prefix}.name`} required error={guardianErrors.name?.message}>
-        <Input id={`${prefix}.name`} {...register(`${prefix}.name`)} error={!!guardianErrors.name} />
-      </Field>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Field label="First name" htmlFor={`${prefix}.first_name`} required error={guardianErrors.first_name?.message}>
+          <Input id={`${prefix}.first_name`} {...register(`${prefix}.first_name`)} error={!!guardianErrors.first_name} />
+        </Field>
+        <Field label="Middle name" htmlFor={`${prefix}.middle_name`} error={guardianErrors.middle_name?.message}>
+          <Input id={`${prefix}.middle_name`} {...register(`${prefix}.middle_name`)} error={!!guardianErrors.middle_name} />
+        </Field>
+        <Field label="Last name" htmlFor={`${prefix}.last_name`} required error={guardianErrors.last_name?.message}>
+          <Input id={`${prefix}.last_name`} {...register(`${prefix}.last_name`)} error={!!guardianErrors.last_name} />
+        </Field>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Email" htmlFor={`${prefix}.email`} required error={guardianErrors.email?.message}>
           <Input id={`${prefix}.email`} type="email" {...register(`${prefix}.email`)} error={!!guardianErrors.email} />
@@ -234,9 +254,11 @@ function GuardianFields({
 }
 
 function StudentFormFields({
+  schoolId,
   classes,
   existingGuardians,
 }: {
+  schoolId: string;
   classes: { id: string; name: string }[];
   existingGuardians: { id: string; name: string }[];
 }) {
@@ -245,15 +267,47 @@ function StudentFormFields({
   const addSecondary = useWatch({ name: "add_secondary_guardian" });
   const sameAddress = useWatch({ name: "same_address_as_guardian" });
   const primaryAddress = useWatch({ name: "primary_guardian.address" });
+  const photoUrl = useWatch({ name: "photo_url" }) ?? "";
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraUploading, setCameraUploading] = useState(false);
 
   const useExistingGuardian = Boolean(existingGuardianId);
+  const photoStoragePath = `${schoolId}/students`;
+
+  async function handleCameraCapture(file: File) {
+    if (file.size > STUDENT_PHOTO_MAX_BYTES) {
+      toast.error(`File too large. Max ${STUDENT_PHOTO_MAX_BYTES / 1024 / 1024}MB`);
+      throw new Error("File too large");
+    }
+
+    setCameraUploading(true);
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      const ext = file.name.split(".").pop() ?? "jpg";
+      const filePath = `${photoStoragePath}/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from("school-assets").upload(filePath, file);
+      if (error) throw error;
+      const { data } = supabase.storage.from("school-assets").getPublicUrl(filePath);
+      setValue("photo_url", data.publicUrl, { shouldDirty: true, shouldValidate: true });
+      toast.success("Photo uploaded");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+      throw err;
+    } finally {
+      setCameraUploading(false);
+    }
+  }
 
   return (
     <>
       <FormSection title="Child information" description="Basic details for the student">
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
           <Field label="First name" htmlFor="first_name" required error={errors.first_name?.message}>
             <Input id="first_name" {...register("first_name")} error={!!errors.first_name} />
+          </Field>
+          <Field label="Middle name" htmlFor="middle_name" error={errors.middle_name?.message}>
+            <Input id="middle_name" {...register("middle_name")} error={!!errors.middle_name} />
           </Field>
           <Field label="Last name" htmlFor="last_name" required error={errors.last_name?.message}>
             <Input id="last_name" {...register("last_name")} error={!!errors.last_name} />
@@ -276,6 +330,45 @@ function StudentFormFields({
             />
           </Field>
         </div>
+        <Field
+          label="Student photo"
+          htmlFor="photo_url"
+          error={errors.photo_url?.message}
+          hint="Optional. Upload a file or take a photo with the webcam."
+        >
+          <input type="hidden" {...register("photo_url")} />
+          <div className="space-y-2">
+            <FileUpload
+              bucket="school-assets"
+              path={photoStoragePath}
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              maxSize={STUDENT_PHOTO_MAX_BYTES}
+              value={photoUrl || undefined}
+              onUpload={(url) => {
+                setValue("photo_url", url, { shouldDirty: true, shouldValidate: true });
+                toast.success("Photo uploaded");
+              }}
+              onRemove={() => setValue("photo_url", "", { shouldDirty: true, shouldValidate: true })}
+              onError={(message) => toast.error(message)}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={cameraUploading}
+              onClick={() => setCameraOpen(true)}
+            >
+              <Camera className="mr-1.5 h-4 w-4" />
+              Take photo
+            </Button>
+          </div>
+          <CameraCaptureModal
+            isOpen={cameraOpen}
+            onClose={() => setCameraOpen(false)}
+            onCapture={handleCameraCapture}
+            disabled={cameraUploading}
+          />
+        </Field>
       </FormSection>
 
       <div className="border-t border-stone-200 dark:border-stone-800" />

@@ -18,11 +18,14 @@ import { companyIdentity } from "@/lib/company/identity";
 import { registerSchoolOrganization } from "@/lib/actions/school-registration";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
+import { localeNames, type Locale } from "@/i18n/config";
+import { Select } from "@/components/ui/select";
 
 type RegisterFormData = {
   school_name: string;
   admin_email: string;
   password: string;
+  locale: "en" | "fr";
 };
 
 export default function RegisterPage() {
@@ -100,6 +103,7 @@ function RegisterForm() {
         school_name: z.string().min(1, tv("schoolNameRequired")),
         admin_email: z.string().email(tv("invalidEmail")),
         password: z.string().min(8, tv("passwordMinLength")),
+        locale: z.enum(["en", "fr"]),
       }),
     [tv]
   );
@@ -131,6 +135,7 @@ function RegisterForm() {
         userId: authData.user.id,
         schoolName: data.school_name,
         adminEmail: data.admin_email,
+        locale: data.locale,
       });
 
       if (org.error) {
@@ -155,7 +160,12 @@ function RegisterForm() {
   }
 
   return (
-    <FormWrapper schema={registerSchema} onSubmit={onSubmit} className="space-y-5">
+    <FormWrapper
+      schema={registerSchema}
+      defaultValues={{ locale: "fr" }}
+      onSubmit={onSubmit}
+      className="space-y-5"
+    >
       <RegisterFormFields loading={loading} />
     </FormWrapper>
   );
@@ -203,6 +213,24 @@ function RegisterFormFields({ loading }: { loading: boolean }) {
         />
         {errors.school_name && (
           <p className="mt-1.5 text-sm text-red-500">{errors.school_name.message}</p>
+        )}
+      </div>
+
+      <div>
+        <Label htmlFor="locale" required>
+          {t("systemLanguage")}
+        </Label>
+        <Select
+          id="locale"
+          options={(Object.entries(localeNames) as [Locale, string][]).map(
+            ([code, name]) => ({ value: code, label: name })
+          )}
+          error={!!errors.locale}
+          {...register("locale")}
+        />
+        <p className="mt-1.5 text-xs text-muted">{t("systemLanguageHint")}</p>
+        {errors.locale && (
+          <p className="mt-1.5 text-sm text-red-500">{errors.locale.message}</p>
         )}
       </div>
 

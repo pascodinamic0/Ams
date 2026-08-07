@@ -45,3 +45,12 @@ export const inviteUserSchema = z.object({
 });
 
 export type InviteUserFormData = z.infer<typeof inviteUserSchema>;
+
+export const updateTeamMemberRoleSchema = z.object({
+  userId: z.string().uuid("Invalid user ID"),
+  role: inviteUserSchema.shape.role,
+});
+
+export type UpdateTeamMemberRoleFormData = z.infer<
+  typeof updateTeamMemberRoleSchema
+>;

@@ -31,6 +31,7 @@ export function createDemoSchool(template: WebsiteTemplateId): SchoolRow {
     status: "approved",
     owner_id: null,
     currency_code: "USD",
+    locale: "en",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };

@@ -1,7 +1,9 @@
 import { z } from "zod";
 
 export const guardianSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  first_name: z.string().min(1, "First name is required"),
+  middle_name: z.string().optional(),
+  last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email"),
   phone: z.string().optional(),
   whatsapp: z.string().optional(),

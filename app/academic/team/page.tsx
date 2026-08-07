@@ -6,6 +6,7 @@ import { getSchoolTeamMembers } from "@/lib/db/users";
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { TeamInviteForm } from "./team-invite-form";
+import { TeamRoleSelect } from "./team-role-select";
 
 export default async function AcademicTeamPage() {
   const t = await getTranslations("academic");
@@ -24,6 +25,9 @@ export default async function AcademicTeamPage() {
     redirect("/pending");
   }
 
+  const canManage =
+    profile.role === "academic_admin" || profile.role === "super_admin";
+
   const members = await getSchoolTeamMembers(profile.school_id);
 
   return (
@@ -35,7 +39,7 @@ export default async function AcademicTeamPage() {
         </p>
       </div>
 
-      <TeamInviteForm />
+      <TeamInviteForm canManage={canManage} />
 
       {members.length === 0 ? (
         <EmptyState
@@ -46,7 +50,11 @@ export default async function AcademicTeamPage() {
         <DataTable
           data={members.map((m) => ({
             ...m,
-            role_label: m.role.replace(/_/g, " "),
+            role_label: canManage ? (
+              <TeamRoleSelect userId={m.id} currentRole={m.role} />
+            ) : (
+              m.role.replace(/_/g, " ")
+            ),
           }))}
           columns={[
             { id: "name", header: tc("name"), accessorKey: "name", sortable: true },

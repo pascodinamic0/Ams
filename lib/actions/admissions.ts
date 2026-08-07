@@ -10,6 +10,7 @@ import {
 } from "@/lib/validations/academic";
 import { revalidateSchoolWebsiteBySchoolId } from "@/lib/schools/revalidate-website";
 import { createNotification } from "@/lib/services/notifications";
+import { splitPersonName } from "@/lib/utils";
 import { createStudentWithGuardians } from "./student-onboarding";
 
 export async function createAdmission(
@@ -115,22 +116,24 @@ export async function convertAdmissionToStudent(
 
   if (error || !app) return { error: "Application not found" };
 
-  const nameParts = app.student_name.trim().split(/\s+/);
-  const firstName = nameParts[0] ?? app.student_name;
-  const lastName = nameParts.slice(1).join(" ") || firstName;
+  const studentName = splitPersonName(app.student_name);
+  const guardianName = splitPersonName(app.guardian_name);
 
   const studentResult = await createStudentWithGuardians({
     school_id: app.school_id,
     branch_id: branchId,
-    first_name: firstName,
-    last_name: lastName,
+    first_name: studentName.first_name,
+    middle_name: studentName.middle_name,
+    last_name: studentName.last_name,
     date_of_birth: app.dob ?? "2000-01-01",
     gender: app.gender ?? undefined,
     class_id: undefined,
     status: "active",
     add_secondary_guardian: false,
     primary_guardian: {
-      name: app.guardian_name,
+      first_name: guardianName.first_name,
+      middle_name: guardianName.middle_name,
+      last_name: guardianName.last_name,
       email: app.guardian_email,
       whatsapp: app.guardian_phone ?? undefined,
       relation: app.relation ?? "guardian",

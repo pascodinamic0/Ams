@@ -34,7 +34,7 @@ export function GuardianForm({ schoolId }: { schoolId: string }) {
   }
 
   return (
-    <FormWrapper schema={guardianSchema} defaultValues={{ relation: "guardian" }} onSubmit={onSubmit}>
+    <FormWrapper schema={guardianSchema} defaultValues={{ relation: "guardian", first_name: "", middle_name: "", last_name: "" }} onSubmit={onSubmit}>
       <Card>
         <CardHeader>
           <CardTitle>Guardian details</CardTitle>
@@ -120,9 +120,17 @@ function GuardianFormFields() {
   return (
     <>
       <FormSection title="Contact information" description="How the school can reach this guardian">
-        <Field label="Full name" htmlFor="name" required error={errors.name?.message}>
-          <Input id="name" {...register("name")} error={!!errors.name} />
-        </Field>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Field label="First name" htmlFor="first_name" required error={errors.first_name?.message}>
+            <Input id="first_name" {...register("first_name")} error={!!errors.first_name} />
+          </Field>
+          <Field label="Middle name" htmlFor="middle_name" error={errors.middle_name?.message}>
+            <Input id="middle_name" {...register("middle_name")} error={!!errors.middle_name} />
+          </Field>
+          <Field label="Last name" htmlFor="last_name" required error={errors.last_name?.message}>
+            <Input id="last_name" {...register("last_name")} error={!!errors.last_name} />
+          </Field>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Email" htmlFor="email" required error={errors.email?.message}>
             <Input id="email" type="email" {...register("email")} error={!!errors.email} />

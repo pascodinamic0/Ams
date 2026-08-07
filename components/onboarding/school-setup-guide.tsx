@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { dismissSetupGuide, restoreSetupGuide } from "@/lib/actions/setup-guide";
 import type { SetupGuideProgress } from "@/lib/schools/setup-guide";
@@ -11,7 +11,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 type SchoolSetupGuideProps = {
   progress: SetupGuideProgress;
+  schoolId: string;
 };
+
+function setupGuideCollapsedKey(schoolId: string) {
+  return `shuleos.setup-guide.collapsed.${schoolId}`;
+}
 
 function CheckIcon({ done }: { done: boolean }) {
   if (done) {
@@ -29,12 +34,34 @@ function CheckIcon({ done }: { done: boolean }) {
   );
 }
 
-export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
+export function SchoolSetupGuide({ progress, schoolId }: SchoolSetupGuideProps) {
   const t = useTranslations("onboarding");
   const tc = useTranslations("common");
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+  const [collapseReady, setCollapseReady] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    try {
+      setCollapsed(localStorage.getItem(setupGuideCollapsedKey(schoolId)) === "1");
+    } catch {
+      // Ignore storage access errors (private mode, etc.)
+    }
+    setCollapseReady(true);
+  }, [schoolId]);
+
+  function toggleCollapsed() {
+    setCollapsed((current) => {
+      const next = !current;
+      try {
+        localStorage.setItem(setupGuideCollapsedKey(schoolId), next ? "1" : "0");
+      } catch {
+        // Ignore storage access errors
+      }
+      return next;
+    });
+  }
 
   if (progress.dismissed && !progress.allComplete) {
     return (
@@ -67,6 +94,7 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
   }
 
   const pct = Math.round((progress.completedCount / progress.totalCount) * 100);
+  const showSteps = collapseReady && !collapsed;
 
   return (
     <Card className="border-primary-200 bg-gradient-to-br from-teal-50/80 to-white dark:border-primary-900 dark:from-teal-950/30 dark:to-slate-900">
@@ -79,7 +107,7 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => setCollapsed((v) => !v)}>
+            <Button variant="ghost" size="sm" onClick={toggleCollapsed}>
               {collapsed ? tc("expand") : tc("collapse")}
             </Button>
             <Button
@@ -115,7 +143,7 @@ export function SchoolSetupGuide({ progress }: SchoolSetupGuideProps) {
           </div>
         </div>
       </CardHeader>
-      {!collapsed && (
+      {showSteps && (
         <CardContent className="pt-0">
           <ul className="space-y-2">
             {progress.steps.map((step) => {

@@ -10,6 +10,7 @@ export default async function FinanceLayout({ children }: { children: React.Reac
 
   return (
     <AppShell
+      localeLocked={Boolean(profile?.school_id)}
       sidebar={<Sidebar role={role} />}
       header={<span className="font-medium">{t("finance")}</span>}
       dashboardHref="/finance"

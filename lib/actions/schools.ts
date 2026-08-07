@@ -14,6 +14,8 @@ import {
   type SchoolWebsiteContent,
 } from "@/lib/schools/website-content";
 import { SCHOOL_CURRENCIES, type SchoolCurrencyCode } from "@/lib/currency";
+import { isValidLocale, type Locale } from "@/i18n/config";
+import { setLocale } from "@/lib/i18n/actions";
 
 export type CreateSchoolInput = {
   name: string;
@@ -234,6 +236,62 @@ export async function updateSchoolCurrency(
   revalidatePath("/finance/reports");
   revalidatePath("/finance/settings");
   revalidatePath("/finance/fee-reminders");
+  return {};
+}
+
+const LOCALE_MANAGERS = new Set([
+  "super_admin",
+  "academic_admin",
+  "admin_coordinator",
+  "principal",
+]);
+
+export async function updateSchoolLocale(schoolId: string, locale: Locale) {
+  if (!isValidLocale(locale)) {
+    return { error: "Invalid language" };
+  }
+
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return { error: "Not authenticated" };
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, school_id")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || !LOCALE_MANAGERS.has(profile.role)) {
+    return { error: "Not authorized to update school language" };
+  }
+
+  if (profile.role !== "super_admin" && profile.school_id !== schoolId) {
+    return { error: "You can only update language for your own school" };
+  }
+
+  const { error } = await supabase
+    .from("schools")
+    .update({ locale })
+    .eq("id", schoolId);
+
+  if (error) {
+    console.error("updateSchoolLocale error:", error);
+    return { error: error.message };
+  }
+
+  await setLocale(locale);
+
+  revalidatePath("/", "layout");
+  revalidatePath("/academic/settings");
+  revalidatePath("/finance/settings");
+  revalidatePath("/admin/schools");
+  revalidatePath(`/admin/schools/${schoolId}`);
+  revalidatePath("/settings");
   return {};
 }
 

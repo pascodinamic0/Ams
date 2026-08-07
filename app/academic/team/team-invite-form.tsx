@@ -11,7 +11,11 @@ import { inviteSchoolUser } from "@/lib/actions/invite-user";
 import { INVITABLE_ROLES } from "@/lib/validations/team";
 import { toast } from "@/lib/toast";
 
-export function TeamInviteForm() {
+interface TeamInviteFormProps {
+  canManage?: boolean;
+}
+
+export function TeamInviteForm({ canManage = true }: TeamInviteFormProps) {
   const t = useTranslations("academic");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -56,11 +60,19 @@ export function TeamInviteForm() {
       return;
     }
 
-    toast.success(t("invitationSent"));
+    if (result.data?.roleUpdated) {
+      toast.success(t("roleUpdatedViaInvite"));
+    } else {
+      toast.success(t("invitationSent"));
+    }
 
     setName("");
     setEmail("");
     router.refresh();
+  }
+
+  if (!canManage) {
+    return null;
   }
 
   return (

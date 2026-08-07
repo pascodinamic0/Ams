@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
+import { formatPersonName } from "@/lib/utils";
 
 export type ConversationListItem = {
   id: string;
@@ -77,7 +78,7 @@ export async function getConversations(): Promise<ConversationListItem[]> {
       created_by,
       created_at,
       updated_at,
-      students(first_name, last_name),
+      students(first_name, middle_name, last_name),
       profiles!conversations_created_by_fkey(name),
       conversation_messages(body, created_at, sender_id),
       conversation_participants(profile_id, last_read_at)
@@ -90,7 +91,7 @@ export async function getConversations(): Promise<ConversationListItem[]> {
   }
 
   return (data ?? []).map((c) => {
-    const student = c.students as { first_name?: string; last_name?: string } | null;
+    const student = c.students as { first_name?: string; middle_name?: string | null; last_name?: string } | null;
     const creator = c.profiles as { name?: string } | null;
     const msgs = (c.conversation_messages ?? []) as Array<{
       body: string;
@@ -108,9 +109,9 @@ export async function getConversations(): Promise<ConversationListItem[]> {
 
     return {
       id: c.id,
-      title: c.title ?? (student ? `${student.first_name} ${student.last_name}` : "Conversation"),
+      title: c.title ?? (student ? formatPersonName(student) : "Conversation"),
       student_id: c.student_id,
-      student_name: student ? `${student.first_name} ${student.last_name}`.trim() : null,
+      student_name: student ? formatPersonName(student) : null,
       created_by: c.created_by,
       created_by_name: creator?.name ?? "Unknown",
       last_message: lastMsg?.body ?? null,
@@ -144,7 +145,7 @@ export async function getConversationById(id: string): Promise<ConversationDetai
         .from("conversations")
         .select(`
           id, title, student_id, created_by, created_at, updated_at,
-          students(first_name, last_name),
+          students(first_name, middle_name, last_name),
           profiles!conversations_created_by_fkey(name)
         `)
         .eq("id", id)
@@ -165,7 +166,7 @@ export async function getConversationById(id: string): Promise<ConversationDetai
     return null;
   }
 
-  const student = conv.students as { first_name?: string; last_name?: string } | null;
+  const student = conv.students as { first_name?: string; middle_name?: string | null; last_name?: string } | null;
   const creator = conv.profiles as { name?: string } | null;
 
   const messages: ConversationMessage[] = (msgs ?? []).map((m) => {
@@ -198,9 +199,9 @@ export async function getConversationById(id: string): Promise<ConversationDetai
 
   return {
     id: conv.id,
-    title: conv.title ?? (student ? `${student.first_name} ${student.last_name}` : "Conversation"),
+    title: conv.title ?? (student ? formatPersonName(student) : "Conversation"),
     student_id: conv.student_id,
-    student_name: student ? `${student.first_name} ${student.last_name}`.trim() : null,
+    student_name: student ? formatPersonName(student) : null,
     created_by: conv.created_by,
     created_by_name: creator?.name ?? "Unknown",
     last_message: lastMessage?.body ?? null,
@@ -274,7 +275,7 @@ export async function getGuardianContacts(): Promise<GuardianContact[]> {
       guardian_id,
       student_id,
       guardians!guardian_students_guardian_id_fkey(id, name, phone, relation, auth_user_id),
-      students!guardian_students_student_id_fkey(id, first_name, last_name, classes!students_class_id_fkey(name))
+      students!guardian_students_student_id_fkey(id, first_name, middle_name, last_name, classes!students_class_id_fkey(name))
     `)
     .order("guardian_id");
 
@@ -296,6 +297,7 @@ export async function getGuardianContacts(): Promise<GuardianContact[]> {
     students: {
       id: string;
       first_name: string;
+      middle_name?: string | null;
       last_name: string;
       classes?: { name: string } | null;
     } | null;
@@ -311,7 +313,7 @@ export async function getGuardianContacts(): Promise<GuardianContact[]> {
       phone: g?.phone ?? null,
       relation: g?.relation ?? "guardian",
       student_id: s?.id ?? row.student_id,
-      student_name: s ? `${s.first_name} ${s.last_name}`.trim() : "Unknown Student",
+      student_name: s ? formatPersonName(s) : "Unknown Student",
       class_name: s?.classes?.name ?? "No Class",
       profile_id: g?.auth_user_id ?? null,
     };
@@ -338,7 +340,7 @@ export async function getStaffContactsForParent(): Promise<StaffContact[]> {
     .from("guardian_students")
     .select(`
       student_id,
-      students(id, first_name, last_name, class_id, classes(name))
+      students(id, first_name, middle_name, last_name, class_id, classes(name))
     `)
     .eq("guardian_id", guardian.id);
 
@@ -347,6 +349,7 @@ export async function getStaffContactsForParent(): Promise<StaffContact[]> {
     students: {
       id: string;
       first_name: string;
+      middle_name?: string | null;
       last_name: string;
       class_id: string | null;
       classes: { name: string } | null;
@@ -368,7 +371,7 @@ export async function getStaffContactsForParent(): Promise<StaffContact[]> {
     const student = link.students;
     if (!student) continue;
 
-    const studentName = `${student.first_name} ${student.last_name}`.trim();
+    const studentName = formatPersonName(student);
     const className = student.classes?.name ?? "Class";
 
     if (student.class_id) {

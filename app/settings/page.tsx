@@ -20,6 +20,7 @@ import { UserAvatar } from "@/components/layout/user-avatar";
 import { createClient } from "@/lib/supabase/client";
 import { uploadUserAvatar } from "@/lib/profile/avatar";
 import { toast } from "@/lib/toast";
+import { localeNames, type Locale } from "@/i18n/config";
 
 type ChangePasswordData = {
   current_password: string;
@@ -33,6 +34,8 @@ type ProfileInfo = {
   fullName: string;
   role: string;
   avatarUrl: string | null;
+  schoolId: string | null;
+  schoolLocale: string | null;
 };
 
 export default function SettingsPage() {
@@ -48,9 +51,12 @@ export default function SettingsPage() {
 
       const { data: row } = await supabase
         .from("profiles")
-        .select("name, role, avatar_url")
+        .select("name, role, avatar_url, school_id, schools(locale)")
         .eq("id", user.id)
         .single();
+
+      const school = row?.schools as { locale?: string } | { locale?: string }[] | null;
+      const schoolLocale = Array.isArray(school) ? school[0]?.locale ?? null : school?.locale ?? null;
 
       const fullName = row?.name || user.email?.split("@")[0] || "User";
       setProfile({
@@ -59,6 +65,8 @@ export default function SettingsPage() {
         fullName,
         role: row?.role ?? "user",
         avatarUrl: row?.avatar_url ?? null,
+        schoolId: row?.school_id ?? null,
+        schoolLocale,
       });
     }
     loadProfile();
@@ -86,7 +94,9 @@ export default function SettingsPage() {
         }
       />
       <AppearanceCard />
-      <LanguageCard />
+      <LanguageCard
+        lockedLocale={profile?.schoolId ? profile.schoolLocale : null}
+      />
       <AppInstallCard />
       <SecurityCard />
     </div>
@@ -196,8 +206,28 @@ function AppearanceCard() {
   );
 }
 
-function LanguageCard() {
+function LanguageCard({ lockedLocale }: { lockedLocale?: string | null }) {
   const t = useTranslations("settings");
+
+  if (lockedLocale) {
+    const language =
+      localeNames[(lockedLocale as Locale)] ?? lockedLocale.toUpperCase();
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("languageLockedTitle")}</CardTitle>
+          <p className="text-sm text-stone-500 dark:text-stone-400">
+            {t("languageLockedDescription")}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm font-medium text-stone-800 dark:text-stone-200">
+            {t("languageLockedValue", { language })}
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

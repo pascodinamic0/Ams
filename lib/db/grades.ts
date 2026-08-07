@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { formatPersonName } from "@/lib/utils";
 
 export type StudentGradeItem = {
   id: string;
@@ -62,7 +63,7 @@ export async function getGradesForClass(options: {
 
   const { data: students, error: studentsError } = await supabase
     .from("students")
-    .select("id, first_name, last_name, student_id, class_id")
+    .select("id, first_name, middle_name, last_name, student_id, class_id")
     .eq("class_id", options.classId)
     .eq("status", "active")
     .order("last_name");
@@ -90,7 +91,7 @@ export async function getGradesForClass(options: {
       return {
         id: g.id,
         student_id: g.student_id,
-        student_name: student ? `${student.first_name} ${student.last_name}` : "Unknown",
+        student_name: student ? formatPersonName(student) : "Unknown",
         student_number: student?.student_id ?? null,
         subject_id: g.subject_id,
         subject_name: (g.subjects as { name?: string } | null)?.name ?? "Subject",
@@ -130,7 +131,7 @@ export async function getGradesForClass(options: {
     return {
       id: existing?.id ?? null,
       student_id: s.id,
-      student_name: `${s.first_name} ${s.last_name}`,
+      student_name: formatPersonName(s),
       student_number: s.student_id,
       subject_id: options.subjectId!,
       subject_name: existing?.subject_name ?? "Subject",

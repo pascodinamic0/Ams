@@ -1,4 +1,5 @@
 import { SchoolCurrencyForm } from "@/components/schools/school-currency-form";
+import { SchoolLocaleForm } from "@/components/schools/school-locale-form";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getSchoolById } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
@@ -33,6 +34,13 @@ export default async function AcademicSettingsPage() {
           {t("settingsDescription")}
         </p>
       </div>
+
+      <SchoolLocaleForm
+        schoolId={school.id}
+        locale={school.locale}
+        title={t("localeTitle")}
+        description={t("localeDescription")}
+      />
 
       <SchoolCurrencyForm
         schoolId={school.id}

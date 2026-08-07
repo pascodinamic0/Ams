@@ -5,6 +5,7 @@ export * from "./invoice";
 export * from "./finance";
 export * from "./student";
 export * from "./student-onboarding";
+export * from "./school-structure";
 export * from "./operations";
 export * from "./teacher";
 export * from "./team";

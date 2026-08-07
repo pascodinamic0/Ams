@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { resolveLoginDestination } from "@/lib/auth/login-redirect";
+import { shouldNeedStructureSetup } from "@/lib/auth/structure-setup";
 
 const nameSchema = z
   .string()
@@ -68,19 +69,27 @@ export async function completeProfileOnboarding() {
   if (error) return { error: error.message };
 
   let schoolStatus: "pending" | "approved" | "suspended" | null = null;
+  let structureSetupCompletedAt: string | null = null;
   if (auth.profile.school_id) {
     const { data: school } = await auth.supabase
       .from("schools")
-      .select("status")
+      .select("status, structure_setup_completed_at")
       .eq("id", auth.profile.school_id)
       .single();
     schoolStatus = (school?.status as typeof schoolStatus) ?? null;
+    structureSetupCompletedAt = school?.structure_setup_completed_at ?? null;
   }
 
-  const destination = resolveLoginDestination({
+  const destination = shouldNeedStructureSetup({
     role: auth.profile.role,
     schoolStatus,
-  });
+    structureSetupCompletedAt,
+  })
+    ? "/onboarding/school"
+    : resolveLoginDestination({
+        role: auth.profile.role,
+        schoolStatus,
+      });
 
   revalidatePath("/", "layout");
   return { data: { destination } };

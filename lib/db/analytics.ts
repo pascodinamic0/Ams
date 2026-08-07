@@ -1,6 +1,7 @@
 import { format, subDays, endOfWeek, eachWeekOfInterval, parseISO } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
 import { getFinanceKPIs } from "./invoices";
+import { formatPersonName } from "@/lib/utils";
 
 export type ChartPoint = { name: string; value: number };
 export type MultiChartPoint = Record<string, string | number>;
@@ -215,7 +216,7 @@ export async function getStudentAnalytics(options?: Scope & { classId?: string }
 
   let studentsQuery = supabase
     .from("students")
-    .select("id, first_name, last_name, student_id, class_id, status, classes(name)")
+    .select("id, first_name, middle_name, last_name, student_id, class_id, status, classes(name)")
     .eq("status", "active");
   if (options?.schoolId) studentsQuery = studentsQuery.eq("school_id", options.schoolId);
   if (options?.branchId) studentsQuery = studentsQuery.eq("branch_id", options.branchId);
@@ -277,7 +278,7 @@ export async function getStudentAnalytics(options?: Scope & { classId?: string }
   for (const g of grades) {
     if (g.marks === null) continue;
     const student = students.find((s) => s.id === g.student_id);
-    const name = student ? `${student.first_name} ${student.last_name}` : "Student";
+    const name = student ? formatPersonName(student) : "Student";
     const code = student?.student_id ?? "-";
     if (!byStudent[g.student_id]) byStudent[g.student_id] = { name, student_id: code, sum: 0, count: 0 };
     byStudent[g.student_id].sum += Number(g.marks);
@@ -333,7 +334,7 @@ export async function getAttendanceAnalytics(options?: Scope & {
 
   let activeStudentsQuery = supabase
     .from("students")
-    .select("id, first_name, last_name, student_id, class_id, classes(name)")
+    .select("id, first_name, middle_name, last_name, student_id, class_id, classes(name)")
     .eq("status", "active");
   if (options?.schoolId) activeStudentsQuery = activeStudentsQuery.eq("school_id", options.schoolId);
   if (options?.branchId) activeStudentsQuery = activeStudentsQuery.eq("branch_id", options.branchId);
@@ -341,7 +342,7 @@ export async function getAttendanceAnalytics(options?: Scope & {
   const [attendanceResult, studentsResult, classesResult] = await Promise.all([
     supabase
       .from("attendance_records")
-      .select("status, date, student_id, students(first_name, last_name, student_id, class_id, school_id, branch_id, classes(name))")
+      .select("status, date, student_id, students(first_name, middle_name, last_name, student_id, class_id, school_id, branch_id, classes(name))")
       .gte("date", startDate)
       .lte("date", endDate),
     activeStudentsQuery,
@@ -391,11 +392,12 @@ export async function getAttendanceAnalytics(options?: Scope & {
   for (const r of records) {
     const student = r.students as {
       first_name?: string;
+      middle_name?: string | null;
       last_name?: string;
       student_id?: string;
       classes?: { name?: string };
     } | null;
-    const name = student ? `${student.first_name ?? ""} ${student.last_name ?? ""}`.trim() : "Student";
+    const name = student ? formatPersonName(student) : "Student";
     const code = student?.student_id ?? "-";
     const className = student?.classes?.name ?? "-";
     if (!studentStats[r.student_id]) {

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { formatPersonName } from "@/lib/utils";
 
 export type BookListItem = {
   id: string;
@@ -100,7 +101,7 @@ export async function getBookIssues(options?: {
       due_at,
       returned_at,
       books(title),
-      students(first_name, last_name)
+      students(first_name, middle_name, last_name)
     `)
     .in("book_id", bookIds)
     .order("issued_at", { ascending: false });
@@ -116,7 +117,7 @@ export async function getBookIssues(options?: {
   }
 
   return (data ?? []).map((issue) => {
-    const student = issue.students as { first_name?: string; last_name?: string } | null;
+    const student = issue.students as { first_name?: string; middle_name?: string | null; last_name?: string } | null;
     const book = issue.books as { title?: string } | null;
     return {
       id: issue.id,
@@ -124,7 +125,7 @@ export async function getBookIssues(options?: {
       book_title: book?.title ?? "Unknown",
       student_id: issue.student_id,
       student_name: student
-        ? `${student.first_name ?? ""} ${student.last_name ?? ""}`.trim()
+        ? formatPersonName(student)
         : "Unknown",
       issued_at: issue.issued_at,
       due_at: issue.due_at,
