@@ -318,10 +318,10 @@ export default function SchoolStructureOnboardingPage() {
   if (loading) {
     return (
       <div className="space-y-5">
-        <div className="h-3 w-28 animate-pulse rounded-full bg-white/10" />
-        <div className="h-10 w-64 animate-pulse rounded-lg bg-white/10" />
-        <div className="h-4 w-full max-w-sm animate-pulse rounded bg-white/5" />
-        <div className="h-56 animate-pulse rounded-2xl border border-white/10 bg-white/[0.03]" />
+        <div className="h-3 w-28 animate-pulse rounded-full bg-mkt-ink/10" />
+        <div className="h-10 w-64 animate-pulse rounded-lg bg-mkt-ink/10" />
+        <div className="h-4 w-full max-w-sm animate-pulse rounded bg-mkt-ink/5" />
+        <div className="h-56 animate-pulse border border-mkt-ink/10 bg-mkt-ink/[0.03]" />
       </div>
     );
   }
@@ -344,25 +344,25 @@ export default function SchoolStructureOnboardingPage() {
         </AnimatePresence>
       </div>
 
-      <div className="space-y-7">
+      <div className="space-y-6 sm:space-y-7">
         <motion.div
           initial={reduceMotion ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-500">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">
             {t("badge")}
           </p>
-          <h1 className="mt-2 font-display text-3xl tracking-tight text-white sm:text-4xl">
+          <h1 className="mt-2 font-display text-3xl tracking-tight text-mkt-ink sm:text-4xl">
             {t("title")}
           </h1>
-          <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/50">
+          <p className="mt-3 max-w-xl text-sm leading-relaxed text-mkt-ink/55">
             {t("subtitle", { school: schoolName })}
           </p>
         </motion.div>
 
         <div className="space-y-3">
-          <div className="relative h-px bg-white/10">
+          <div className="relative h-px bg-mkt-ink/10">
             <motion.div
               className="absolute inset-y-0 left-0 origin-left bg-amber-500"
               initial={false}
@@ -392,25 +392,16 @@ export default function SchoolStructureOnboardingPage() {
                   aria-current={active ? "step" : undefined}
                 >
                   <motion.span
-                    animate={{
-                      scale: active ? 1.08 : 1,
-                      borderColor:
-                        active || complete
-                          ? "rgb(245 158 11)"
-                          : "rgba(255,255,255,0.15)",
-                      backgroundColor: complete
-                        ? "rgb(245 158 11)"
-                        : active
-                          ? "rgba(245,158,11,0.12)"
-                          : "rgba(0,0,0,0)",
-                      color: complete
-                        ? "rgb(0 0 0)"
-                        : active
-                          ? "rgb(245 158 11)"
-                          : "rgba(255,255,255,0.35)",
-                    }}
+                    animate={{ scale: active ? 1.08 : 1 }}
                     transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border"
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-full border",
+                      complete
+                        ? "border-amber-500 bg-amber-500 text-black"
+                        : active
+                          ? "border-amber-500 bg-amber-500/15 text-amber-600 dark:text-amber-500"
+                          : "border-mkt-ink/15 text-mkt-ink/35"
+                    )}
                   >
                     {complete ? (
                       <Check className="h-4 w-4" strokeWidth={2.5} />
@@ -421,7 +412,7 @@ export default function SchoolStructureOnboardingPage() {
                   <span
                     className={cn(
                       "hidden text-[10px] font-semibold uppercase tracking-[0.16em] sm:block",
-                      active || complete ? "text-white/70" : "text-white/30"
+                      active || complete ? "text-mkt-ink/70" : "text-mkt-ink/30"
                     )}
                   >
                     {t(`steps.${step}.title`)}
@@ -431,7 +422,7 @@ export default function SchoolStructureOnboardingPage() {
             })}
           </div>
 
-          <p className="text-center text-xs text-white/40 sm:text-left">
+          <p className="text-center text-xs text-mkt-ink/45 sm:text-left">
             {t("stepProgress", {
               current: stepIndex + 1,
               total: STEPS.length,
@@ -440,7 +431,7 @@ export default function SchoolStructureOnboardingPage() {
           </p>
         </div>
 
-        <div className="relative min-h-[280px] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+        <div className="relative min-h-[280px] overflow-hidden border border-mkt-ink/10 bg-mkt-ink/[0.02]">
           <AnimatePresence mode="wait" custom={direction} initial={false}>
             <motion.div
               key={currentStep}
@@ -453,22 +444,22 @@ export default function SchoolStructureOnboardingPage() {
                 duration: reduceMotion ? 0.15 : 0.42,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="p-6 sm:p-7"
+              className="p-5 sm:p-7"
             >
               <div className="mb-5 flex items-start gap-3">
                 <motion.div
                   initial={reduceMotion ? false : { rotate: -8, scale: 0.9 }}
                   animate={{ rotate: 0, scale: 1 }}
                   transition={{ type: "spring", stiffness: 220, damping: 16 }}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-amber-500/40 text-amber-500"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-amber-500/40 text-amber-600 dark:text-amber-500"
                 >
                   <StepIcon className="h-5 w-5" />
                 </motion.div>
                 <div>
-                  <h2 className="text-lg font-semibold text-white">
+                  <h2 className="text-lg font-semibold text-mkt-ink">
                     {t(`steps.${currentStep}.title`)}
                   </h2>
-                  <p className="mt-1 text-sm leading-relaxed text-white/50">
+                  <p className="mt-1 text-sm leading-relaxed text-mkt-ink/55">
                     {t(`steps.${currentStep}.description`)}
                   </p>
                 </div>
@@ -484,16 +475,16 @@ export default function SchoolStructureOnboardingPage() {
                         type="button"
                         onClick={() => selectLevel(value)}
                         className={cn(
-                          "rounded-xl border px-4 py-3 text-left transition",
+                          "border px-4 py-3 text-left transition",
                           active
-                            ? "border-amber-500 bg-amber-500/15 text-white"
-                            : "border-white/10 bg-black/30 text-white/70 hover:border-white/25 hover:text-white"
+                            ? "border-amber-500 bg-amber-500/15 text-mkt-ink"
+                            : "border-mkt-ink/10 bg-mkt-ink/[0.03] text-mkt-ink/70 hover:border-mkt-ink/25 hover:text-mkt-ink"
                         )}
                       >
                         <p className="text-sm font-semibold">
                           {t(`levels.${value}.label`)}
                         </p>
-                        <p className="mt-1 text-xs leading-relaxed text-white/45">
+                        <p className="mt-1 text-xs leading-relaxed text-mkt-ink/50">
                           {t(`levels.${value}.hint`)}
                         </p>
                       </button>
@@ -517,7 +508,7 @@ export default function SchoolStructureOnboardingPage() {
                               "rounded-full border px-3 py-1.5 text-sm transition",
                               active
                                 ? "border-amber-500 bg-amber-500 text-black"
-                                : "border-white/15 bg-black/30 text-white/70 hover:border-white/30"
+                                : "border-mkt-ink/15 bg-mkt-ink/[0.03] text-mkt-ink/70 hover:border-mkt-ink/30"
                             )}
                           >
                             {grade.label}
@@ -526,10 +517,10 @@ export default function SchoolStructureOnboardingPage() {
                       })}
                     </div>
                   ) : (
-                    <p className="text-sm text-white/50">{t("customGradesOnly")}</p>
+                    <p className="text-sm text-mkt-ink/55">{t("customGradesOnly")}</p>
                   )}
 
-                  <div className="space-y-2 border-t border-white/10 pt-4">
+                  <div className="space-y-2 border-t border-mkt-ink/10 pt-4">
                     <Label htmlFor="custom_grade">{t("customGradeLabel")}</Label>
                     <div className="flex gap-2">
                       <Input
@@ -543,7 +534,6 @@ export default function SchoolStructureOnboardingPage() {
                           }
                         }}
                         placeholder={t("customGradePlaceholder")}
-                        className="border-white/15 bg-black/50 text-white placeholder:text-white/30 focus:ring-amber-500"
                       />
                       <Button
                         type="button"
@@ -562,7 +552,7 @@ export default function SchoolStructureOnboardingPage() {
                             key={grade}
                             type="button"
                             onClick={() => removeCustomGrade(grade)}
-                            className="rounded-full border border-amber-500/50 bg-amber-500/15 px-3 py-1 text-sm text-amber-100"
+                            className="rounded-full border border-amber-500/50 bg-amber-500/15 px-3 py-1 text-sm text-amber-800 dark:text-amber-100"
                           >
                             {grade} ×
                           </button>
@@ -584,10 +574,10 @@ export default function SchoolStructureOnboardingPage() {
                           type="button"
                           onClick={() => toggleSection(letter)}
                           className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-semibold transition",
+                            "flex h-10 w-10 items-center justify-center border text-sm font-semibold transition",
                             active
                               ? "border-amber-500 bg-amber-500 text-black"
-                              : "border-white/15 bg-black/30 text-white/70 hover:border-white/30"
+                              : "border-mkt-ink/15 bg-mkt-ink/[0.03] text-mkt-ink/70 hover:border-mkt-ink/30"
                           )}
                         >
                           {letter}
@@ -595,7 +585,7 @@ export default function SchoolStructureOnboardingPage() {
                       );
                     })}
                   </div>
-                  <p className="text-sm text-white/50">
+                  <p className="text-sm text-mkt-ink/55">
                     {t("sectionsHint", { count: plannedCount })}
                   </p>
                 </div>
@@ -603,8 +593,8 @@ export default function SchoolStructureOnboardingPage() {
 
               {currentStep === "confirm" && (
                 <div className="space-y-4">
-                  <div className="rounded-xl border border-white/10 bg-black/40 p-4">
-                    <p className="text-sm text-white/70">
+                  <div className="border border-mkt-ink/10 bg-mkt-ink/[0.04] p-4">
+                    <p className="text-sm text-mkt-ink/70">
                       {t("confirmSummary", {
                         level: level ? t(`levels.${level}.label`) : "",
                         grades: selectedGrades.length,
@@ -612,21 +602,21 @@ export default function SchoolStructureOnboardingPage() {
                         classes: plannedCount,
                       })}
                     </p>
-                    <p className="mt-3 text-xs uppercase tracking-[0.14em] text-white/40">
+                    <p className="mt-3 text-xs uppercase tracking-[0.14em] text-mkt-ink/45">
                       {t("noStudentsNote")}
                     </p>
                   </div>
                   {previewNames.length > 0 ? (
                     <div>
-                      <p className="mb-2 text-xs uppercase tracking-[0.14em] text-white/40">
+                      <p className="mb-2 text-xs uppercase tracking-[0.14em] text-mkt-ink/45">
                         {t("previewLabel")}
                       </p>
-                      <ul className="space-y-1 text-sm text-white/65">
+                      <ul className="space-y-1 text-sm text-mkt-ink/65">
                         {previewNames.map((name) => (
                           <li key={name}>{name}</li>
                         ))}
                         {plannedCount > previewNames.length ? (
-                          <li className="text-white/40">
+                          <li className="text-mkt-ink/45">
                             {t("previewMore", {
                               count: plannedCount - previewNames.length,
                             })}
@@ -649,7 +639,7 @@ export default function SchoolStructureOnboardingPage() {
                 variant="ghost"
                 disabled={saving}
                 onClick={() => goToStep(stepIndex - 1)}
-                className="text-white/70 hover:bg-white/5 hover:text-white"
+                className="rounded-full text-mkt-ink/70 hover:bg-mkt-ink/5 hover:text-mkt-ink"
               >
                 {tc("back")}
               </Button>
@@ -659,7 +649,7 @@ export default function SchoolStructureOnboardingPage() {
                 variant="ghost"
                 disabled={saving}
                 onClick={() => void handleSkip()}
-                className="text-white/50 hover:bg-white/5 hover:text-white/80"
+                className="rounded-full text-mkt-ink/50 hover:bg-mkt-ink/5 hover:text-mkt-ink/80"
               >
                 {t("skip")}
               </Button>
@@ -673,7 +663,7 @@ export default function SchoolStructureOnboardingPage() {
               if (isLastStep) void handleCreate();
               else handleNext();
             }}
-            className="bg-amber-500 text-black hover:bg-amber-400"
+            className="rounded-full bg-amber-500 text-black hover:bg-amber-400"
           >
             {saving
               ? tc("saving")
