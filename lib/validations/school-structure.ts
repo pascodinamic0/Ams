@@ -1,11 +1,14 @@
 import { z } from "zod";
 import {
-  SCHOOL_LEVELS,
+  SELECTABLE_SCHOOL_LEVELS,
   SECTION_LETTERS,
 } from "@/lib/schools/structure-presets";
 
 export const schoolStructureSchema = z.object({
-  school_level: z.enum(SCHOOL_LEVELS),
+  school_levels: z
+    .array(z.enum(SELECTABLE_SCHOOL_LEVELS))
+    .min(1, "Select at least one school level")
+    .max(SELECTABLE_SCHOOL_LEVELS.length),
   grades: z
     .array(z.string().trim().min(1).max(80))
     .min(1, "Select at least one grade")

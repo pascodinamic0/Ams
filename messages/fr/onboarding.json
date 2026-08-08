@@ -68,7 +68,8 @@
     "skip": "Je configurerai cela moi-même",
     "skipSuccess": "Configuration de structure ignorée. Vous pouvez créer des classes à tout moment.",
     "skipFailed": "Impossible d'ignorer la configuration. Réessayez.",
-    "levelRequired": "Sélectionnez le niveau de votre école pour continuer.",
+    "levelRequired": "Sélectionnez au moins un niveau scolaire pour continuer.",
+    "levelMultiHint": "Cochez tous les niveaux que vous offrez — beaucoup d'écoles en couvrent plusieurs.",
     "gradesRequired": "Sélectionnez au moins un niveau/classe.",
     "sectionsRequired": "Sélectionnez au moins une section.",
     "duplicateGrade": "Ce niveau est déjà sélectionné.",
@@ -86,8 +87,8 @@
     "createFailed": "Impossible de créer les classes. Réessayez.",
     "steps": {
       "level": {
-        "title": "Niveau d'école",
-        "description": "Choisissez le niveau qui correspond à votre établissement pour proposer les bons grades."
+        "title": "Niveaux d'école",
+        "description": "Cochez chaque bande que votre établissement couvre — maternelle, primaire, secondaire, supérieur — pour que les suggestions de classes correspondent au campus réel, pas à une seule étiquette."
       },
       "grades": {
         "title": "Niveaux",

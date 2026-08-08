@@ -21,14 +21,17 @@ import {
   skipSchoolStructureSetup,
 } from "@/lib/actions/school-structure";
 import {
-  GRADE_PRESETS_BY_LEVEL,
-  SCHOOL_LEVELS,
+  SELECTABLE_SCHOOL_LEVELS,
   SECTION_LETTERS,
   buildClassName,
   countPlannedClasses,
-  defaultGradeIdsForLevel,
+  defaultGradeIdsForLevels,
+  expandSchoolLevels,
+  gradePresetsForLevels,
+  orderSchoolLevels,
   type SchoolLevel,
   type SectionLetter,
+  type SelectableSchoolLevel,
 } from "@/lib/schools/structure-presets";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -62,7 +65,7 @@ export default function SchoolStructureOnboardingPage() {
   const [stepIndex, setStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [schoolName, setSchoolName] = useState("");
-  const [level, setLevel] = useState<SchoolLevel | null>(null);
+  const [levels, setLevels] = useState<SelectableSchoolLevel[]>([]);
   const [selectedGradeIds, setSelectedGradeIds] = useState<string[]>([]);
   const [customGrades, setCustomGrades] = useState<string[]>([]);
   const [customDraft, setCustomDraft] = useState("");
@@ -98,7 +101,9 @@ export default function SchoolStructureOnboardingPage() {
 
       const { data: school } = await supabase
         .from("schools")
-        .select("name, status, school_level, structure_setup_completed_at")
+        .select(
+          "name, status, school_level, school_levels, structure_setup_completed_at"
+        )
         .eq("id", profile.school_id)
         .single();
 
@@ -128,10 +133,15 @@ export default function SchoolStructureOnboardingPage() {
       }
 
       setSchoolName(school.name);
-      if (school.school_level) {
-        const existingLevel = school.school_level as SchoolLevel;
-        setLevel(existingLevel);
-        setSelectedGradeIds(defaultGradeIdsForLevel(existingLevel));
+      const existingLevels = expandSchoolLevels(
+        (school.school_levels as SchoolLevel[] | null) ?? null,
+        (school.school_level as SchoolLevel | null) ?? null
+      ).filter((level): level is SelectableSchoolLevel =>
+        (SELECTABLE_SCHOOL_LEVELS as readonly string[]).includes(level)
+      );
+      if (existingLevels.length > 0) {
+        setLevels(existingLevels);
+        setSelectedGradeIds(defaultGradeIdsForLevels(existingLevels));
       }
       setLoading(false);
     }
@@ -144,7 +154,10 @@ export default function SchoolStructureOnboardingPage() {
   const StepIcon = STEP_ICONS[currentStep];
   const progress = ((stepIndex + 1) / STEPS.length) * 100;
 
-  const presetGrades = level ? GRADE_PRESETS_BY_LEVEL[level] : [];
+  const presetGrades = useMemo(
+    () => gradePresetsForLevels(levels),
+    [levels]
+  );
 
   const selectedGrades = useMemo(() => {
     const fromPresets = presetGrades
@@ -152,6 +165,14 @@ export default function SchoolStructureOnboardingPage() {
       .map((g) => g.grade);
     return [...fromPresets, ...customGrades];
   }, [presetGrades, selectedGradeIds, customGrades]);
+
+  const levelSummary = useMemo(
+    () =>
+      orderSchoolLevels(levels)
+        .map((level) => t(`levels.${level}.label`))
+        .join(" · "),
+    [levels, t]
+  );
 
   const plannedCount = countPlannedClasses(selectedGrades, sections);
   const previewNames = useMemo(() => {
@@ -171,13 +192,24 @@ export default function SchoolStructureOnboardingPage() {
     setStepIndex(nextIndex);
   }
 
-  function selectLevel(next: SchoolLevel) {
-    setLevel(next);
-    setSelectedGradeIds(defaultGradeIdsForLevel(next));
-    if (next !== "other") {
-      setCustomGrades([]);
-      setCustomDraft("");
-    }
+  function toggleLevel(next: SelectableSchoolLevel) {
+    setLevels((current) => {
+      const exists = current.includes(next);
+      const updated = orderSchoolLevels(
+        exists ? current.filter((level) => level !== next) : [...current, next]
+      ).filter((level): level is SelectableSchoolLevel =>
+        (SELECTABLE_SCHOOL_LEVELS as readonly string[]).includes(level)
+      );
+
+      const allowedIds = new Set(defaultGradeIdsForLevels(updated));
+      setSelectedGradeIds((grades) => {
+        const kept = grades.filter((id) => allowedIds.has(id));
+        if (exists) return kept;
+        return [...new Set([...kept, ...defaultGradeIdsForLevels([next])])];
+      });
+
+      return updated;
+    });
   }
 
   function toggleGradeId(id: string) {
@@ -217,7 +249,7 @@ export default function SchoolStructureOnboardingPage() {
   }
 
   function handleNext() {
-    if (currentStep === "level" && !level) {
+    if (currentStep === "level" && levels.length === 0) {
       toast.error(t("levelRequired"));
       return;
     }
@@ -233,7 +265,7 @@ export default function SchoolStructureOnboardingPage() {
   }
 
   async function handleCreate() {
-    if (!level) {
+    if (levels.length === 0) {
       toast.error(t("levelRequired"));
       return;
     }
@@ -245,7 +277,7 @@ export default function SchoolStructureOnboardingPage() {
     setSaving(true);
     try {
       const result = await createSchoolStructure({
-        school_level: level,
+        school_levels: levels,
         grades: selectedGrades,
         sections,
       });
@@ -466,30 +498,47 @@ export default function SchoolStructureOnboardingPage() {
               </div>
 
               {currentStep === "level" && (
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {SCHOOL_LEVELS.map((value) => {
-                    const active = level === value;
-                    return (
-                      <button
-                        key={value}
-                        type="button"
-                        onClick={() => selectLevel(value)}
-                        className={cn(
-                          "border px-4 py-3 text-left transition",
-                          active
-                            ? "border-amber-500 bg-amber-500/15 text-mkt-ink"
-                            : "border-mkt-ink/10 bg-mkt-ink/[0.03] text-mkt-ink/70 hover:border-mkt-ink/25 hover:text-mkt-ink"
-                        )}
-                      >
-                        <p className="text-sm font-semibold">
-                          {t(`levels.${value}.label`)}
-                        </p>
-                        <p className="mt-1 text-xs leading-relaxed text-mkt-ink/50">
-                          {t(`levels.${value}.hint`)}
-                        </p>
-                      </button>
-                    );
-                  })}
+                <div className="space-y-3">
+                  <p className="text-xs text-mkt-ink/50">{t("levelMultiHint")}</p>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {SELECTABLE_SCHOOL_LEVELS.map((value) => {
+                      const active = levels.includes(value);
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          aria-pressed={active}
+                          onClick={() => toggleLevel(value)}
+                          className={cn(
+                            "flex items-start gap-3 border px-4 py-3 text-left transition",
+                            active
+                              ? "border-amber-600 bg-amber-500/20 text-mkt-ink dark:border-amber-500 dark:bg-amber-500/15"
+                              : "border-mkt-ink/15 bg-mkt-ink/[0.03] text-mkt-ink/75 hover:border-mkt-ink/30 hover:text-mkt-ink"
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border",
+                              active
+                                ? "border-amber-600 bg-amber-500 text-black dark:border-amber-500"
+                                : "border-mkt-ink/25 bg-transparent text-transparent"
+                            )}
+                            aria-hidden
+                          >
+                            <Check className="h-3 w-3" strokeWidth={3} />
+                          </span>
+                          <span className="min-w-0">
+                            <p className="text-sm font-semibold text-mkt-ink">
+                              {t(`levels.${value}.label`)}
+                            </p>
+                            <p className="mt-1 text-xs leading-relaxed text-mkt-ink/55">
+                              {t(`levels.${value}.hint`)}
+                            </p>
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
@@ -596,7 +645,7 @@ export default function SchoolStructureOnboardingPage() {
                   <div className="border border-mkt-ink/10 bg-mkt-ink/[0.04] p-4">
                     <p className="text-sm text-mkt-ink/70">
                       {t("confirmSummary", {
-                        level: level ? t(`levels.${level}.label`) : "",
+                        level: levelSummary,
                         grades: selectedGrades.length,
                         sections: sections.join(", "),
                         classes: plannedCount,
