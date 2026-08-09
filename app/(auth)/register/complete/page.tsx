@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { registerSchoolOrganization } from "@/lib/actions/school-registration";
+import { resolvePostAuthDestination } from "@/lib/actions/post-auth-redirect";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 import { localeNames, type Locale } from "@/i18n/config";
@@ -47,13 +48,11 @@ export default function RegisterCompletePage() {
         .eq("id", user.id)
         .single();
 
-      if (profile?.school_id) {
-        router.replace("/");
-        return;
-      }
-
-      if (profile?.role === "super_admin") {
-        window.location.assign("/admin");
+      if (profile?.school_id || profile?.role === "super_admin") {
+        const destination = await resolvePostAuthDestination({
+          userId: user.id,
+        });
+        window.location.assign(destination);
         return;
       }
 
