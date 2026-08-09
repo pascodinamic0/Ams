@@ -9,11 +9,75 @@ export const SCHOOL_LEVELS = [
 
 export type SchoolLevel = (typeof SCHOOL_LEVELS)[number];
 
+/** Levels users can pick in the structure wizard (multi-select). */
+export const SELECTABLE_SCHOOL_LEVELS = [
+  "nursery",
+  "primary",
+  "secondary",
+  "university",
+  "other",
+] as const satisfies readonly SchoolLevel[];
+
+export type SelectableSchoolLevel = (typeof SELECTABLE_SCHOOL_LEVELS)[number];
+
 export type GradePreset = {
   id: string;
   label: string;
   grade: string;
 };
+
+const LEVEL_ORDER = new Map(
+  SCHOOL_LEVELS.map((level, index) => [level, index] as const)
+);
+
+/** Expand legacy `combined` into primary + secondary for multi-select UI. */
+export function expandSchoolLevels(
+  levels: SchoolLevel[] | null | undefined,
+  fallback?: SchoolLevel | null
+): SchoolLevel[] {
+  const raw =
+    levels && levels.length > 0
+      ? levels
+      : fallback
+        ? [fallback]
+        : [];
+
+  const expanded = raw.flatMap((level) =>
+    level === "combined"
+      ? (["primary", "secondary"] as SchoolLevel[])
+      : [level]
+  );
+
+  return orderSchoolLevels(expanded);
+}
+
+export function orderSchoolLevels(levels: SchoolLevel[]): SchoolLevel[] {
+  return [...new Set(levels)].sort(
+    (a, b) => (LEVEL_ORDER.get(a) ?? 99) - (LEVEL_ORDER.get(b) ?? 99)
+  );
+}
+
+/** Single-column summary kept for older readers of `schools.school_level`. */
+export function derivePrimarySchoolLevel(levels: SchoolLevel[]): SchoolLevel {
+  const ordered = orderSchoolLevels(
+    levels.flatMap((level) =>
+      level === "combined"
+        ? (["primary", "secondary"] as SchoolLevel[])
+        : [level]
+    )
+  );
+
+  if (ordered.length === 0) return "other";
+  if (ordered.length === 1) return ordered[0]!;
+
+  const onlyPrimarySecondary =
+    ordered.length === 2 &&
+    ordered.includes("primary") &&
+    ordered.includes("secondary");
+
+  if (onlyPrimarySecondary) return "combined";
+  return ordered[0]!;
+}
 
 export const SECTION_LETTERS = [
   "A",
@@ -86,6 +150,25 @@ export const GRADE_PRESETS_BY_LEVEL: Record<SchoolLevel, GradePreset[]> = {
   university: UNIVERSITY_GRADES,
   other: [],
 };
+
+export function gradePresetsForLevels(levels: SchoolLevel[]): GradePreset[] {
+  const seen = new Set<string>();
+  const presets: GradePreset[] = [];
+
+  for (const level of orderSchoolLevels(levels)) {
+    for (const grade of GRADE_PRESETS_BY_LEVEL[level]) {
+      if (seen.has(grade.id)) continue;
+      seen.add(grade.id);
+      presets.push(grade);
+    }
+  }
+
+  return presets;
+}
+
+export function defaultGradeIdsForLevels(levels: SchoolLevel[]): string[] {
+  return gradePresetsForLevels(levels).map((grade) => grade.id);
+}
 
 /** Default selected grade ids when a level is first chosen. */
 export function defaultGradeIdsForLevel(level: SchoolLevel): string[] {

@@ -2,7 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { buildClassName } from "@/lib/schools/structure-presets";
+import {
+  buildClassName,
+  derivePrimarySchoolLevel,
+  orderSchoolLevels,
+} from "@/lib/schools/structure-presets";
 import {
   schoolStructureSchema,
   type SchoolStructureInput,
@@ -67,7 +71,9 @@ export async function createSchoolStructure(input: SchoolStructureInput) {
   const auth = await requireStructureAdmin();
   if ("error" in auth) return auth;
 
-  const { grades, sections, school_level } = parsed.data;
+  const { grades, sections, school_levels } = parsed.data;
+  const orderedLevels = orderSchoolLevels(school_levels);
+  const school_level = derivePrimarySchoolLevel(orderedLevels);
   const uniqueGrades = [...new Set(grades.map((g) => g.trim()).filter(Boolean))];
   const uniqueSections = [...new Set(sections)];
 
@@ -141,6 +147,7 @@ export async function createSchoolStructure(input: SchoolStructureInput) {
     .from("schools")
     .update({
       school_level,
+      school_levels: orderedLevels,
       structure_setup_completed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })
