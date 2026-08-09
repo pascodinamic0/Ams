@@ -12,8 +12,27 @@ const appIconPath = path.join(root, "app/icon.png");
 
 const sizes = [72, 96, 128, 144, 152, 180, 192, 384, 512];
 
-// Teal primary #0d9488
-const maskableBackground = { r: 13, g: 148, b: 136, alpha: 1 };
+// Soft off-white so the dark-teal mark stays crisp on home screens
+const iconBackground = { r: 255, g: 255, b: 255, alpha: 1 };
+const maskableBackground = { r: 255, g: 255, b: 255, alpha: 1 };
+
+async function renderIcon(svg, size, paddingRatio = 0.12) {
+  const inner = Math.round(size * (1 - paddingRatio * 2));
+  const pad = Math.round((size - inner) / 2);
+  const mark = await sharp(svg).resize(inner, inner).png().toBuffer();
+
+  return sharp({
+    create: {
+      width: size,
+      height: size,
+      channels: 4,
+      background: iconBackground,
+    },
+  })
+    .composite([{ input: mark, top: pad, left: pad }])
+    .png()
+    .toBuffer();
+}
 
 async function main() {
   await mkdir(outDir, { recursive: true });
@@ -21,13 +40,14 @@ async function main() {
 
   for (const size of sizes) {
     const out = path.join(outDir, `icon-${size}x${size}.png`);
-    await sharp(faviconSvg).resize(size, size).png().toFile(out);
+    const buffer = await renderIcon(faviconSvg, size, size <= 96 ? 0.1 : 0.12);
+    await sharp(buffer).toFile(out);
     console.log(`Wrote ${path.relative(root, out)}`);
   }
 
   const maskableSize = 512;
   const maskableOut = path.join(outDir, "maskable-icon-512x512.png");
-  const iconSize = Math.round(maskableSize * 0.72);
+  const iconSize = Math.round(maskableSize * 0.68);
   const padding = Math.round((maskableSize - iconSize) / 2);
   const iconBuffer = await sharp(faviconSvg).resize(iconSize, iconSize).png().toBuffer();
 
@@ -50,9 +70,16 @@ async function main() {
     [faviconPath, 32],
     [appIconPath, 32],
   ]) {
-    await sharp(faviconSvg).resize(size, size).png().toFile(out);
+    const buffer = await renderIcon(faviconSvg, size, 0.08);
+    await sharp(buffer).toFile(out);
     console.log(`Wrote ${path.relative(root, out)}`);
   }
+
+  // Keep a high-res mark source for future regenerations
+  const markSource = path.join(root, "scripts/assets/shuleos-favicon-source.png");
+  await mkdir(path.dirname(markSource), { recursive: true });
+  await sharp(faviconSvg).resize(512, 512).png().toFile(markSource);
+  console.log(`Wrote ${path.relative(root, markSource)}`);
 }
 
 main().catch((error) => {

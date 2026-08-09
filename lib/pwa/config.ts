@@ -2,7 +2,8 @@ import { companyIdentity } from "@/lib/company/identity";
 import type { MetadataRoute } from "next";
 
 export const pwaThemeColor = companyIdentity.brand.primary;
-export const pwaBackgroundColor = companyIdentity.brand.background;
+/** Matches the mobile splash canvas so install/launch feels seamless */
+export const pwaBackgroundColor = "#ffffff";
 
 const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512] as const;
 

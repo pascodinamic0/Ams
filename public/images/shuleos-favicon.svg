@@ -1,58 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="ShuleOS">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" fill="none" role="img" aria-label="ShuleOS">
   <defs>
-    <linearGradient id="book" x1="8" y1="40" x2="40" y2="28">
-      <stop offset="0%" stop-color="#047857"/>
-      <stop offset="55%" stop-color="#0d9488"/>
-      <stop offset="100%" stop-color="#2dd4bf"/>
+    <linearGradient id="star" x1="64" y1="26" x2="64" y2="78">
+      <stop offset="0%" stop-color="#FFE49A"/>
+      <stop offset="42%" stop-color="#F6B23A"/>
+      <stop offset="100%" stop-color="#E07A14"/>
     </linearGradient>
-    <linearGradient id="page" x1="14" y1="32" x2="34" y2="38">
-      <stop offset="0%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#ccfbf1"/>
-    </linearGradient>
-    <linearGradient id="beam" x1="24" y1="36" x2="24" y2="14">
-      <stop offset="0%" stop-color="#5eead4"/>
-      <stop offset="45%" stop-color="#ffffff"/>
-      <stop offset="100%" stop-color="#99f6e4"/>
-    </linearGradient>
-    <linearGradient id="star" x1="24" y1="3" x2="24" y2="16">
-      <stop offset="0%" stop-color="#fef08a"/>
-      <stop offset="50%" stop-color="#fbbf24"/>
-      <stop offset="100%" stop-color="#d97706"/>
+    <radialGradient id="starCore" cx="64" cy="52" r="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFF6C8"/>
+      <stop offset="55%" stop-color="#F7C14A"/>
+      <stop offset="100%" stop-color="#E8912D" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="book" x1="28" y1="70" x2="100" y2="104">
+      <stop offset="0%" stop-color="#0A3A36"/>
+      <stop offset="55%" stop-color="#0F4F49"/>
+      <stop offset="100%" stop-color="#165E56"/>
     </linearGradient>
   </defs>
+
+  <!-- Outer orbital arc + satellite -->
   <path
-    d="M24 39.5L7.5 33.2C5.8 32.4 5 30.5 5.8 28.8C6.6 27.1 8.5 26.3 10.2 27.1L24 32.8L37.8 27.1C39.5 26.3 41.4 27.1 42.2 28.8C43 30.5 42.2 32.4 40.5 33.2L24 39.5Z"
+    d="M28 62C28 36.5 48.5 20 64 20C79.5 20 100 36.5 100 62"
+    stroke="#2A3230"
+    stroke-width="2.2"
+    stroke-linecap="round"
+    fill="none"
+  />
+  <circle cx="93.5" cy="34.5" r="3.2" fill="#2A3230"/>
+
+  <!-- Orbit back (behind star) -->
+  <path
+    d="M38.5 66C42 44 84 36 92 54"
+    stroke="#0F4F49"
+    stroke-width="3.2"
+    stroke-linecap="round"
+    fill="none"
+  />
+
+  <!-- Open book -->
+  <path
+    d="M64 98C52 90 34 86 22 88C22 74 34 64 48 62C54 61 60 62 64 66C68 62 74 61 80 62C94 64 106 74 106 88C94 86 76 90 64 98Z"
     fill="url(#book)"
   />
+  <path d="M64 66V98" stroke="#08332F" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M30 78C40 74 52 74 64 82" stroke="#D7E7E4" stroke-width="2" stroke-linecap="round" opacity="0.55"/>
+  <path d="M98 78C88 74 76 74 64 82" stroke="#D7E7E4" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+
+  <!-- Four-pointed star -->
+  <circle cx="64" cy="52" r="18" fill="url(#starCore)"/>
   <path
-    d="M24 39.5L12.5 34.5C11.2 33.9 10.6 32.4 11.1 31.1C11.6 29.8 13.1 29.2 14.4 29.8L24 34.2L33.6 29.8C34.9 29.2 36.4 29.8 36.9 31.1C37.4 32.4 36.8 33.9 35.5 34.5L24 39.5Z"
-    fill="url(#page)"
-  />
-  <path
-    d="M24 34.2V39.5"
-    stroke="#065f46"
-    stroke-width="1.4"
-    stroke-linecap="round"
-  />
-  <path
-    d="M24 34.5V14"
-    stroke="url(#beam)"
-    stroke-width="3.8"
-    stroke-linecap="round"
-  />
-  <path
-    d="M24 30.5C20.8 26.8 20.8 22.2 24 18.5C27.2 22.2 27.2 26.8 24 30.5Z"
-    fill="#ffffff"
-  />
-  <path
-    d="M24 3.5L26.8 11.2L35 11.5L28.6 16.4L30.8 24.5L24 19.8L17.2 24.5L19.4 16.4L13 11.5L21.2 11.2L24 3.5Z"
+    d="M64 28L69.2 46.8L88 52L69.2 57.2L64 76L58.8 57.2L40 52L58.8 46.8Z"
     fill="url(#star)"
   />
   <path
-    d="M24 3.5L26.8 11.2L35 11.5L28.6 16.4L30.8 24.5L24 19.8L17.2 24.5L19.4 16.4L13 11.5L21.2 11.2L24 3.5Z"
-    stroke="#b45309"
-    stroke-width="0.6"
-    stroke-linejoin="round"
+    d="M64 36L66.6 47.4L78 50L66.6 52.6L64 64L61.4 52.6L50 50L61.4 47.4Z"
+    fill="#FFF4C2"
+    opacity="0.9"
   />
-  <circle cx="22.5" cy="8.5" r="1.1" fill="#fffbeb" fill-opacity="0.9"/>
+
+  <!-- Orbit front (in front of star) -->
+  <path
+    d="M36 58C44 72 78 78 91.5 62"
+    stroke="#0F4F49"
+    stroke-width="3.2"
+    stroke-linecap="round"
+    fill="none"
+  />
 </svg>
