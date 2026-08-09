@@ -16,5 +16,9 @@
   "pushPromptDescription": "Activez les alertes pour que la prochaine période arrive sur l'écran de verrouillage comme une alarme—avant que les élèves n'attendent pendant que vous êtes encore dans le couloir.",
   "pushEnable": "Ne plus manquer les périodes",
   "pushEnabling": "Activation…",
-  "pushLater": "Pas maintenant"
+  "pushLater": "Pas maintenant",
+  "updateTitle": "Vous êtes encore sur une ancienne version de ShuleOS",
+  "updateDescription": "Une version plus récente est déjà disponible. Rester ici, c'est travailler sans les derniers correctifs que les enseignants et la finance utilisent déjà.",
+  "updateNow": "Mettre à jour",
+  "updateLater": "Pas maintenant"
 }

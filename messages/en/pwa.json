@@ -16,5 +16,9 @@
   "pushPromptDescription": "Turn on alerts so the next period hits your lock screen like an alarm—before students are waiting and you're still in the hallway.",
   "pushEnable": "Stop missing periods",
   "pushEnabling": "Enabling…",
-  "pushLater": "Not now"
+  "pushLater": "Not now",
+  "updateTitle": "You're still on an older ShuleOS",
+  "updateDescription": "A newer build already shipped. Staying here means working without the latest fixes teachers and finance are already using.",
+  "updateNow": "Update now",
+  "updateLater": "Not now"
 }
