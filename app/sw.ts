@@ -14,7 +14,8 @@ declare const self: ServiceWorkerGlobalScope;
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
-  skipWaiting: true,
+  // Wait for user consent before activating a new version (see UpdatePrompt).
+  skipWaiting: false,
   clientsClaim: true,
   navigationPreload: true,
   runtimeCaching: defaultCache,
