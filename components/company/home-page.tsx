@@ -164,7 +164,9 @@ export function HomePage() {
               className="mt-7 flex flex-col items-stretch gap-3 sm:mt-8 sm:flex-row sm:items-center sm:justify-center sm:gap-4"
             >
               <Link
-                href="/contact"
+                href={companyIdentity.contact.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center justify-center rounded-full border border-white/35 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:border-white hover:bg-white/5 sm:px-7 sm:py-3.5 sm:text-xs"
               >
                 [ {t("heroCtaSecondary")} ]
@@ -498,7 +500,9 @@ export function HomePage() {
                   <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
                 <Link
-                  href="/contact"
+                  href={companyIdentity.contact.whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="inline-flex flex-1 items-center justify-center rounded-full border border-mkt-ink/35 px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-mkt-ink transition-colors hover:border-mkt-ink hover:bg-mkt-ink/5"
                 >
                   {t("finalCtaSecondary")}

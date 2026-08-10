@@ -3,7 +3,7 @@ export const companyIdentity = {
   productName: "ShuleOS",
   productFullName: "ShuleOS - School Management Platform",
   legalName: "Digni Digital LLC",
-  tagline: "The operating system for schools",
+  tagline: "One system for growing schools—that never forgets",
   origin: "Serving schools across the DRC",
   website: "https://www.digni-digital-llc.com",
 
