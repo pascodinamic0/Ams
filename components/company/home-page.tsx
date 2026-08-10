@@ -5,13 +5,13 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Users,
+  UsersRound,
   GraduationCap,
   CheckCircle2,
   ArrowRight,
-  MapPin,
-  Sparkles,
-  HeadphonesIcon,
-  Wallet,
+  Flag,
+  Layers,
+  Database,
   Wifi,
   Linkedin,
 } from "lucide-react";
@@ -33,10 +33,10 @@ export function HomePage() {
   const homepageCtaSections = getHomepageCtaSections(tm);
 
   const trustPillars = [
-    { icon: MapPin, title: t("trustLocal"), desc: t("trustLocalDesc") },
-    { icon: Sparkles, title: t("trustSimple"), desc: t("trustSimpleDesc") },
-    { icon: HeadphonesIcon, title: t("trustSupport"), desc: t("trustSupportDesc") },
-    { icon: Wallet, title: t("trustAffordable"), desc: t("trustAffordableDesc") },
+    { icon: Flag, title: t("trustLocal"), desc: t("trustLocalDesc") },
+    { icon: Layers, title: t("trustSimple"), desc: t("trustSimpleDesc") },
+    { icon: UsersRound, title: t("trustSupport"), desc: t("trustSupportDesc") },
+    { icon: Database, title: t("trustAffordable"), desc: t("trustAffordableDesc") },
   ];
 
   const connectivityFeatures = [
