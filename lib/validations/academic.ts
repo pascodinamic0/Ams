@@ -24,7 +24,14 @@ export const branchSchema = z.object({
   address: z.string().optional(),
 });
 
-export const admissionSchema = z.object({
+export const admissionPickupPersonSchema = z.object({
+  full_name: z.string().min(1, "Name is required"),
+  phone: z.string().min(1, "Phone number is required"),
+  relationship: z.string().min(1, "Relationship is required"),
+  notes: z.string().optional(),
+});
+
+const admissionBaseSchema = z.object({
   student_name: z.string().min(1, "Student name is required"),
   dob: z.string().optional(),
   gender: z.string().optional(),
@@ -35,15 +42,34 @@ export const admissionSchema = z.object({
   relation: z.enum(["father", "mother", "guardian", "other"]).default("guardian"),
   address: z.string().optional(),
   notes: z.string().optional(),
+  guardian_can_pickup: z.boolean().default(false),
+  pickup_persons: z.array(admissionPickupPersonSchema).default([]),
 });
 
-export const onlineEnrollmentSchema = admissionSchema.extend({
-  dob: z.string().min(1, "Date of birth is required"),
-  class_applying: z.string().min(1, "Grade or class is required"),
-  guardian_phone: z.string().min(1, "Phone number is required"),
-  address: z.string().min(1, "Address is required"),
-});
+function refinePickupAuthorization<T extends {
+  guardian_can_pickup?: boolean;
+  pickup_persons?: unknown[];
+}>(data: T, ctx: z.RefinementCtx) {
+  if (!data.guardian_can_pickup && (data.pickup_persons?.length ?? 0) === 0) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message:
+        "Specify who may pick up this child from school — authorize the guardian and/or add another person",
+      path: ["pickup_persons"],
+    });
+  }
+}
 
+export const admissionSchema = admissionBaseSchema.superRefine(refinePickupAuthorization);
+
+export const onlineEnrollmentSchema = admissionBaseSchema
+  .extend({
+    dob: z.string().min(1, "Date of birth is required"),
+    class_applying: z.string().min(1, "Grade or class is required"),
+    guardian_phone: z.string().min(1, "Phone number is required"),
+    address: z.string().min(1, "Address is required"),
+  })
+  .superRefine(refinePickupAuthorization);
 const timeStringSchema = z
   .string()
   .regex(/^\d{2}:\d{2}(:\d{2})?$/, "Invalid time")

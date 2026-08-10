@@ -7,6 +7,7 @@ import { ACADEMIC_PORTAL_ROLES } from "@/lib/auth/rbac";
 import {
   studentOnboardingSchema,
   type GuardianOnboardingData,
+  type PickupPersonData,
   type StudentOnboardingData,
 } from "@/lib/validations/student-onboarding";
 import { formatPersonName } from "@/lib/utils";
@@ -41,12 +42,37 @@ async function insertGuardian(
 async function linkGuardian(
   supabase: Awaited<ReturnType<typeof createClient>>,
   guardianId: string,
-  studentId: string
+  studentId: string,
+  canPickup: boolean
 ) {
   const { error } = await supabase.from("guardian_students").insert({
     guardian_id: guardianId,
     student_id: studentId,
+    can_pickup: canPickup,
   });
+  if (error) return { error: error.message };
+  return {};
+}
+
+async function insertPickupPersons(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  schoolId: string,
+  studentId: string,
+  persons: PickupPersonData[]
+) {
+  if (persons.length === 0) return {};
+
+  const { error } = await supabase.from("student_pickup_persons").insert(
+    persons.map((person) => ({
+      school_id: schoolId,
+      student_id: studentId,
+      full_name: person.full_name.trim(),
+      phone: person.phone.trim(),
+      relationship: person.relationship.trim(),
+      notes: person.notes?.trim() || null,
+    }))
+  );
+
   if (error) return { error: error.message };
   return {};
 }
@@ -77,6 +103,7 @@ export async function createStudentWithGuardians(
       existing_guardian_id: input.existing_guardian_id || undefined,
       class_id: input.class_id || undefined,
       gender: input.gender || undefined,
+      pickup_persons: input.pickup_persons ?? [],
     };
 
     const parsed = studentOnboardingSchema.safeParse(normalized);
@@ -125,17 +152,26 @@ export async function createStudentWithGuardians(
       return { error: studentError.message };
     }
 
-    const guardianIds: string[] = [];
+    type GuardianLink = { id: string; canPickup: boolean };
+    const guardianLinks: GuardianLink[] = [];
 
     if (data.existing_guardian_id) {
-      guardianIds.push(data.existing_guardian_id);
+      guardianLinks.push({
+        id: data.existing_guardian_id,
+        canPickup: Boolean(data.existing_guardian_can_pickup),
+      });
     } else if (data.primary_guardian) {
       const result = await insertGuardian(supabase, input.school_id, data.primary_guardian);
       if (result.error) {
         await supabase.from("students").delete().eq("id", student.id);
         return { error: result.error };
       }
-      if (result.data) guardianIds.push(result.data.id);
+      if (result.data) {
+        guardianLinks.push({
+          id: result.data.id,
+          canPickup: Boolean(data.primary_guardian.can_pickup),
+        });
+      }
     }
 
     if (data.add_secondary_guardian && data.secondary_guardian) {
@@ -143,14 +179,29 @@ export async function createStudentWithGuardians(
       if (result.error) {
         return { error: result.error };
       }
-      if (result.data) guardianIds.push(result.data.id);
+      if (result.data) {
+        guardianLinks.push({
+          id: result.data.id,
+          canPickup: Boolean(data.secondary_guardian.can_pickup),
+        });
+      }
     }
 
-    for (const guardianId of guardianIds) {
-      const linkResult = await linkGuardian(supabase, guardianId, student.id);
+    for (const link of guardianLinks) {
+      const linkResult = await linkGuardian(supabase, link.id, student.id, link.canPickup);
       if (linkResult.error) {
         return { error: linkResult.error };
       }
+    }
+
+    const pickupResult = await insertPickupPersons(
+      supabase,
+      input.school_id,
+      student.id,
+      data.pickup_persons ?? []
+    );
+    if (pickupResult.error) {
+      return { error: pickupResult.error };
     }
 
     revalidatePath("/academic");
@@ -178,7 +229,12 @@ export async function addGuardianToStudent(
   const result = await insertGuardian(supabase, schoolId, guardian);
   if (result.error || !result.data) return { error: result.error ?? "Failed to create guardian" };
 
-  const linkResult = await linkGuardian(supabase, result.data.id, studentId);
+  const linkResult = await linkGuardian(
+    supabase,
+    result.data.id,
+    studentId,
+    Boolean(guardian.can_pickup)
+  );
   if (linkResult.error) return { error: linkResult.error };
 
   revalidatePath("/academic/students");

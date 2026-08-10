@@ -70,5 +70,10 @@
   "colSubject": "Subject",
   "colTerm": "Term",
   "colMarks": "Marks",
-  "colGrade": "Grade"
+  "colGrade": "Grade",
+  "reportCardTitle": "My report card",
+  "reportCardSubtitle": "Download or print your term report card with your student ID.",
+  "exportPdf": "Export PDF",
+  "viewReportCard": "Report card / PDF",
+  "notSignedInDescReportCard": "Please log in to view your report card."
 }

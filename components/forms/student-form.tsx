@@ -35,7 +35,26 @@ const defaultPrimaryGuardian = {
   relation: "guardian" as const,
   address: "",
   workplace: "",
+  can_pickup: false,
 };
+
+const emptyPickupPerson = {
+  full_name: "",
+  phone: "",
+  relationship: "",
+  notes: "",
+};
+
+const pickupRelationshipOptions = [
+  { value: "uncle", label: "Uncle" },
+  { value: "aunt", label: "Aunt" },
+  { value: "grandparent", label: "Grandparent" },
+  { value: "sibling", label: "Sibling" },
+  { value: "driver", label: "Driver" },
+  { value: "nanny", label: "Nanny / caregiver" },
+  { value: "family_friend", label: "Family friend" },
+  { value: "other", label: "Other" },
+];
 
 function firstErrorMessage(error: unknown): string | undefined {
   if (!error) return undefined;
@@ -105,8 +124,10 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
       defaultValues={{
         status: "active",
         add_secondary_guardian: false,
+        existing_guardian_can_pickup: false,
         photo_url: "",
         primary_guardian: defaultPrimaryGuardian,
+        pickup_persons: [],
       }}
       onSubmit={onSubmit}
       onInvalid={onInvalid}
@@ -115,7 +136,7 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
         <CardHeader>
           <CardTitle>Student onboarding</CardTitle>
           <p className="text-sm text-stone-500 dark:text-stone-400">
-            Register the child and their guardian(s) in one step.
+            Register the child, guardian(s), and who is authorized to pick them up from school.
           </p>
         </CardHeader>
         <CardContent className="space-y-8">
@@ -249,7 +270,128 @@ function GuardianFields({
       <Field label="Workplace" htmlFor={`${prefix}.workplace`}>
         <Input id={`${prefix}.workplace`} {...register(`${prefix}.workplace`)} />
       </Field>
+      <label className="flex items-start gap-2 text-sm text-stone-700 dark:text-stone-300">
+        <input
+          type="checkbox"
+          className="mt-0.5 rounded border-stone-300"
+          {...register(`${prefix}.can_pickup`)}
+        />
+        <span>
+          Authorized to pick up this child from school
+          <span className="mt-0.5 block text-xs text-stone-500 dark:text-stone-400">
+            Must be specified even when this person is a parent or guardian.
+          </span>
+        </span>
+      </label>
     </>
+  );
+}
+
+function PickupPersonsFields() {
+  const { register, setValue, formState: { errors } } = useFormContext<StudentOnboardingData>();
+  const pickupPersons =
+    useWatch<StudentOnboardingData, "pickup_persons">({ name: "pickup_persons" }) ?? [];
+
+  function addPerson() {
+    setValue("pickup_persons", [...pickupPersons, { ...emptyPickupPerson }], {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+  }
+
+  function removePerson(index: number) {
+    setValue(
+      "pickup_persons",
+      pickupPersons.filter((_, i) => i !== index),
+      { shouldDirty: true, shouldValidate: true }
+    );
+  }
+
+  return (
+    <FormSection
+      title="Who may pick up from school"
+      description="Authorize guardians above and/or list other people who may collect this child. Gate staff need a name, phone, and relationship for each person."
+    >
+      {errors.pickup_persons?.message && (
+        <p className="text-sm text-red-500">{errors.pickup_persons.message}</p>
+      )}
+      {typeof errors.pickup_persons?.root?.message === "string" && (
+        <p className="text-sm text-red-500">{errors.pickup_persons.root.message}</p>
+      )}
+
+      {pickupPersons.map((_, index) => {
+        const personErrors = (errors.pickup_persons?.[index] ?? {}) as Record<
+          string,
+          { message?: string }
+        >;
+        return (
+          <div
+            key={index}
+            className="space-y-4 rounded-lg border border-stone-200 p-4 dark:border-stone-800"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-stone-900 dark:text-white">
+                Authorized person {index + 1}
+              </p>
+              <Button type="button" variant="ghost" size="sm" onClick={() => removePerson(index)}>
+                Remove
+              </Button>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field
+                label="Full name"
+                htmlFor={`pickup_persons.${index}.full_name`}
+                required
+                error={personErrors.full_name?.message}
+              >
+                <Input
+                  id={`pickup_persons.${index}.full_name`}
+                  {...register(`pickup_persons.${index}.full_name`)}
+                  error={!!personErrors.full_name}
+                />
+              </Field>
+              <Field
+                label="Phone"
+                htmlFor={`pickup_persons.${index}.phone`}
+                required
+                error={personErrors.phone?.message}
+              >
+                <Input
+                  id={`pickup_persons.${index}.phone`}
+                  type="tel"
+                  {...register(`pickup_persons.${index}.phone`)}
+                  error={!!personErrors.phone}
+                />
+              </Field>
+            </div>
+            <Field
+              label="Relationship to child"
+              htmlFor={`pickup_persons.${index}.relationship`}
+              required
+              error={personErrors.relationship?.message}
+            >
+              <Select
+                id={`pickup_persons.${index}.relationship`}
+                placeholder="Select relationship"
+                options={pickupRelationshipOptions}
+                {...register(`pickup_persons.${index}.relationship`)}
+              />
+            </Field>
+            <Field label="Notes (optional)" htmlFor={`pickup_persons.${index}.notes`}>
+              <Input
+                id={`pickup_persons.${index}.notes`}
+                placeholder="e.g. Only after 3pm, carries school ID card"
+                {...register(`pickup_persons.${index}.notes`)}
+              />
+            </Field>
+          </div>
+        );
+      })}
+
+      <Button type="button" variant="outline" size="sm" onClick={addPerson}>
+        Add authorized pickup person
+      </Button>
+    </FormSection>
   );
 }
 
@@ -452,7 +594,21 @@ function StudentFormFields({
             </p>
           </Field>
         )}
-        {!useExistingGuardian && (
+        {useExistingGuardian ? (
+          <label className="flex items-start gap-2 text-sm text-stone-700 dark:text-stone-300">
+            <input
+              type="checkbox"
+              className="mt-0.5 rounded border-stone-300"
+              {...register("existing_guardian_can_pickup")}
+            />
+            <span>
+              This guardian is authorized to pick up this child from school
+              <span className="mt-0.5 block text-xs text-stone-500 dark:text-stone-400">
+                Must be specified even when linking an existing parent or guardian.
+              </span>
+            </span>
+          </label>
+        ) : (
           <GuardianFields prefix="primary_guardian" errors={errors} />
         )}
       </FormSection>
@@ -470,6 +626,10 @@ function StudentFormFields({
         </label>
         {addSecondary && <GuardianFields prefix="secondary_guardian" errors={errors} />}
       </FormSection>
+
+      <div className="border-t border-stone-200 dark:border-stone-800" />
+
+      <PickupPersonsFields />
     </>
   );
 }

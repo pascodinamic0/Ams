@@ -131,16 +131,16 @@ export const platformModules: PlatformModule[] = [
   },
   {
     slug: "school-websites",
-    title: "School Websites",
-    tagline: "Your school online, on brand",
+    title: "Free School Website",
+    tagline: "Stop losing families who never find you online",
     summary:
-      "Launch a branded public website with online admissions, events, and contact details - connected directly to your ShuleOS portal.",
-    desc: "Branded sites with online admissions",
+      "Parents search WhatsApp and Google before they visit. Without a site, they enroll elsewhere. Get a branded school website free with ShuleOS — homepage, contact, and online admissions into your admin queue.",
+    desc: "Your school online with admissions — included free",
     span: "md:col-span-2",
     icon: Globe,
     iconClassName: "text-amber-500",
     highlights: [
-      "Branded homepage with your logo, colours, and cover image",
+      "Free branded homepage with your logo, colours, and cover image",
       "About, programs, gallery, and contact sections",
       "Online admissions form feeding straight into your admin queue",
       "Public events page for open days and school activities",
@@ -148,12 +148,12 @@ export const platformModules: PlatformModule[] = [
       "Staff login link connecting visitors to the school portal",
     ],
     whoItsFor: [
-      "Schools launching or upgrading their public web presence",
-      "Admissions teams collecting online applications",
-      "Marketing staff showcasing programs and achievements",
+      "Schools losing intake to competitors with better online presence",
+      "Admissions teams drowning in paper applications",
+      "Directors who know first impressions happen on a phone screen",
     ],
     localContext:
-      "Parents often discover your school on WhatsApp or Google first. A professional site with online admissions helps you capture enquiries before they go to a competitor.",
+      "Every intake season without a website, families choose the school they found first. Launch yours free — and capture enquiries before they go elsewhere.",
   },
   {
     slug: "messaging",

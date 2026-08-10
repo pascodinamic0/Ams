@@ -175,3 +175,35 @@ export async function getStudentAttendanceStats(
 
   return { present, absent, total, percentage };
 }
+
+export type StudentAttendanceRecord = {
+  id: string;
+  date: string;
+  status: string;
+  period: number | null;
+};
+
+export async function getStudentAttendanceHistory(
+  studentId: string,
+  limit = 60
+): Promise<StudentAttendanceRecord[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("attendance_records")
+    .select("id, date, status, period")
+    .eq("student_id", studentId)
+    .order("date", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("getStudentAttendanceHistory error:", error);
+    return [];
+  }
+
+  return (data ?? []).map((r) => ({
+    id: r.id,
+    date: r.date,
+    status: r.status,
+    period: r.period ?? null,
+  }));
+}

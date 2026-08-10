@@ -119,6 +119,34 @@ export async function convertAdmissionToStudent(
   const studentName = splitPersonName(app.student_name);
   const guardianName = splitPersonName(app.guardian_name);
 
+  const pickupPersons: Array<{
+    full_name: string;
+    phone: string;
+    relationship: string;
+    notes?: string;
+  }> = Array.isArray(app.pickup_persons)
+    ? (app.pickup_persons as unknown[])
+        .filter(
+          (p): p is {
+            full_name?: string;
+            phone?: string;
+            relationship?: string;
+            notes?: string;
+          } => typeof p === "object" && p !== null
+        )
+        .map((p) => ({
+          full_name: String(p.full_name ?? "").trim(),
+          phone: String(p.phone ?? "").trim(),
+          relationship: String(p.relationship ?? "").trim(),
+          notes: p.notes ? String(p.notes) : undefined,
+        }))
+        .filter((p) => p.full_name && p.phone && p.relationship)
+    : [];
+
+  // Legacy applications (pre-pickup fields) default the guardian as authorized.
+  const guardianCanPickup =
+    Boolean(app.guardian_can_pickup) || pickupPersons.length === 0;
+
   const studentResult = await createStudentWithGuardians({
     school_id: app.school_id,
     branch_id: branchId,
@@ -129,6 +157,7 @@ export async function convertAdmissionToStudent(
     gender: app.gender ?? undefined,
     class_id: undefined,
     status: "active",
+    existing_guardian_can_pickup: false,
     add_secondary_guardian: false,
     primary_guardian: {
       first_name: guardianName.first_name,
@@ -137,7 +166,9 @@ export async function convertAdmissionToStudent(
       email: app.guardian_email,
       whatsapp: app.guardian_phone ?? undefined,
       relation: app.relation ?? "guardian",
+      can_pickup: guardianCanPickup,
     },
+    pickup_persons: pickupPersons,
   });
 
   if (studentResult.error || !studentResult.data) {

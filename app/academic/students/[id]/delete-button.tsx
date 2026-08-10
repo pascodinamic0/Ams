@@ -24,7 +24,7 @@ export function DeleteStudentButton({ id }: { id: string }) {
   }
 
   return (
-    <Button variant="ghost" className="text-red-600" onClick={handleDelete}>
+    <Button variant="danger" size="sm" onClick={handleDelete}>
       {tc("delete")}
     </Button>
   );

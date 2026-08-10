@@ -30,9 +30,9 @@
   },
   "home": {
     "heroBadge": "ShuleOS · OS scolaire / RDC",
-    "heroTitleLine1": "Arrêtez de gérer votre école avec des carnets et WhatsApp",
-    "heroTitleLine2": "Chaque semaine d'attente, les frais fuient, les notes s'éparpillent et les parents apprennent trop tard.",
-    "heroSubtitle": "Les frais fuient. Les notes s'éparpillent. Les parents apprennent trop tard.",
+    "heroTitleLine1": "Arrêtez de perdre frais et confiance parentale aux carnets et WhatsApp",
+    "heroTitleLine2": "Chaque semaine d'attente, les frais fuient — et les parents ratent soldes, notes et absences jusqu'à ce que ça fasse mal.",
+    "heroSubtitle": "Les frais fuient. Les notes s'éparpillent. Les parents ratent soldes, notes et absences.",
     "heroSubtitleBody": "Un après-midi pour passer en ligne—avant qu'un autre trimestre paie le chaos.",
     "heroSubtitleMobilePayoff": "Un après-midi vaut mieux qu'un trimestre de fuites",
     "heroSubtitleExtra": "Sans frais d'installation. Vrai support WhatsApp quand vous en avez besoin.",
@@ -135,8 +135,8 @@
     "studentItems": ["Devoirs", "Notes", "Bibliothèque", "Messagerie", "Événements"],
     "analyticsModule": "Analytique",
     "analyticsItems": ["Tableaux de bord", "Performance par campus", "Analytique élèves", "Rapports de présence", "Rapports financiers"],
-    "schoolWebsitesModule": "Sites web scolaires",
-    "schoolWebsitesItems": ["Page d'accueil personnalisée", "Admissions en ligne", "3 modèles (Modern, Classic, Minimal)"]
+    "schoolWebsitesModule": "Site web scolaire gratuit",
+    "schoolWebsitesItems": ["Page d'accueil gratuite", "Admissions en ligne", "3 modèles (Modern, Classic, Minimal)"]
   },
   "contact": {
     "title": "Nous contacter",

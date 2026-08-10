@@ -288,6 +288,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/student/timetable", labelKey: "timetable", icon: icon.timetable },
     { href: "/student/assignments", labelKey: "assignments", icon: icon.assignments },
     { href: "/student/grades", labelKey: "grades", icon: icon.grades },
+    { href: "/student/report-card", labelKey: "reportCards", icon: icon.reports },
     { href: "/student/library", labelKey: "library", icon: icon.library },
     { href: "/student/events", labelKey: "events", icon: icon.events },
   ],

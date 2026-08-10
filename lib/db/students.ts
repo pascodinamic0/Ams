@@ -148,8 +148,10 @@ export async function getStudentById(id: string) {
       *,
       classes(name, grade),
       guardian_students(
+        can_pickup,
         guardians(id, name, first_name, middle_name, last_name, email, phone, relation, address, workplace)
-      )
+      ),
+      student_pickup_persons(id, full_name, phone, relationship, notes)
     `
     )
     .eq("id", id)

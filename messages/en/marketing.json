@@ -30,9 +30,9 @@
   },
   "home": {
     "heroBadge": "ShuleOS · School OS / DRC",
-    "heroTitleLine1": "Stop running your school on notebooks and WhatsApp",
-    "heroTitleLine2": "Every week you wait, fees leak, grades scatter, and parents find out late.",
-    "heroSubtitle": "Fees leak. Grades scatter. Parents find out late.",
+    "heroTitleLine1": "Stop losing fees and parent trust to notebooks and WhatsApp",
+    "heroTitleLine2": "Every week you wait, fees leak — and parents miss balances, marks, and absences until it already hurts.",
+    "heroSubtitle": "Fees leak. Marks scatter. Parents miss balances, marks, and absences.",
     "heroSubtitleBody": "One afternoon to go live—before another term pays for the chaos.",
     "heroSubtitleMobilePayoff": "One afternoon beats another term of leaks",
     "heroSubtitleExtra": "No setup fees. Real support on WhatsApp when you need it.",
@@ -135,8 +135,8 @@
     "studentItems": ["Assignments", "Grades", "Library", "Messages", "Events"],
     "analyticsModule": "Analytics",
     "analyticsItems": ["Dashboards", "Branch performance", "Student analytics", "Attendance reports", "Financial reports"],
-    "schoolWebsitesModule": "School Websites",
-    "schoolWebsitesItems": ["Branded homepage", "Online admissions", "3 templates (Modern, Classic, Minimal)"]
+    "schoolWebsitesModule": "Free School Website",
+    "schoolWebsitesItems": ["Free branded homepage", "Online admissions", "3 templates (Modern, Classic, Minimal)"]
   },
   "contact": {
     "title": "Contact us",

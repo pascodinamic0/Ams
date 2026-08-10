@@ -70,5 +70,10 @@
   "colSubject": "Matière",
   "colTerm": "Trimestre",
   "colMarks": "Points",
-  "colGrade": "Note"
+  "colGrade": "Note",
+  "reportCardTitle": "Mon bulletin",
+  "reportCardSubtitle": "Téléchargez ou imprimez votre bulletin avec votre ID élève.",
+  "exportPdf": "Exporter en PDF",
+  "viewReportCard": "Bulletin / PDF",
+  "notSignedInDescReportCard": "Veuillez vous connecter pour consulter votre bulletin."
 }

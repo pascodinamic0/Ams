@@ -86,12 +86,12 @@
     "localContext": "Term reports and fee collection targets shouldn't take a week to compile. ShuleOS dashboards show what leadership needs in minutes—not days of manual aggregation."
   },
   "schoolWebsites": {
-    "title": "School Websites",
-    "tagline": "Stop losing families before they walk in",
-    "summary": "Parents discover schools on WhatsApp and Google first. Without a professional site and online admissions, enquiries go to the school that answered fastest—not necessarily yours.",
-    "desc": "Branded sites with online admissions",
+    "title": "Free School Website",
+    "tagline": "Stop losing families who never find you online",
+    "summary": "Parents search WhatsApp and Google before they visit. Without a site, they enroll elsewhere. Get a branded school website free with ShuleOS — homepage, contact, and online admissions into your admin queue.",
+    "desc": "Your school online with admissions — included free",
     "highlights": {
-      "0": "Branded homepage with your logo, colours, and cover image",
+      "0": "Free branded homepage with your logo, colours, and cover image",
       "1": "About, programs, gallery, and contact sections",
       "2": "Online admissions form feeding straight into your admin queue",
       "3": "Public events page for open days and school activities",
@@ -103,7 +103,7 @@
       "1": "Admissions teams drowning in paper applications",
       "2": "Directors who know first impressions happen on a phone screen"
     },
-    "localContext": "Every intake season without online admissions, families choose the school that made enrolling easy. Capture enquiries before they go elsewhere."
+    "localContext": "Every intake season without a website, families choose the school they found first. Launch yours free — and capture enquiries before they go elsewhere."
   },
   "messaging": {
     "title": "Messaging",
@@ -143,6 +143,6 @@
       "1": "Students missing deadlines because assignments weren't visible",
       "2": "Schools whose front office becomes a help desk every fee season"
     },
-    "localContext": "Most Congolese parents manage school life from their phone. Without a portal, they find out late—and you pay the cost in trust, time, and delayed payments."
+    "localContext": "Most Congolese parents manage school life from their phone. Without a portal, they miss fee balances, grades, and absences until the office queue or a crisis—and you pay in trust, time, and delayed payments."
   }
 }

@@ -86,12 +86,12 @@
     "localContext": "Rapports trimestriels et objectifs de collecte ne devraient pas prendre une semaine à compiler. Les tableaux de bord ShuleOS montrent ce qu'il faut en minutes—pas en jours d'agrégation manuelle."
   },
   "schoolWebsites": {
-    "title": "Sites web scolaires",
-    "tagline": "Arrêtez de perdre des familles avant qu'elles entrent",
-    "summary": "Les parents découvrent les écoles sur WhatsApp et Google en premier. Sans site professionnel et admissions en ligne, les demandes vont à l'école qui a répondu le plus vite.",
-    "desc": "Sites personnalisés avec admissions en ligne",
+    "title": "Site web scolaire gratuit",
+    "tagline": "Arrêtez de perdre des familles qui ne vous trouvent pas en ligne",
+    "summary": "Les parents cherchent sur WhatsApp et Google avant de venir. Sans site, ils s'inscrivent ailleurs. Obtenez un site scolaire gratuit avec ShuleOS — page d'accueil, contact et admissions en ligne dans votre file admin.",
+    "desc": "Votre école en ligne avec admissions — inclus gratuitement",
     "highlights": {
-      "0": "Page d'accueil personnalisée avec logo, couleurs et image de couverture",
+      "0": "Page d'accueil gratuite avec logo, couleurs et image de couverture",
       "1": "Sections À propos, programmes, galerie et contact",
       "2": "Formulaire d'admission en ligne alimentant directement votre file d'attente admin",
       "3": "Page événements publics pour journées portes ouvertes et activités",
@@ -103,7 +103,7 @@
       "1": "Équipes d'admission noyées sous les candidatures papier",
       "2": "Directeurs sachant que la première impression se fait sur un écran de téléphone"
     },
-    "localContext": "Chaque saison d'inscription sans admissions en ligne, les familles choisissent l'école qui a facilité l'inscription. Capturez les demandes avant qu'elles n'aille ailleurs."
+    "localContext": "Chaque saison d'inscription sans site web, les familles choisissent l'école qu'elles ont trouvée en premier. Lancez le vôtre gratuitement — et capturez les demandes avant qu'elles n'aillent ailleurs."
   },
   "messaging": {
     "title": "Messagerie",
@@ -143,6 +143,6 @@
       "1": "Élèves manquant des échéances parce que les devoirs n'étaient pas visibles",
       "2": "Écoles dont le bureau devient un help desk chaque saison de frais"
     },
-    "localContext": "La plupart des parents congolais gèrent la vie scolaire depuis leur téléphone. Sans portail, ils apprennent tard—et vous payez en confiance, temps et paiements retardés."
+    "localContext": "La plupart des parents congolais gèrent la vie scolaire depuis leur téléphone. Sans portail, ils ratent soldes, notes et absences jusqu'à la file au bureau ou une crise—et vous payez en confiance, temps et paiements retardés."
   }
 }

@@ -1,5 +1,7 @@
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getStudentByAuthUserId, getGradesForStudent } from "@/lib/db";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import { CopyableBadge } from "@/components/ui/copyable-badge";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -38,9 +40,14 @@ export default async function StudentGradesPage() {
           <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("gradesTitle")}</h1>
           <p className="mt-1 text-sm text-stone-500">{t("gradesSubtitle")}</p>
         </div>
-        {student.student_id && (
-          <CopyableBadge value={student.student_id} label={t("idLabel", { id: student.student_id })} />
-        )}
+        <div className="flex flex-wrap items-center gap-2">
+          {student.student_id && (
+            <CopyableBadge value={student.student_id} label={t("idLabel", { id: student.student_id })} />
+          )}
+          <Link href="/student/report-card">
+            <Button size="sm" variant="outline">{t("viewReportCard")}</Button>
+          </Link>
+        </div>
       </div>
 
       {grades.length === 0 ? (

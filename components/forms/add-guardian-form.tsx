@@ -42,7 +42,13 @@ export function AddGuardianForm({ studentId, schoolId }: Props) {
   return (
     <FormWrapper
       schema={guardianOnboardingSchema}
-      defaultValues={{ relation: "guardian", first_name: "", middle_name: "", last_name: "" }}
+      defaultValues={{
+        relation: "guardian",
+        first_name: "",
+        middle_name: "",
+        last_name: "",
+        can_pickup: false,
+      }}
       onSubmit={onSubmit}
     >
       <Card>
@@ -125,6 +131,19 @@ function AddGuardianFields() {
         <Label htmlFor="workplace">Workplace</Label>
         <Input id="workplace" {...register("workplace")} />
       </div>
+      <label className="flex items-start gap-2 text-sm text-stone-700 dark:text-stone-300">
+        <input
+          type="checkbox"
+          className="mt-0.5 rounded border-stone-300"
+          {...register("can_pickup")}
+        />
+        <span>
+          Authorized to pick up this child from school
+          <span className="mt-0.5 block text-xs text-stone-500 dark:text-stone-400">
+            Must be specified even when this person is a parent or guardian.
+          </span>
+        </span>
+      </label>
     </>
   );
 }

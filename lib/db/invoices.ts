@@ -192,6 +192,47 @@ export async function getInvoicesForGuardian(
   });
 }
 
+export async function getInvoicesForStudent(
+  studentId: string
+): Promise<InvoiceListItem[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("fee_invoices")
+    .select(`
+      id,
+      amount,
+      amount_paid,
+      due_date,
+      status,
+      description,
+      students(
+        id,
+        student_id,
+        first_name,
+        middle_name,
+        last_name,
+        school_id,
+        branch_id
+      ),
+      fee_structures(name)
+    `)
+    .eq("student_id", studentId)
+    .order("due_date", { ascending: false });
+
+  if (error) {
+    console.error("getInvoicesForStudent error:", error);
+    return [];
+  }
+
+  return (data ?? []).map((inv) => {
+    const { school_id: _s, branch_id: _b, ...item } = mapInvoiceRow(
+      inv as Parameters<typeof mapInvoiceRow>[0]
+    );
+    return item;
+  });
+}
+
 export async function getOpenInvoices(options?: {
   schoolId?: string;
   branchId?: string;

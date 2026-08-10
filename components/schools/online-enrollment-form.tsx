@@ -14,6 +14,23 @@ import { toast } from "@/lib/toast";
 
 const STEPS = ["Student", "Family", "Review", "Campus visit"];
 
+const emptyPickup = {
+  full_name: "",
+  phone: "",
+  relationship: "",
+};
+
+const pickupRelationshipOptions = [
+  { value: "uncle", label: "Uncle" },
+  { value: "aunt", label: "Aunt" },
+  { value: "grandparent", label: "Grandparent" },
+  { value: "sibling", label: "Sibling" },
+  { value: "driver", label: "Driver" },
+  { value: "nanny", label: "Nanny / caregiver" },
+  { value: "family_friend", label: "Family friend" },
+  { value: "other", label: "Other" },
+];
+
 export function OnlineEnrollmentForm({
   schoolId,
   schoolName,
@@ -43,6 +60,8 @@ export function OnlineEnrollmentForm({
     relation: "guardian",
     address: "",
     notes: "",
+    guardian_can_pickup: false,
+    pickup_persons: [] as Array<{ full_name: string; phone: string; relationship: string }>,
   });
 
   const hasVisitSlots = campusVisitSlots.length > 0;
@@ -55,13 +74,21 @@ export function OnlineEnrollmentForm({
       gender: form.gender || undefined,
       notes: form.notes || undefined,
       relation: form.relation as "father" | "mother" | "guardian" | "other",
+      pickup_persons: form.pickup_persons.filter(
+        (p) => p.full_name.trim() && p.phone.trim() && p.relationship.trim()
+      ),
     });
     setLoading(false);
 
     if (result.error) {
       const message =
-        typeof result.error === "string" ? result.error : "Please check the form and try again";
-      toast.error(message);
+        typeof result.error === "string"
+          ? result.error
+          : typeof result.error === "object" && result.error !== null
+            ? Object.values(result.error).flat().filter(Boolean)[0] ??
+              "Please check the form and try again"
+            : "Please check the form and try again";
+      toast.error(String(message));
       return;
     }
 
@@ -257,6 +284,117 @@ export function OnlineEnrollmentForm({
                 rows={2}
               />
             </div>
+
+            <div className="space-y-3 rounded-xl border border-stone-200 p-4 dark:border-stone-800">
+              <div>
+                <p className="text-sm font-medium">Who may pick up from school</p>
+                <p className="mt-0.5 text-xs text-stone-500">
+                  Gate staff need a named authorized person. Mark the guardian and/or add someone else.
+                </p>
+              </div>
+              <label className="flex items-start gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  className="mt-0.5 rounded border-stone-300"
+                  checked={form.guardian_can_pickup}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, guardian_can_pickup: e.target.checked }))
+                  }
+                />
+                <span>
+                  This guardian is authorized to pick up the child from school
+                  <span className="mt-0.5 block text-xs text-stone-500">
+                    Required to specify even when the guardian will collect the child.
+                  </span>
+                </span>
+              </label>
+
+              {form.pickup_persons.map((person, index) => (
+                <div
+                  key={index}
+                  className="space-y-3 rounded-lg border border-stone-200 p-3 dark:border-stone-800"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-medium">Authorized person {index + 1}</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        setForm((f) => ({
+                          ...f,
+                          pickup_persons: f.pickup_persons.filter((_, i) => i !== index),
+                        }))
+                      }
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                  <div>
+                    <Label>Full name</Label>
+                    <Input
+                      value={person.full_name}
+                      onChange={(e) =>
+                        setForm((f) => ({
+                          ...f,
+                          pickup_persons: f.pickup_persons.map((p, i) =>
+                            i === index ? { ...p, full_name: e.target.value } : p
+                          ),
+                        }))
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <Label>Phone</Label>
+                      <Input
+                        type="tel"
+                        value={person.phone}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            pickup_persons: f.pickup_persons.map((p, i) =>
+                              i === index ? { ...p, phone: e.target.value } : p
+                            ),
+                          }))
+                        }
+                        required
+                      />
+                    </div>
+                    <div>
+                      <Label>Relationship</Label>
+                      <Select
+                        options={pickupRelationshipOptions}
+                        value={person.relationship}
+                        onChange={(e) =>
+                          setForm((f) => ({
+                            ...f,
+                            pickup_persons: f.pickup_persons.map((p, i) =>
+                              i === index ? { ...p, relationship: e.target.value } : p
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setForm((f) => ({
+                    ...f,
+                    pickup_persons: [...f.pickup_persons, { ...emptyPickup }],
+                  }))
+                }
+              >
+                Add another authorized person
+              </Button>
+            </div>
           </>
         )}
 
@@ -268,6 +406,22 @@ export function OnlineEnrollmentForm({
             <p><span className="font-medium">Guardian:</span> {form.guardian_name}</p>
             <p><span className="font-medium">Contact:</span> {form.guardian_email} / {form.guardian_phone}</p>
             <p><span className="font-medium">Address:</span> {form.address}</p>
+            <p>
+              <span className="font-medium">Guardian pickup:</span>{" "}
+              {form.guardian_can_pickup ? "Authorized" : "Not authorized"}
+            </p>
+            {form.pickup_persons.length > 0 && (
+              <div>
+                <p className="font-medium">Other authorized pickup:</p>
+                <ul className="mt-1 list-inside list-disc text-stone-600 dark:text-stone-400">
+                  {form.pickup_persons.map((p, i) => (
+                    <li key={i}>
+                      {p.full_name} · {p.phone} · {p.relationship.replace(/_/g, " ")}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <p className="pt-2 text-stone-600 dark:text-stone-400">
               {hasVisitSlots
                 ? "After submitting, you will book a campus visit slot to complete enrollment in person."

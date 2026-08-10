@@ -107,8 +107,17 @@ export default async function ReportCardsPage({
                 </div>
               </div>
 
-              <div className="mt-6 h-24 w-20 rounded border border-dashed border-stone-300 bg-stone-50 text-center text-xs leading-[6rem] text-stone-400">
-                {t("photoPlaceholder")}
+              <div className="mt-6 h-24 w-20 overflow-hidden rounded border border-dashed border-stone-300 bg-stone-50 text-center text-xs leading-[6rem] text-stone-400">
+                {student.photo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={student.photo_url}
+                    alt={student.name}
+                    className="h-full w-full object-cover leading-none"
+                  />
+                ) : (
+                  t("photoPlaceholder")
+                )}
               </div>
 
               <table className="mt-6 w-full text-sm">

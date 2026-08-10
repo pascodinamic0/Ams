@@ -146,6 +146,7 @@ export {
   getInvoices,
   getInvoiceById,
   getInvoicesForGuardian,
+  getInvoicesForStudent,
   getOpenInvoices,
   getFinanceKPIs,
   type InvoiceListItem,
@@ -184,9 +185,11 @@ export {
   getTeacherTodaySchedule,
   getAttendanceForClass,
   getStudentAttendanceStats,
+  getStudentAttendanceHistory,
   type TeacherClassItem,
   type ScheduleSlotItem,
   type AttendanceRecordItem,
+  type StudentAttendanceRecord,
 } from "./attendance";
 export {
   getGradesForClass,
@@ -240,3 +243,8 @@ export {
   type TeacherAssignmentListItem,
   type GuardianAssignmentRow,
 } from "./assignments";
+export {
+  getStudentProfileBundle,
+  type StudentProfileBundle,
+  type StudentProfileStats,
+} from "./student-profile";

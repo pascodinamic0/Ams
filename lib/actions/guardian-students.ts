@@ -3,11 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
-export async function linkGuardianToStudent(guardianId: string, studentId: string) {
+export async function linkGuardianToStudent(
+  guardianId: string,
+  studentId: string,
+  canPickup = false
+) {
   const supabase = await createClient();
   const { error } = await supabase.from("guardian_students").insert({
     guardian_id: guardianId,
     student_id: studentId,
+    can_pickup: canPickup,
   });
 
   if (error) return { error: error.message };
