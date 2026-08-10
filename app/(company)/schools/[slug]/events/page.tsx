@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { EventBookingForm } from "@/components/schools/event-booking-form";
+import { SchoolInnerPage } from "@/components/schools/school-inner-page";
 import { getSchoolBySlug } from "@/lib/db";
 import { getPublicSchoolEvents } from "@/lib/db/public-events";
 
@@ -28,29 +28,24 @@ export default async function SchoolEventsPage({
   const primary = school.theme_primary_color ?? "#0d9488";
 
   return (
-    <div className="mx-auto max-w-4xl px-6 py-12">
-      <Link
-        href={`/schools/${slug}`}
-        className="text-sm text-stone-500 hover:underline"
-      >
-        &larr; Back to {school.name}
-      </Link>
-      <h1 className="mt-4 text-3xl font-bold">School events</h1>
-      <p className="mt-2 text-stone-600 dark:text-stone-400">
-        Upcoming events at {school.name}. Register online where booking is available.
-      </p>
-
+    <SchoolInnerPage
+      school={school}
+      title="School events"
+      description={`Upcoming events at ${school.name}. Register online where booking is available.`}
+      backHref={`/schools/${slug}`}
+      backLabel={`Back to ${school.name}`}
+    >
       {events.length === 0 ? (
-        <p className="mt-10 rounded-xl border border-dashed border-stone-300 p-8 text-center text-stone-500 dark:border-stone-700">
+        <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-10 text-center text-stone-600 dark:border-stone-700 dark:bg-stone-900/40 dark:text-stone-400">
           No upcoming public events right now. Check back soon.
-        </p>
+        </div>
       ) : (
-        <div className="mt-10 space-y-10">
+        <div className="space-y-8">
           {events.map((event) => (
             <article
               key={event.id}
               id={`event-${event.id}`}
-              className="scroll-mt-24 rounded-2xl border border-stone-200 bg-white p-6 dark:border-stone-800 dark:bg-stone-950"
+              className="scroll-mt-24 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm dark:border-stone-800 dark:bg-stone-950"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -79,13 +74,15 @@ export default async function SchoolEventsPage({
               {event.type === "event" && !event.booking_enabled && event.booking_procedure && (
                 <div className="mt-6 rounded-xl bg-stone-50 p-4 text-sm dark:bg-stone-900">
                   <p className="font-medium">How to attend</p>
-                  <p className="mt-2 text-stone-600 dark:text-stone-400">{event.booking_procedure}</p>
+                  <p className="mt-2 text-stone-600 dark:text-stone-400">
+                    {event.booking_procedure}
+                  </p>
                 </div>
               )}
             </article>
           ))}
         </div>
       )}
-    </div>
+    </SchoolInnerPage>
   );
 }

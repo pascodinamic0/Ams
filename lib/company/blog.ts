@@ -14,6 +14,12 @@ export type BlogSection = {
   who: string;
 };
 
+/** Static cover art per post (under /public). */
+const BLOG_COVER_IMAGES: Record<BlogPostSlug, string> = {
+  "every-way-shuleos-stops-the-leaks":
+    "/images/blog/every-way-shuleos-stops-the-leaks.jpg",
+};
+
 export type BlogPost = {
   slug: BlogPostSlug;
   title: string;
@@ -21,6 +27,7 @@ export type BlogPost = {
   date: string;
   readTime: string;
   metaDescription: string;
+  coverImage: string;
   intro: string[];
   sections: BlogSection[];
   midCtaTitle: string;
@@ -72,6 +79,7 @@ export function getBlogPost(
     date: t(`${base}.date`),
     readTime: t(`${base}.readTime`),
     metaDescription: t(`${base}.metaDescription`),
+    coverImage: BLOG_COVER_IMAGES[slug],
     intro: intro as string[],
     sections: sections as BlogSection[],
     midCtaTitle: t(`${base}.midCtaTitle`),

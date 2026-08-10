@@ -46,11 +46,17 @@ export function PendingApprovalCard({
       <p className="mt-3 text-white/55">
         {isSuspended
           ? t.rich("suspendedMessage", {
-              schoolName: () => <strong className="text-white">{schoolName}</strong>,
+              strong: (chunks) => (
+                <strong className="text-white">{chunks}</strong>
+              ),
+              schoolName,
               productName: companyIdentity.productName,
             })
           : t.rich("pendingMessage", {
-              schoolName: () => <strong className="text-white">{schoolName}</strong>,
+              strong: (chunks) => (
+                <strong className="text-white">{chunks}</strong>
+              ),
+              schoolName,
               productName: companyIdentity.productName,
             })}
       </p>

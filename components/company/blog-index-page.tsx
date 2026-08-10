@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -27,27 +28,39 @@ export async function BlogIndexPage() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group block border border-mkt-ink/10 p-6 transition-colors hover:border-mkt-ink/25 sm:p-8"
+              className="group block border border-mkt-ink/10 transition-colors hover:border-mkt-ink/25"
             >
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-mkt-ink/40">
-                <time dateTime={post.date}>
-                  {formatBlogDate(post.date, locale)}
-                </time>
-                <span aria-hidden className="text-mkt-ink/20">
-                  ·
-                </span>
-                <span>{post.readTime}</span>
+              <div className="relative aspect-[16/9] w-full overflow-hidden bg-mkt-ink/5">
+                <Image
+                  src={post.coverImage}
+                  alt=""
+                  fill
+                  sizes="(max-width: 896px) 100vw, 896px"
+                  className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  priority={post.slug === posts[0]?.slug}
+                />
               </div>
-              <h2 className="mt-4 font-display text-xl tracking-tight text-mkt-ink transition-colors group-hover:text-amber-500 sm:text-2xl">
-                {post.title}
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-mkt-ink/50 sm:text-base">
-                {post.excerpt}
-              </p>
-              <span className="mt-5 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500">
-                {t("index.readArticle")}
-                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-              </span>
+              <div className="p-6 sm:p-8">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-mkt-ink/40">
+                  <time dateTime={post.date}>
+                    {formatBlogDate(post.date, locale)}
+                  </time>
+                  <span aria-hidden className="text-mkt-ink/20">
+                    ·
+                  </span>
+                  <span>{post.readTime}</span>
+                </div>
+                <h2 className="mt-4 font-display text-xl tracking-tight text-mkt-ink transition-colors group-hover:text-amber-500 sm:text-2xl">
+                  {post.title}
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-mkt-ink/50 sm:text-base">
+                  {post.excerpt}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500">
+                  {t("index.readArticle")}
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </div>
             </Link>
           ))}
         </div>

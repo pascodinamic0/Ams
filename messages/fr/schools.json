@@ -6,7 +6,17 @@
     "contact": "Contact",
     "login": "Connexion",
     "enroll": "S'inscrire",
-    "admissions": "Admissions"
+    "admissions": "Admissions",
+    "bookVisit": "Réserver une visite"
+  },
+  "visit": {
+    "title": "Réserver une visite",
+    "description": "Découvrez {schoolName} avant de vous décider. Choisissez un créneau qui convient à votre famille.",
+    "backToSchool": "Retour à {schoolName}",
+    "emptyTitle": "Aucun créneau de visite disponible",
+    "emptyDescription": "Chaque semaine sans visite du campus, c'est une semaine de plus à hésiter. Revenez bientôt ou contactez l'école directement.",
+    "contactHint": "Rendez-nous visite au",
+    "slotLabel": "Visite du campus"
   },
   "forms": {
     "submitApplication": "Soumettre la candidature",

@@ -10,6 +10,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     NEXT_PUBLIC_VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
   },
+  serverExternalPackages: ["import-in-the-middle", "@sentry/nextjs"],
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "date-fns", "framer-motion"],
   },
@@ -34,8 +35,13 @@ function withOptionalSerwist(config: NextConfig): NextConfig {
   return withSerwist(config);
 }
 
-export default withSentryConfig(withNextIntl(withOptionalSerwist(nextConfig)), {
-  org: process.env.SENTRY_ORG ?? "ams",
-  project: process.env.SENTRY_PROJECT ?? "ams",
-  silent: !process.env.CI,
-});
+const baseConfig = withNextIntl(withOptionalSerwist(nextConfig));
+
+/** Sentry's webpack instrumentation breaks Turbopack HMR in dev (layout-router factory errors). */
+export default process.env.TURBOPACK
+  ? baseConfig
+  : withSentryConfig(baseConfig, {
+      org: process.env.SENTRY_ORG ?? "ams",
+      project: process.env.SENTRY_PROJECT ?? "ams",
+      silent: !process.env.CI,
+    });

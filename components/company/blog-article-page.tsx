@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -22,6 +23,16 @@ export async function BlogArticlePage({ post }: { post: BlogPost }) {
         </Link>
 
         <header className="mt-8 border-b border-mkt-ink/10 pb-10">
+          <div className="relative mb-8 aspect-[16/9] w-full overflow-hidden bg-mkt-ink/5">
+            <Image
+              src={post.coverImage}
+              alt=""
+              fill
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-cover"
+              priority
+            />
+          </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-mkt-ink/40">
             <time dateTime={post.date}>
               {formatBlogDate(post.date, locale)}

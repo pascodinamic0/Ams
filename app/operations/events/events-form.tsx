@@ -61,7 +61,7 @@ export function EventForm({ branchId }: { branchId: string }) {
     }
     toast.success(
       isCampusVisit
-        ? "Campus visit slot created for online enrollment"
+        ? "Campus visit slot created — visible on the public Book a visit page"
         : publicOnWebsite && !isHoliday
           ? "Event published to school website"
           : "Event created"
@@ -133,7 +133,7 @@ export function EventForm({ branchId }: { branchId: string }) {
               className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             >
               <option value="general">General event</option>
-              <option value="campus_visit">Campus visit slot (enrollment)</option>
+              <option value="campus_visit">Campus visit slot (public Book a visit page)</option>
             </select>
           </div>
         )}
@@ -160,8 +160,9 @@ export function EventForm({ branchId }: { branchId: string }) {
         <div className="space-y-3 rounded-lg border border-dashed border-amber-200 bg-amber-50/50 p-4 dark:border-amber-900 dark:bg-amber-950/20">
           <p className="text-sm font-medium">Campus visit slot</p>
           <p className="text-sm text-stone-600 dark:text-stone-400">
-            This time slot appears on the online enrollment page for families to book after they
-            submit an application. Set a start time so families know when to arrive.
+            This slot appears on the school&apos;s public Book a visit page for anyone to reserve.
+            It also appears during online enrollment after families submit an application. Set a start
+            time so visitors know when to arrive.
           </p>
           <div>
             <Label>Visit instructions (shown after booking)</Label>

@@ -17,6 +17,42 @@ export async function createEventRegistration(input: EventRegistrationFormData) 
   }
 
   const supabase = await createClient();
+
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select(
+      "id, booking_enabled, purpose, public_on_website, branch_id, branches(school_id, schools(slug, public_site_enabled, status))"
+    )
+    .eq("id", parsed.data.event_id)
+    .maybeSingle();
+
+  if (eventError || !event) {
+    return { error: "This event or visit slot is no longer available." };
+  }
+
+  if (!event.booking_enabled) {
+    return { error: "Booking is closed for this slot." };
+  }
+
+  const isBookable =
+    event.purpose === "campus_visit" || event.public_on_website === true;
+
+  if (!isBookable) {
+    return { error: "This event is not open for online booking." };
+  }
+
+  const branches = event.branches as
+    | { school_id: string; schools: { slug: string; public_site_enabled: boolean; status: string } | { slug: string; public_site_enabled: boolean; status: string }[] | null }
+    | { school_id: string; schools: { slug: string; public_site_enabled: boolean; status: string } | { slug: string; public_site_enabled: boolean; status: string }[] | null }[]
+    | null;
+  const branch = Array.isArray(branches) ? branches[0] : branches;
+  const schoolsRaw = branch?.schools ?? null;
+  const school = Array.isArray(schoolsRaw) ? schoolsRaw[0] : schoolsRaw;
+
+  if (!school?.public_site_enabled || school.status !== "approved") {
+    return { error: "Online booking is not available for this school." };
+  }
+
   const { data, error } = await supabase
     .from("event_registrations")
     .insert({
@@ -36,6 +72,10 @@ export async function createEventRegistration(input: EventRegistrationFormData) 
 
   revalidatePath("/operations/events");
   revalidatePath("/academic/admissions");
+  if (school.slug) {
+    revalidatePath(`/schools/${school.slug}/visit`);
+    revalidatePath(`/schools/${school.slug}/events`);
+  }
   return { data: { id: data.id } };
 }
 
@@ -127,6 +167,16 @@ export async function bookCampusVisitSlot(input: CampusVisitBookingFormData) {
 
   revalidatePath("/operations/events");
   revalidatePath("/academic/admissions");
+  const { data: branchRow } = await admin
+    .from("branches")
+    .select("schools(slug)")
+    .eq("id", event.branch_id)
+    .maybeSingle();
+  const schools = branchRow?.schools as { slug: string } | { slug: string }[] | null;
+  const schoolSlug = Array.isArray(schools) ? schools[0]?.slug : schools?.slug;
+  if (schoolSlug) {
+    revalidatePath(`/schools/${schoolSlug}/visit`);
+  }
   return {
     data: {
       id: data.id,

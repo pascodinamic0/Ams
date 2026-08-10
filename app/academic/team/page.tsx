@@ -48,14 +48,23 @@ export default async function AcademicTeamPage() {
         />
       ) : (
         <DataTable
-          data={members.map((m) => ({
-            ...m,
-            role_label: canManage ? (
-              <TeamRoleSelect userId={m.id} currentRole={m.role} />
-            ) : (
-              m.role.replace(/_/g, " ")
-            ),
-          }))}
+          data={members.map((m) => {
+            const roleLocked =
+              m.role === "super_admin" || m.role === "academic_admin";
+
+            return {
+              ...m,
+              role_label: canManage ? (
+                <TeamRoleSelect
+                  userId={m.id}
+                  currentRole={m.role}
+                  locked={roleLocked}
+                />
+              ) : (
+                m.role.replace(/_/g, " ")
+              ),
+            };
+          })}
           columns={[
             { id: "name", header: tc("name"), accessorKey: "name", sortable: true },
             { id: "email", header: tc("email"), accessorKey: "email", sortable: true },

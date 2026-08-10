@@ -126,6 +126,12 @@ function ModernShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
             >
               Events
             </NavLink>
+            <NavLink
+              href={isPreview ? "#" : `/schools/${school.slug}/visit`}
+              className="text-white"
+            >
+              Book a visit
+            </NavLink>
             <NavLink href={`${base}#contact`} className="text-white">
               Contact
             </NavLink>
@@ -187,6 +193,12 @@ function ClassicShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
                   className="text-white"
                 >
                   Calendar
+                </NavLink>
+                <NavLink
+                  href={isPreview ? "#" : `/schools/${school.slug}/visit`}
+                  className="text-white"
+                >
+                  Book a visit
                 </NavLink>
                 <NavLink href="/login" className="text-white">
                   Login
@@ -252,6 +264,12 @@ function MinimalShell({ school, children, isPreview }: SchoolSiteLayoutProps) {
               className="text-white"
             >
               Events
+            </NavLink>
+            <NavLink
+              href={isPreview ? "#" : `/schools/${school.slug}/visit`}
+              className="text-white"
+            >
+              Book a visit
             </NavLink>
             <NavLink href={`${base}#contact`} className="text-white">
               Contact

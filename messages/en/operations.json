@@ -23,7 +23,7 @@
   "quickActions": "Quick actions",
   "assignBranchEvents": "Assign a branch to your profile to add events.",
   "eventBookings": "Event bookings",
-  "eventBookingsDesc": "Registrations submitted from your school's public events page.",
+  "eventBookingsDesc": "Registrations from your school's public events page and Book a visit page. Campus visit slots appear here too.",
   "allEvents": "All events",
   "noEvents": "No events yet",
   "noEventsDesc": "Add school events and holidays",

@@ -16,6 +16,7 @@ export async function revalidateSchoolWebsiteByBranch(branchId: string) {
 
   revalidatePath(`/schools/${slug}`);
   revalidatePath(`/schools/${slug}/events`);
+  revalidatePath(`/schools/${slug}/visit`);
   revalidatePath(`/schools/${slug}/enroll`);
   revalidatePath(`/schools/${slug}/admissions`);
 }

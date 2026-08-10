@@ -6,7 +6,17 @@
     "contact": "Contact",
     "login": "Login",
     "enroll": "Enroll",
-    "admissions": "Admissions"
+    "admissions": "Admissions",
+    "bookVisit": "Book a visit"
+  },
+  "visit": {
+    "title": "Book a visit",
+    "description": "See {schoolName} before you decide. Pick a time that works for your family.",
+    "backToSchool": "Back to {schoolName}",
+    "emptyTitle": "No visit slots open yet",
+    "emptyDescription": "Every week without a campus tour is another week guessing. Check back soon or contact the school directly.",
+    "contactHint": "Visit us at",
+    "slotLabel": "Campus visit"
   },
   "forms": {
     "submitApplication": "Submit application",

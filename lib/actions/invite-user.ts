@@ -11,8 +11,8 @@ import {
   type InvitableRole,
 } from "@/lib/validations/team";
 
-const LAST_ADMIN_ERROR =
-  "Cannot change the role of the last academic admin for this school";
+const ACADEMIC_ADMIN_LOCKED_ERROR =
+  "Academic admin role cannot be changed to a different role";
 
 type InviteAuth =
   | { ok: false; error: string }
@@ -70,38 +70,6 @@ async function requireSchoolAdmin(): Promise<InviteAuth> {
   };
 }
 
-async function countOtherSchoolAcademicAdmins(
-  admin: SupabaseClient,
-  schoolId: string,
-  excludeUserId: string
-): Promise<number> {
-  const { count, error } = await admin
-    .from("profiles")
-    .select("id", { count: "exact", head: true })
-    .eq("school_id", schoolId)
-    .eq("role", "academic_admin")
-    .neq("id", excludeUserId);
-
-  if (error) {
-    console.error("countOtherSchoolAcademicAdmins error:", error);
-    return 0;
-  }
-
-  return count ?? 0;
-}
-
-function isLastAdminDemotion(
-  currentRole: string,
-  newRole: InvitableRole,
-  otherAdminCount: number
-): boolean {
-  return (
-    currentRole === "academic_admin" &&
-    newRole !== "academic_admin" &&
-    otherAdminCount === 0
-  );
-}
-
 async function applySchoolTeamMemberRoleUpdate(
   admin: SupabaseClient,
   input: {
@@ -112,14 +80,11 @@ async function applySchoolTeamMemberRoleUpdate(
     name?: string;
   }
 ): Promise<{ error?: string }> {
-  const otherAdminCount = await countOtherSchoolAcademicAdmins(
-    admin,
-    input.schoolId,
-    input.userId
-  );
-
-  if (isLastAdminDemotion(input.currentRole, input.role, otherAdminCount)) {
-    return { error: LAST_ADMIN_ERROR };
+  if (
+    input.currentRole === "academic_admin" &&
+    input.role !== "academic_admin"
+  ) {
+    return { error: ACADEMIC_ADMIN_LOCKED_ERROR };
   }
 
   const updatePayload: {

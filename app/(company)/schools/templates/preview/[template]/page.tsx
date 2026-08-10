@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { SchoolHomeTemplate } from "@/components/schools/school-home-templates";
 import { SchoolSiteLayout } from "@/components/schools/school-site-layout";
+import { TemplatePreviewBanner } from "@/components/schools/template-preview-banner";
 import { createDemoSchool } from "@/lib/schools/demo-school";
 import { isWebsiteTemplateId } from "@/lib/schools/website-templates";
 
@@ -24,24 +24,7 @@ export default async function TemplatePreviewPage({
 
   return (
     <SchoolSiteLayout school={school} isPreview>
-      {!isEmbed && (
-        <div
-          className="relative z-40 border-b px-6 py-3 text-center text-sm"
-          style={{
-            backgroundColor: "#f7f4ea",
-            borderColor: "#e7d9a8",
-            color: "#1a2b56",
-          }}
-        >
-          Template preview — sample content only.{" "}
-          <Link
-            href={`/admin/schools/new?template=${template}`}
-            className="font-semibold underline underline-offset-2"
-          >
-            Use this design before another school claims the look
-          </Link>
-        </div>
-      )}
+      {!isEmbed && <TemplatePreviewBanner template={template} />}
       <SchoolHomeTemplate school={school} isPreview />
     </SchoolSiteLayout>
   );

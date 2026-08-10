@@ -23,7 +23,7 @@
   "quickActions": "Actions rapides",
   "assignBranchEvents": "Assignez un campus à votre profil pour ajouter des événements.",
   "eventBookings": "Réservations d'événements",
-  "eventBookingsDesc": "Inscriptions soumises depuis la page publique des événements de votre école.",
+  "eventBookingsDesc": "Inscriptions depuis la page événements publique et la page Réserver une visite. Les créneaux de visite du campus apparaissent ici aussi.",
   "allEvents": "Tous les événements",
   "noEvents": "Aucun événement",
   "noEventsDesc": "Ajoutez des événements scolaires et des vacances",

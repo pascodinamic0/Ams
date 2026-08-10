@@ -38,6 +38,7 @@ export function OnlineEnrollmentForm({
   schoolAddress,
   primary,
   campusVisitSlots = [],
+  hideIntro = false,
 }: {
   schoolId: string;
   schoolName: string;
@@ -45,6 +46,7 @@ export function OnlineEnrollmentForm({
   schoolAddress: string | null;
   primary: string;
   campusVisitSlots?: PublicSchoolEvent[];
+  hideIntro?: boolean;
 }) {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -153,16 +155,20 @@ export function OnlineEnrollmentForm({
   }
 
   return (
-    <div className="mx-auto max-w-xl">
-      <h1 className="text-2xl font-bold">Online enrollment</h1>
-      <p className="mt-2 text-stone-600 dark:text-stone-400">
-        Submit your details online
-        {hasVisitSlots
-          ? ", then book a campus visit to complete enrollment in person."
-          : `, then visit ${schoolName} to complete enrollment in person.`}
-      </p>
+    <div className={hideIntro ? "max-w-xl" : "mx-auto max-w-xl"}>
+      {!hideIntro && (
+        <>
+          <h1 className="text-2xl font-bold">Online enrollment</h1>
+          <p className="mt-2 text-stone-600 dark:text-stone-400">
+            Submit your details online
+            {hasVisitSlots
+              ? ", then book a campus visit to complete enrollment in person."
+              : `, then visit ${schoolName} to complete enrollment in person.`}
+          </p>
+        </>
+      )}
 
-      <div className="mt-6 flex gap-2">
+      <div className={hideIntro ? "flex gap-2" : "mt-6 flex gap-2"}>
         {visibleSteps.map((label, i) => (
           <div
             key={label}
