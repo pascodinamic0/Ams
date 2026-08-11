@@ -171,9 +171,12 @@ export async function syncSchoolTeamPayees(schoolId: string, branchId?: string |
   }
 
   // Soft-deactivate profile-linked payees who left the school team.
-  const activeProfileIds = new Set((profiles ?? []).map((p) => p.id as string));
+  const activeProfileIds = new Set(
+    (profiles ?? []).map((p: { id: string }) => p.id)
+  );
   const stale = (existing ?? []).filter(
-    (row) => row.profile_id && !activeProfileIds.has(row.profile_id)
+    (row: { id: string; profile_id: string | null }) =>
+      row.profile_id && !activeProfileIds.has(row.profile_id)
   );
   for (const row of stale) {
     await auth.supabase
