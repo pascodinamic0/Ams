@@ -20,6 +20,8 @@ export const gradeSchema = z.object({
   student_id: z.string().uuid(),
   subject_id: z.string().uuid(),
   class_id: z.string().uuid(),
+  /** School-year start (e.g. 2026 for 2026 - 2027). */
+  school_year: z.coerce.number().int().min(2000).max(2100),
   term: z.string().min(1),
   marks: z.coerce.number().min(0).max(100).optional().nullable(),
   grade: z.string().optional().nullable(),

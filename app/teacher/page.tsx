@@ -80,6 +80,9 @@ export default async function TeacherDashboard() {
             <Link href="/teacher/assignments">
               <Button size="sm" variant="ghost" className="w-full">{t("manageAssignments")}</Button>
             </Link>
+            <Link href="/teacher/discipline">
+              <Button size="sm" variant="ghost" className="w-full">{t("openDiscipline")}</Button>
+            </Link>
           </CardContent>
         </Card>
       </div>

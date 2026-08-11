@@ -16,6 +16,8 @@ export function canCreateConversation(role: string): boolean {
   return STAFF_ROLES.has(role) || role === "parent";
 }
 
+type StaffPickerTab = "parents" | "staff";
+
 interface Props {
   role: string;
   schoolId: string;
@@ -31,13 +33,16 @@ export function NewConversationButton({
 }: Props) {
   const router = useRouter();
   const t = useTranslations("messages");
+  const tRoles = useTranslations("roles");
   const canStartConversation = canCreateConversation(role);
   const isParent = role === "parent";
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [pickerTab, setPickerTab] = useState<StaffPickerTab>("staff");
   const [selectedGuardian, setSelectedGuardian] = useState<GuardianContact | null>(null);
   const [selectedStaff, setSelectedStaff] = useState<StaffContact | null>(null);
   const [message, setMessage] = useState("");
+  const [topic, setTopic] = useState("");
   const [loading, setLoading] = useState(false);
 
   const guardianGrouped = useMemo(() => {
@@ -61,36 +66,49 @@ export function NewConversationButton({
       (c) =>
         !search ||
         c.name.toLowerCase().includes(search.toLowerCase()) ||
+        c.role.toLowerCase().includes(search.toLowerCase()) ||
         (c.student_name?.toLowerCase().includes(search.toLowerCase()) ?? false) ||
         c.context.toLowerCase().includes(search.toLowerCase())
     );
   }, [staffContacts, search]);
+
+  function roleLabel(roleKey: string) {
+    try {
+      return tRoles(roleKey as Parameters<typeof tRoles>[0]);
+    } catch {
+      return roleKey;
+    }
+  }
+
+  function staffContext(contact: StaffContact) {
+    if (contact.student_name) return contact.context;
+    return roleLabel(contact.role);
+  }
 
   function resetForm() {
     setOpen(false);
     setSelectedGuardian(null);
     setSelectedStaff(null);
     setMessage("");
+    setTopic("");
     setSearch("");
+    setPickerTab("staff");
   }
 
   async function handleStart() {
-    if (isParent) {
-      if (!selectedStaff || !message.trim()) {
-        toast.error(t("selectContactAndMessage"));
-        return;
-      }
+    const trimmedTopic = topic.trim();
+    if (!selected || !trimmedTopic || !message.trim()) {
+      toast.error(t("selectContactTopicAndMessage"));
+      return;
+    }
 
+    if (selectedStaff) {
       setLoading(true);
       try {
         const studentId = selectedStaff.student_id ?? undefined;
-        const title = selectedStaff.student_name
-          ? `Chat with ${selectedStaff.name} — ${selectedStaff.student_name}`
-          : `Chat with ${selectedStaff.name}`;
-
         const result = await createConversation(schoolId, {
           student_id: studentId,
-          title,
+          title: trimmedTopic,
           participant_profile_ids: [selectedStaff.profile_id],
           initial_message: message.trim(),
         });
@@ -111,8 +129,8 @@ export function NewConversationButton({
       return;
     }
 
-    if (!selectedGuardian || !message.trim()) {
-      toast.error(t("selectContactAndMessage"));
+    if (!selectedGuardian) {
+      toast.error(t("selectContactTopicAndMessage"));
       return;
     }
 
@@ -125,7 +143,7 @@ export function NewConversationButton({
     try {
       const result = await createConversation(schoolId, {
         student_id: selectedGuardian.student_id,
-        title: `Chat with ${selectedGuardian.name} — ${selectedGuardian.student_name}`,
+        title: trimmedTopic,
         participant_profile_ids: [selectedGuardian.profile_id],
         initial_message: message.trim(),
       });
@@ -145,10 +163,10 @@ export function NewConversationButton({
     }
   }
 
-  const selected = isParent ? selectedStaff : selectedGuardian;
-  const selectedName = isParent
-    ? selectedStaff?.name
-    : selectedGuardian?.name;
+  const selected = selectedStaff ?? selectedGuardian;
+  const selectedName = selectedStaff?.name ?? selectedGuardian?.name;
+  const showStaffPicker = isParent || pickerTab === "staff";
+  const showParentPicker = !isParent && pickerTab === "parents";
 
   if (!canStartConversation) return null;
 
@@ -185,8 +203,46 @@ export function NewConversationButton({
             <div className="max-h-[60vh] flex-1 space-y-4 overflow-y-auto p-5">
               <div>
                 <p className="mb-2 text-sm font-medium text-stone-700 dark:text-stone-300">
-                  {selected ? t("contact") : isParent ? t("selectStaffContact") : t("selectParentContact")}
+                  {selected
+                    ? t("contact")
+                    : isParent
+                      ? t("selectStaffContact")
+                      : t("selectContact")}
                 </p>
+
+                {!isParent && !selected && (
+                  <div className="mb-3 flex rounded-lg border border-stone-200 p-0.5 dark:border-stone-700">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPickerTab("staff");
+                        setSearch("");
+                      }}
+                      className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                        pickerTab === "staff"
+                          ? "bg-primary text-white"
+                          : "text-stone-600 hover:bg-stone-50 dark:text-stone-300 dark:hover:bg-stone-800"
+                      }`}
+                    >
+                      {t("tabStaff")}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPickerTab("parents");
+                        setSearch("");
+                      }}
+                      className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                        pickerTab === "parents"
+                          ? "bg-primary text-white"
+                          : "text-stone-600 hover:bg-stone-50 dark:text-stone-300 dark:hover:bg-stone-800"
+                      }`}
+                    >
+                      {t("tabParents")}
+                    </button>
+                  </div>
+                )}
+
                 {selected ? (
                   <div className="flex items-center justify-between rounded-lg border border-primary-200 bg-primary-light px-3 py-2.5 dark:border-primary-800 dark:bg-primary-light/40">
                     <div>
@@ -194,8 +250,8 @@ export function NewConversationButton({
                         {selectedName}
                       </p>
                       <p className="text-xs text-primary dark:text-primary">
-                        {isParent && selectedStaff
-                          ? selectedStaff.context
+                        {selectedStaff
+                          ? staffContext(selectedStaff)
                           : selectedGuardian
                             ? `${selectedGuardian.student_name} · ${selectedGuardian.class_name}`
                             : ""}
@@ -212,7 +268,7 @@ export function NewConversationButton({
                       {t("change")}
                     </button>
                   </div>
-                ) : isParent ? (
+                ) : showStaffPicker ? (
                   <>
                     <Input
                       placeholder={t("searchStaffPlaceholder")}
@@ -227,7 +283,10 @@ export function NewConversationButton({
                           <button
                             key={`${c.profile_id}-${c.student_id ?? "general"}`}
                             type="button"
-                            onClick={() => setSelectedStaff(c)}
+                            onClick={() => {
+                              setSelectedStaff(c);
+                              setSelectedGuardian(null);
+                            }}
                             className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-stone-50 dark:hover:bg-stone-800"
                           >
                             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-light text-xs font-bold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
@@ -235,14 +294,14 @@ export function NewConversationButton({
                             </div>
                             <div>
                               <p className="text-sm font-medium text-stone-900 dark:text-white">{c.name}</p>
-                              <p className="text-xs text-stone-500">{c.context}</p>
+                              <p className="text-xs text-stone-500">{staffContext(c)}</p>
                             </div>
                           </button>
                         ))
                       )}
                     </div>
                   </>
-                ) : (
+                ) : showParentPicker ? (
                   <>
                     <Input
                       placeholder={t("searchParentPlaceholder")}
@@ -262,7 +321,10 @@ export function NewConversationButton({
                               <button
                                 key={`${c.guardian_id}-${c.student_id}`}
                                 type="button"
-                                onClick={() => setSelectedGuardian(c)}
+                                onClick={() => {
+                                  setSelectedGuardian(c);
+                                  setSelectedStaff(null);
+                                }}
                                 className="flex w-full items-center gap-3 px-3 py-2.5 text-left hover:bg-stone-50 dark:hover:bg-stone-800"
                               >
                                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-light text-xs font-bold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
@@ -286,20 +348,37 @@ export function NewConversationButton({
                       )}
                     </div>
                   </>
-                )}
+                ) : null}
               </div>
 
               {selected && (
-                <div>
-                  <p className="mb-2 text-sm font-medium text-stone-700 dark:text-stone-300">{t("message")}</p>
-                  <textarea
-                    rows={4}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder={t("writeFirstMessage", { name: selectedName ?? "" })}
-                    className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500"
-                  />
-                </div>
+                <>
+                  <div>
+                    <p className="mb-2 text-sm font-medium text-stone-700 dark:text-stone-300">
+                      {t("topic")}
+                    </p>
+                    <Input
+                      value={topic}
+                      onChange={(e) => setTopic(e.target.value)}
+                      placeholder={t("topicPlaceholder")}
+                      maxLength={120}
+                      autoFocus
+                    />
+                    <p className="mt-1.5 text-xs text-stone-500">{t("topicHint")}</p>
+                  </div>
+                  <div>
+                    <p className="mb-2 text-sm font-medium text-stone-700 dark:text-stone-300">
+                      {t("message")}
+                    </p>
+                    <textarea
+                      rows={4}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder={t("writeFirstMessage", { name: selectedName ?? "" })}
+                      className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500"
+                    />
+                  </div>
+                </>
               )}
             </div>
 
@@ -307,7 +386,10 @@ export function NewConversationButton({
               <Button variant="ghost" onClick={() => setOpen(false)} disabled={loading}>
                 {t("cancel")}
               </Button>
-              <Button onClick={handleStart} disabled={!selected || !message.trim() || loading}>
+              <Button
+                onClick={handleStart}
+                disabled={!selected || !topic.trim() || !message.trim() || loading}
+              >
                 {loading ? t("starting") : t("startConversation")}
               </Button>
             </div>

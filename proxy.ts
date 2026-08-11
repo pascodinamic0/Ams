@@ -1,7 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { getProxyAuthContext } from "@/lib/auth/proxy-context";
-import { schoolPortalBlocked } from "@/lib/auth/school-access";
+import {
+  schoolHasProductAccess,
+  schoolPortalBlockDestination,
+  schoolPortalBlocked,
+} from "@/lib/auth/school-access";
 import { getPostAuthRedirect } from "@/lib/auth/post-auth-redirect";
 import { isProfileOnboardingExempt } from "@/lib/auth/profile-onboarding";
 import { isStructureSetupExempt } from "@/lib/auth/structure-setup";
@@ -111,9 +115,23 @@ export async function proxy(request: NextRequest) {
     return redirectWithCookies(request, supabaseResponse, "/onboarding");
   }
 
+  if (access && schoolPortalBlocked(access, pathname)) {
+    if (serverAction) {
+      return supabaseResponse;
+    }
+    return redirectWithCookies(
+      request,
+      supabaseResponse,
+      schoolPortalBlockDestination(access)
+    );
+  }
+
   if (pathname === "/onboarding" && access && !access.needsOnboarding) {
     if (serverAction) {
       return supabaseResponse;
+    }
+    if (!schoolHasProductAccess(access) && access.schoolStatus === "approved") {
+      return redirectWithCookies(request, supabaseResponse, "/billing");
     }
     return redirectWithCookies(
       request,
@@ -127,6 +145,7 @@ export async function proxy(request: NextRequest) {
   if (
     access?.needsStructureSetup &&
     !access.needsOnboarding &&
+    schoolHasProductAccess(access) &&
     !isStructureSetupExempt(pathname)
   ) {
     if (serverAction) {
@@ -146,16 +165,12 @@ export async function proxy(request: NextRequest) {
     );
   }
 
-  if (access && schoolPortalBlocked(access, pathname)) {
-    if (serverAction) {
-      return supabaseResponse;
-    }
-    return redirectWithCookies(request, supabaseResponse, "/pending");
-  }
-
   if (access?.schoolStatus === "approved" && pathname === "/pending") {
     if (serverAction) {
       return supabaseResponse;
+    }
+    if (!schoolHasProductAccess(access)) {
+      return redirectWithCookies(request, supabaseResponse, "/billing");
     }
     return redirectWithCookies(
       request,

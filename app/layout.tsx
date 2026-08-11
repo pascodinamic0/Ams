@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { JetBrains_Mono, Outfit, Plus_Jakarta_Sans, Source_Serif_4 } from "next/font/google";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTimeZone } from "next-intl/server";
 import { AppIntlProvider } from "@/components/i18n/app-intl-provider";
 import { AppToaster } from "@/components/ui/app-toaster";
 import { PwaRoot } from "@/components/pwa/pwa-root";
@@ -81,6 +81,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const locale = await getLocale();
+  const timeZone = await getTimeZone();
   const messages = await getMessages();
   const headerStore = await headers();
   // Prefer proxy-injected path; if missing (build/prerender), keep full messages.
@@ -96,7 +97,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="bg-background antialiased text-foreground">
-        <AppIntlProvider locale={locale} messages={clientMessages}>
+        <AppIntlProvider locale={locale} timeZone={timeZone} messages={clientMessages}>
           <ThemeProvider>
             <PwaRoot>{children}</PwaRoot>
             <AppToaster />

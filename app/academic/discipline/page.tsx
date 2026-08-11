@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { canAccessPath } from "@/lib/auth/rbac";
+import { canAccessPath, normalizeRole } from "@/lib/auth/rbac";
 import { getStudents } from "@/lib/db";
 import { getDisciplineIncidents } from "@/lib/db/workspaces";
 import { DisciplineBoard } from "./discipline-board";
@@ -9,6 +9,7 @@ import { formatPersonName } from "@/lib/utils";
 export default async function AcademicDisciplinePage() {
   const profile = await getCurrentProfile();
   if (!profile?.school_id) redirect("/academic");
+  if (normalizeRole(profile.role) === "teacher") redirect("/teacher/discipline");
   if (!canAccessPath(profile.role, "/academic/discipline")) redirect("/academic");
 
   const [incidents, students] = await Promise.all([

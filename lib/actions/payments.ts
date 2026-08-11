@@ -50,6 +50,7 @@ export async function recordPayment(input: PaymentFormData) {
     method: parsed.data.method,
     reference: parsed.data.reference || null,
     paid_at: parsed.data.paid_at || new Date().toISOString(),
+    proof_url: parsed.data.proof_url?.trim() || null,
     recorded_by: user.id,
   });
 

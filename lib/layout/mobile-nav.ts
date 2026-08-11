@@ -42,7 +42,7 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   admissions_officer: [
     { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/academic/admissions", labelKey: "admissions", icon: GraduationCap },
-    { id: "tab3", href: "/academic/tasks", labelKey: "tasks", icon: ClipboardList },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   pedagogy_coordinator: [
     { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
@@ -62,27 +62,27 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   finance_officer: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/finance/invoices", labelKey: "invoices", icon: DollarSign },
-    { id: "tab3", href: "/finance/payments", labelKey: "payments", icon: ClipboardList },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   cashier: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/finance/invoices", labelKey: "invoices", icon: DollarSign },
-    { id: "tab3", href: "/finance/payments", labelKey: "payments", icon: ClipboardList },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   accountant: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/finance/reports", labelKey: "reports", icon: DollarSign },
-    { id: "tab3", href: "/finance/payroll", labelKey: "payroll", icon: ClipboardList },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   operations_manager: [
     { id: "home", href: "/operations", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/operations/events", labelKey: "events", icon: ClipboardList },
-    { id: "tab3", href: "/operations/library", labelKey: "library", icon: GraduationCap },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   operations_officer: [
     { id: "home", href: "/operations", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/operations/events", labelKey: "events", icon: ClipboardList },
-    { id: "tab3", href: "/operations/library", labelKey: "library", icon: GraduationCap },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   discipline_officer: [
     { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
@@ -112,7 +112,7 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   analytics: [
     { id: "home", href: "/analytics", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/analytics/students", labelKey: "students", icon: GraduationCap },
-    { id: "tab3", href: "/analytics/finance", labelKey: "finance", icon: DollarSign },
+    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
 };
 

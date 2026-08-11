@@ -29,6 +29,13 @@ export type SchoolRow = {
   owner_id: string | null;
   currency_code: string;
   locale: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  subscription_status: import("@/lib/billing/types").SubscriptionStatus;
+  subscription_price_id: string | null;
+  trial_ends_at: string | null;
+  current_period_end: string | null;
+  billing_exempt: boolean;
   created_at: string;
   updated_at: string;
 };
@@ -41,6 +48,8 @@ export type SchoolListItem = {
   status: SchoolStatus;
   public_site_enabled: boolean;
   website_template: string | null;
+  billing_exempt: boolean;
+  subscription_status: import("@/lib/billing/types").SubscriptionStatus;
 };
 
 export type SchoolDirectoryItem = {
@@ -81,7 +90,9 @@ export async function getSchools(options?: {
 
   const { data, error } = await supabase
     .from("schools")
-    .select("id, name, slug, address, public_site_enabled, status, website_template")
+    .select(
+      "id, name, slug, address, public_site_enabled, status, website_template, billing_exempt, subscription_status"
+    )
     .order("name");
 
   if (error) {
@@ -102,6 +113,9 @@ export async function getSchools(options?: {
     status: (s.status as SchoolStatus) ?? "pending",
     public_site_enabled: s.public_site_enabled ?? false,
     website_template: s.website_template ?? "modern",
+    billing_exempt: Boolean(s.billing_exempt),
+    subscription_status:
+      (s.subscription_status as SchoolListItem["subscription_status"]) ?? "none",
   }));
 }
 

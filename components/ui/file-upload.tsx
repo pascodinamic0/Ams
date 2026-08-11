@@ -8,6 +8,8 @@ interface FileUploadProps {
   bucket: string;
   path: string;
   accept?: string;
+  /** When set, mobile browsers may open the camera directly (e.g. "environment"). */
+  capture?: boolean | "user" | "environment";
   maxSize?: number;
   value?: string;
   onUpload: (url: string) => void;
@@ -19,6 +21,7 @@ export function FileUpload({
   bucket,
   path,
   accept = "image/*",
+  capture,
   maxSize = 5 * 1024 * 1024,
   value,
   onUpload,
@@ -75,6 +78,7 @@ export function FileUpload({
           ref={inputRef}
           type="file"
           accept={accept}
+          capture={capture === true ? "environment" : capture || undefined}
           className="hidden"
           onChange={handleFile}
           disabled={uploading}
@@ -91,9 +95,11 @@ export function FileUpload({
           <div className="flex flex-col items-center gap-2 text-center">
             <ImagePlus className="h-8 w-8 text-stone-400" />
             <span className="text-sm text-stone-600 dark:text-stone-400">
-              Click to upload an image
+              Click to upload from your device
             </span>
-            <span className="text-xs text-stone-400">JPEG, PNG, WebP up to 5MB</span>
+            <span className="text-xs text-stone-400">
+              JPEG, PNG, WebP up to {Math.round(maxSize / 1024 / 1024)}MB
+            </span>
           </div>
         )}
       </div>

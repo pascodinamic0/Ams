@@ -55,10 +55,16 @@ export default function ResetPasswordPage() {
       if (user) {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("role")
+          .select("role, onboarding_completed_at")
           .eq("id", user.id)
           .single();
-        destination = getDashboardForRole(profile?.role);
+
+        // Invited users set a password first, then finish profile onboarding.
+        if (!profile?.onboarding_completed_at) {
+          destination = "/onboarding";
+        } else {
+          destination = getDashboardForRole(profile?.role);
+        }
       }
 
       toast.success(t("passwordUpdated"));

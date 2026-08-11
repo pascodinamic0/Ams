@@ -4,12 +4,18 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTeacherClasses, getGradesForClass } from "@/lib/db";
 import { getSubjects } from "@/lib/db/subjects";
+import { getCurrentSchoolYearStart } from "@/lib/academic/school-year";
 import { ExamGradeGrid } from "./exam-grade-grid";
 
 export default async function ExamsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ class?: string; subject?: string; exam?: string }>;
+  searchParams: Promise<{
+    class?: string;
+    subject?: string;
+    exam?: string;
+    year?: string;
+  }>;
 }) {
   const t = await getTranslations("teacher");
   const tc = await getTranslations("common");
@@ -38,9 +44,18 @@ export default async function ExamsPage({
     : classes[0].id;
   const subjectId = params.subject ?? "";
   const examName = params.exam ?? "Midterm Exam";
+  const parsedYear = Number(params.year);
+  const schoolYear = Number.isFinite(parsedYear)
+    ? parsedYear
+    : getCurrentSchoolYearStart();
 
   const rows = subjectId
-    ? await getGradesForClass({ classId, subjectId, term: examName })
+    ? await getGradesForClass({
+        classId,
+        subjectId,
+        term: examName,
+        schoolYear,
+      })
     : [];
 
   return (
@@ -54,6 +69,7 @@ export default async function ExamsPage({
           initialClassId={classId}
           initialSubjectId={subjectId}
           initialExamName={examName}
+          initialSchoolYear={schoolYear}
           rows={rows}
         />
       </Suspense>

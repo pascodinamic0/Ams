@@ -42,7 +42,7 @@ export {
   type PublicSchoolEvent,
   type EventRegistrationListItem,
 } from "./public-events";
-export { getStaff, getStaffCount, type StaffListItem } from "./staff";
+export { getStaff, getStaffCount, getAdminPayees, type StaffListItem, type AdminPayeeListItem } from "./staff";
 export {
   getBranches,
   getBranchById,
@@ -58,6 +58,7 @@ export {
   getConversationById,
   getGuardianContacts,
   getStaffContactsForParent,
+  getStaffContactsForStaff,
   findExistingConversation,
   getUnreadConversationCount,
   type ConversationListItem,
@@ -87,6 +88,8 @@ export {
 } from "./schools";
 export {
   getStudents,
+  getStudentsForBilling,
+  type BillingStudentOption,
   getStudentById,
   getStudentByAuthUserId,
   type StudentListItem,
@@ -160,18 +163,39 @@ export {
 export {
   getExpenses,
   getExpenseById,
+  getExpenseReceipt,
   getExpenseCategories,
   getExpenseTotal,
   getMonthlyExpenseTotals,
   getExpensesByCategory,
   type ExpenseListItem,
+  type ExpenseReceipt,
+  type ExpenseStatus,
 } from "./expenses";
+export {
+  getMonthlyActivityReport,
+  type MonthlyActivityReport,
+  type MonthlyCompletedTask,
+  type MonthlyExpenseDecision,
+} from "./reports";
+export {
+  getBudgetPlans,
+  getBudgetPlanById,
+  getBudgetLineById,
+  type BudgetPlanListItem,
+  type BudgetPlanDetail,
+  type BudgetLineItem,
+  type BudgetPlanStatus,
+  type BudgetLineStatus,
+  type BudgetPeriodType,
+} from "./budget";
 export {
   getPayroll,
   getPayrollById,
   getPayrollTotals,
   getMonthlyPayrollTotals,
   getPayrollMonths,
+  getPayrollExcludedStaffIds,
   type PayrollListItem,
   type PayrollMonthListItem,
 } from "./payroll";

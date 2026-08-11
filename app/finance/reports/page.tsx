@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import { Chart } from "@/components/ui/chart-lazy";
-import { ExportButton } from "@/components/ui/export-button";
+import { ExportPdfButton } from "@/components/students/export-pdf-button";
 import {
   getFinanceKPIs,
   getInvoices,
@@ -12,10 +12,12 @@ import {
   getPayrollTotals,
   getExpensesByCategory,
   getSchoolCurrencyForSchool,
+  getSchoolById,
 } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
 import { formatMoney } from "@/lib/currency";
+import { format } from "date-fns";
 
 function lastMonths(count: number): string[] {
   const months: string[] = [];
@@ -23,7 +25,9 @@ function lastMonths(count: number): string[] {
     const d = new Date();
     d.setDate(1);
     d.setMonth(d.getMonth() - i);
-    months.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    months.push(
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
+    );
   }
   return months;
 }
@@ -53,6 +57,7 @@ export default async function FinancialReportsPage() {
     payrollTotals,
     expensesByCategory,
     currency,
+    school,
   ] = await Promise.all([
     getFinanceKPIs(scope),
     getInvoices(scope),
@@ -63,8 +68,10 @@ export default async function FinancialReportsPage() {
     getPayrollTotals(scope),
     getExpensesByCategory(scope),
     getSchoolCurrencyForSchool(profile?.school_id),
+    profile?.school_id ? getSchoolById(profile.school_id) : Promise.resolve(null),
   ]);
   const formatCurrency = (value: number) => formatMoney(value, currency.code);
+  const issuedOn = format(new Date(), "yyyy-MM-dd");
 
   const months = lastMonths(6);
   const trendData = months.map((month) => ({
@@ -85,159 +92,245 @@ export default async function FinancialReportsPage() {
         (i) =>
           i.balance > 0 &&
           (i.status === "overdue" ||
-            (i.status === "pending" && new Date(i.due_date) < new Date(new Date().toDateString())))
+            (i.status === "pending" &&
+              new Date(i.due_date) < new Date(new Date().toDateString())))
       ).length,
     },
   ].filter((row) => row.value > 0);
 
   const breakdownRows = trendData.map((row) => ({
     month: row.month,
-    revenue: row.revenue,
-    expenses: row.expenses,
-    net: row.revenue - row.expenses,
+    revenue: formatCurrency(row.revenue),
+    expenses: formatCurrency(row.expenses),
+    net: formatCurrency(row.revenue - row.expenses),
   }));
 
   const netPosition = kpis.collected - expenseTotal - payrollTotals.paid;
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <h1 className="text-2xl font-bold">{t("reportsTitle")}</h1>
-        <ExportButton
-          data={breakdownRows}
-          columns={[
-            { key: "month", label: t("colMonth") },
-            { key: "revenue", label: t("colRevenue") },
-            { key: "expenses", label: t("colExpenses") },
-            { key: "net", label: t("colNet") },
-          ]}
-          filename="financial-report"
-        />
+        <ExportPdfButton label={t("exportBudgetPdf")} />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader><CardTitle>{t("collected")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(kpis.collected)}</p>
-            <p className="text-sm text-stone-500">{t("collectedFeesSub")}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("outstanding")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(kpis.outstanding)}</p>
-            <p className="text-sm text-stone-500">{t("outstandingInvoiceSub")}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("expensesTitle")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(expenseTotal)}</p>
-            <p className="text-sm text-stone-500">{t("expensesSub")}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("netPosition")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className={`text-2xl font-bold ${netPosition >= 0 ? "text-green-600" : "text-red-600"}`}>
-              {formatCurrency(netPosition)}
-            </p>
-            <p className="text-sm text-stone-500">{t("netPositionSub")}</p>
-          </CardContent>
-        </Card>
-      </div>
+      <article className="finance-report space-y-6">
+        <header className="hidden border-b border-stone-200 pb-4 print:flex print:items-start print:justify-between">
+          <div className="flex items-start gap-4">
+            {school?.logo_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={school.logo_url}
+                alt=""
+                className="h-14 w-14 rounded-lg object-contain"
+              />
+            ) : null}
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
+                {t("reportsTitle")}
+              </p>
+              <h2 className="mt-1 text-2xl font-bold">
+                {school?.name ?? t("reportsTitle")}
+              </h2>
+              {school?.address ? (
+                <p className="mt-1 text-sm text-stone-500">{school.address}</p>
+              ) : null}
+            </div>
+          </div>
+          <p className="text-sm text-stone-500">
+            {t("budgetIssuedOn")}: {issuedOn}
+          </p>
+        </header>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Chart
-          data={trendData}
-          type="line"
-          xKey="month"
-          yKeys={["revenue", "expenses"]}
-          title={t("chartRevenueVsExpenses")}
-          height={320}
-        />
-        {feeStatusBreakdown.length > 0 ? (
-          <Chart
-            data={feeStatusBreakdown}
-            type="pie"
-            nameKey="name"
-            dataKey="value"
-            title={t("chartInvoiceStatus")}
-            height={320}
-          />
-        ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <Card>
-            <CardHeader><CardTitle>{t("chartInvoiceStatus")}</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>{t("collected")}</CardTitle>
+            </CardHeader>
             <CardContent>
-              <p className="text-sm text-stone-500">{t("noInvoiceChartData")}</p>
+              <p className="text-2xl font-bold">{formatCurrency(kpis.collected)}</p>
+              <p className="text-sm text-stone-500">{t("collectedFeesSub")}</p>
             </CardContent>
           </Card>
-        )}
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Chart
-          data={trendData}
-          type="bar"
-          xKey="month"
-          yKeys={["revenue", "expenses"]}
-          title={t("chartMonthlyCollection")}
-          height={320}
-        />
-        {expensesByCategory.length > 0 ? (
-          <Chart
-            data={expensesByCategory}
-            type="pie"
-            nameKey="name"
-            dataKey="value"
-            title={t("chartExpensesByCategory")}
-            height={320}
-          />
-        ) : (
           <Card>
-            <CardHeader><CardTitle>{t("chartExpensesByCategory")}</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>{t("outstanding")}</CardTitle>
+            </CardHeader>
             <CardContent>
-              <p className="text-sm text-stone-500">{t("noExpensesChartData")}</p>
+              <p className="text-2xl font-bold">
+                {formatCurrency(kpis.outstanding)}
+              </p>
+              <p className="text-sm text-stone-500">
+                {t("outstandingInvoiceSub")}
+              </p>
             </CardContent>
           </Card>
-        )}
-      </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("expensesTitle")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold">{formatCurrency(expenseTotal)}</p>
+              <p className="text-sm text-stone-500">{t("expensesSub")}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("netPosition")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p
+                className={`text-2xl font-bold ${
+                  netPosition >= 0 ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {formatCurrency(netPosition)}
+              </p>
+              <p className="text-sm text-stone-500">{t("netPositionSub")}</p>
+            </CardContent>
+          </Card>
+        </div>
 
-      <div className="space-y-3">
-        <h2 className="text-lg font-medium">{t("monthlyBreakdown")}</h2>
-        <DataTable
-          data={breakdownRows}
-          keyField="month"
-          columns={[
-            { id: "month", header: t("colMonth"), accessorKey: "month", sortable: true },
-            { id: "revenue", header: t("colRevenue"), accessorKey: "revenue", sortable: true },
-            { id: "expenses", header: t("colExpenses"), accessorKey: "expenses", sortable: true },
-            { id: "net", header: t("colNet"), accessorKey: "net", sortable: true },
-          ]}
-        />
-      </div>
+        <div className="grid gap-6 print:hidden lg:grid-cols-2">
+          <Chart
+            data={trendData}
+            type="line"
+            xKey="month"
+            yKeys={["revenue", "expenses"]}
+            title={t("chartRevenueVsExpenses")}
+            height={320}
+          />
+          {feeStatusBreakdown.length > 0 ? (
+            <Chart
+              data={feeStatusBreakdown}
+              type="pie"
+              nameKey="name"
+              dataKey="value"
+              title={t("chartInvoiceStatus")}
+              height={320}
+            />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("chartInvoiceStatus")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-stone-500">{t("noInvoiceChartData")}</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Card>
-          <CardHeader><CardTitle>{tc("overdue")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-red-600">{formatCurrency(kpis.overdue)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("payrollPendingKpi")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(payrollTotals.pending)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("invoicesKpi")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{kpis.invoiceCount}</p>
-          </CardContent>
-        </Card>
-      </div>
+        <div className="grid gap-6 print:hidden lg:grid-cols-2">
+          <Chart
+            data={trendData}
+            type="bar"
+            xKey="month"
+            yKeys={["revenue", "expenses"]}
+            title={t("chartMonthlyCollection")}
+            height={320}
+          />
+          {expensesByCategory.length > 0 ? (
+            <Chart
+              data={expensesByCategory}
+              type="pie"
+              nameKey="name"
+              dataKey="value"
+              title={t("chartExpensesByCategory")}
+              height={320}
+            />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>{t("chartExpensesByCategory")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-stone-500">
+                  {t("noExpensesChartData")}
+                </p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+
+        <div className="space-y-3">
+          <h2 className="text-lg font-medium">{t("monthlyBreakdown")}</h2>
+          <DataTable
+            data={breakdownRows}
+            keyField="month"
+            columns={[
+              {
+                id: "month",
+                header: t("colMonth"),
+                accessorKey: "month",
+                sortable: true,
+              },
+              {
+                id: "revenue",
+                header: t("colRevenue"),
+                accessorKey: "revenue",
+                sortable: true,
+              },
+              {
+                id: "expenses",
+                header: t("colExpenses"),
+                accessorKey: "expenses",
+                sortable: true,
+              },
+              {
+                id: "net",
+                header: t("colNet"),
+                accessorKey: "net",
+                sortable: true,
+              },
+            ]}
+          />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <CardTitle>{tc("overdue")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-red-600">
+                {formatCurrency(kpis.overdue)}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("payrollPendingKpi")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold">
+                {formatCurrency(payrollTotals.pending)}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("invoicesKpi")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold">{kpis.invoiceCount}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </article>
+
+      <style>{`
+        @media print {
+          body * { visibility: hidden; }
+          .finance-report, .finance-report * { visibility: visible; }
+          .finance-report {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+          }
+        }
+      `}</style>
     </div>
   );
 }

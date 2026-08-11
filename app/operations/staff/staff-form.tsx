@@ -18,7 +18,6 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
-  const [monthlySalary, setMonthlySalary] = useState("0");
   const [employmentStatus, setEmploymentStatus] = useState<"active" | "inactive">("active");
   const [loading, setLoading] = useState(false);
 
@@ -29,7 +28,7 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
       name,
       email: email || undefined,
       role: role || undefined,
-      monthly_salary: Number(monthlySalary || 0),
+      monthly_salary: 0,
       employment_status: employmentStatus,
       school_id: schoolId,
       branch_id: campusId ?? null,
@@ -43,17 +42,16 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
       toast.error(message);
       return;
     }
-    toast.success("Staff member added");
+    toast.success("Staff member added — set their pay amount in Finance payroll");
     setName("");
     setEmail("");
     setRole("");
-    setMonthlySalary("0");
     setEmploymentStatus("active");
     router.refresh();
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-5">
+    <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-4">
       <div>
         <Label>Name</Label>
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
@@ -67,16 +65,6 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
         <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="e.g. Librarian" />
       </div>
       <div>
-        <Label>Monthly Salary</Label>
-        <Input
-          type="number"
-          min="0"
-          step="0.01"
-          value={monthlySalary}
-          onChange={(e) => setMonthlySalary(e.target.value)}
-        />
-      </div>
-      <div>
         <Label>Employment Status</Label>
         <select
           value={employmentStatus}
@@ -87,8 +75,11 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
           <option value="inactive">Inactive</option>
         </select>
       </div>
-      <div className="flex items-end">
-        <Button type="submit" disabled={loading} className="w-full">Add staff</Button>
+      <p className="sm:col-span-2 lg:col-span-4 text-xs text-stone-500">
+        Pay amounts are set only by Finance on the payroll page.
+      </p>
+      <div className="flex items-end sm:col-span-2 lg:col-span-4">
+        <Button type="submit" disabled={loading} className="w-full sm:w-auto">Add staff</Button>
       </div>
     </form>
   );
@@ -106,6 +97,7 @@ export function EditStaffButton({
     role: string | null;
     monthly_salary: number;
     employment_status: "active" | "inactive";
+    is_admin_payee?: boolean;
   };
   schoolId: string;
   campusId?: string;
@@ -115,7 +107,6 @@ export function EditStaffButton({
   const [name, setName] = useState(member.name);
   const [email, setEmail] = useState(member.email ?? "");
   const [role, setRole] = useState(member.role ?? "");
-  const [monthlySalary, setMonthlySalary] = useState(String(member.monthly_salary));
   const [employmentStatus, setEmploymentStatus] = useState<"active" | "inactive">(
     member.employment_status
   );
@@ -127,14 +118,16 @@ export function EditStaffButton({
       name,
       email: email || undefined,
       role: role || undefined,
-      monthly_salary: Number(monthlySalary || 0),
+      monthly_salary: Number(member.monthly_salary || 0),
       employment_status: employmentStatus,
       school_id: schoolId,
       branch_id: campusId ?? null,
     });
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to update staff member");
+      toast.error(
+        typeof result.error === "string" ? result.error : "Failed to update staff member"
+      );
       return;
     }
     toast.success("Staff updated");
@@ -143,6 +136,10 @@ export function EditStaffButton({
   }
 
   async function handleDelete() {
+    if (member.is_admin_payee) {
+      toast.error("School team members synced to payroll are managed from Finance payroll");
+      return;
+    }
     if (!confirm("Delete this staff member?")) return;
     setLoading(true);
     const result = await deleteStaff(member.id);
@@ -159,24 +156,20 @@ export function EditStaffButton({
     return (
       <div className="flex gap-2">
         <Button size="sm" variant="ghost" onClick={() => setEditing(true)}>Edit</Button>
-        <Button size="sm" variant="ghost" onClick={handleDelete} disabled={loading}>Delete</Button>
+        {!member.is_admin_payee ? (
+          <Button size="sm" variant="ghost" onClick={handleDelete} disabled={loading}>
+            Delete
+          </Button>
+        ) : null}
       </div>
     );
   }
 
   return (
-    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
       <Input value={name} onChange={(e) => setName(e.target.value)} />
       <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
       <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" />
-      <Input
-        type="number"
-        min="0"
-        step="0.01"
-        value={monthlySalary}
-        onChange={(e) => setMonthlySalary(e.target.value)}
-        placeholder="Monthly salary"
-      />
       <select
         value={employmentStatus}
         onChange={(e) => setEmploymentStatus(e.target.value as "active" | "inactive")}
@@ -185,6 +178,9 @@ export function EditStaffButton({
         <option value="active">Active</option>
         <option value="inactive">Inactive</option>
       </select>
+      <p className="sm:col-span-2 lg:col-span-4 text-[11px] text-stone-500">
+        Pay amount: {member.monthly_salary.toLocaleString()} (set by Finance only)
+      </p>
       <div className="flex gap-2">
         <Button size="sm" onClick={handleSave} disabled={loading}>Save</Button>
         <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>

@@ -25,10 +25,26 @@ export default async function PaymentsPage() {
     label: `${inv.student_name} (${inv.student_id}) - due ${inv.due_date}`,
   }));
 
+  const tableData = payments.map((payment) => ({
+    ...payment,
+    proof: payment.proof_url ? (
+      <a
+        href={payment.proof_url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-medium text-zinc-900 underline underline-offset-2 hover:text-zinc-700 dark:text-zinc-100 dark:hover:text-zinc-300"
+      >
+        {t("viewProof")}
+      </a>
+    ) : (
+      "—"
+    ),
+  }));
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{t("paymentsTitle")}</h1>
-      <PaymentForm openInvoices={invoiceOptions} />
+      <PaymentForm schoolId={scope.schoolId} openInvoices={invoiceOptions} />
       {payments.length === 0 ? (
         <EmptyState
           title={t("noPayments")}
@@ -36,13 +52,14 @@ export default async function PaymentsPage() {
         />
       ) : (
         <DataTable
-          data={payments}
+          data={tableData}
           columns={[
             { id: "paid_at", header: tc("date"), accessorKey: "paid_at", sortable: true },
             { id: "student_name", header: t("colStudent"), accessorKey: "student_name", sortable: true },
             { id: "amount", header: tc("amount"), accessorKey: "amount", sortable: true },
             { id: "method", header: t("colMethod"), accessorKey: "method" },
             { id: "reference", header: t("colReference"), accessorKey: "reference" },
+            { id: "proof", header: t("colProof"), accessorKey: "proof" },
             { id: "invoice_amount", header: t("colInvoiceTotal"), accessorKey: "invoice_amount" },
           ]}
         />

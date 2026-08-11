@@ -267,7 +267,10 @@ export async function inviteSchoolUser(input: {
     }
   }
 
-  const redirectTo = buildAuthCallbackUrl({ redirect: "/reset-password" });
+  const redirectTo = buildAuthCallbackUrl({
+    intent: "invite",
+    redirect: "/reset-password",
+  });
 
   const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
     email,

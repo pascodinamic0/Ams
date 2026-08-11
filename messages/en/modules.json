@@ -88,15 +88,17 @@
   "schoolWebsites": {
     "title": "Free School Website",
     "tagline": "Stop losing families who never find you online",
-    "summary": "Parents search WhatsApp and Google before they visit. Without a site, they enroll elsewhere. Get a branded school website free with ShuleOS — homepage, contact, and online admissions into your admin queue.",
-    "desc": "Your school online with admissions — included free",
+    "summary": "Parents search WhatsApp and Google before they visit. Without a site, they enroll elsewhere. Get a branded school website free with ShuleOS — homepage, admissions, events, hiring, and school visit booking into your admin queue.",
+    "desc": "Your school online with admissions, events, hiring & visits — included free",
     "highlights": {
       "0": "Free branded homepage with your logo, colours, and cover image",
       "1": "About, programs, gallery, and contact sections",
       "2": "Online admissions form feeding straight into your admin queue",
-      "3": "Public events page for open days and school activities",
-      "4": "Three templates: Modern, Classic, and Minimal",
-      "5": "Staff login link connecting visitors to the school portal"
+      "3": "Public events managed from ShuleOS — open days and school activities",
+      "4": "Hiring / careers listings with applications into your staff queue",
+      "5": "Book a school visit directly from the site into your calendar",
+      "6": "Three templates: Modern, Classic, and Minimal",
+      "7": "Staff login link connecting visitors to the school portal"
     },
     "whoItsFor": {
       "0": "Schools losing intake to competitors with better online presence",

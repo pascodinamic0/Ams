@@ -10,6 +10,7 @@ import {
 } from "react";
 import { usePathname } from "next/navigation";
 import { fetchUnreadNotificationCount } from "@/app/notifications/actions";
+import { NotificationToasts } from "@/components/layout/notification-toasts";
 import { fetchUnreadConversationCount } from "@/lib/actions/conversations";
 import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
 
@@ -19,12 +20,15 @@ type ShellBadgesContextValue = {
   unreadNotifications: number;
   unreadMessages: number;
   refresh: () => void;
+  /** Instant badge bump when a realtime notification arrives. */
+  bumpUnreadNotifications: (by?: number) => void;
 };
 
 const ShellBadgesContext = createContext<ShellBadgesContextValue>({
   unreadNotifications: 0,
   unreadMessages: 0,
   refresh: () => {},
+  bumpUnreadNotifications: () => {},
 });
 
 export function useShellBadges() {
@@ -79,17 +83,27 @@ export function ShellBadgesProvider({
     };
   }, [role, pathname]);
 
+  const refresh = useCallback(() => {
+    void load();
+  }, [load]);
+
+  const bumpUnreadNotifications = useCallback((by = 1) => {
+    setUnreadNotifications((count) => count + by);
+  }, []);
+
   const value = useMemo(
     () => ({
       unreadNotifications,
       unreadMessages,
-      refresh: () => void load(),
+      refresh,
+      bumpUnreadNotifications,
     }),
-    [unreadNotifications, unreadMessages, load]
+    [unreadNotifications, unreadMessages, refresh, bumpUnreadNotifications]
   );
 
   return (
     <ShellBadgesContext.Provider value={value}>
+      <NotificationToasts />
       {children}
     </ShellBadgesContext.Provider>
   );

@@ -13,6 +13,10 @@ export type SchoolTask = {
   assigned_name: string | null;
   created_by: string | null;
   created_at: string;
+  related_type: string | null;
+  related_id: string | null;
+  related_expense_status: "pending" | "approved" | "rejected" | null;
+  related_receipt_number: string | null;
 };
 
 export type DisciplineIncident = {
@@ -74,7 +78,7 @@ export async function getSchoolTasks(schoolId: string): Promise<SchoolTask[]> {
     .from("school_tasks")
     .select(`
       id, title, description, department, status, priority, due_date,
-      assigned_to, created_by, created_at,
+      assigned_to, created_by, created_at, related_type, related_id,
       profiles:assigned_to(name)
     `)
     .eq("school_id", schoolId)
@@ -85,8 +89,31 @@ export async function getSchoolTasks(schoolId: string): Promise<SchoolTask[]> {
     return [];
   }
 
+  const expenseIds = (data ?? [])
+    .filter((row) => row.related_type === "expense" && row.related_id)
+    .map((row) => row.related_id as string);
+
+  const expenseMeta = new Map<
+    string,
+    { status: "pending" | "approved" | "rejected"; receipt_number: string | null }
+  >();
+
+  if (expenseIds.length > 0) {
+    const { data: expenses } = await supabase
+      .from("expenses")
+      .select("id, status, receipt_number")
+      .in("id", expenseIds);
+    for (const expense of expenses ?? []) {
+      expenseMeta.set(expense.id, {
+        status: expense.status as "pending" | "approved" | "rejected",
+        receipt_number: expense.receipt_number,
+      });
+    }
+  }
+
   return (data ?? []).map((row) => {
     const profile = row.profiles as { name?: string } | null;
+    const related = row.related_id ? expenseMeta.get(row.related_id) : undefined;
     return {
       id: row.id,
       title: row.title,
@@ -99,6 +126,10 @@ export async function getSchoolTasks(schoolId: string): Promise<SchoolTask[]> {
       assigned_name: profile?.name ?? null,
       created_by: row.created_by,
       created_at: row.created_at,
+      related_type: row.related_type ?? null,
+      related_id: row.related_id ?? null,
+      related_expense_status: related?.status ?? null,
+      related_receipt_number: related?.receipt_number ?? null,
     };
   });
 }

@@ -6,6 +6,7 @@ export const feeStructureSchema = z.object({
   amount: z.coerce.number().min(0, "Amount must be zero or positive"),
   class_id: z.string().uuid().optional().or(z.literal("")),
   description: z.string().optional(),
+  school_year: z.coerce.number().int().min(2000).max(2100),
 });
 
 export const invoiceSchema = z.object({
@@ -29,6 +30,7 @@ export const paymentSchema = z.object({
   ]),
   reference: z.string().optional(),
   paid_at: z.string().optional(),
+  proof_url: z.string().url().optional().or(z.literal("")),
 });
 
 export const expenseSchema = z.object({
@@ -62,6 +64,27 @@ export const payrollPaymentSchema = z.object({
   notes: z.string().optional(),
 });
 
+/** `year` is the school-year start (e.g. 2026 for 2026 - 2027). */
+export const budgetPlanSchema = z.object({
+  year: z.coerce.number().int().min(2000).max(2100),
+  title: z.string().min(1, "Title is required"),
+  label: z.string().optional(),
+  notes: z.string().optional(),
+  status: z.enum(["draft", "active", "archived"]).optional(),
+});
+
+export const budgetLineItemSchema = z.object({
+  category: z.string().min(1, "Category is required"),
+  name: z.string().min(1, "Item name is required"),
+  description: z.string().optional(),
+  quantity: z.coerce.number().min(0, "Quantity must be zero or positive"),
+  unit_cost: z.coerce.number().min(0, "Unit cost must be zero or positive"),
+  period_type: z.enum(["year", "quarter", "trimester", "month"]),
+  period_key: z.string().min(1, "Period is required"),
+  sort_order: z.coerce.number().int().optional(),
+  status: z.enum(["planned", "in_progress", "done", "cancelled"]).optional(),
+});
+
 export type FeeStructureFormData = z.infer<typeof feeStructureSchema>;
 export type InvoiceFormData = z.infer<typeof invoiceSchema>;
 export type PaymentFormData = z.infer<typeof paymentSchema>;
@@ -69,3 +92,5 @@ export type ExpenseFormData = z.infer<typeof expenseSchema>;
 export type PayrollFormData = z.infer<typeof payrollSchema>;
 export type PayrollGenerateFormData = z.infer<typeof payrollGenerateSchema>;
 export type PayrollPaymentFormData = z.infer<typeof payrollPaymentSchema>;
+export type BudgetPlanFormData = z.infer<typeof budgetPlanSchema>;
+export type BudgetLineItemFormData = z.infer<typeof budgetLineItemSchema>;

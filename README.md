@@ -149,7 +149,7 @@ Set `CRON_SECRET` in Vercel env vars; invocations must send `Authorization: Bear
 
 > **Note:** Vercel Hobby may only allow daily crons. For 5-minute class alarms on Hobby, call `/api/cron/class-reminders` from an external scheduler (cron-job.org, GitHub Actions, etc.) with the same bearer token.
 
-### Webhooks: payments
+### Webhooks: payments (school fees)
 
 Configure your payment provider (Paystack, Flutterwave, etc.) to POST to:
 
@@ -158,6 +158,23 @@ https://www.shuleos.app/api/webhooks/payments
 ```
 
 Set `PAYMENT_WEBHOOK_SECRET` in Vercel. The handler verifies HMAC-SHA256 signatures via `x-payment-signature`, `x-webhook-signature`, or `stripe-signature` headers.
+
+### SaaS billing (schools pay for ShuleOS)
+
+Schools unlock the app with a fixed **$350 USD** Stripe subscription (or a super-admin billing exemption).
+
+1. Apply migration `00045_school_billing.sql` (`bun run db:migrate`).
+2. In Stripe Dashboard, create a Product + recurring Price of **$350 USD**; copy the Price ID.
+3. Set `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, and optionally `STRIPE_TRIAL_DAYS` in Vercel / `.env.local`.
+4. Add a Stripe webhook endpoint to `https://www.shuleos.app/api/webhooks/stripe` for:
+   - `checkout.session.completed`
+   - `customer.subscription.created`
+   - `customer.subscription.updated`
+   - `customer.subscription.deleted`
+5. Set `STRIPE_WEBHOOK_SECRET` from that endpoint.
+6. Enable the Customer Portal in Stripe for self-serve card updates / cancellation.
+
+Existing approved schools are marked `billing_exempt` by the migration so they are not locked out. From **Admin → Schools**, toggle **Payment off** per school for complimentary access; otherwise schools must subscribe to the $350 plan.
 
 ## Security
 

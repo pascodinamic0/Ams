@@ -1,7 +1,14 @@
 import { getRequestConfig } from "next-intl/server";
 import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
-import { defaultLocale, isValidLocale, LOCALE_COOKIE, locales, type Locale } from "./config";
+import {
+  defaultLocale,
+  defaultTimeZone,
+  isValidLocale,
+  LOCALE_COOKIE,
+  locales,
+  type Locale,
+} from "./config";
 
 async function loadMessages(locale: string) {
   const [
@@ -29,6 +36,7 @@ async function loadMessages(locale: string) {
     messages,
     outreach,
     notifications,
+    billing,
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`),
     import(`../messages/${locale}/nav.json`),
@@ -54,6 +62,7 @@ async function loadMessages(locale: string) {
     import(`../messages/${locale}/messages.json`),
     import(`../messages/${locale}/outreach.json`),
     import(`../messages/${locale}/notifications.json`),
+    import(`../messages/${locale}/billing.json`),
   ]);
 
   return {
@@ -81,6 +90,7 @@ async function loadMessages(locale: string) {
     messages: messages.default,
     outreach: outreach.default,
     notifications: notifications.default,
+    billing: billing.default,
   };
 }
 
@@ -127,6 +137,7 @@ export default getRequestConfig(async () => {
   if (schoolLocale) {
     return {
       locale: schoolLocale,
+      timeZone: defaultTimeZone,
       messages: await loadMessages(schoolLocale),
     };
   }
@@ -138,6 +149,7 @@ export default getRequestConfig(async () => {
 
   return {
     locale,
+    timeZone: defaultTimeZone,
     messages: await loadMessages(locale),
   };
 });

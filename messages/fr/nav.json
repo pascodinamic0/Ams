@@ -54,5 +54,8 @@
   "student": "Élève",
   "analytics": "Analytique",
   "tasks": "Tâches",
-  "discipline": "Discipline"
+  "discipline": "Discipline",
+  "monthlyActivity": "Activité mensuelle",
+  "budget": "Plan budgétaire",
+  "billing": "Facturation"
 }

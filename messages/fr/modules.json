@@ -88,15 +88,17 @@
   "schoolWebsites": {
     "title": "Site web scolaire gratuit",
     "tagline": "Arrêtez de perdre des familles qui ne vous trouvent pas en ligne",
-    "summary": "Les parents cherchent sur WhatsApp et Google avant de venir. Sans site, ils s'inscrivent ailleurs. Obtenez un site scolaire gratuit avec ShuleOS — page d'accueil, contact et admissions en ligne dans votre file admin.",
-    "desc": "Votre école en ligne avec admissions — inclus gratuitement",
+    "summary": "Les parents cherchent sur WhatsApp et Google avant de venir. Sans site, ils s'inscrivent ailleurs. Obtenez un site scolaire gratuit avec ShuleOS — page d'accueil, admissions, événements, recrutement et réservation de visite dans votre file admin.",
+    "desc": "Votre école en ligne avec admissions, événements, recrutement et visites — inclus gratuitement",
     "highlights": {
       "0": "Page d'accueil gratuite avec logo, couleurs et image de couverture",
       "1": "Sections À propos, programmes, galerie et contact",
       "2": "Formulaire d'admission en ligne alimentant directement votre file d'attente admin",
-      "3": "Page événements publics pour journées portes ouvertes et activités",
-      "4": "Trois modèles : Modern, Classic et Minimal",
-      "5": "Lien de connexion personnel connectant les visiteurs au portail scolaire"
+      "3": "Événements publics gérés depuis ShuleOS — portes ouvertes et activités",
+      "4": "Offres d'emploi / recrutement avec candidatures dans votre file RH",
+      "5": "Réservation de visite scolaire directement depuis le site vers votre agenda",
+      "6": "Trois modèles : Modern, Classic et Minimal",
+      "7": "Lien de connexion personnel connectant les visiteurs au portail scolaire"
     },
     "whoItsFor": {
       "0": "Écoles perdant des inscriptions face à des concurrents mieux présents en ligne",

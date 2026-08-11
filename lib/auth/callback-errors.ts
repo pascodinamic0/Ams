@@ -29,8 +29,15 @@ export function resolveCallbackErrorMessage(
   if (options?.intent === "register") {
     return (
       "Registration could not be completed. The callback URL may be missing from " +
-      "Supabase Auth ? URL Configuration (add your site URL with /auth/callback, " +
+      "Supabase Auth → URL Configuration (add your site URL with /auth/callback, " +
       "including ?intent=register or use a /** wildcard). Then try again."
+    );
+  }
+
+  if (options?.intent === "invite") {
+    return (
+      "This invite link is invalid or expired. Ask your admin to send a new invitation, " +
+      "then open the latest email and use the Accept invite button."
     );
   }
 
@@ -40,5 +47,7 @@ export function resolveCallbackErrorMessage(
 }
 
 export function authErrorRedirectPath(intent?: string | null): string {
-  return intent === "register" ? "/register" : "/login";
+  if (intent === "register") return "/register";
+  // Invite failures land on login with a clear expired-link message.
+  return "/login";
 }

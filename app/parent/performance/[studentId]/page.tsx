@@ -17,7 +17,14 @@ async function getStudentPerformanceData(studentId: string) {
     student_id: string; class_id: string | null;
     classes: { name: string } | null;
   };
-  type GradeRow = { id: string; marks: number | null; grade: string | null; term: string; subjects: { name: string } | null };
+  type GradeRow = {
+    id: string;
+    marks: number | null;
+    grade: string | null;
+    school_year: number;
+    term: string;
+    subjects: { name: string } | null;
+  };
   type AttendanceRow = { id: string; date: string; status: string };
   type AssignmentRow = { id: string; grade: number | null; submitted_at: string | null; assignments: { title: string; due_date: string | null; subjects: { name: string } | null } | null };
 
@@ -34,8 +41,9 @@ async function getStudentPerformanceData(studentId: string) {
       .single(),
     supabase
       .from("grades")
-      .select("id, marks, grade, term, subjects(name)")
+      .select("id, marks, grade, school_year, term, subjects(name)")
       .eq("student_id", studentId)
+      .order("school_year", { ascending: false })
       .order("term"),
     supabase
       .from("attendance_records")

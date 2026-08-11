@@ -3,6 +3,7 @@ export const STRUCTURE_SETUP_EXEMPT_PREFIXES = [
   "/onboarding/school",
   "/settings",
   "/pending",
+  "/billing",
   "/auth",
   "/login",
 ];

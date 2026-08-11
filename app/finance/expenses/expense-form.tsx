@@ -42,7 +42,11 @@ export function ExpenseForm({ branchId, categories, expense, currencySymbol = "$
       return;
     }
 
-    toast.success(isEdit ? "Expense updated" : "Expense recorded");
+    toast.success(
+      isEdit
+        ? "Expense updated"
+        : "Expense submitted for academic admin approval"
+    );
     router.refresh();
   }
 
@@ -75,7 +79,7 @@ function ExpenseFields({
   isEdit: boolean;
   currencySymbol: string;
 }) {
-  const { register, formState: { errors } } = useFormContext<ExpenseFormData>();
+  const { register, formState: { errors, isSubmitting } } = useFormContext<ExpenseFormData>();
 
   return (
     <>
@@ -109,7 +113,7 @@ function ExpenseFields({
         <Input id="description" {...register("description")} />
       </div>
       <div className="flex items-end">
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
           {isEdit ? "Update expense" : "Add expense"}
         </Button>
       </div>

@@ -54,5 +54,8 @@
   "student": "Student",
   "analytics": "Analytics",
   "tasks": "Tasks",
-  "discipline": "Discipline"
+  "discipline": "Discipline",
+  "monthlyActivity": "Monthly activity",
+  "budget": "Budget plan",
+  "billing": "Billing"
 }

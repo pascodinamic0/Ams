@@ -6,7 +6,9 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { SchoolYearSelect } from "@/components/academic/school-year-select";
 import { upsertGrades } from "@/lib/actions/grades";
+import { getCurrentSchoolYearStart } from "@/lib/academic/school-year";
 import { toast } from "@/lib/toast";
 import type { GradeGridItem } from "@/lib/db";
 
@@ -16,6 +18,7 @@ interface Props {
   initialClassId: string;
   initialSubjectId: string;
   initialTerm: string;
+  initialSchoolYear: number;
   rows: GradeGridItem[];
 }
 
@@ -25,6 +28,7 @@ export function GradebookGrid({
   initialClassId,
   initialSubjectId,
   initialTerm,
+  initialSchoolYear,
   rows,
 }: Props) {
   const t = useTranslations("teacher");
@@ -41,6 +45,10 @@ export function GradebookGrid({
   const classId = searchParams.get("class") ?? initialClassId;
   const subjectId = searchParams.get("subject") ?? initialSubjectId;
   const term = searchParams.get("term") ?? initialTerm;
+  const parsedYear = Number(searchParams.get("year"));
+  const schoolYear = Number.isFinite(parsedYear)
+    ? parsedYear
+    : initialSchoolYear || getCurrentSchoolYearStart();
 
   function updateParams(updates: Record<string, string>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -62,6 +70,7 @@ export function GradebookGrid({
         student_id: r.student_id,
         subject_id: subjectId,
         class_id: classId,
+        school_year: schoolYear,
         term,
         marks: marks[r.student_id] ? Number(marks[r.student_id]) : null,
         grade: null,
@@ -107,6 +116,13 @@ export function GradebookGrid({
             ))}
           </select>
         </div>
+        <SchoolYearSelect
+          id="grade-year"
+          className="min-w-[160px]"
+          label={tc("schoolYear")}
+          value={schoolYear}
+          onChange={(e) => updateParams({ year: e.target.value })}
+        />
         <div>
           <Label htmlFor="grade-term">{t("termLabel")}</Label>
           <Input

@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/server";
-import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
 import { formatPersonName } from "@/lib/utils";
 
 export type ConversationListItem = {
@@ -13,6 +12,7 @@ export type ConversationListItem = {
   last_message_at: string | null;
   last_message_sender_id: string | null;
   created_at: string;
+  archived_at: string | null;
   unread: boolean;
 };
 
@@ -62,14 +62,16 @@ function computeUnread(
   return lastMessageAt > lastReadAt;
 }
 
-export async function getConversations(): Promise<ConversationListItem[]> {
+export async function getConversations(
+  options: { includeArchived?: boolean; archivedOnly?: boolean } = {}
+): Promise<ConversationListItem[]> {
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return [];
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("conversations")
     .select(`
       id,
@@ -78,12 +80,21 @@ export async function getConversations(): Promise<ConversationListItem[]> {
       created_by,
       created_at,
       updated_at,
+      archived_at,
       students(first_name, middle_name, last_name),
       profiles!conversations_created_by_fkey(name),
       conversation_messages(body, created_at, sender_id),
       conversation_participants(profile_id, last_read_at)
     `)
     .order("updated_at", { ascending: false });
+
+  if (options.archivedOnly) {
+    query = query.not("archived_at", "is", null);
+  } else if (!options.includeArchived) {
+    query = query.is("archived_at", null);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("getConversations error:", error.message, error.code, error.details, error.hint);
@@ -118,6 +129,7 @@ export async function getConversations(): Promise<ConversationListItem[]> {
       last_message_at: lastMsg?.created_at ?? null,
       last_message_sender_id: lastMsg?.sender_id ?? null,
       created_at: c.created_at,
+      archived_at: (c.archived_at as string | null) ?? null,
       unread: computeUnread(
         lastMsg?.created_at ?? null,
         lastMsg?.sender_id ?? null,
@@ -144,7 +156,7 @@ export async function getConversationById(id: string): Promise<ConversationDetai
       supabase
         .from("conversations")
         .select(`
-          id, title, student_id, created_by, created_at, updated_at,
+          id, title, student_id, created_by, created_at, updated_at, archived_at,
           students(first_name, middle_name, last_name),
           profiles!conversations_created_by_fkey(name)
         `)
@@ -208,6 +220,7 @@ export async function getConversationById(id: string): Promise<ConversationDetai
     last_message_at: lastMessage?.created_at ?? null,
     last_message_sender_id: lastMessage?.sender_id ?? null,
     created_at: conv.created_at,
+    archived_at: (conv.archived_at as string | null) ?? null,
     unread: user
       ? computeUnread(
           lastMessage?.created_at ?? null,
@@ -221,18 +234,21 @@ export async function getConversationById(id: string): Promise<ConversationDetai
   };
 }
 
-/** Find an existing thread with the same student and participant set. */
+/** Find an active (non-archived) thread with the same student, topic, and participants. */
 export async function findExistingConversation(
   studentId: string | null | undefined,
   participantProfileIds: string[],
-  creatorId: string
+  creatorId: string,
+  title?: string | null
 ): Promise<string | null> {
   const supabase = await createClient();
   const targetParticipants = new Set([creatorId, ...participantProfileIds]);
+  const normalizedTitle = title?.trim().toLowerCase() ?? null;
 
   let query = supabase
     .from("conversations")
-    .select(`id, student_id, conversation_participants(profile_id)`);
+    .select(`id, student_id, title, archived_at, conversation_participants(profile_id)`)
+    .is("archived_at", null);
 
   if (studentId) {
     query = query.eq("student_id", studentId);
@@ -247,6 +263,13 @@ export async function findExistingConversation(
   for (const conv of data ?? []) {
     if (studentId && conv.student_id !== studentId) continue;
     if (!studentId && conv.student_id) continue;
+
+    const convTitle = ((conv.title as string | null) ?? "").trim().toLowerCase();
+    if (normalizedTitle) {
+      if (convTitle !== normalizedTitle) continue;
+    } else if (convTitle) {
+      continue;
+    }
 
     const participants = new Set(
       ((conv.conversation_participants ?? []) as Array<{ profile_id: string }>).map(
@@ -318,6 +341,41 @@ export async function getGuardianContacts(): Promise<GuardianContact[]> {
       profile_id: g?.auth_user_id ?? null,
     };
   });
+}
+
+type MessagingStaffRow = {
+  profile_id: string;
+  name: string;
+  role: string;
+};
+
+async function listMessagingStaffViaRpc(): Promise<MessagingStaffRow[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("list_messaging_staff_contacts");
+  if (error) {
+    console.error("list_messaging_staff_contacts error:", error.message);
+    return [];
+  }
+  return ((data ?? []) as MessagingStaffRow[]).map((row) => ({
+    profile_id: row.profile_id,
+    name: row.name ?? "Staff",
+    role: row.role ?? "teacher",
+  }));
+}
+
+/** Staff peers for staff↔staff chat in the unified messages UI. */
+export async function getStaffContactsForStaff(): Promise<StaffContact[]> {
+  const rows = await listMessagingStaffViaRpc();
+  return rows
+    .map((row) => ({
+      profile_id: row.profile_id,
+      name: row.name,
+      role: row.role,
+      student_id: null,
+      student_name: null,
+      context: "School staff",
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /** Staff contacts a parent can message: class teachers + school messaging staff. */
@@ -397,18 +455,12 @@ export async function getStaffContactsForParent(): Promise<StaffContact[]> {
     }
   }
 
-  const { data: staffProfiles } = await supabase
-    .from("profiles")
-    .select("id, name, role")
-    .eq("school_id", guardian.school_id)
-    .in("role", MESSAGING_STAFF_ROLES)
-    .neq("id", user.id);
-
-  for (const profile of staffProfiles ?? []) {
+  const staffProfiles = await listMessagingStaffViaRpc();
+  for (const profile of staffProfiles) {
     addContact({
-      profile_id: profile.id,
-      name: profile.name ?? "Staff",
-      role: profile.role ?? "teacher",
+      profile_id: profile.profile_id,
+      name: profile.name,
+      role: profile.role,
       student_id: null,
       student_name: null,
       context: "School staff",

@@ -25,6 +25,7 @@
   "quickActions": "Actions rapides",
   "takeAttendance": "Prendre les présences",
   "manageAssignments": "Gérer les devoirs",
+  "openDiscipline": "Bureau de discipline",
   "noClassesAssigned": "Aucune classe assignée",
   "noClassesAssignedDesc": "Assignez d'abord des classes dans l'emploi du temps.",
   "noClassesAssignedYet": "Aucune classe assignée pour le moment.",
@@ -78,7 +79,7 @@
   "saveGradesFailed": "Échec de l'enregistrement des notes",
   "gradesSaved": "Notes enregistrées",
   "termLabel": "Trimestre",
-  "termPlaceholder": "p. ex. Trimestre 1",
+  "termPlaceholder": "p. ex. T1",
   "saveGrades": "Enregistrer les notes",
   "selectSubjectTermToEnter": "Sélectionnez une matière et un trimestre pour saisir les notes.",
   "marksRangeCol": "Notes (0–100)",
@@ -95,5 +96,5 @@
   "teacherSignature": "Signature de l'enseignant",
   "teacherFallback": "Enseignant",
   "printReportCards": "Imprimer les bulletins",
-  "termPlaceholderShort": "Trimestre 1"
+  "termPlaceholderShort": "T1"
 }

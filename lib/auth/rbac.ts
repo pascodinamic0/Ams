@@ -77,6 +77,7 @@ export const OPERATIONS_PORTAL_ROLES: UserRole[] = [
   "operations_officer",
 ];
 
+/** School staff who can use the unified /messages chat (staff↔staff and staff↔parent). */
 export const MESSAGING_STAFF_ROLES: UserRole[] = [
   "super_admin",
   "academic_admin",
@@ -86,6 +87,36 @@ export const MESSAGING_STAFF_ROLES: UserRole[] = [
   "pedagogy_coordinator",
   "principal",
   "teacher",
+  "finance_officer",
+  "cashier",
+  "accountant",
+  "operations_manager",
+  "operations_officer",
+  "discipline_officer",
+  "supervisor",
+  "pedagogical_council_member",
+  "analytics",
+];
+
+/** Discipline desk is limited to teacher-level accounts. */
+export const DISCIPLINE_ROLES: UserRole[] = [
+  "teacher",
+  "discipline_officer",
+  "supervisor",
+];
+
+/** School admin roles that appear on finance payroll for pay-amount setup. */
+export const PAYROLL_ADMIN_ROLES: UserRole[] = [
+  "academic_admin",
+  "admin_coordinator",
+  "registrar",
+  "admissions_officer",
+  "pedagogy_coordinator",
+  "principal",
+  "finance_officer",
+  "accountant",
+  "operations_manager",
+  "operations_officer",
   "discipline_officer",
   "supervisor",
   "pedagogical_council_member",
@@ -97,11 +128,9 @@ export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
   academic_admin: [tree("/academic"), tree("/analytics")],
   admin_coordinator: [
     exact("/academic"),
-    tree("/academic/team"),
     tree("/academic/students"),
     tree("/academic/admissions"),
     tree("/academic/tasks"),
-    tree("/academic/discipline"),
     tree("/outreach"),
   ],
   registrar: [
@@ -109,7 +138,6 @@ export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
     tree("/academic/students"),
     tree("/academic/guardians"),
     tree("/academic/admissions"),
-    tree("/academic/team"),
     tree("/academic/tasks"),
   ],
   admissions_officer: [
@@ -120,7 +148,6 @@ export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
   ],
   pedagogy_coordinator: [
     exact("/academic"),
-    tree("/academic/team"),
     tree("/academic/students"),
     tree("/academic/classes"),
     tree("/academic/sections"),
@@ -174,6 +201,7 @@ export const SHARED_AUTH_ROUTES = [
   "/register/complete",
   "/onboarding",
   "/pending",
+  "/billing",
   "/reset-password",
 ];
 
@@ -206,8 +234,47 @@ export function canAccessPath(
     return true;
   }
 
+  // Expense receipts: finance roles + academic task approvers
+  if (
+    /^\/finance\/expenses\/[^/]+\/receipt\/?$/.test(pathname)
+  ) {
+    if (
+      FINANCE_PORTAL_ROLES.includes(normalized) ||
+      normalized === "academic_admin" ||
+      normalized === "principal" ||
+      normalized === "admin_coordinator" ||
+      normalized === "registrar" ||
+      normalized === "admissions_officer" ||
+      normalized === "pedagogy_coordinator"
+    ) {
+      return true;
+    }
+  }
+
   // Super admin can access everything
   if (normalized === "super_admin") return true;
+
+  // School team roster is academic-admin only (even if role has tree("/academic"))
+  if (
+    pathname === "/academic/team" ||
+    pathname.startsWith("/academic/team/")
+  ) {
+    return normalized === "academic_admin";
+  }
+
+  // Discipline is teacher-level only (not academic admin / principal / coordinator)
+  if (
+    pathname === "/teacher/discipline" ||
+    pathname.startsWith("/teacher/discipline/")
+  ) {
+    return normalized === "teacher";
+  }
+  if (
+    pathname === "/academic/discipline" ||
+    pathname.startsWith("/academic/discipline/")
+  ) {
+    return DISCIPLINE_ROLES.includes(normalized);
+  }
 
   const allowed = ROLE_ROUTE_SCOPES[normalized];
   return allowed.some((scope) =>

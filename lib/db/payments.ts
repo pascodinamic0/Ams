@@ -6,6 +6,7 @@ export type PaymentListItem = {
   amount: number;
   method: string;
   reference: string | null;
+  proof_url: string | null;
   paid_at: string;
   student_name: string;
   student_code: string;
@@ -26,6 +27,7 @@ export async function getPayments(options?: {
       amount,
       method,
       reference,
+      proof_url,
       paid_at,
       fee_invoices(
         amount,
@@ -65,6 +67,7 @@ export async function getPayments(options?: {
         amount: Number(row.amount),
         method: row.method ?? "other",
         reference: row.reference,
+        proof_url: row.proof_url ?? null,
         paid_at: row.paid_at,
         student_name: student
           ? `${student.first_name ?? ""} ${student.last_name ?? ""}`.trim()

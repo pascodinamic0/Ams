@@ -258,3 +258,25 @@ export async function getPayrollMonths(options?: {
     a.year === b.year ? b.month - a.month : b.year - a.year
   );
 }
+
+/** Staff IDs finance marked as not payable for a given month. */
+export async function getPayrollExcludedStaffIds(options: {
+  schoolId: string;
+  month: number;
+  year: number;
+}): Promise<string[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("payroll_exclusions")
+    .select("staff_id")
+    .eq("school_id", options.schoolId)
+    .eq("payroll_month", options.month)
+    .eq("payroll_year", options.year);
+
+  if (error) {
+    console.error("getPayrollExcludedStaffIds error:", error);
+    return [];
+  }
+
+  return (data ?? []).map((row) => row.staff_id as string);
+}

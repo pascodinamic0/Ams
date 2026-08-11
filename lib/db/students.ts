@@ -139,6 +139,64 @@ export async function getStudents(options?: {
   });
 }
 
+/** Lean student list for finance invoicing (school-wide, no guardian join). */
+export type BillingStudentOption = {
+  id: string;
+  student_id: string | null;
+  name: string;
+  class_id: string | null;
+  class_name: string | null;
+  status: string;
+};
+
+export async function getStudentsForBilling(options?: {
+  schoolId?: string;
+  classId?: string;
+  status?: string;
+}): Promise<BillingStudentOption[]> {
+  const supabase = await createClient();
+  let query = supabase
+    .from("students")
+    .select(`
+      id,
+      student_id,
+      first_name,
+      middle_name,
+      last_name,
+      status,
+      class_id,
+      classes(name)
+    `)
+    .order("last_name", { ascending: true })
+    .order("first_name", { ascending: true });
+
+  if (options?.schoolId) {
+    query = query.eq("school_id", options.schoolId);
+  }
+  if (options?.classId) {
+    query = query.eq("class_id", options.classId);
+  }
+  if (options?.status) {
+    query = query.eq("status", options.status);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("getStudentsForBilling error:", error);
+    return [];
+  }
+
+  return (data ?? []).map((s) => ({
+    id: s.id,
+    student_id: s.student_id,
+    name: formatPersonName(s),
+    class_id: s.class_id,
+    class_name: (s.classes as { name?: string } | null)?.name ?? null,
+    status: s.status ?? "active",
+  }));
+}
+
 export async function getStudentById(id: string) {
   const supabase = await createClient();
   const { data, error } = await supabase

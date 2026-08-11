@@ -6,7 +6,9 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { SchoolYearSelect } from "@/components/academic/school-year-select";
 import { upsertGrades } from "@/lib/actions/grades";
+import { getCurrentSchoolYearStart } from "@/lib/academic/school-year";
 import { toast } from "@/lib/toast";
 import type { GradeGridItem } from "@/lib/db";
 
@@ -16,6 +18,7 @@ interface Props {
   initialClassId: string;
   initialSubjectId: string;
   initialExamName: string;
+  initialSchoolYear: number;
   rows: GradeGridItem[];
 }
 
@@ -25,9 +28,11 @@ export function ExamGradeGrid({
   initialClassId,
   initialSubjectId,
   initialExamName,
+  initialSchoolYear,
   rows,
 }: Props) {
   const t = useTranslations("teacher");
+  const tc = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
@@ -43,6 +48,10 @@ export function ExamGradeGrid({
   const classId = searchParams.get("class") ?? initialClassId;
   const subjectId = searchParams.get("subject") ?? initialSubjectId;
   const examName = searchParams.get("exam") ?? initialExamName;
+  const parsedYear = Number(searchParams.get("year"));
+  const schoolYear = Number.isFinite(parsedYear)
+    ? parsedYear
+    : initialSchoolYear || getCurrentSchoolYearStart();
 
   function updateParams(updates: Record<string, string>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -64,6 +73,7 @@ export function ExamGradeGrid({
         student_id: r.student_id,
         subject_id: subjectId,
         class_id: classId,
+        school_year: schoolYear,
         term: examName,
         marks: marks[r.student_id] ? Number(marks[r.student_id]) : null,
         grade: letterGrades[r.student_id] || null,
@@ -95,6 +105,13 @@ export function ExamGradeGrid({
             ))}
           </select>
         </div>
+        <SchoolYearSelect
+          id="exam-year"
+          className="min-w-[160px]"
+          label={tc("schoolYear")}
+          value={schoolYear}
+          onChange={(e) => updateParams({ year: e.target.value })}
+        />
         <div>
           <Label htmlFor="exam-subject">{t("subjectLabel")}</Label>
           <select

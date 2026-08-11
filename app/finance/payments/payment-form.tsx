@@ -1,16 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
+import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FileUpload } from "@/components/ui/file-upload";
+import { CameraCaptureModal } from "@/components/profile/camera-capture-modal";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { recordPayment } from "@/lib/actions/payments";
 import { paymentSchema, type PaymentFormData } from "@/lib/validations/finance";
 import { toast } from "@/lib/toast";
 
+const PROOF_MAX_BYTES = 5 * 1024 * 1024;
+
 interface Props {
+  schoolId?: string;
   openInvoices: {
     id: string;
     label: string;
@@ -18,8 +25,9 @@ interface Props {
   }[];
 }
 
-export function PaymentForm({ openInvoices }: Props) {
+export function PaymentForm({ schoolId, openInvoices }: Props) {
   const router = useRouter();
+  const [formKey, setFormKey] = useState(0);
 
   async function onSubmit(data: PaymentFormData) {
     const result = await recordPayment(data);
@@ -28,27 +36,73 @@ export function PaymentForm({ openInvoices }: Props) {
       return;
     }
     toast.success("Payment recorded");
+    setFormKey((key) => key + 1);
     router.refresh();
   }
 
   return (
     <FormWrapper
+      key={formKey}
       schema={paymentSchema}
-      defaultValues={{ method: "cash" }}
+      defaultValues={{ method: "cash", proof_url: "" }}
       onSubmit={onSubmit}
       className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-3"
     >
-      <PaymentFormFields openInvoices={openInvoices} />
+      <PaymentFormFields schoolId={schoolId} openInvoices={openInvoices} />
     </FormWrapper>
   );
 }
 
 function PaymentFormFields({
+  schoolId,
   openInvoices,
 }: {
+  schoolId?: string;
   openInvoices: { id: string; label: string; balance: number }[];
 }) {
-  const { register, formState: { errors } } = useFormContext<PaymentFormData>();
+  const {
+    register,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useFormContext<PaymentFormData>();
+  const proofUrl = useWatch({ name: "proof_url" }) ?? "";
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraUploading, setCameraUploading] = useState(false);
+
+  const storagePath = schoolId ? `${schoolId}/payment-proofs` : null;
+
+  async function uploadProof(file: File) {
+    if (!storagePath) {
+      toast.error("Assign a school to your profile before uploading payment proof");
+      throw new Error("Missing school");
+    }
+    if (file.size > PROOF_MAX_BYTES) {
+      toast.error(`File too large. Max ${PROOF_MAX_BYTES / 1024 / 1024}MB`);
+      throw new Error("File too large");
+    }
+
+    const { createClient } = await import("@/lib/supabase/client");
+    const supabase = createClient();
+    const ext = file.name.split(".").pop() ?? "jpg";
+    const filePath = `${storagePath}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("school-assets").upload(filePath, file);
+    if (error) throw error;
+    const { data } = supabase.storage.from("school-assets").getPublicUrl(filePath);
+    setValue("proof_url", data.publicUrl, { shouldDirty: true, shouldValidate: true });
+  }
+
+  async function handleCameraCapture(file: File) {
+    setCameraUploading(true);
+    try {
+      await uploadProof(file);
+      toast.success("Payment proof uploaded");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Upload failed");
+      throw err;
+    } finally {
+      setCameraUploading(false);
+    }
+  }
 
   return (
     <>
@@ -95,8 +149,55 @@ function PaymentFormFields({
         <Label htmlFor="paid_at">Paid at</Label>
         <Input id="paid_at" type="datetime-local" {...register("paid_at")} />
       </div>
-      <div className="flex items-end">
-        <Button type="submit" className="w-full">Record payment</Button>
+      <div className="sm:col-span-2 lg:col-span-3">
+        <Label htmlFor="proof_url">Payment proof</Label>
+        <p className="mb-2 text-xs text-stone-500 dark:text-stone-400">
+          Optional. Upload a receipt or transfer screenshot, or take a photo with your camera.
+        </p>
+        <input type="hidden" {...register("proof_url")} />
+        {storagePath ? (
+          <div className="space-y-2">
+            <FileUpload
+              bucket="school-assets"
+              path={storagePath}
+              accept="image/jpeg,image/png,image/gif,image/webp"
+              maxSize={PROOF_MAX_BYTES}
+              value={proofUrl || undefined}
+              onUpload={(url) => {
+                setValue("proof_url", url, { shouldDirty: true, shouldValidate: true });
+                toast.success("Payment proof uploaded");
+              }}
+              onRemove={() => setValue("proof_url", "", { shouldDirty: true, shouldValidate: true })}
+              onError={(message) => toast.error(message)}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={cameraUploading}
+              onClick={() => setCameraOpen(true)}
+            >
+              <Camera className="mr-1.5 h-4 w-4" />
+              Take photo
+            </Button>
+            <CameraCaptureModal
+              isOpen={cameraOpen}
+              onClose={() => setCameraOpen(false)}
+              onCapture={handleCameraCapture}
+              disabled={cameraUploading}
+            />
+          </div>
+        ) : (
+          <p className="text-sm text-amber-700 dark:text-amber-400">
+            Assign a school to your profile to attach payment proof.
+          </p>
+        )}
+        {errors.proof_url && <p className="mt-1 text-sm text-red-500">{errors.proof_url.message}</p>}
+      </div>
+      <div className="flex items-end sm:col-span-2 lg:col-span-3">
+        <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting}>
+          Record payment
+        </Button>
       </div>
     </>
   );

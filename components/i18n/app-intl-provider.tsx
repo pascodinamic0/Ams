@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 
 type AppIntlProviderProps = {
   locale: string;
+  timeZone: string;
   messages: Record<string, unknown>;
   children: React.ReactNode;
 };
@@ -16,11 +17,12 @@ type AppIntlProviderProps = {
  */
 export function AppIntlProvider({
   locale,
+  timeZone,
   messages,
   children,
 }: AppIntlProviderProps) {
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider locale={locale} timeZone={timeZone} messages={messages}>
       {children}
     </NextIntlClientProvider>
   );

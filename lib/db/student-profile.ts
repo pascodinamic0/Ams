@@ -1,3 +1,4 @@
+import { formatSchoolYearPeriod } from "@/lib/academic/school-year";
 import { getAssignmentsForStudent, type StudentAssignmentItem } from "./assignments";
 import {
   getStudentAttendanceHistory,
@@ -19,7 +20,9 @@ export type StudentProfileStats = {
   gradeCount: number;
   subjectCount: number;
   outstandingFees: number;
+  /** Display labels like "2026 - 2027 / T1" */
   terms: string[];
+  schoolYears: number[];
 };
 
 export type StudentProfileBundle = {
@@ -48,7 +51,14 @@ function computeStats(
       ? Math.round(marks.reduce((sum, m) => sum + m, 0) / marks.length)
       : null;
   const subjects = new Set(grades.map((g) => g.subject_name));
-  const terms = [...new Set(grades.map((g) => g.term))].sort();
+  const terms = [
+    ...new Set(
+      grades.map((g) => formatSchoolYearPeriod(g.school_year, g.term))
+    ),
+  ].sort();
+  const schoolYears = [...new Set(grades.map((g) => g.school_year))].sort(
+    (a, b) => b - a
+  );
   const outstandingFees = invoices.reduce((sum, inv) => sum + inv.balance, 0);
 
   return {
@@ -61,14 +71,20 @@ function computeStats(
     subjectCount: subjects.size,
     outstandingFees,
     terms,
+    schoolYears,
   };
+}
+
+function gradePeriodKey(grade: StudentGradeItem): string {
+  return formatSchoolYearPeriod(grade.school_year, grade.term);
 }
 
 function groupGradesByTerm(grades: StudentGradeItem[]): Record<string, StudentGradeItem[]> {
   const grouped: Record<string, StudentGradeItem[]> = {};
   for (const grade of grades) {
-    if (!grouped[grade.term]) grouped[grade.term] = [];
-    grouped[grade.term].push(grade);
+    const key = gradePeriodKey(grade);
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(grade);
   }
   return grouped;
 }

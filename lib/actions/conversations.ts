@@ -9,7 +9,7 @@ import { z } from "zod";
 
 const newConversationSchema = z.object({
   student_id: z.string().uuid().optional(),
-  title: z.string().optional(),
+  title: z.string().trim().min(1, "Topic is required").max(120),
   participant_profile_ids: z.array(z.string().uuid()).min(1, "At least one participant required"),
   initial_message: z.string().min(1, "First message cannot be empty"),
 });
@@ -41,7 +41,8 @@ export async function createConversation(
   const existingId = await findExistingConversation(
     parsed.data.student_id ?? null,
     parsed.data.participant_profile_ids,
-    user.id
+    user.id,
+    parsed.data.title
   );
 
   if (existingId) {
@@ -59,7 +60,7 @@ export async function createConversation(
       school_id: schoolId,
       created_by: user.id,
       student_id: parsed.data.student_id ?? null,
-      title: parsed.data.title ?? null,
+      title: parsed.data.title,
     })
     .select("id")
     .single();
@@ -209,4 +210,29 @@ export async function markConversationRead(conversationId: string): Promise<void
 export async function fetchUnreadConversationCount(): Promise<number> {
   const { getUnreadConversationCount } = await import("@/lib/db/conversations");
   return getUnreadConversationCount();
+}
+
+export async function setConversationArchived(
+  conversationId: string,
+  archived: boolean
+): Promise<{ error?: string }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const { error } = await supabase
+    .from("conversations")
+    .update({ archived_at: archived ? new Date().toISOString() : null })
+    .eq("id", conversationId);
+
+  if (error) {
+    console.error("setConversationArchived error:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/messages");
+  revalidatePath(`/messages/${conversationId}`);
+  return {};
 }

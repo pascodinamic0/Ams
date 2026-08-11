@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { type User } from "@supabase/supabase-js";
 import { type NextRequest } from "next/server";
+import type { SubscriptionStatus } from "@/lib/billing/types";
 import { normalizeRole, type UserRole } from "./rbac";
 import { shouldNeedStructureSetup } from "./structure-setup";
 
@@ -8,6 +9,8 @@ export type ProxyAuthContext = {
   role: UserRole;
   schoolId: string | null;
   schoolStatus: "pending" | "approved" | "suspended" | null;
+  billingExempt: boolean;
+  subscriptionStatus: SubscriptionStatus | null;
   needsOnboarding: boolean;
   needsStructureSetup: boolean;
   name: string;
@@ -46,16 +49,23 @@ export async function getProxyAuthContext(
 
   const role = normalizeRole(profile.role);
   let schoolStatus: ProxyAuthContext["schoolStatus"] = null;
+  let billingExempt = false;
+  let subscriptionStatus: SubscriptionStatus | null = null;
   let structureSetupCompletedAt: string | null = null;
 
   if (profile.school_id) {
     const { data: school } = await supabase
       .from("schools")
-      .select("status, structure_setup_completed_at")
+      .select(
+        "status, structure_setup_completed_at, billing_exempt, subscription_status"
+      )
       .eq("id", profile.school_id)
       .single();
     schoolStatus = (school?.status as ProxyAuthContext["schoolStatus"]) ?? null;
     structureSetupCompletedAt = school?.structure_setup_completed_at ?? null;
+    billingExempt = Boolean(school?.billing_exempt);
+    subscriptionStatus =
+      (school?.subscription_status as SubscriptionStatus | null) ?? "none";
   }
 
   const name =
@@ -65,6 +75,8 @@ export async function getProxyAuthContext(
     role,
     schoolId: profile.school_id,
     schoolStatus,
+    billingExempt,
+    subscriptionStatus,
     needsOnboarding: !profile.onboarding_completed_at,
     needsStructureSetup: shouldNeedStructureSetup({
       role,

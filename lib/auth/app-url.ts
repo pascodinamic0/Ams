@@ -1,5 +1,5 @@
 type AuthCallbackOptions = {
-  intent?: "login" | "register";
+  intent?: "login" | "register" | "invite";
   redirect?: string | null;
 };
 
@@ -39,8 +39,8 @@ export function getAppOrigin(): string {
 export function buildAuthCallbackUrl(options?: AuthCallbackOptions): string {
   const url = new URL("/auth/callback", getAppOrigin());
 
-  if (options?.intent === "register") {
-    url.searchParams.set("intent", "register");
+  if (options?.intent === "register" || options?.intent === "invite") {
+    url.searchParams.set("intent", options.intent);
   }
   if (options?.redirect) {
     url.searchParams.set("redirect", options.redirect);

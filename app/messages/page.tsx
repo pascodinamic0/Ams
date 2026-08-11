@@ -1,12 +1,18 @@
-import { getConversations, getGuardianContacts, getStaffContactsForParent } from "@/lib/db/conversations";
+import { getConversations, getGuardianContacts, getStaffContactsForParent, getStaffContactsForStaff } from "@/lib/db/conversations";
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { ConversationList } from "./conversation-list";
 import { NewConversationButton } from "./new-conversation-button";
 
-export default async function MessagesPage() {
+interface PageProps {
+  searchParams: Promise<{ archived?: string }>;
+}
+
+export default async function MessagesPage({ searchParams }: PageProps) {
   const t = await getTranslations("messages");
   const tc = await getTranslations("common");
+  const { archived } = await searchParams;
+  const showArchived = archived === "1";
   const supabase = await createClient();
   const {
     data: { user },
@@ -27,16 +33,18 @@ export default async function MessagesPage() {
   const isParent = role === "parent";
 
   const [conversations, guardianContacts, staffContacts] = await Promise.all([
-    getConversations(),
+    getConversations({ archivedOnly: showArchived }),
     isParent ? Promise.resolve([]) : getGuardianContacts(),
-    isParent ? getStaffContactsForParent() : Promise.resolve([]),
+    isParent ? getStaffContactsForParent() : getStaffContactsForStaff(),
   ]);
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-0 overflow-hidden md:gap-4 md:h-[calc(100vh-8rem)] md:flex-row">
       <div className="flex min-h-0 w-full flex-1 flex-col rounded-none border-0 bg-white md:w-80 md:shrink-0 md:rounded-xl md:border md:border-stone-200 dark:bg-stone-900 md:dark:border-stone-700">
         <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3 dark:border-stone-700">
-          <h2 className="font-semibold text-stone-900 dark:text-white">{t("conversations")}</h2>
+          <h2 className="font-semibold text-stone-900 dark:text-white">
+            {showArchived ? t("archivedConversations") : t("conversations")}
+          </h2>
           <NewConversationButton
             role={role}
             schoolId={schoolId}
@@ -49,6 +57,8 @@ export default async function MessagesPage() {
           <ConversationList
             conversations={conversations}
             yesterdayLabel={tc("yesterday")}
+            emptyHintKey={isParent ? "startChattingParent" : "startChattingStaff"}
+            showArchived={showArchived}
           />
         </div>
       </div>
@@ -69,7 +79,7 @@ export default async function MessagesPage() {
             {t("selectConversation")}
           </h3>
           <p className="mt-1 text-sm text-stone-400">
-            {isParent ? t("startNewWithStaff") : t("startNewWithParent")}
+            {isParent ? t("startNewWithStaff") : t("startNewWithAnyone")}
           </p>
         </div>
       </div>

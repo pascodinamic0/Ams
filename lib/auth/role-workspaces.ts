@@ -50,10 +50,9 @@ const WORKSPACES: Partial<Record<UserRole, RoleWorkspace>> = {
     quickActions: [
       { href: "/academic/tasks", label: "Approvals & tasks" },
       { href: "/academic/admissions", label: "Review admissions", variant: "ghost" },
-      { href: "/academic/discipline", label: "Discipline cases", variant: "ghost" },
       { href: "/analytics", label: "Open reports", variant: "outline" },
     ],
-    metricHints: ["admissions", "openTasks", "openIncidents", "students"],
+    metricHints: ["admissions", "openTasks", "students"],
   },
   registrar: {
     role: "registrar",

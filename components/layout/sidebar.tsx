@@ -12,6 +12,7 @@ import {
   Calendar,
   CheckCircle,
   ClipboardList,
+  CreditCard,
   DollarSign,
   Globe,
   GraduationCap,
@@ -83,6 +84,9 @@ type NavLabels = {
   finance: string;
   tasks: string;
   discipline: string;
+  monthlyActivity: string;
+  budget: string;
+  billing: string;
 };
 
 const icon = {
@@ -118,6 +122,7 @@ const icon = {
   outreach: <Megaphone className={iconClass} />,
   chat: <MessageSquare className={iconClass} />,
   reminders: <Bell className={iconClass} />,
+  billing: <CreditCard className={iconClass} />,
 };
 
 const ROLE_NAV: Record<string, NavItem[]> = {
@@ -136,9 +141,10 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/academic/website", labelKey: "publicWebsite", icon: icon.website },
     { href: "/academic/settings", labelKey: "schoolSettings", icon: icon.settings },
+    { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/academic/team", labelKey: "team", icon: icon.users },
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
+    { href: "/academic/reports/monthly", labelKey: "monthlyActivity", icon: icon.reports },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
@@ -152,10 +158,8 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   admin_coordinator: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/academic/team", labelKey: "team", icon: icon.users },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
-    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
     { href: "/outreach", labelKey: "outreach", icon: icon.outreach },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
@@ -164,7 +168,6 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/academic/team", labelKey: "team", icon: icon.users },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   admissions_officer: [
@@ -176,7 +179,6 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   ],
   pedagogy_coordinator: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/academic/team", labelKey: "team", icon: icon.users },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
     { href: "/academic/sections", labelKey: "sections", icon: icon.sections },
@@ -189,9 +191,9 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   ],
   principal: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
-    { href: "/academic/team", labelKey: "team", icon: icon.users },
+    { href: "/academic/reports/monthly", labelKey: "monthlyActivity", icon: icon.reports },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
@@ -208,34 +210,42 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/teacher/assignments", labelKey: "assignments", icon: icon.assignments },
     { href: "/teacher/exams", labelKey: "exams", icon: icon.timetable },
     { href: "/teacher/report-cards", labelKey: "reportCards", icon: icon.reports },
+    { href: "/teacher/discipline", labelKey: "discipline", icon: icon.roles },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   finance_officer: [
     { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.curriculum },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.fees },
     { href: "/finance/payments", labelKey: "payments", icon: icon.finance },
     { href: "/finance/payroll", labelKey: "payroll", icon: icon.staff },
     { href: "/finance/expenses", labelKey: "expenses", icon: icon.finance },
+    { href: "/finance/budget", labelKey: "budget", icon: icon.reports },
     { href: "/finance/reports", labelKey: "reports", icon: icon.reports },
     { href: "/finance/fee-reminders", labelKey: "feeReminders", icon: icon.reminders },
     { href: "/finance/settings", labelKey: "schoolSettings", icon: icon.settings },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   cashier: [
     { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.fees },
     { href: "/finance/payments", labelKey: "payments", icon: icon.finance },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   accountant: [
     { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.curriculum },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.fees },
     { href: "/finance/payments", labelKey: "payments", icon: icon.finance },
     { href: "/finance/payroll", labelKey: "payroll", icon: icon.staff },
     { href: "/finance/expenses", labelKey: "expenses", icon: icon.finance },
+    { href: "/finance/budget", labelKey: "budget", icon: icon.reports },
     { href: "/finance/reports", labelKey: "reports", icon: icon.reports },
     { href: "/finance/fee-reminders", labelKey: "feeReminders", icon: icon.reminders },
     { href: "/finance/settings", labelKey: "schoolSettings", icon: icon.settings },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   operations_manager: [
     { href: "/operations", labelKey: "dashboard", icon: icon.dashboard },
@@ -243,6 +253,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/operations/transport", labelKey: "transport", icon: icon.transport },
     { href: "/operations/events", labelKey: "events", icon: icon.events },
     { href: "/operations/staff", labelKey: "staff", icon: icon.staff },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   operations_officer: [
     { href: "/operations", labelKey: "dashboard", icon: icon.dashboard },
@@ -250,6 +261,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/operations/transport", labelKey: "transport", icon: icon.transport },
     { href: "/operations/events", labelKey: "events", icon: icon.events },
     { href: "/operations/staff", labelKey: "staff", icon: icon.staff },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
   discipline_officer: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
@@ -297,6 +309,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/analytics/students", labelKey: "students", icon: icon.students },
     { href: "/analytics/attendance", labelKey: "attendance", icon: icon.attendance },
     { href: "/analytics/finance", labelKey: "finance", icon: icon.finance },
+    { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
 };
 

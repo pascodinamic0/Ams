@@ -2,7 +2,15 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { UserAvatar } from "@/components/layout/user-avatar";
-import { getExpenseTotal, getFinanceKPIs, getPayroll, getPayrollMonths, getSchoolCurrencyForSchool } from "@/lib/db";
+import {
+  getExpenseTotal,
+  getFinanceKPIs,
+  getPayroll,
+  getPayrollExcludedStaffIds,
+  getPayrollMonths,
+  getSchoolCurrencyForSchool,
+  getStaff,
+} from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
 import { formatMoney } from "@/lib/currency";
@@ -10,6 +18,7 @@ import { PayrollGenerateForm } from "./payroll-form";
 import { PayrollFilters } from "./payroll-filters";
 import { PayrollRowActions } from "./payroll-row-actions";
 import { PayrollMonthActions } from "./payroll-month-actions";
+import { StaffPayAmountsPanel } from "./staff-pay-amounts-panel";
 
 type PageProps = {
   searchParams: Promise<{
@@ -31,12 +40,19 @@ export default async function PayrollPage({ searchParams }: PageProps) {
     branchId: profile?.branch_id ?? undefined,
   };
 
-  const [months, financeKpis, operatingExpenses, currency] = await Promise.all([
-    getPayrollMonths(scope),
-    getFinanceKPIs(scope),
-    getExpenseTotal(scope),
-    getSchoolCurrencyForSchool(profile?.school_id),
-  ]);
+  const [months, financeKpis, operatingExpenses, currency, staffRoster] =
+    await Promise.all([
+      getPayrollMonths(scope),
+      getFinanceKPIs(scope),
+      getExpenseTotal(scope),
+      getSchoolCurrencyForSchool(profile?.school_id),
+      scope.schoolId
+        ? getStaff({
+            schoolId: scope.schoolId,
+            activeOnly: true,
+          })
+        : Promise.resolve([]),
+    ]);
   const formatCurrency = (value: number) => formatMoney(value, currency.code);
   const activeMonth = Number(params.month ?? months[0]?.month ?? new Date().getMonth() + 1);
   const activeYear = Number(params.year ?? months[0]?.year ?? new Date().getFullYear());
@@ -45,15 +61,24 @@ export default async function PayrollPage({ searchParams }: PageProps) {
     { month: "long", year: "numeric" }
   );
 
-  const payroll = await getPayroll({
-    ...scope,
-    month: activeMonth,
-    year: activeYear,
-    status: params.status || undefined,
-    search: params.search || undefined,
-    position: params.position || undefined,
-    department: params.department || undefined,
-  });
+  const [payroll, excludedStaffIds] = await Promise.all([
+    getPayroll({
+      ...scope,
+      month: activeMonth,
+      year: activeYear,
+      status: params.status || undefined,
+      search: params.search || undefined,
+      position: params.position || undefined,
+      department: params.department || undefined,
+    }),
+    scope.schoolId
+      ? getPayrollExcludedStaffIds({
+          schoolId: scope.schoolId,
+          month: activeMonth,
+          year: activeYear,
+        })
+      : Promise.resolve([] as string[]),
+  ]);
 
   const totalEmployees = payroll.length;
   const paidEmployees = payroll.filter((row) => row.status === "paid").length;
@@ -87,6 +112,18 @@ export default async function PayrollPage({ searchParams }: PageProps) {
         defaultMonth={activeMonth}
         defaultYear={activeYear}
       />
+
+      {scope.schoolId ? (
+        <StaffPayAmountsPanel
+          schoolId={scope.schoolId}
+          branchId={scope.branchId}
+          staff={staffRoster}
+          currencyCode={currency.code}
+          month={activeMonth}
+          year={activeYear}
+          excludedStaffIds={excludedStaffIds}
+        />
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
@@ -246,7 +283,7 @@ export default async function PayrollPage({ searchParams }: PageProps) {
                       </td>
                       <td className="px-3 py-2">{row.payment_date ?? "—"}</td>
                       <td className="px-3 py-2">
-                        <PayrollRowActions row={row} />
+                        <PayrollRowActions row={row} schoolId={scope.schoolId} />
                       </td>
                     </tr>
                   ))}

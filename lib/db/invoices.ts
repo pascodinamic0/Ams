@@ -12,6 +12,7 @@ export type InvoiceListItem = {
   due_date: string;
   status: string;
   description: string | null;
+  fee_structure_id: string | null;
   fee_structure_name: string | null;
 };
 
@@ -34,6 +35,7 @@ function mapInvoiceRow(inv: {
   due_date: string;
   status: string | null;
   description: string | null;
+  fee_structure_id?: string | null;
   students: {
     id?: string;
     student_id?: string;
@@ -59,6 +61,7 @@ function mapInvoiceRow(inv: {
     due_date: inv.due_date,
     status: inv.status ?? "pending",
     description: inv.description,
+    fee_structure_id: inv.fee_structure_id ?? null,
     fee_structure_name: inv.fee_structures?.name ?? null,
     school_id: s?.school_id,
     branch_id: s?.branch_id,
@@ -81,10 +84,12 @@ export async function getInvoices(options?: {
       due_date,
       status,
       description,
+      fee_structure_id,
       students(
         id,
         student_id,
         first_name,
+        middle_name,
         last_name,
         school_id,
         branch_id
@@ -166,10 +171,12 @@ export async function getInvoicesForGuardian(
       due_date,
       status,
       description,
+      fee_structure_id,
       students(
         id,
         student_id,
         first_name,
+        middle_name,
         last_name,
         school_id,
         branch_id
@@ -206,6 +213,7 @@ export async function getInvoicesForStudent(
       due_date,
       status,
       description,
+      fee_structure_id,
       students(
         id,
         student_id,

@@ -32,6 +32,13 @@ export function createDemoSchool(template: WebsiteTemplateId): SchoolRow {
     owner_id: null,
     currency_code: "USD",
     locale: "en",
+    stripe_customer_id: null,
+    stripe_subscription_id: null,
+    subscription_status: "none",
+    subscription_price_id: null,
+    trial_ends_at: null,
+    current_period_end: null,
+    billing_exempt: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   };

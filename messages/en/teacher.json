@@ -25,6 +25,7 @@
   "quickActions": "Quick actions",
   "takeAttendance": "Take attendance",
   "manageAssignments": "Manage assignments",
+  "openDiscipline": "Discipline desk",
   "noClassesAssigned": "No classes assigned",
   "noClassesAssignedDesc": "Assign classes in the timetable first.",
   "noClassesAssignedYet": "No classes assigned yet.",
@@ -78,7 +79,7 @@
   "saveGradesFailed": "Failed to save grades",
   "gradesSaved": "Grades saved",
   "termLabel": "Term",
-  "termPlaceholder": "e.g. Term 1",
+  "termPlaceholder": "e.g. T1",
   "saveGrades": "Save grades",
   "selectSubjectTermToEnter": "Select a subject and term to enter grades.",
   "marksRangeCol": "Marks (0–100)",
@@ -95,5 +96,5 @@
   "teacherSignature": "Teacher signature",
   "teacherFallback": "Teacher",
   "printReportCards": "Print report cards",
-  "termPlaceholderShort": "Term 1"
+  "termPlaceholderShort": "T1"
 }

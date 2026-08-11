@@ -90,6 +90,8 @@
   "thisWeek": "Cette semaine",
   "thisMonth": "Ce mois-ci",
   "thisYear": "Cette année",
+  "schoolYear": "Année scolaire",
+  "thisSchoolYear": "Cette année scolaire",
   "lastUpdated": "Dernière mise à jour",
   "createdAt": "Créé le",
   "updatedAt": "Mis à jour le",
@@ -109,5 +111,8 @@
   "sidebar": "Barre latérale",
   "unreadNotifications": "{count} notifications non lues",
   "somethingWentWrong": "Une erreur s'est produite",
-  "unexpectedError": "Une erreur inattendue s'est produite"
+  "unexpectedError": "Une erreur inattendue s'est produite",
+  "duplicateSubmitTitle": "Soumettre à nouveau ?",
+  "duplicateSubmitDescription": "Cela ressemble à la même soumission que vous venez d'envoyer. Continuer quand même ?",
+  "duplicateSubmitConfirm": "Soumettre à nouveau"
 }

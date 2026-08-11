@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTimeZone } from "next-intl/server";
 import { BrandLogo } from "@/components/company/brand-logo";
 import { AppIntlProvider } from "@/components/i18n/app-intl-provider";
 
@@ -9,10 +9,11 @@ export default async function OnboardingLayout({
   children: React.ReactNode;
 }) {
   const locale = await getLocale();
+  const timeZone = await getTimeZone();
   const messages = await getMessages();
 
   return (
-    <AppIntlProvider locale={locale} messages={messages}>
+    <AppIntlProvider locale={locale} timeZone={timeZone} messages={messages}>
       <div className="marketing-surface flex min-h-[100dvh] flex-col">
         <header className="relative z-10 shrink-0 px-4 pt-[calc(env(safe-area-inset-top)+1rem)] pb-2 md:px-6">
           <Link href="/" className="inline-flex">

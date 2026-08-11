@@ -4,6 +4,9 @@ export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
 
+/** Default IANA timezone for next-intl formatting (DRC / WAT). */
+export const defaultTimeZone = "Africa/Kinshasa";
+
 export const localeNames: Record<Locale, string> = {
   en: "English",
   fr: "Francais",

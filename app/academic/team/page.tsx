@@ -14,6 +14,10 @@ export default async function AcademicTeamPage() {
   const profile = await getCurrentProfile();
   if (!profile?.school_id) redirect("/academic");
 
+  const canManage =
+    profile.role === "academic_admin" || profile.role === "super_admin";
+  if (!canManage) redirect("/academic");
+
   const supabase = await createClient();
   const { data: school } = await supabase
     .from("schools")
@@ -24,9 +28,6 @@ export default async function AcademicTeamPage() {
   if (school?.status !== "approved") {
     redirect("/pending");
   }
-
-  const canManage =
-    profile.role === "academic_admin" || profile.role === "super_admin";
 
   const members = await getSchoolTeamMembers(profile.school_id);
 

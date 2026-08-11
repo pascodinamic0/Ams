@@ -3,11 +3,15 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { DISCIPLINE_ROLES, normalizeRole } from "@/lib/auth/rbac";
 
 const taskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  department: z.string().min(1).default("general"),
+  /** "unassigned" | "everyone" | profile uuid */
+  assignee: z
+    .union([z.literal("unassigned"), z.literal("everyone"), z.string().uuid()])
+    .default("unassigned"),
   priority: z.enum(["low", "medium", "high"]).default("medium"),
   due_date: z.string().optional(),
 });
@@ -40,6 +44,18 @@ async function requireSchoolProfile() {
   return { supabase, profile };
 }
 
+async function requireDisciplineProfile() {
+  const auth = await requireSchoolProfile();
+  if ("error" in auth) return auth;
+
+  const role = normalizeRole(auth.profile.role);
+  if (role !== "super_admin" && !DISCIPLINE_ROLES.includes(role)) {
+    return { error: "Discipline is only available on teacher-level accounts" as const };
+  }
+
+  return auth;
+}
+
 export async function createSchoolTask(input: z.infer<typeof taskSchema>) {
   const parsed = taskSchema.safeParse(input);
   if (!parsed.success) {
@@ -49,13 +65,36 @@ export async function createSchoolTask(input: z.infer<typeof taskSchema>) {
   const auth = await requireSchoolProfile();
   if ("error" in auth) return auth;
 
+  const { assignee, title, description, priority, due_date } = parsed.data;
+  let assignedTo: string | null = null;
+  let department = "general";
+
+  if (assignee === "everyone") {
+    department = "everyone";
+  } else if (assignee !== "unassigned") {
+    const { data: member, error: memberError } = await auth.supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", assignee)
+      .eq("school_id", auth.profile.school_id)
+      .neq("role", "student")
+      .neq("role", "parent")
+      .maybeSingle();
+
+    if (memberError) return { error: memberError.message };
+    if (!member) return { error: "Selected staff member was not found" };
+
+    assignedTo = member.id;
+  }
+
   const { error } = await auth.supabase.from("school_tasks").insert({
     school_id: auth.profile.school_id,
-    title: parsed.data.title,
-    description: parsed.data.description || null,
-    department: parsed.data.department,
-    priority: parsed.data.priority,
-    due_date: parsed.data.due_date || null,
+    title,
+    description: description || null,
+    department,
+    priority,
+    due_date: due_date || null,
+    assigned_to: assignedTo,
     created_by: auth.profile.id,
   });
 
@@ -94,7 +133,7 @@ export async function createDisciplineIncident(
     return { error: parsed.error.issues[0]?.message ?? "Invalid incident" };
   }
 
-  const auth = await requireSchoolProfile();
+  const auth = await requireDisciplineProfile();
   if ("error" in auth) return auth;
 
   const { error } = await auth.supabase.from("discipline_incidents").insert({
@@ -111,6 +150,7 @@ export async function createDisciplineIncident(
 
   revalidatePath("/academic");
   revalidatePath("/academic/discipline");
+  revalidatePath("/teacher/discipline");
   return {};
 }
 
@@ -118,7 +158,7 @@ export async function updateDisciplineStatus(
   id: string,
   status: "open" | "monitoring" | "resolved" | "escalated"
 ) {
-  const auth = await requireSchoolProfile();
+  const auth = await requireDisciplineProfile();
   if ("error" in auth) return auth;
 
   const { error } = await auth.supabase
@@ -131,5 +171,6 @@ export async function updateDisciplineStatus(
 
   revalidatePath("/academic");
   revalidatePath("/academic/discipline");
+  revalidatePath("/teacher/discipline");
   return {};
 }

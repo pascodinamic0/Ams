@@ -18,6 +18,7 @@ export async function upsertGrade(input: GradeFormData) {
     .eq("student_id", parsed.data.student_id)
     .eq("subject_id", parsed.data.subject_id)
     .eq("class_id", parsed.data.class_id)
+    .eq("school_year", parsed.data.school_year)
     .eq("term", parsed.data.term)
     .maybeSingle();
 
@@ -25,6 +26,7 @@ export async function upsertGrade(input: GradeFormData) {
     student_id: parsed.data.student_id,
     subject_id: parsed.data.subject_id,
     class_id: parsed.data.class_id,
+    school_year: parsed.data.school_year,
     term: parsed.data.term,
     marks: parsed.data.marks ?? null,
     grade: parsed.data.grade ?? null,

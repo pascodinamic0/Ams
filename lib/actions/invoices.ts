@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentProfile } from "@/lib/auth/session";
 import { invoiceSchema, type InvoiceFormData } from "@/lib/validations/finance";
+import { getStudentsForBilling } from "@/lib/db/students";
 
 function deriveInvoiceStatus(amount: number, amountPaid: number, dueDate: string) {
   if (amountPaid >= amount) return "paid";
@@ -10,26 +12,43 @@ function deriveInvoiceStatus(amount: number, amountPaid: number, dueDate: string
   return "pending";
 }
 
+function revalidateInvoicePaths() {
+  revalidatePath("/finance/invoices");
+  revalidatePath("/finance");
+  revalidatePath("/finance/payments");
+  revalidatePath("/parent/fees");
+}
+
+async function resolveInvoiceAmount(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  amount: number,
+  feeStructureId: string | null
+) {
+  if (!feeStructureId) return amount;
+  const { data: structure } = await supabase
+    .from("fee_structures")
+    .select("amount")
+    .eq("id", feeStructureId)
+    .single();
+  return structure ? Number(structure.amount) : amount;
+}
+
 export async function createInvoice(input: InvoiceFormData) {
   const parsed = invoiceSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  let amount = parsed.data.amount;
   const feeStructureId = parsed.data.fee_structure_id || null;
-
-  if (feeStructureId) {
-    const { data: structure } = await supabase
-      .from("fee_structures")
-      .select("amount")
-      .eq("id", feeStructureId)
-      .single();
-    if (structure) amount = Number(structure.amount);
-  }
-
+  const amount = await resolveInvoiceAmount(
+    supabase,
+    parsed.data.amount,
+    feeStructureId
+  );
   const status = deriveInvoiceStatus(amount, 0, parsed.data.due_date);
 
   const { data, error } = await supabase
@@ -47,9 +66,7 @@ export async function createInvoice(input: InvoiceFormData) {
     .single();
 
   if (error) return { error: error.message };
-  revalidatePath("/finance/invoices");
-  revalidatePath("/finance");
-  revalidatePath("/parent/fees");
+  revalidateInvoicePaths();
   return { data: { id: data.id } };
 }
 
@@ -63,44 +80,49 @@ export async function updateInvoice(
   const supabase = await createClient();
   const { data: existing } = await supabase
     .from("fee_invoices")
-    .select("amount_paid")
+    .select("amount_paid, amount, due_date, fee_structure_id")
     .eq("id", id)
     .single();
 
-  const amount = parsed.data.amount ?? undefined;
-  const dueDate = parsed.data.due_date;
-  const amountPaid = Number(existing?.amount_paid ?? 0);
+  if (!existing) return { error: "Invoice not found" };
+
+  const feeStructureId =
+    parsed.data.fee_structure_id === undefined
+      ? existing.fee_structure_id
+      : parsed.data.fee_structure_id === ""
+        ? null
+        : parsed.data.fee_structure_id;
+
+  const amount =
+    parsed.data.amount !== undefined
+      ? await resolveInvoiceAmount(supabase, parsed.data.amount, feeStructureId)
+      : await resolveInvoiceAmount(
+          supabase,
+          Number(existing.amount),
+          feeStructureId
+        );
+
+  const dueDate = parsed.data.due_date ?? existing.due_date;
+  const amountPaid = Number(existing.amount_paid ?? 0);
 
   const payload: Record<string, unknown> = {
-    ...parsed.data,
-    fee_structure_id:
-      parsed.data.fee_structure_id === ""
-        ? null
-        : parsed.data.fee_structure_id,
     updated_at: new Date().toISOString(),
+    amount,
+    due_date: dueDate,
+    fee_structure_id: feeStructureId,
+    status: deriveInvoiceStatus(amount, amountPaid, dueDate),
   };
 
-  if (amount !== undefined && dueDate) {
-    payload.status = deriveInvoiceStatus(amount, amountPaid, dueDate);
-  } else if (dueDate) {
-    const { data: inv } = await supabase
-      .from("fee_invoices")
-      .select("amount")
-      .eq("id", id)
-      .single();
-    if (inv) {
-      payload.status = deriveInvoiceStatus(
-        Number(inv.amount),
-        amountPaid,
-        dueDate
-      );
-    }
+  if (parsed.data.student_id !== undefined) {
+    payload.student_id = parsed.data.student_id;
+  }
+  if (parsed.data.description !== undefined) {
+    payload.description = parsed.data.description || null;
   }
 
   const { error } = await supabase.from("fee_invoices").update(payload).eq("id", id);
   if (error) return { error: error.message };
-  revalidatePath("/finance/invoices");
-  revalidatePath("/finance");
+  revalidateInvoicePaths();
   return {};
 }
 
@@ -108,7 +130,75 @@ export async function deleteInvoice(id: string) {
   const supabase = await createClient();
   const { error } = await supabase.from("fee_invoices").delete().eq("id", id);
   if (error) return { error: error.message };
-  revalidatePath("/finance/invoices");
-  revalidatePath("/finance");
+  revalidateInvoicePaths();
   return {};
+}
+
+/** Create invoices for all active students (optionally class-filtered via fee structure). */
+export async function generateInvoicesFromFeeStructure(input: {
+  fee_structure_id: string;
+  due_date: string;
+  description?: string;
+}) {
+  const feeStructureId = input.fee_structure_id;
+  const dueDate = input.due_date;
+  if (!feeStructureId || !dueDate) {
+    return { error: "Fee structure and due date are required" };
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: "Not authenticated" };
+
+  const profile = await getCurrentProfile();
+  const schoolId = profile?.school_id ?? undefined;
+
+  const { data: structure, error: structureError } = await supabase
+    .from("fee_structures")
+    .select("id, amount, class_id, name, description")
+    .eq("id", feeStructureId)
+    .single();
+
+  if (structureError || !structure) {
+    return { error: structureError?.message ?? "Fee structure not found" };
+  }
+
+  const students = await getStudentsForBilling({
+    schoolId,
+    classId: structure.class_id ?? undefined,
+    status: "active",
+  });
+
+  if (students.length === 0) {
+    return { error: "No active students found to invoice" };
+  }
+
+  const amount = Number(structure.amount);
+  const status = deriveInvoiceStatus(amount, 0, dueDate);
+  const description =
+    input.description?.trim() ||
+    structure.description ||
+    structure.name ||
+    null;
+
+  const rows = students.map((student) => ({
+    student_id: student.id,
+    fee_structure_id: feeStructureId,
+    amount,
+    amount_paid: 0,
+    due_date: dueDate,
+    status,
+    description,
+  }));
+
+  const { data, error } = await supabase
+    .from("fee_invoices")
+    .insert(rows)
+    .select("id");
+
+  if (error) return { error: error.message };
+  revalidateInvoicePaths();
+  return { data: { created: data?.length ?? rows.length } };
 }

@@ -10,6 +10,11 @@ import { StudentReportCard } from "@/components/students/student-report-card";
 import { getGradesForReportCard } from "@/lib/db/grades";
 import { getStudentAttendanceStats } from "@/lib/db/attendance";
 import { getStudentProfileBundle } from "@/lib/db/student-profile";
+import {
+  formatSchoolYearPeriod,
+  getCurrentSchoolYearStart,
+  parseSchoolYearPeriod,
+} from "@/lib/academic/school-year";
 import { formatPersonName } from "@/lib/utils";
 
 export default async function StudentReportCardPage({
@@ -32,13 +37,16 @@ export default async function StudentReportCardPage({
   const className =
     (student.classes as { name?: string } | null)?.name ?? null;
 
-  const term =
+  const periodKey =
     termParam ??
     stats.terms[0] ??
-    t("reportCardDefaultTerm");
+    formatSchoolYearPeriod(getCurrentSchoolYearStart(), t("reportCardDefaultTerm"));
+  const parsed = parseSchoolYearPeriod(periodKey);
+  const term = parsed.term;
+  const schoolYear = parsed.schoolYear ?? getCurrentSchoolYearStart();
 
   const [grades, attendance] = await Promise.all([
-    getGradesForReportCard(id, term),
+    getGradesForReportCard(id, term, schoolYear),
     getStudentAttendanceStats(id),
   ]);
 
@@ -57,7 +65,7 @@ export default async function StudentReportCardPage({
           <h1 className="text-2xl font-bold">{t("reportCardTitle")}</h1>
           <p className="mt-1 text-sm text-stone-500">
             {fullName}
-            {student.student_id ? ` � ${student.student_id}` : ""}
+            {student.student_id ? ` / ${student.student_id}` : ""}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -73,8 +81,8 @@ export default async function StudentReportCardPage({
       <Suspense fallback={null}>
         <ReportCardTermFilter
           basePath={`/academic/students/${id}/report-card`}
-          initialTerm={term}
-          termLabel={t("term")}
+          initialTerm={periodKey}
+          termLabel={tc("schoolYear")}
           termPlaceholder={t("reportCardDefaultTerm")}
           availableTerms={stats.terms}
         />
@@ -88,7 +96,7 @@ export default async function StudentReportCardPage({
         studentId={student.student_id}
         studentPhotoUrl={student.photo_url}
         className={className}
-        term={term}
+        term={formatSchoolYearPeriod(schoolYear, term)}
         grades={grades}
         attendance={attendance}
         averageMarks={averageMarks}

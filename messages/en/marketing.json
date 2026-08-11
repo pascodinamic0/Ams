@@ -119,24 +119,73 @@
     "ctaSubtitle": "Register your school and walk through every module live—before another term of rebuilding the same information.",
     "ctaPrimary": "Register your school",
     "ctaSecondary": "Log in",
-    "platformAdmin": "Platform Admin",
-    "platformAdminItems": ["Schools & branches", "Users & roles", "Audit logs", "Feature toggles"],
     "academicModule": "Academic",
-    "academicItems": ["Students", "Guardians", "Admissions", "Classes & sections", "Timetable", "Curriculum"],
+    "academicItems": [
+      "Students & guardians",
+      "Admissions",
+      "Classes, sections & subjects",
+      "Timetable & curriculum",
+      "Team & task board",
+      "Discipline",
+      "Monthly activity reports"
+    ],
     "teacherModule": "Teacher",
-    "teacherItems": ["Attendance", "Gradebook", "Assignments", "Exams", "Report cards", "Messages"],
+    "teacherItems": [
+      "My classes",
+      "Attendance",
+      "Gradebook",
+      "Assignments",
+      "Exams & report cards",
+      "Discipline",
+      "Messages"
+    ],
     "financeModule": "Finance",
-    "financeItems": ["Fee structure", "Invoices", "Payments", "Payroll", "Expenses", "Reports"],
+    "financeItems": [
+      "Fee structure",
+      "Invoices & payments",
+      "Payroll",
+      "Expenses & receipts",
+      "Budget plans",
+      "Fee reminders",
+      "Reports"
+    ],
     "operationsModule": "Operations",
     "operationsItems": ["Library", "Transport", "Events", "Staff/HR"],
     "parentPortal": "Parent Portal",
-    "parentItems": ["Child performance", "Fees & payments", "Timetable", "Messages", "Events"],
+    "parentItems": [
+      "Child performance",
+      "Fees & payments",
+      "Timetable",
+      "Assignments",
+      "Transport",
+      "Messages",
+      "Events"
+    ],
     "studentPortal": "Student Portal",
-    "studentItems": ["Assignments", "Grades", "Library", "Messages", "Events"],
+    "studentItems": [
+      "Timetable",
+      "Assignments",
+      "Grades",
+      "Report cards",
+      "Library",
+      "Events"
+    ],
     "analyticsModule": "Analytics",
-    "analyticsItems": ["Dashboards", "Branch performance", "Student analytics", "Attendance reports", "Financial reports"],
+    "analyticsItems": [
+      "School dashboards",
+      "Branch performance",
+      "Student analytics",
+      "Attendance reports",
+      "Financial reports"
+    ],
     "schoolWebsitesModule": "Free School Website",
-    "schoolWebsitesItems": ["Free branded homepage", "Online admissions", "3 templates (Modern, Classic, Minimal)"]
+    "schoolWebsitesItems": [
+      "Free branded homepage",
+      "Online admissions",
+      "Events, hiring & school visit booking",
+      "All managed directly in ShuleOS",
+      "3 templates (Modern, Classic, Minimal)"
+    ]
   },
   "contact": {
     "title": "Contact us",

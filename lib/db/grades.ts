@@ -4,6 +4,7 @@ import { formatPersonName } from "@/lib/utils";
 export type StudentGradeItem = {
   id: string;
   subject_name: string;
+  school_year: number;
   term: string;
   marks: number | null;
   grade: string | null;
@@ -17,6 +18,7 @@ export type GradeGridItem = {
   subject_id: string;
   subject_name: string;
   class_id: string;
+  school_year: number;
   term: string;
   marks: number | null;
   grade: string | null;
@@ -24,6 +26,7 @@ export type GradeGridItem = {
 
 export type ReportCardGrade = {
   subject_name: string;
+  school_year: number;
   term: string;
   marks: number | null;
   grade: string | null;
@@ -36,8 +39,9 @@ export async function getGradesForStudent(studentId: string): Promise<StudentGra
 
   const { data, error } = await supabase
     .from("grades")
-    .select("id, term, marks, grade, subjects(name)")
+    .select("id, school_year, term, marks, grade, subjects(name)")
     .eq("student_id", studentId)
+    .order("school_year", { ascending: false })
     .order("term");
 
   if (error) {
@@ -48,6 +52,7 @@ export async function getGradesForStudent(studentId: string): Promise<StudentGra
   return (data ?? []).map((g) => ({
     id: g.id,
     subject_name: (g.subjects as { name?: string } | null)?.name ?? "Subject",
+    school_year: Number(g.school_year),
     term: g.term,
     marks: g.marks !== null ? Number(g.marks) : null,
     grade: g.grade,
@@ -57,6 +62,7 @@ export async function getGradesForStudent(studentId: string): Promise<StudentGra
 export async function getGradesForClass(options: {
   classId: string;
   subjectId?: string;
+  schoolYear?: number;
   term?: string;
 }): Promise<GradeGridItem[]> {
   const supabase = await createClient();
@@ -75,11 +81,19 @@ export async function getGradesForClass(options: {
 
   if (!students?.length) return [];
 
-  if (!options.subjectId || !options.term) {
-    const { data: grades, error: gradesError } = await supabase
+  if (!options.subjectId || !options.term || options.schoolYear == null) {
+    let query = supabase
       .from("grades")
-      .select("id, student_id, subject_id, class_id, term, marks, grade, subjects(name)")
+      .select(
+        "id, student_id, subject_id, class_id, school_year, term, marks, grade, subjects(name)"
+      )
       .eq("class_id", options.classId);
+
+    if (options.schoolYear != null) {
+      query = query.eq("school_year", options.schoolYear);
+    }
+
+    const { data: grades, error: gradesError } = await query;
 
     if (gradesError) {
       console.error("getGradesForClass grades error:", gradesError);
@@ -96,6 +110,7 @@ export async function getGradesForClass(options: {
         subject_id: g.subject_id,
         subject_name: (g.subjects as { name?: string } | null)?.name ?? "Subject",
         class_id: g.class_id,
+        school_year: Number(g.school_year),
         term: g.term,
         marks: g.marks !== null ? Number(g.marks) : null,
         grade: g.grade,
@@ -105,9 +120,12 @@ export async function getGradesForClass(options: {
 
   const { data: grades, error: gradesError } = await supabase
     .from("grades")
-    .select("id, student_id, subject_id, class_id, term, marks, grade, subjects(name)")
+    .select(
+      "id, student_id, subject_id, class_id, school_year, term, marks, grade, subjects(name)"
+    )
     .eq("class_id", options.classId)
     .eq("subject_id", options.subjectId)
+    .eq("school_year", options.schoolYear)
     .eq("term", options.term);
 
   if (gradesError) {
@@ -136,6 +154,7 @@ export async function getGradesForClass(options: {
       subject_id: options.subjectId!,
       subject_name: existing?.subject_name ?? "Subject",
       class_id: options.classId,
+      school_year: options.schoolYear!,
       term: options.term!,
       marks: existing?.marks ?? null,
       grade: existing?.grade ?? null,
@@ -145,16 +164,23 @@ export async function getGradesForClass(options: {
 
 export async function getGradesForReportCard(
   studentId: string,
-  term: string
+  term: string,
+  schoolYear?: number
 ): Promise<ReportCardGrade[]> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("grades")
-    .select("term, marks, grade, subjects(name)")
+    .select("school_year, term, marks, grade, subjects(name)")
     .eq("student_id", studentId)
     .eq("term", term)
     .order("term");
+
+  if (schoolYear != null) {
+    query = query.eq("school_year", schoolYear);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("getGradesForReportCard error:", error);
@@ -163,6 +189,7 @@ export async function getGradesForReportCard(
 
   return (data ?? []).map((g) => ({
     subject_name: (g.subjects as { name?: string } | null)?.name ?? "Subject",
+    school_year: Number(g.school_year),
     term: g.term,
     marks: g.marks !== null ? Number(g.marks) : null,
     grade: g.grade,

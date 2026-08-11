@@ -23,6 +23,8 @@ import { SchoolStatusActions } from "../school-status-actions";
 import { SchoolStatusBadge } from "../school-status-badge";
 import { SchoolEditForm } from "./school-edit-form";
 import { SchoolCurrencyForm } from "@/components/schools/school-currency-form";
+import { BillingExemptToggle } from "./billing-exempt-button";
+import { hasPaidAccess, SHULEOS_PLAN_AMOUNT_USD } from "@/lib/billing/types";
 
 export default async function SchoolDetailPage({
   params,
@@ -196,6 +198,33 @@ export default async function SchoolDetailPage({
                 redirectAfterDelete
                 stacked
               />
+              <div className="space-y-2 border-t border-stone-200 pt-4 dark:border-stone-800">
+                <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
+                  {t("billingSectionTitle")}
+                </p>
+                <p className="text-sm text-stone-500 dark:text-stone-400">
+                  {t("billingStatusLine", {
+                    status: school.billing_exempt
+                      ? t("billingStatusExempt")
+                      : (school.subscription_status ?? "none"),
+                    access: hasPaidAccess(school)
+                      ? t("billingAccessOn")
+                      : t("billingAccessLocked"),
+                    amount: SHULEOS_PLAN_AMOUNT_USD,
+                  })}
+                </p>
+                {school.stripe_customer_id && (
+                  <p className="break-all text-xs text-stone-400">
+                    {t("billingStripeCustomer", {
+                      id: school.stripe_customer_id,
+                    })}
+                  </p>
+                )}
+                <BillingExemptToggle
+                  schoolId={school.id}
+                  billingExempt={Boolean(school.billing_exempt)}
+                />
+              </div>
             </CardContent>
           </Card>
 

@@ -17,6 +17,10 @@ export default async function ClassesPage() {
   ]);
   const tableData = classes.map((row) => ({
     ...row,
+    enrollment:
+      row.capacity != null
+        ? `${row.student_count} / ${row.capacity}`
+        : String(row.student_count),
     actions: <DeleteClassButton id={row.id as string} name={String(row.name)} />,
   }));
 
@@ -37,7 +41,7 @@ export default async function ClassesPage() {
             { id: "name", header: tc("name"), accessorKey: "name", sortable: true },
             { id: "grade", header: t("grade"), accessorKey: "grade" },
             { id: "section", header: t("sectionsTitle"), accessorKey: "section_name" },
-            { id: "capacity", header: t("capacity"), accessorKey: "capacity" },
+            { id: "enrollment", header: t("capacity"), accessorKey: "enrollment" },
             { id: "actions", header: "", accessorKey: "actions" },
           ]}
         />

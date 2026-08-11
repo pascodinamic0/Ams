@@ -8,12 +8,16 @@ import {
   getStudentAttendanceStats,
 } from "@/lib/db";
 import { getStudents } from "@/lib/db/students";
+import {
+  formatSchoolYear,
+  getCurrentSchoolYearStart,
+} from "@/lib/academic/school-year";
 import { ReportCardFilters } from "./report-card-filters";
 
 export default async function ReportCardsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ class?: string; term?: string }>;
+  searchParams: Promise<{ class?: string; term?: string; year?: string }>;
 }) {
   const t = await getTranslations("teacher");
   const tc = await getTranslations("common");
@@ -37,14 +41,18 @@ export default async function ReportCardsPage({
   const classId = params.class && classes.some((c) => c.id === params.class)
     ? params.class
     : classes[0].id;
-  const term = params.term ?? "Term 1";
+  const term = params.term ?? "T1";
+  const parsedYear = Number(params.year);
+  const schoolYear = Number.isFinite(parsedYear)
+    ? parsedYear
+    : getCurrentSchoolYearStart();
 
   const students = await getStudents({ classId, status: "active" });
 
   const reportData = await Promise.all(
     students.map(async (student) => {
       const [grades, attendance] = await Promise.all([
-        getGradesForReportCard(student.id, term),
+        getGradesForReportCard(student.id, term, schoolYear),
         getStudentAttendanceStats(student.id),
       ]);
       return { student, grades, attendance };
@@ -65,6 +73,7 @@ export default async function ReportCardsPage({
           classes={classes.map((c) => ({ id: c.id, name: c.name }))}
           initialClassId={classId}
           initialTerm={term}
+          initialSchoolYear={schoolYear}
         />
       </Suspense>
 
@@ -79,7 +88,9 @@ export default async function ReportCardsPage({
             >
               <header className="border-b pb-4 text-center">
                 <h2 className="text-xl font-bold">{t("studentReportCard")}</h2>
-                <p className="text-sm text-stone-600">{selectedClass?.name} · {term}</p>
+                <p className="text-sm text-stone-600">
+                  {selectedClass?.name} · {formatSchoolYear(schoolYear)} · {term}
+                </p>
               </header>
 
               <div className="mt-6 grid gap-4 sm:grid-cols-2">

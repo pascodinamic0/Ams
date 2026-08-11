@@ -23,6 +23,7 @@ export async function createFeeStructure(input: FeeStructureFormData) {
       amount: parsed.data.amount,
       class_id: parsed.data.class_id || null,
       description: parsed.data.description || null,
+      school_year: parsed.data.school_year,
     })
     .select("id")
     .single();

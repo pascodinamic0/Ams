@@ -36,7 +36,7 @@ const guides = [
     title: "Roles & permissions",
     description:
       "Understand admin, teacher, parent, and student access levels.",
-    href: "/features#platform-admin",
+    href: "/features",
   },
   {
     icon: Shield,

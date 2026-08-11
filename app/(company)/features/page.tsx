@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { companyIdentity } from "@/lib/company/identity";
 import {
-  Building2,
   GraduationCap,
   School,
   Wallet,
@@ -34,12 +33,6 @@ export default function FeaturesPage() {
 
   const features = useMemo(
     () => [
-      {
-        slug: "platform-admin",
-        title: t("platformAdmin"),
-        icon: <Building2 className="h-5 w-5" />,
-        items: t.raw("platformAdminItems") as string[],
-      },
       {
         slug: "academic",
         title: t("academicModule"),

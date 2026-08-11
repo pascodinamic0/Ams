@@ -2,11 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormWrapper } from "@/components/forms/form-wrapper";
+import { SchoolYearSelect } from "@/components/academic/school-year-select";
 import { createFeeStructure } from "@/lib/actions/fee-structures";
+import { getCurrentSchoolYearStart } from "@/lib/academic/school-year";
 import { feeStructureSchema, type FeeStructureFormData } from "@/lib/validations/finance";
 import { toast } from "@/lib/toast";
 
@@ -17,11 +20,17 @@ interface Props {
 
 export function FeeStructureForm({ branchId, classes }: Props) {
   const router = useRouter();
+  const tc = useTranslations("common");
+  const defaultYear = getCurrentSchoolYearStart();
 
   async function onSubmit(data: FeeStructureFormData) {
     const result = await createFeeStructure({ ...data, branch_id: branchId });
     if (result.error) {
-      toast.error(typeof result.error === "string" ? result.error : "Failed to create fee structure");
+      toast.error(
+        typeof result.error === "string"
+          ? result.error
+          : "Failed to create fee structure"
+      );
       return;
     }
     toast.success("Fee structure created");
@@ -31,30 +40,63 @@ export function FeeStructureForm({ branchId, classes }: Props) {
   return (
     <FormWrapper
       schema={feeStructureSchema}
-      defaultValues={{ branch_id: branchId, amount: 0 }}
+      defaultValues={{
+        branch_id: branchId,
+        amount: 0,
+        school_year: defaultYear,
+      }}
       onSubmit={onSubmit}
-      className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-5"
+      className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-6"
     >
-      <FeeStructureFields classes={classes} />
+      <FeeStructureFields classes={classes} schoolYearLabel={tc("schoolYear")} />
     </FormWrapper>
   );
 }
 
-function FeeStructureFields({ classes }: { classes: { id: string; name: string }[] }) {
-  const { register, formState: { errors } } = useFormContext<FeeStructureFormData>();
+function FeeStructureFields({
+  classes,
+  schoolYearLabel,
+}: {
+  classes: { id: string; name: string }[];
+  schoolYearLabel: string;
+}) {
+  const {
+    register,
+    formState: { errors, isSubmitting },
+  } = useFormContext<FeeStructureFormData>();
 
   return (
     <>
       <div>
-        <Label htmlFor="name" required>Name</Label>
+        <Label htmlFor="name" required>
+          Name
+        </Label>
         <Input id="name" {...register("name")} error={!!errors.name} />
-        {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>}
+        {errors.name && (
+          <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+        )}
       </div>
       <div>
-        <Label htmlFor="amount" required>Amount</Label>
-        <Input id="amount" type="number" step="0.01" {...register("amount")} error={!!errors.amount} />
-        {errors.amount && <p className="mt-1 text-sm text-red-500">{errors.amount.message}</p>}
+        <Label htmlFor="amount" required>
+          Amount
+        </Label>
+        <Input
+          id="amount"
+          type="number"
+          step="0.01"
+          {...register("amount")}
+          error={!!errors.amount}
+        />
+        {errors.amount && (
+          <p className="mt-1 text-sm text-red-500">{errors.amount.message}</p>
+        )}
       </div>
+      <SchoolYearSelect
+        label={schoolYearLabel}
+        required
+        error={!!errors.school_year}
+        {...register("school_year", { valueAsNumber: true })}
+      />
       <div>
         <Label htmlFor="class_id">Class (optional)</Label>
         <select
@@ -64,7 +106,9 @@ function FeeStructureFields({ classes }: { classes: { id: string; name: string }
         >
           <option value="">All classes</option>
           {classes.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
           ))}
         </select>
       </div>
@@ -73,7 +117,9 @@ function FeeStructureFields({ classes }: { classes: { id: string; name: string }
         <Input id="description" {...register("description")} />
       </div>
       <div className="flex items-end">
-        <Button type="submit" className="w-full">Add fee structure</Button>
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          Add fee structure
+        </Button>
       </div>
     </>
   );

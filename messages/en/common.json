@@ -90,6 +90,8 @@
   "thisWeek": "This week",
   "thisMonth": "This month",
   "thisYear": "This year",
+  "schoolYear": "School year",
+  "thisSchoolYear": "This school year",
   "lastUpdated": "Last updated",
   "createdAt": "Created at",
   "updatedAt": "Updated at",
@@ -109,5 +111,8 @@
   "sidebar": "Sidebar",
   "unreadNotifications": "{count} unread notifications",
   "somethingWentWrong": "Something went wrong",
-  "unexpectedError": "An unexpected error occurred"
+  "unexpectedError": "An unexpected error occurred",
+  "duplicateSubmitTitle": "Submit again?",
+  "duplicateSubmitDescription": "This looks like the same submission you just sent. Continue anyway?",
+  "duplicateSubmitConfirm": "Submit again"
 }

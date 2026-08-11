@@ -11,6 +11,7 @@ All tenant-scoped tables in Supabase use **Row Level Security**. Policies are de
 - **Service role bypass:** `SUPABASE_SERVICE_ROLE_KEY` bypasses RLS. It is used only in trusted server contexts:
   - Seed scripts (`scripts/seed-*.mjs`)
   - Payment webhooks (`/api/webhooks/payments`)
+  - Stripe SaaS billing webhooks (`/api/webhooks/stripe`)
   - Cron jobs (`/api/cron/fee-reminders`, `/api/cron/class-reminders`)
   - Admin utilities in `lib/supabase/admin.ts`
   - Web Push delivery (`lib/services/web-push.ts`)
@@ -25,6 +26,9 @@ Never expose the service role key to the browser or commit it to version control
 | `CRON_SECRET` | `/api/cron/fee-reminders`, `/api/cron/class-reminders` | Random string; reject requests without `Authorization: Bearer <CRON_SECRET>` |
 | `VAPID_PRIVATE_KEY` | Web Push send | Server-only; pair with `NEXT_PUBLIC_VAPID_PUBLIC_KEY` |
 | `PAYMENT_WEBHOOK_SECRET` | `/api/webhooks/payments` | Shared with payment provider; used for HMAC signature verification |
+| `STRIPE_SECRET_KEY` | SaaS Checkout / Customer Portal | Server-only Stripe secret (prefer restricted key) |
+| `STRIPE_WEBHOOK_SECRET` | `/api/webhooks/stripe` | Stripe signing secret for subscription webhooks |
+| `STRIPE_PRICE_ID` | Checkout Sessions | Recurring Price ID for the fixed $350 USD school plan |
 | `TWILIO_AUTH_TOKEN` | WhatsApp / SMS | Server-only; paired with `TWILIO_ACCOUNT_SID` |
 
 Generate strong random values (e.g. `openssl rand -hex 32`) for `CRON_SECRET` and `PAYMENT_WEBHOOK_SECRET`.
