@@ -54,3 +54,9 @@ export const updateTeamMemberRoleSchema = z.object({
 export type UpdateTeamMemberRoleFormData = z.infer<
   typeof updateTeamMemberRoleSchema
 >;
+
+export const removeTeamMemberSchema = z.object({
+  userId: z.string().uuid("Invalid user ID"),
+});
+
+export type RemoveTeamMemberFormData = z.infer<typeof removeTeamMemberSchema>;

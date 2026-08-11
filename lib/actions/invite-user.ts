@@ -7,12 +7,15 @@ import { createClient } from "@/lib/supabase/server";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import {
   inviteUserSchema,
+  removeTeamMemberSchema,
   updateTeamMemberRoleSchema,
   type InvitableRole,
 } from "@/lib/validations/team";
 
 const ACADEMIC_ADMIN_LOCKED_ERROR =
   "Academic admin role cannot be changed to a different role";
+const LAST_ACADEMIC_ADMIN_REMOVE_ERROR =
+  "Cannot remove the last academic admin for this school";
 
 type InviteAuth =
   | { ok: false; error: string }
@@ -176,6 +179,112 @@ export async function updateSchoolTeamMemberRole(input: {
   revalidatePath("/academic/team");
   revalidatePath("/admin/users");
   return { data: { userId: parsed.data.userId, roleUpdated: true as const } };
+}
+
+/**
+ * Soft-remove a school team member: unlink them from the school (clear school/branch)
+ * without deleting their auth account. Linked payroll payees are soft-deactivated.
+ */
+export async function removeSchoolTeamMember(input: { userId: string }) {
+  const parsed = removeTeamMemberSchema.safeParse(input);
+  if (!parsed.success) {
+    const first = parsed.error.issues[0];
+    return { error: first?.message ?? "Invalid input" };
+  }
+
+  const auth = await requireSchoolAdmin();
+  if (!auth.ok) return { error: auth.error };
+
+  if (parsed.data.userId === auth.user.id) {
+    return { error: "You cannot remove yourself from the team" };
+  }
+
+  const adminResult = requireAdminClient();
+  if ("error" in adminResult) return { error: adminResult.error };
+  const admin = adminResult.client;
+
+  const { data: targetProfile, error: targetError } = await admin
+    .from("profiles")
+    .select("role, school_id")
+    .eq("id", parsed.data.userId)
+    .single();
+
+  if (targetError || !targetProfile) {
+    return { error: "Team member not found" };
+  }
+
+  if (targetProfile.role === "super_admin") {
+    return {
+      error:
+        "This account belongs to a platform administrator and cannot be removed",
+    };
+  }
+
+  if (
+    targetProfile.role === "parent" ||
+    targetProfile.role === "student" ||
+    !targetProfile.school_id
+  ) {
+    return { error: "This user is not a school team member" };
+  }
+
+  if (targetProfile.school_id !== auth.schoolId) {
+    return { error: "You can only manage team members at your school" };
+  }
+
+  if (targetProfile.role === "academic_admin") {
+    const { count, error: countError } = await admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("school_id", auth.schoolId)
+      .eq("role", "academic_admin");
+
+    if (countError) {
+      console.error("removeSchoolTeamMember count error:", countError);
+      return { error: countError.message };
+    }
+
+    if ((count ?? 0) <= 1) {
+      return { error: LAST_ACADEMIC_ADMIN_REMOVE_ERROR };
+    }
+  }
+
+  const { error: unlinkError } = await admin
+    .from("profiles")
+    .update({
+      school_id: null,
+      branch_id: null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", parsed.data.userId)
+    .eq("school_id", auth.schoolId);
+
+  if (unlinkError) {
+    console.error("removeSchoolTeamMember unlink error:", unlinkError);
+    return { error: unlinkError.message };
+  }
+
+  // Soft-deactivate payroll payees linked to this profile (same school).
+  const { error: staffError } = await admin
+    .from("staff")
+    .update({
+      is_admin_payee: false,
+      employment_status: "inactive",
+      updated_at: new Date().toISOString(),
+    })
+    .eq("school_id", auth.schoolId)
+    .eq("profile_id", parsed.data.userId);
+
+  if (staffError) {
+    // Profile is already unlinked; log and continue so remove still succeeds.
+    console.error("removeSchoolTeamMember staff deactivate error:", staffError);
+  }
+
+  revalidatePath("/academic/team");
+  revalidatePath("/admin/users");
+  revalidatePath("/finance/payroll");
+  revalidatePath("/operations/staff");
+  return { data: { userId: parsed.data.userId, removed: true as const } };
 }
 
 export async function inviteSchoolUser(input: {

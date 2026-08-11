@@ -1,6 +1,5 @@
--- Unified chat: all school staff can message each other (and parents).
--- Expand is_messaging_staff, fix conversation INSERT RLS, and expose a
--- SECURITY DEFINER contact list so non-admins can discover peer profiles.
+-- SET LOCAL is not allowed inside STABLE functions (PostgreSQL).
+-- Use function-level SET row_security = off instead (same pattern as 00034).
 
 CREATE OR REPLACE FUNCTION public.is_messaging_staff()
 RETURNS boolean
@@ -38,19 +37,6 @@ BEGIN
 END;
 $$;
 
-GRANT EXECUTE ON FUNCTION public.is_messaging_staff() TO authenticated;
-
--- Staff create policy still hardcoded super_admin/academic_admin/teacher from 00008.
-DROP POLICY IF EXISTS "Staff can create conversations" ON public.conversations;
-CREATE POLICY "Staff can create conversations"
-  ON public.conversations FOR INSERT
-  WITH CHECK (
-    created_by = auth.uid()
-    AND school_id = public.get_my_school_id()
-    AND public.is_messaging_staff()
-  );
-
--- Peer/staff directory for messaging (bypasses narrow profiles SELECT RLS).
 CREATE OR REPLACE FUNCTION public.list_messaging_staff_contacts()
 RETURNS TABLE (
   profile_id uuid,
@@ -108,5 +94,3 @@ BEGIN
   ORDER BY COALESCE(p.name, 'Staff');
 END;
 $$;
-
-GRANT EXECUTE ON FUNCTION public.list_messaging_staff_contacts() TO authenticated;
