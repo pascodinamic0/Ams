@@ -53,10 +53,21 @@ export function getSchoolCurrency(
 export function formatMoney(
   value: number,
   currencyCode: string | null | undefined,
-  options?: { minimumFractionDigits?: number; maximumFractionDigits?: number }
+  options?: {
+    minimumFractionDigits?: number;
+    maximumFractionDigits?: number;
+    /** App locale (`en` / `fr`) or full BCP 47 tag (`fr-FR`). */
+    locale?: string;
+  }
 ) {
   const code = normalizeCurrencyCode(currencyCode);
-  return new Intl.NumberFormat(undefined, {
+  const localeTag =
+    options?.locale === "fr"
+      ? "fr-FR"
+      : options?.locale === "en"
+        ? "en-US"
+        : options?.locale;
+  return new Intl.NumberFormat(localeTag, {
     style: "currency",
     currency: code,
     minimumFractionDigits: options?.minimumFractionDigits ?? 2,
