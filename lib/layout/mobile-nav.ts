@@ -61,8 +61,8 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   ],
   finance_officer: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
-    { id: "tab2", href: "/finance/invoices", labelKey: "invoices", icon: DollarSign },
-    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
+    { id: "tab2", href: "/finance/budget", labelKey: "budget", icon: ClipboardList },
+    { id: "tab3", href: "/finance/invoices", labelKey: "invoices", icon: DollarSign },
   ],
   cashier: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
@@ -71,8 +71,8 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   ],
   accountant: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
-    { id: "tab2", href: "/finance/reports", labelKey: "reports", icon: DollarSign },
-    { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
+    { id: "tab2", href: "/finance/budget", labelKey: "budget", icon: ClipboardList },
+    { id: "tab3", href: "/finance/reports", labelKey: "reports", icon: DollarSign },
   ],
   operations_manager: [
     { id: "home", href: "/operations", labelKey: "dashboard", icon: Home },

@@ -142,27 +142,30 @@ const WORKSPACES: Partial<Record<UserRole, RoleWorkspace>> = {
   accountant: {
     role: "accountant",
     title: "Finance control",
-    subtitle: "Control fee structures, expenses, payroll, and financial reporting.",
+    subtitle: "Control fee structures, expenses, payroll, budget, and financial reporting.",
     focusQuestion: "Is money controlled and report-ready?",
     quickActions: [
-      { href: "/finance/reports", label: "Finance reports" },
+      { href: "/finance/budget", label: "Yearly budget" },
+      { href: "/finance/reports", label: "Finance reports", variant: "ghost" },
       { href: "/finance/payroll", label: "Payroll", variant: "ghost" },
       { href: "/finance/expenses", label: "Expenses", variant: "ghost" },
       { href: "/finance/fee-structure", label: "Fee structures", variant: "outline" },
     ],
-    metricHints: ["collected", "outstanding", "payroll", "expenses"],
+    metricHints: ["collected", "outstanding", "payroll", "expenses", "budget"],
   },
   finance_officer: {
     role: "finance_officer",
     title: "Finance office",
-    subtitle: "Manage invoices, payments, payroll, expenses, and fee operations.",
+    subtitle:
+      "Manage invoices, payments, payroll, expenses, yearly budget, and fee operations.",
     focusQuestion: "What finance work is unfinished?",
     quickActions: [
-      { href: "/finance/payments", label: "Record payment" },
+      { href: "/finance/budget", label: "Yearly budget" },
+      { href: "/finance/payments", label: "Record payment", variant: "ghost" },
       { href: "/finance/invoices", label: "Create invoice", variant: "ghost" },
       { href: "/finance/reports", label: "Reports", variant: "outline" },
     ],
-    metricHints: ["collected", "outstanding", "payroll", "expenses"],
+    metricHints: ["collected", "outstanding", "payroll", "expenses", "budget"],
   },
 };
 
