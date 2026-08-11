@@ -33,6 +33,7 @@ const APP_NAMESPACES = [
   "student",
   "analytics",
   "outreach",
+  "billing",
 ] as const;
 
 function pickNamespaces(messages: Messages, namespaces: Iterable<string>): Messages {

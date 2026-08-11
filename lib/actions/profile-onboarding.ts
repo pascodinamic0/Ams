@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { resolveLoginDestination } from "@/lib/auth/login-redirect";
 import { shouldNeedStructureSetup } from "@/lib/auth/structure-setup";
+import type { SubscriptionStatus } from "@/lib/billing/types";
 
 const nameSchema = z
   .string()
@@ -70,27 +71,42 @@ export async function completeProfileOnboarding() {
 
   let schoolStatus: "pending" | "approved" | "suspended" | null = null;
   let structureSetupCompletedAt: string | null = null;
+  let billingExempt = false;
+  let subscriptionStatus: SubscriptionStatus | null = null;
   if (auth.profile.school_id) {
     const { data: school } = await auth.supabase
       .from("schools")
-      .select("status, structure_setup_completed_at")
+      .select(
+        "status, structure_setup_completed_at, billing_exempt, subscription_status"
+      )
       .eq("id", auth.profile.school_id)
       .single();
     schoolStatus = (school?.status as typeof schoolStatus) ?? null;
     structureSetupCompletedAt = school?.structure_setup_completed_at ?? null;
+    billingExempt = Boolean(school?.billing_exempt);
+    subscriptionStatus =
+      (school?.subscription_status as SubscriptionStatus | null) ?? "none";
   }
 
-  const destination = shouldNeedStructureSetup({
+  // Match post-auth / proxy order: pay before structure setup.
+  const destination = resolveLoginDestination({
     role: auth.profile.role,
     schoolStatus,
-    structureSetupCompletedAt,
-  })
-    ? "/onboarding/school"
-    : resolveLoginDestination({
-        role: auth.profile.role,
-        schoolStatus,
-      });
+    billingExempt,
+    subscriptionStatus,
+  });
+
+  const next =
+    destination === "/billing" || destination === "/pending"
+      ? destination
+      : shouldNeedStructureSetup({
+            role: auth.profile.role,
+            schoolStatus,
+            structureSetupCompletedAt,
+          })
+        ? "/onboarding/school"
+        : destination;
 
   revalidatePath("/", "layout");
-  return { data: { destination } };
+  return { data: { destination: next } };
 }

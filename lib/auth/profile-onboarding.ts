@@ -56,15 +56,22 @@ export async function getProfileOnboardingState(
   };
 }
 
-/** Routes that must stay reachable before profile onboarding completes. */
-export const PROFILE_ONBOARDING_EXEMPT_PREFIXES = [
+/**
+ * Routes that must stay reachable before profile onboarding completes.
+ * Exact `/onboarding` only — `/onboarding/school` is structure setup and
+ * should not bypass the profile-onboarding gate.
+ */
+export const PROFILE_ONBOARDING_EXEMPT_PATHS = [
   "/onboarding",
   "/register/complete",
   "/auth/callback",
 ];
 
 export function isProfileOnboardingExempt(pathname: string): boolean {
-  return PROFILE_ONBOARDING_EXEMPT_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
-  );
+  return PROFILE_ONBOARDING_EXEMPT_PATHS.some((path) => {
+    if (path === "/onboarding") {
+      return pathname === "/onboarding";
+    }
+    return pathname === path || pathname.startsWith(`${path}/`);
+  });
 }

@@ -23,11 +23,16 @@ function isApprovalHoldPath(pathname: string): boolean {
   );
 }
 
-/** While waiting to pay, keep them on billing (not the structure wizard). */
+/**
+ * While waiting to pay, keep them on billing — not the product or structure wizard.
+ * Profile onboarding (/onboarding only) must stay reachable so invite → password →
+ * onboarding does not bounce against /billing.
+ */
 function isBillingHoldPath(pathname: string): boolean {
   return (
     pathname === "/billing" ||
     pathname.startsWith("/billing/") ||
+    pathname === "/onboarding" ||
     pathname.startsWith("/settings") ||
     pathname === "/login"
   );
