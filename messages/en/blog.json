@@ -7,6 +7,266 @@
     "backToBlog": "Back to blog"
   },
   "posts": {
+    "why-every-kinshasa-school-should-run-on-shuleos": {
+      "title": "Kinshasa schools already pay for ShuleOS. They just don't have it yet.",
+      "excerpt": "Two-thirds of Kinshasa primary schools are private. Fees run in CDF and USD. Parents live on WhatsApp. The internet drops. Another term on notebooks is the expensive choice — here's the map.",
+      "date": "2026-08-12",
+      "readTime": "14 min read",
+      "metaDescription": "Why every Kinshasa school should run on ShuleOS: private-school economics, CDF/USD fees, WhatsApp parents, Programme National report cards, offline attendance, and support from Batetela.",
+      "coverImageAlt": "A Kinshasa school gate at dusk: parents, uniforms, handwritten ledgers, cash, and a phone — the system the city already runs on.",
+      "intro": [
+        "Kinshasa is not waiting for a school operating system. It already has one: cash at the gate, a register in a drawer, a WhatsApp group that never ends, and a bursar who reconciles after the term has already leaked.",
+        "That system has a price. In this city, most primary schools are private — they run on parent fees, not a ministry payroll. When balances live in three places, the school finances the gap. When parents only learn a balance at the gate, collections slip. When report cards are rebuilt from chats, the office shuts down for a week.",
+        "ShuleOS was built in Kinshasa for that reality: Programme National, French first, CDF and USD, mobile money, WhatsApp, attendance that survives a dead signal. The next term does not have to buy the same leaks again."
+      ],
+      "factsTitle": "The Kinshasa facts, not the brochure",
+      "facts": [
+        {
+          "value": "66.4%",
+          "label": "of Kinshasa primary schools are private — this city educates on parent contributions.",
+          "source": "MEPSP statistical yearbook 2019–2020"
+        },
+        {
+          "value": "101,000+",
+          "label": "schools nationwide from preschool to secondary. Kinshasa is the private-school exception, not the national average.",
+          "source": "Government of DRC, 2022"
+        },
+        {
+          "value": "30.5%",
+          "label": "internet penetration nationwide. Kinshasa is better connected — and classrooms still lose the signal mid-roll.",
+          "source": "DataReportal, Digital 2026"
+        },
+        {
+          "value": "CDF + USD",
+          "label": "how fees actually get paid. A tool that only speaks one currency is already lying to the bursar."
+        },
+        {
+          "value": "8:00–18:00",
+          "label": "support hours from Kinshasa (WAT) — not a ticket queue in another timezone.",
+          "source": "Digni Digital LLC, Crown Towers, Batetela"
+        }
+      ],
+      "flowTitle": "What a Kinshasa school actually runs on",
+      "flowBeforeLabel": "The system you already have",
+      "flowAfterLabel": "The same school on ShuleOS",
+      "flowBefore": [
+        "A paper register for each class — rewritten when it tears or goes missing",
+        "Fee balances in a notebook, a spreadsheet, and someone's memory",
+        "Parents asking in WhatsApp; the office answering \"come in and we'll check\"",
+        "Attendance that dies when the connection dies",
+        "Report-card week that shuts the office down",
+        "The director finding out in July what broke in October"
+      ],
+      "flowAfter": [
+        "One student file: guardians, class, fees, attendance, grades",
+        "Invoices in CDF and USD, paid by mobile money, visible to the parent",
+        "WhatsApp reminders with a trail — before the gate dispute",
+        "Attendance marked on the phone, offline, then synced",
+        "Programme National report cards from the gradebook, not from chats",
+        "A dashboard the director can trust mid-term, not after the damage"
+      ],
+      "termCostTitle": "You don't need our number. Use yours.",
+      "termCostIntro": "Put a franc amount on this term before you decide another year of paper is \"fine.\" The expensive choice is already on the books.",
+      "termCostItems": [
+        "Uncollected fees still sitting in \"we'll check\" — not in the account",
+        "Evenings teachers spend re-entering attendance and grades after a dead connection",
+        "Days the office closes to rebuild bulletins from registers and chats",
+        "Staff hours spent answering balance questions that a portal would have shown",
+        "Families who never finished admission because the form lived on paper",
+        "Intake that walked to the school they found first on a phone"
+      ],
+      "modulesTitle": "What the school actually runs — in one place",
+      "modulesIntro": "ShuleOS is not another chat on top of the chaos. It is the record: every role, every duty, nothing stuck in a notebook.",
+      "modules": [
+        {
+          "title": "Academic",
+          "detail": "Admissions, classes, timetable, attendance, gradebook, exams, and Programme National report cards."
+        },
+        {
+          "title": "Finance",
+          "detail": "Fee structures, invoices, mobile money, WhatsApp reminders, expenses, payroll, and reports the bursar can defend."
+        },
+        {
+          "title": "Parent & student portals",
+          "detail": "Balances, grades, attendance, timetable, and assignments on the phone — without a trip to the office."
+        },
+        {
+          "title": "Messaging",
+          "detail": "Logged conversations plus mass WhatsApp and SMS, so unlogged chats stop becoming disputes with no proof."
+        },
+        {
+          "title": "Operations",
+          "detail": "Library, transport, events, and staff/HR — the logistics that used to live on sticky notes."
+        },
+        {
+          "title": "Analytics",
+          "detail": "Attendance, collections, performance, and branch comparison — mid-term, not after the damage."
+        },
+        {
+          "title": "Free school website",
+          "detail": "Branded homepage, online admissions, events, hiring, and visit booking into your admin queue."
+        },
+        {
+          "title": "Roles & audit",
+          "detail": "Directors, teachers, bursars, parents, students — each sees their work, with a trail of who changed what."
+        }
+      ],
+      "sections": [
+        {
+          "title": "Kinshasa is a private-school city. Fees are the operating budget.",
+          "imageAlt": "A Kinshasa neighbourhood with private school courtyards, uniforms, and motorcycle taxis at the end of the school day.",
+          "imageCaption": "Kinshasa is the exception in the DRC: most primary schools here are private. Parent fees are not a side account — they are how the school runs.",
+          "body": [
+            "Nationally, private schools are about 17% of the system. Kinshasa is not the nation. The ministry's own yearbook put private primary schools at 66.4% of all primary schools in this city. Haut-Katanga is the other outlier. Everywhere else, the mix looks different.",
+            "That number is the whole argument. A Kinshasa private school does not \"also collect fees.\" It lives on them — teacher pay, chalk, fuel for the generator, the next intake campaign. Research on low-income Kinshasa neighbourhoods found private fees ranging from about $8 a year to several hundred. Elite schools publish in the thousands of dollars. The ministry does not set those prices. Your bursar is the system of record — or there isn't one.",
+            "When the record is a notebook, the school is already paying: disputed balances, families who leave because nobody could answer, cash that never quite matches the register. That is not a software wish. It is this year's budget walking out the gate."
+          ],
+          "costLabel": "What it costs",
+          "cost": "A private school with no single fee ledger is financing its own leaks. Every \"we'll check\" is money that should have been on the books this week.",
+          "fixLabel": "What ShuleOS fixes",
+          "fix": "One student account tied to fee structures, invoices, payments, and history — so the bursar, the director, and the parent are looking at the same balance.",
+          "whoLabel": "Who breathes easier",
+          "who": "School owners and directors in Kinshasa whose entire year depends on collections they can actually see."
+        },
+        {
+          "title": "Cash, CDF, USD, and \"we'll check\" is how money disappears.",
+          "imageAlt": "A bursar desk in Kinshasa with handwritten fee registers, mixed CDF and USD notes, and a phone showing a digital invoice.",
+          "imageCaption": "Parents already pay how Kinshasa pays: cash, CDF, USD, and mobile money. The leak is the school that cannot show the exact balance — or prove the receipt.",
+          "body": [
+            "Kinshasa parents do not wait for a bank appointment to pay school. They pay in Congolese francs, in dollars, in cash at the window, and increasingly on the phone. Mobile money is no longer a side channel. In 2025 the telecom regulator's figures put M-Pesa and Airtel Money in the same league — hundreds of millions of dollars in service revenue — the kind of number you only see when a payment rail has become infrastructure.",
+            "The University of Kinshasa opened mobile payment for academic fees in 2025 for a reason it said out loud: cut the queues, and fight fake receipts. If UNIKIN is still fighting faux reçus, so is every private school stamping carbon copies at the gate.",
+            "A foreign school tool that invoices in one currency, with no mobile-money path and no WhatsApp reminder, asks your bursar to keep a second system. That second system is where the leaks live."
+          ],
+          "costLabel": "What it costs",
+          "cost": "Balances in three places. Parents disputing at the gate. Collections that look fine until someone reconciles — too late to recover the term.",
+          "fixLabel": "What ShuleOS fixes",
+          "fix": "Fee structures by class, term, or boarding. Invoices with history. CDF and USD. Mobile-money-ready amounts. WhatsApp reminders before the due date — not after the queue forms. Expenses, payroll, and reports beside the same ledger.",
+          "whoLabel": "Who breathes easier",
+          "who": "Bursars who should not spend Sunday reconstructing what was paid in cash, on the phone, and \"to the teacher.\""
+        },
+        {
+          "title": "Parents already have a portal. It's WhatsApp. It has no ledger.",
+          "imageAlt": "A Kinshasa parent checking a school portal on her phone at home, with an office queue faded in the background.",
+          "imageCaption": "The office queue is the old portal. The phone is where Kinshasa parents already live — they just cannot see the real balance, the absence, or the grade until it is costly.",
+          "body": [
+            "Ask a Kinshasa parent how they talk to the school. The answer is almost never \"the parent portal.\" It is a class WhatsApp group, a director's personal number, and a trip to the secretariat when the chat goes silent. That is communication. It is not a record.",
+            "Unlogged chats become disputes with no proof. \"Come to the office\" becomes the default reply — and every visit costs staff time, parent time, and often a delayed payment. Trust erodes when the fee figure and the grade arrive late, or wrong.",
+            "Most Congolese parents already manage school life from a phone. Without a real portal, they miss balances, grades, and absences until the queue or a crisis. You pay in trust, in time, and in fees that land after the reminder should have gone out."
+          ],
+          "costLabel": "What it costs",
+          "cost": "The secretariat becomes a helpdesk. Teachers repeat the same update twenty times. Parents find out by accident — and then they don't pay, or they don't come back.",
+          "fixLabel": "What ShuleOS fixes",
+          "fix": "A parent portal for performance, fees, timetable, messages, and events. A student portal for assignments, grades, library, and timetable. Mass WhatsApp, SMS, and in-app outreach with a trail — so the school can prove what was said.",
+          "whoLabel": "Who breathes easier",
+          "who": "Parents who should not travel across Kinshasa for a balance; offices that should not be a call centre every fee week."
+        },
+        {
+          "title": "Programme National bulletins cannot be an all-nighter.",
+          "imageAlt": "A Kinshasa teacher at night surrounded by paper report cards, with a laptop showing a clean digital bulletin.",
+          "imageCaption": "Report-card week is not a printing problem. It is the bill for a term of grades that lived in registers, chats, and memory.",
+          "body": [
+            "The Congolese school year runs roughly September to July. The bulletin is not a US-style GPA export. Teachers are expected to report against Programme National learning areas, term by term, in a format families and inspectors recognise. When grades live in a register, a chat, and a personal spreadsheet, that format gets rebuilt by hand — usually at night, usually with errors that become parent fights.",
+            "Foreign student-information systems fail here in a boring way: they assume a different report card, a different year, a different language of work. Staff then keep a paper parallel. The parallel is what shuts the office down.",
+            "ShuleOS keeps attendance, the gradebook, assignments, exams, and Programme National report cards in the teacher workflow. The term should end with printable cards, not a scramble."
+          ],
+          "costLabel": "What it costs",
+          "cost": "Evenings gone. Printing week as an all-nighter. Errors that turn into meetings. Academic records nobody would sign if they had to defend them in October.",
+          "fixLabel": "What ShuleOS fixes",
+          "fix": "Classes and sections aligned to DRC grade levels. Daily attendance. Gradebooks and exams mapped to national curriculum strands. Report cards that come out of the same file the teacher already used all term.",
+          "whoLabel": "Who breathes easier",
+          "who": "Teachers who want evenings back; pedagogy leads who need the same bulletin logic across every class."
+        },
+        {
+          "title": "Attendance that dies with the signal is attendance you invented.",
+          "imageAlt": "A Kinshasa teacher marking attendance on a smartphone in class while a router light sits dark in the corner.",
+          "imageCaption": "Nationwide, most people are still offline. In Kinshasa the signal is better — until it isn't. The roll call cannot wait for Vodacom.",
+          "body": [
+            "At the end of 2025, about 34.7 million people in the DRC used the internet — 30.5% of the population. There were 64.7 million mobile connections, many of them voice-only. Kinshasa is an island of coverage compared with the interior. It is still an island that blinks.",
+            "A classroom with a dead connection does not pause the day. Teachers fall back to paper, then double-enter at night — if they remember, if the list survived the bag. Directors then make decisions on reconstructed guesses: who is chronically absent, which class is emptying, whether the fee reminder should have gone to that family.",
+            "ShuleOS installs on the phone like an app. Attendance keeps working offline and syncs when the signal returns. The day still counts."
+          ],
+          "costLabel": "What it costs",
+          "cost": "Ghost rolls. Night-time re-entry. Absences parents hear about when it is already a discipline meeting — or a lost fee.",
+          "fixLabel": "What ShuleOS fixes",
+          "fix": "An installable PWA, no special hardware. Bulk marking, absence alerts, and offline sync — so the register is the same object the director reads later.",
+          "whoLabel": "Who breathes easier",
+          "who": "Teachers in rooms where connectivity is optional; directors who need real attendance, not a reconstructed week."
+        },
+        {
+          "title": "The next intake decides on a phone, not at your gate.",
+          "imageAlt": "A Kinshasa family on the sidewalk looking at a school website on a phone, with a torn paper admissions notice on the wall behind them.",
+          "imageCaption": "Families search WhatsApp and Google before they visit. A school with no site is asking them to find the competitor first.",
+          "body": [
+            "Kinshasa has no shortage of private schools. That is the point: families choose. They ask in WhatsApp groups. They search. They judge the first screen. A school with no professional site, and admissions on paper that get lost in a drawer, is not \"traditional.\" It is invisible at the exact moment a parent is ready to enroll.",
+            "Paper admissions mean delays, incomplete files, and families who never finish. Every intake season without a site, some of those families choose the school they found first.",
+            "ShuleOS includes a branded public website — homepage, admissions, events, hiring, school-visit booking — feeding straight into the admin queue. Interest becomes a file, not a maybe."
+          ],
+          "costLabel": "What it costs",
+          "cost": "Empty seats you will still staff. Forms that vanish. A first impression that looks like 2012 while the school next door looks open.",
+          "fixLabel": "What ShuleOS fixes",
+          "fix": "A free branded site with your colours and cover image. Online admissions into the same academic core. Events, careers listings, and visit booking without a second tool.",
+          "whoLabel": "Who breathes easier",
+          "who": "Directors competing for families who decide on a phone screen in Gombe, Lemba, or Ngaliema — not in your courtyard."
+        },
+        {
+          "title": "Directors shouldn't find out in July what broke in October.",
+          "imageAlt": "A Kinshasa school director at dusk looking at a live dashboard, with unused ledgers stacked beside the screen.",
+          "imageCaption": "By the time the spreadsheet is \"done,\" the term is over. The expensive problems — empty seats, unpaid fees, silent absences — were visible in week three.",
+          "body": [
+            "A Kinshasa director is already running a business, a ministry-facing school, and a community. The information to do that job exists. It is just late. Attendance in one book, fees in another, grades in a third, branch numbers in a WhatsApp forward. By the time someone types it into a spreadsheet, the term has moved on.",
+            "That delay has a shape: a class that emptied in October, a collection shortfall that was obvious in November, a teacher whose register never matched. You cannot hire, chase, or intervene in July.",
+            "ShuleOS puts students, attendance, finance, and branch performance on dashboards leadership can read in minutes — exportable for a board or an inspection, not rebuilt for one."
+          ],
+          "costLabel": "What it costs",
+          "cost": "Decisions made blind. Reports that take a week. Multi-campus operators reconciling five versions of the truth.",
+          "fixLabel": "What ShuleOS fixes",
+          "fix": "Executive dashboards, attendance heatmaps, collection rates, academic trends, branch comparison — the view you needed in October.",
+          "whoLabel": "Who breathes easier",
+          "who": "Principals and multi-branch owners who should not wait for a bursar's Sunday spreadsheet to know if the school is healthy."
+        },
+        {
+          "title": "Foreign SIS tools fail here. This one was built on Batetela.",
+          "imageAlt": "A Kinshasa high-rise office at dusk, Congolese support staff on laptops and phones helping a school, city skyline in the windows.",
+          "imageCaption": "Support that keeps Kinshasa hours, speaks French first, and already knows what a bulletin and a mobile-money receipt look like.",
+          "body": [
+            "Tools built for other systems ignore the things that are not optional here: Programme National report cards, CDF and USD in the same week, French-first staff, WhatsApp-heavy parents, classrooms where the internet is a guest. You can translate the menus. You cannot translate the workflow. Staff keep the paper parallel, and you have paid for two systems.",
+            "ShuleOS is a product of Digni Digital LLC, based at Crown Towers on Batetela, 15th floor, Kinshasa. Support runs Monday to Friday, 8:00 to 18:00 WAT, on WhatsApp and email — the same channels the school already uses. Onboarding is four steps, most of it in an afternoon: register, launch the public site, invite every role, open the portals.",
+            "No setup fees. No special hardware. The school you already run, in one place that does not forget."
+          ],
+          "costLabel": "What it costs",
+          "cost": "Another year bending foreign software until it almost fits — while the real school still lives in notebooks.",
+          "fixLabel": "What ShuleOS fixes",
+          "fix": "French and English. Local fee and curriculum workflows. WhatsApp-native reminders. Mobile money. Offline attendance. Roles and audit logs. Support from the same city as the school.",
+          "whoLabel": "Who breathes easier",
+          "who": "Kinshasa schools tired of importing a system that was never asked to survive this city."
+        }
+      ],
+      "midCtaTitle": "Fee season and report cards don't wait for a better moment",
+      "midCtaBody": "Every week off-platform is another queue, another dispute, another evening of double entry. One afternoon to go live beats another Kinshasa term of leaks.",
+      "midCtaPrimary": "Stop the leaks",
+      "midCtaSecondary": "See what it's costing you",
+      "closing": [
+        "Kinshasa already voted: this is a private-school city, a mobile-money city, a WhatsApp city, and a city where the signal drops. The school that still runs on notebooks is not preserving tradition. It is paying, every week, for a system it never chose.",
+        "ShuleOS is the small next step: one afternoon to put fees, grades, parents, and the public site in one place — before the next rentrée locks in the same leaks."
+      ],
+      "sourcesLabel": "Sources",
+      "sources": [
+        "MEPSP statistical yearbook 2019–2020: private primary schools as 66.4% of primary schools in Kinshasa (and 54.8% in Haut-Katanga); nationally, private schools are about 17% of the system.",
+        "Government of DRC (2022): more than 101,000 schools providing general education at preschool, primary, and secondary levels.",
+        "ACCELERE!1 / education-sector research: private fees in low-income Kinshasa neighbourhoods documented from about USD 8 per year to several hundred; the ministry does not control private fee levels.",
+        "DataReportal, Digital 2026 — Democratic Republic of the Congo: 34.7 million internet users (30.5% penetration) and 64.7 million cellular connections as of late 2025.",
+        "ARPTC figures reported for 2025: M-Pesa and Airtel Money as the leading mobile-money services by revenue (on the order of USD 200 million each), consistent with mobile money as urban payment infrastructure.",
+        "Université de Kinshasa, communiqué n°002/2025: mobile payment of academic fees (Orange Money, M-Pesa, Airtel Money, Afrimoney, Illico Cash) to reduce bank queues and fight fraudulent receipts.",
+        "ShuleOS / Digni Digital LLC: Kinshasa office at Immeuble Crown Towers, Sur Batetela, Floor 15, Office 1502; support Monday–Friday, 8:00–18:00 WAT."
+      ],
+      "ctaPrimary": "Stop the leaks",
+      "ctaSecondary": "See what it's costing you",
+      "ctaTertiary": "Fix it before the next rentrée",
+      "relatedLabel": "Explore related modules",
+      "relatedFinance": "Finance",
+      "relatedAcademic": "Academic",
+      "relatedPortals": "Parent & student portals"
+    },
     "every-way-shuleos-stops-the-leaks": {
       "title": "Every way ShuleOS stops what your school is already losing",
       "excerpt": "Fee leaks, report-card chaos, parents missing balances, grades, and absences, offline attendance gaps — and what plugs each one for DRC schools.",

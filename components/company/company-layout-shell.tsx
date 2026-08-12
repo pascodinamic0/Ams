@@ -88,10 +88,12 @@ export function CompanyLayoutShell({
     <div className="marketing-surface min-h-screen selection:bg-amber-500 selection:text-black">
       <header
         className={cn(
-          "fixed inset-x-0 top-0 z-50 transition-all duration-500",
+          "fixed inset-x-0 top-0 z-50",
+          "transition-[background-color,padding,backdrop-filter] duration-500",
           "px-4 pt-[calc(env(safe-area-inset-top)+0.75rem)] md:px-6 md:pt-0 lg:px-8",
+          "md:border-b md:border-transparent",
           solidHeader
-            ? "pb-3 md:border-b md:border-mkt-ink/10 md:bg-mkt-header md:py-4 md:backdrop-blur-xl lg:py-5"
+            ? "pb-3 md:bg-mkt-header md:py-4 md:backdrop-blur-xl lg:py-5"
             : "pb-3 md:bg-transparent md:py-5 lg:py-6"
         )}
       >
