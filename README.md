@@ -52,7 +52,19 @@ Required for local development:
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only key (seed scripts, webhooks, cron) |
 | `DATABASE_URL` | Postgres connection string for migrations |
 
-See `.env.example` for optional variables (Twilio/WhatsApp, Sentry, payment webhooks, cron secret, Web Push VAPID keys).
+See `.env.example` for optional variables (Resend, Twilio/WhatsApp, Sentry, payment webhooks, cron secret, Web Push VAPID keys).
+
+### Email (Resend)
+
+Transactional product emails (admission approved, fee reminders) use the Resend SDK (`lib/services/email.ts`).
+
+1. Add to `.env.local` (and Vercel):
+   - `RESEND_API_KEY=re_...`
+   - `RESEND_FROM=ShuleOS <noreply@your-verified-domain.com>` (optional; defaults to Resend’s test sender)
+2. Verify your domain at [resend.com/domains](https://resend.com/domains).
+3. For **auth** emails (invites, signup confirmation, password reset), keep using Supabase Auth but route delivery through Resend:
+   - Easiest: [Resend → Integrations → Connect to Supabase](https://resend.com/docs/knowledge-base/getting-started-with-resend-and-supabase)
+   - Or manually: Supabase → **Authentication → Email → SMTP Settings** with host `smtp.resend.com`, port `465`, user `resend`, password = your Resend API key ([SMTP guide](https://resend.com/docs/send-with-supabase-smtp))
 
 ### 3. Run database migrations
 
@@ -142,7 +154,7 @@ AMS uses Supabase project **AMC** (`ooheotsnplfrpgblrnot`).
 
 | Path | Schedule | Purpose |
 |------|----------|---------|
-| `/api/cron/fee-reminders` | `0 6 * * *` (06:00 UTC daily) | WhatsApp fee reminders |
+| `/api/cron/fee-reminders` | `0 6 * * *` (06:00 UTC daily) | WhatsApp + email fee reminders |
 | `/api/cron/class-reminders` | `*/5 * * * *` (every 5 min) | Teacher class-time push alarms |
 
 Set `CRON_SECRET` in Vercel env vars; invocations must send `Authorization: Bearer <CRON_SECRET>`. Class reminders also need VAPID keys (`NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`) — generate with `npx web-push generate-vapid-keys`.

@@ -1,26 +1,11 @@
 import Link from "next/link";
-import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getExpenses, getExpenseCategories, getSchoolCurrencyForSchool } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
 import { formatMoney } from "@/lib/currency";
 import { ExpenseForm } from "./expense-form";
-import { ExpenseActions } from "./expense-actions";
-
-function StatusBadge({ status }: { status: string }) {
-  const styles =
-    status === "approved"
-      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-      : status === "rejected"
-        ? "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300"
-        : "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300";
-  return (
-    <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${styles}`}>
-      {status}
-    </span>
-  );
-}
+import { ExpensesTable } from "./expenses-table";
 
 export default async function ExpensesPage({
   searchParams,
@@ -58,26 +43,20 @@ export default async function ExpensesPage({
     .filter((e) => e.status === "approved")
     .reduce((sum, e) => sum + e.amount, 0);
   const pendingCount = expenses.filter((e) => e.status === "pending").length;
-  const tableData = expenses.map((row) => ({
-    ...row,
-    amount: formatCurrency(row.amount),
-    status: <StatusBadge status={row.status} />,
-    receipt_number: row.receipt_number ?? "—",
-    actions: (
-      <ExpenseActions
-        id={row.id as string}
-        status={row.status}
-        receiptNumber={row.receipt_number}
-      />
-    ),
-  }));
 
   const statusLinks = [
-    { key: undefined, label: t("allStatuses") },
+    { key: undefined, label: tc("all") },
     { key: "pending", label: t("statusPending") },
     { key: "approved", label: t("statusApproved") },
     { key: "rejected", label: t("statusRejected") },
   ] as const;
+
+  const segmentClass = (active: boolean) =>
+    `rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+      active
+        ? "bg-white text-stone-900 shadow-sm dark:bg-stone-700 dark:text-white"
+        : "text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200"
+    }`;
 
   return (
     <div className="space-y-6">
@@ -121,45 +100,74 @@ export default async function ExpensesPage({
         <p className="text-sm text-stone-500">{t("assignBranchExpenses")}</p>
       )}
 
-      <div className="flex flex-wrap gap-2">
-        {statusLinks.map((link) => {
-          const href = link.key
-            ? `/finance/expenses?status=${link.key}${params.category ? `&category=${encodeURIComponent(params.category)}` : ""}`
-            : `/finance/expenses${params.category ? `?category=${encodeURIComponent(params.category)}` : ""}`;
-          const active = statusFilter === link.key || (!statusFilter && !link.key);
-          return (
-            <Link
-              key={link.label}
-              href={href}
-              className={`rounded-full px-3 py-1 text-sm ${active ? "bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900" : "border hover:bg-stone-50 dark:hover:bg-stone-900"}`}
-            >
-              {link.label}
-            </Link>
-          );
-        })}
-      </div>
+      <div className="flex flex-col gap-3 rounded-xl border border-stone-200 bg-white p-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5 sm:gap-y-3 dark:border-stone-700 dark:bg-stone-900">
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="shrink-0 text-xs font-medium uppercase tracking-wide text-stone-500">
+            {tc("status")}
+          </span>
+          <div
+            className="inline-flex flex-wrap gap-0.5 rounded-lg bg-stone-100 p-0.5 dark:bg-stone-800"
+            role="group"
+            aria-label={tc("status")}
+          >
+            {statusLinks.map((link) => {
+              const href = link.key
+                ? `/finance/expenses?status=${link.key}${params.category ? `&category=${encodeURIComponent(params.category)}` : ""}`
+                : `/finance/expenses${params.category ? `?category=${encodeURIComponent(params.category)}` : ""}`;
+              const active = statusFilter === link.key || (!statusFilter && !link.key);
+              return (
+                <Link
+                  key={link.label}
+                  href={href}
+                  className={segmentClass(active)}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
 
-      <div className="flex flex-wrap gap-2">
-        <Link
-          href={`/finance/expenses${statusFilter ? `?status=${statusFilter}` : ""}`}
-          className={`rounded-full px-3 py-1 text-sm ${!params.category ? "bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900" : "border hover:bg-stone-50 dark:hover:bg-stone-900"}`}
-        >
-          {t("allCategories")}
-        </Link>
-        {categories.map((category) => {
-          const href = statusFilter
-            ? `/finance/expenses?status=${statusFilter}&category=${encodeURIComponent(category)}`
-            : `/finance/expenses?category=${encodeURIComponent(category)}`;
-          return (
+        <div
+          className="hidden h-8 w-px shrink-0 bg-stone-200 sm:block dark:bg-stone-700"
+          aria-hidden
+        />
+
+        <div className="flex min-w-0 flex-wrap items-center gap-2">
+          <span className="shrink-0 text-xs font-medium uppercase tracking-wide text-stone-500">
+            {t("colCategory")}
+          </span>
+          <div
+            className="inline-flex flex-wrap gap-0.5 rounded-lg bg-stone-100 p-0.5 dark:bg-stone-800"
+            role="group"
+            aria-label={t("colCategory")}
+          >
             <Link
-              key={category}
-              href={href}
-              className={`rounded-full px-3 py-1 text-sm ${params.category === category ? "bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900" : "border hover:bg-stone-50 dark:hover:bg-stone-900"}`}
+              href={`/finance/expenses${statusFilter ? `?status=${statusFilter}` : ""}`}
+              className={segmentClass(!params.category)}
+              aria-current={!params.category ? "page" : undefined}
             >
-              {category}
+              {tc("all")}
             </Link>
-          );
-        })}
+            {categories.map((category) => {
+              const href = statusFilter
+                ? `/finance/expenses?status=${statusFilter}&category=${encodeURIComponent(category)}`
+                : `/finance/expenses?category=${encodeURIComponent(category)}`;
+              const active = params.category === category;
+              return (
+                <Link
+                  key={category}
+                  href={href}
+                  className={segmentClass(active)}
+                  aria-current={active ? "page" : undefined}
+                >
+                  {category}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {expenses.length === 0 ? (
@@ -168,19 +176,7 @@ export default async function ExpensesPage({
           description={t("noExpensesDesc")}
         />
       ) : (
-        <DataTable
-          data={tableData}
-          columns={[
-            { id: "date", header: tc("date"), accessorKey: "date", sortable: true },
-            { id: "category", header: t("colCategory"), accessorKey: "category", sortable: true },
-            { id: "amount", header: tc("amount"), accessorKey: "amount", sortable: true },
-            { id: "status", header: tc("status"), accessorKey: "status" },
-            { id: "receipt_number", header: t("colReceipt"), accessorKey: "receipt_number" },
-            { id: "description", header: tc("description"), accessorKey: "description" },
-            { id: "branch_name", header: t("colBranch"), accessorKey: "branch_name" },
-            { id: "actions", header: "", accessorKey: "actions" },
-          ]}
-        />
+        <ExpensesTable expenses={expenses} currencyCode={currency.code} />
       )}
     </div>
   );

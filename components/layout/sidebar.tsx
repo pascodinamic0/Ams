@@ -69,6 +69,7 @@ type NavLabels = {
   reportCards: string;
   feeStructure: string;
   invoices: string;
+  outstandingFees: string;
   payments: string;
   payroll: string;
   expenses: string;
@@ -218,6 +219,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.curriculum },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.fees },
+    { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.fees },
     { href: "/finance/payments", labelKey: "payments", icon: icon.finance },
     { href: "/finance/payroll", labelKey: "payroll", icon: icon.staff },
     { href: "/finance/expenses", labelKey: "expenses", icon: icon.finance },
@@ -230,6 +232,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   cashier: [
     { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.fees },
+    { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.fees },
     { href: "/finance/payments", labelKey: "payments", icon: icon.finance },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
@@ -238,6 +241,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.curriculum },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.fees },
+    { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.fees },
     { href: "/finance/payments", labelKey: "payments", icon: icon.finance },
     { href: "/finance/payroll", labelKey: "payroll", icon: icon.staff },
     { href: "/finance/expenses", labelKey: "expenses", icon: icon.finance },

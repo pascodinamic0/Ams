@@ -163,6 +163,7 @@ export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
   cashier: [
     exact("/finance"),
     tree("/finance/invoices"),
+    tree("/finance/outstanding"),
     tree("/finance/payments"),
   ],
   accountant: [tree("/finance")],

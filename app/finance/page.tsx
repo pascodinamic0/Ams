@@ -72,6 +72,7 @@ export default async function FinanceDashboard() {
           label: t("outstandingBalances"),
           value: formatCurrency(kpis.outstanding),
           hint: t("outstandingSub"),
+          href: "/finance/outstanding",
         },
       ]
     : [
@@ -84,6 +85,7 @@ export default async function FinanceDashboard() {
           label: t("outstandingSchoolFees"),
           value: formatCurrency(kpis.outstanding),
           hint: t("unpaidBalance"),
+          href: "/finance/outstanding",
         },
         {
           label: t("payrollRequired"),
@@ -120,17 +122,31 @@ export default async function FinanceDashboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {metrics.map((metric) => (
-          <Card key={metric.label}>
-            <CardHeader>
-              <CardTitle>{metric.label}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-3xl font-bold">{metric.value}</p>
-              <p className="text-sm text-stone-500">{metric.hint}</p>
-            </CardContent>
-          </Card>
-        ))}
+        {metrics.map((metric) => {
+          const card = (
+            <Card>
+              <CardHeader>
+                <CardTitle>{metric.label}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{metric.value}</p>
+                <p className="text-sm text-stone-500">{metric.hint}</p>
+              </CardContent>
+            </Card>
+          );
+          if ("href" in metric && metric.href) {
+            return (
+              <Link
+                key={metric.label}
+                href={metric.href}
+                className="rounded-xl transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400"
+              >
+                {card}
+              </Link>
+            );
+          }
+          return <div key={metric.label}>{card}</div>;
+        })}
       </div>
 
       {showBudget ? (

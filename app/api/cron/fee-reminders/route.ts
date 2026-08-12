@@ -8,7 +8,7 @@
  *  1. Finds all fee_reminder_settings records where enabled = true
  *  2. For each school, finds overdue / nearly-due invoices
  *  3. Applies grace period rules
- *  4. Sends the appropriate WhatsApp message to the linked guardian
+ *  4. Sends the appropriate WhatsApp and/or email message to the linked guardian
  *
  * Security: protected by CRON_SECRET header.
  * Add CRON_SECRET=<random-string> to your env and configure your cron caller to send:
@@ -18,6 +18,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendWhatsApp, interpolateTemplate } from "@/lib/services/whatsapp";
+import { isEmailConfigured, sendPlainTextEmail } from "@/lib/services/email";
 import { getSchoolCurrency } from "@/lib/currency";
 import { format, addDays, differenceInDays } from "date-fns";
 import { formatPersonName } from "@/lib/utils";
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
     schools_processed: 0,
     reminders_sent: 0,
     final_warnings_sent: 0,
+    emails_sent: 0,
     errors: 0,
   };
 
@@ -86,7 +88,7 @@ export async function POST(req: NextRequest) {
         students(
           id, first_name, middle_name, last_name, school_id,
           guardian_students(
-            guardians(name, phone)
+            guardians(name, phone, email)
           )
         )
       `)
@@ -104,7 +106,7 @@ export async function POST(req: NextRequest) {
       first_name: string;
       last_name: string;
       guardian_students?: Array<{
-        guardians?: { name: string; phone?: string } | null;
+        guardians?: { name: string; phone?: string; email?: string } | null;
       }>;
     };
 
@@ -126,7 +128,7 @@ export async function POST(req: NextRequest) {
       const guardianLinks = student.guardian_students ?? [];
       for (const link of guardianLinks) {
         const guardian = link.guardians;
-        if (!guardian?.phone) continue;
+        if (!guardian?.phone && !guardian?.email) continue;
 
         const vars = {
           guardian_name: guardian.name,
@@ -168,13 +170,42 @@ export async function POST(req: NextRequest) {
           : setting.morning_message_template;
 
         const message = interpolateTemplate(template, vars);
-        const result = await sendWhatsApp(guardian.phone, message);
+        let delivered = false;
 
-        if (result.success) {
-          if (isFinalWarning) summary.final_warnings_sent++;
-          else summary.reminders_sent++;
-        } else {
-          console.error("WhatsApp send error:", result.error, "to:", guardian.phone);
+        if (guardian.phone) {
+          const result = await sendWhatsApp(guardian.phone, message);
+          if (result.success) {
+            delivered = true;
+            if (isFinalWarning) summary.final_warnings_sent++;
+            else summary.reminders_sent++;
+          } else {
+            console.error("WhatsApp send error:", result.error, "to:", guardian.phone);
+            summary.errors++;
+          }
+        }
+
+        if (guardian.email && isEmailConfigured()) {
+          const emailResult = await sendPlainTextEmail({
+            to: guardian.email,
+            subject: isFinalWarning
+              ? `Final fee notice - ${studentName}`
+              : `Fee reminder - ${studentName}`,
+            body: message,
+            idempotencyKey: `fee-reminder/${invoice.id}/${guardian.email}/${format(today, "yyyy-MM-dd")}`.slice(
+              0,
+              256
+            ),
+          });
+          if (emailResult.success) {
+            delivered = true;
+            summary.emails_sent++;
+          } else {
+            console.error("Fee reminder email error:", emailResult.error, "to:", guardian.email);
+            summary.errors++;
+          }
+        }
+
+        if (!delivered && !guardian.phone && !isEmailConfigured()) {
           summary.errors++;
         }
       }

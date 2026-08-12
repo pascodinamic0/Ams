@@ -151,8 +151,10 @@ export {
   getInvoicesForGuardian,
   getInvoicesForStudent,
   getOpenInvoices,
+  groupOutstandingByStudent,
   getFinanceKPIs,
   type InvoiceListItem,
+  type OutstandingStudentGroup,
   type FinanceKPIs,
 } from "./invoices";
 export {

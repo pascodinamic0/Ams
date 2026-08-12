@@ -75,6 +75,7 @@ export async function recordPayment(input: PaymentFormData) {
   revalidatePath("/finance/payments");
   revalidatePath("/notifications");
   revalidatePath("/finance/invoices");
+  revalidatePath("/finance/outstanding");
   revalidatePath("/finance");
   revalidatePath("/parent/fees");
   return { data: { status: newStatus, amount_paid: newAmountPaid } };

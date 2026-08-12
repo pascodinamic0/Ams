@@ -14,6 +14,7 @@ function deriveInvoiceStatus(amount: number, amountPaid: number, dueDate: string
 
 function revalidateInvoicePaths() {
   revalidatePath("/finance/invoices");
+  revalidatePath("/finance/outstanding");
   revalidatePath("/finance");
   revalidatePath("/finance/payments");
   revalidatePath("/parent/fees");

@@ -10,6 +10,7 @@ import {
 } from "@/lib/validations/academic";
 import { revalidateSchoolWebsiteBySchoolId } from "@/lib/schools/revalidate-website";
 import { createNotification } from "@/lib/services/notifications";
+import { sendAdmissionApprovedEmail } from "@/lib/services/email";
 import { splitPersonName } from "@/lib/utils";
 import { createStudentWithGuardians } from "./student-onboarding";
 
@@ -55,15 +56,31 @@ export async function submitOnlineEnrollment(schoolId: string, input: OnlineEnro
 async function notifyAdmissionApproved(
   schoolId: string,
   guardianEmail: string,
-  studentName: string
+  studentName: string,
+  applicationId: string
 ) {
   const supabase = await createClient();
-  const { data: guardian } = await supabase
-    .from("guardians")
-    .select("auth_user_id")
-    .eq("school_id", schoolId)
-    .eq("email", guardianEmail)
-    .maybeSingle();
+  const [{ data: guardian }, { data: school }] = await Promise.all([
+    supabase
+      .from("guardians")
+      .select("auth_user_id")
+      .eq("school_id", schoolId)
+      .eq("email", guardianEmail)
+      .maybeSingle(),
+    supabase.from("schools").select("name").eq("id", schoolId).maybeSingle(),
+  ]);
+
+  if (guardianEmail) {
+    const emailResult = await sendAdmissionApprovedEmail({
+      to: guardianEmail,
+      studentName,
+      schoolName: school?.name,
+      applicationId,
+    });
+    if (!emailResult.success) {
+      console.error("Admission approved email failed:", emailResult.error);
+    }
+  }
 
   if (!guardian?.auth_user_id) return;
 
@@ -83,12 +100,17 @@ export async function updateAdmissionStatus(
   if (status === "approved") {
     const { data: app } = await supabase
       .from("admission_applications")
-      .select("school_id, guardian_email, student_name")
+      .select("id, school_id, guardian_email, student_name")
       .eq("id", id)
       .single();
 
     if (app) {
-      await notifyAdmissionApproved(app.school_id, app.guardian_email, app.student_name);
+      await notifyAdmissionApproved(
+        app.school_id,
+        app.guardian_email,
+        app.student_name,
+        app.id
+      );
     }
   }
 

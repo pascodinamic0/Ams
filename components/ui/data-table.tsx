@@ -27,6 +27,9 @@ function getCellValue<T>(row: T, accessor: keyof T): ReactNode {
   const value = row[accessor];
   if (value === null || value === undefined) return "—";
   if (isValidElement(value)) return value;
+  // Avoid "[object Object]" when a non-element object slips through (e.g. RSC
+  // serialization of Client Components embedded in Server Component table data).
+  if (typeof value === "object") return "—";
   return String(value);
 }
 

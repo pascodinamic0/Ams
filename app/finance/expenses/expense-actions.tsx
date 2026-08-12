@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { DeleteExpenseButton } from "./delete-button";
 
 export function ExpenseActions({
@@ -12,6 +13,9 @@ export function ExpenseActions({
   status: "pending" | "approved" | "rejected";
   receiptNumber?: string | null;
 }) {
+  const t = useTranslations("finance");
+  const tc = useTranslations("common");
+
   return (
     <div className="flex flex-wrap gap-1">
       {status === "approved" && receiptNumber ? (
@@ -19,7 +23,7 @@ export function ExpenseActions({
           href={`/finance/expenses/${id}/receipt`}
           className="inline-flex h-8 items-center rounded-md px-3 text-sm hover:bg-stone-100 dark:hover:bg-stone-800"
         >
-          Receipt
+          {t("colReceipt")}
         </Link>
       ) : null}
       {status !== "approved" ? (
@@ -28,7 +32,7 @@ export function ExpenseActions({
             href={`/finance/expenses?edit=${id}`}
             className="inline-flex h-8 items-center rounded-md px-3 text-sm hover:bg-stone-100 dark:hover:bg-stone-800"
           >
-            Edit
+            {tc("edit")}
           </Link>
           <DeleteExpenseButton id={id} />
         </>

@@ -135,6 +135,7 @@ const WORKSPACES: Partial<Record<UserRole, RoleWorkspace>> = {
     focusQuestion: "Who still needs to pay today?",
     quickActions: [
       { href: "/finance/payments", label: "Record payment" },
+      { href: "/finance/outstanding", label: "Unpaid list", variant: "ghost" },
       { href: "/finance/invoices", label: "Find invoice", variant: "ghost" },
     ],
     metricHints: ["collected", "outstanding"],
@@ -161,6 +162,7 @@ const WORKSPACES: Partial<Record<UserRole, RoleWorkspace>> = {
     focusQuestion: "What finance work is unfinished?",
     quickActions: [
       { href: "/finance/budget", label: "Yearly budget" },
+      { href: "/finance/outstanding", label: "Outstanding fees", variant: "ghost" },
       { href: "/finance/payments", label: "Record payment", variant: "ghost" },
       { href: "/finance/invoices", label: "Create invoice", variant: "ghost" },
       { href: "/finance/reports", label: "Reports", variant: "outline" },

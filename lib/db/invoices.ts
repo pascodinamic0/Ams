@@ -6,6 +6,7 @@ export type InvoiceListItem = {
   student_uuid: string;
   student_id: string;
   student_name: string;
+  class_name: string | null;
   amount: number;
   amount_paid: number;
   balance: number;
@@ -14,6 +15,15 @@ export type InvoiceListItem = {
   description: string | null;
   fee_structure_id: string | null;
   fee_structure_name: string | null;
+};
+
+export type OutstandingStudentGroup = {
+  student_uuid: string;
+  student_id: string;
+  student_name: string;
+  class_name: string | null;
+  total_balance: number;
+  invoices: InvoiceListItem[];
 };
 
 export type FinanceKPIs = {
@@ -44,6 +54,7 @@ function mapInvoiceRow(inv: {
     last_name?: string;
     school_id?: string;
     branch_id?: string;
+    classes?: { name?: string } | null;
   } | null;
   fee_structures?: { name?: string } | null;
 }): InvoiceListItem & { school_id?: string; branch_id?: string } {
@@ -55,6 +66,7 @@ function mapInvoiceRow(inv: {
     student_uuid: s?.id ?? "",
     student_id: s?.student_id ?? "",
     student_name: s ? formatPersonName(s) : "—",
+    class_name: s?.classes?.name ?? null,
     amount,
     amount_paid: amountPaid,
     balance: Math.max(0, amount - amountPaid),
@@ -92,7 +104,8 @@ export async function getInvoices(options?: {
         middle_name,
         last_name,
         school_id,
-        branch_id
+        branch_id,
+        classes(name)
       ),
       fee_structures(name)
     `)
@@ -139,7 +152,7 @@ export async function getInvoiceById(id: string) {
     .from("fee_invoices")
     .select(`
       *,
-      students(id, student_id, first_name, middle_name, last_name, school_id, branch_id),
+      students(id, student_id, first_name, middle_name, last_name, school_id, branch_id, classes(name)),
       fee_structures(name)
     `)
     .eq("id", id)
@@ -179,7 +192,8 @@ export async function getInvoicesForGuardian(
         middle_name,
         last_name,
         school_id,
-        branch_id
+        branch_id,
+        classes(name)
       ),
       fee_structures(name)
     `)
@@ -221,7 +235,8 @@ export async function getInvoicesForStudent(
         middle_name,
         last_name,
         school_id,
-        branch_id
+        branch_id,
+        classes(name)
       ),
       fee_structures(name)
     `)
@@ -244,9 +259,57 @@ export async function getInvoicesForStudent(
 export async function getOpenInvoices(options?: {
   schoolId?: string;
   branchId?: string;
+  search?: string;
+  className?: string;
+  overdueOnly?: boolean;
 }): Promise<InvoiceListItem[]> {
-  const invoices = await getInvoices(options);
-  return invoices.filter((inv) => inv.balance > 0);
+  const invoices = await getInvoices({
+    schoolId: options?.schoolId,
+    branchId: options?.branchId,
+    search: options?.search,
+  });
+
+  const today = new Date(new Date().toDateString());
+
+  return invoices.filter((inv) => {
+    if (inv.balance <= 0) return false;
+    if (options?.className && inv.class_name !== options.className) return false;
+    if (options?.overdueOnly) {
+      const overdue =
+        inv.status === "overdue" ||
+        (inv.status === "pending" && new Date(inv.due_date) < today);
+      if (!overdue) return false;
+    }
+    return true;
+  });
+}
+
+export function groupOutstandingByStudent(
+  invoices: InvoiceListItem[]
+): OutstandingStudentGroup[] {
+  const map = new Map<string, OutstandingStudentGroup>();
+
+  for (const inv of invoices) {
+    const key = inv.student_uuid || inv.student_id || inv.id;
+    const existing = map.get(key);
+    if (existing) {
+      existing.invoices.push(inv);
+      existing.total_balance += inv.balance;
+      continue;
+    }
+    map.set(key, {
+      student_uuid: inv.student_uuid,
+      student_id: inv.student_id,
+      student_name: inv.student_name,
+      class_name: inv.class_name,
+      total_balance: inv.balance,
+      invoices: [inv],
+    });
+  }
+
+  return Array.from(map.values()).sort((a, b) =>
+    a.student_name.localeCompare(b.student_name)
+  );
 }
 
 export async function getFinanceKPIs(options?: {
