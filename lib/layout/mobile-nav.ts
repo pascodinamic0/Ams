@@ -1,11 +1,13 @@
 import type { LucideIcon } from "lucide-react";
 import {
   CheckCircle,
+  CircleDollarSign,
   ClipboardList,
-  DollarSign,
+  FileText,
   GraduationCap,
   Home,
   MessageSquare,
+  TrendingUp,
 } from "lucide-react";
 import { isNavItemActive } from "@/lib/layout/nav-active";
 
@@ -62,17 +64,17 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   finance_officer: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/finance/budget", labelKey: "budget", icon: ClipboardList },
-    { id: "tab3", href: "/finance/invoices", labelKey: "invoices", icon: DollarSign },
+    { id: "tab3", href: "/finance/invoices", labelKey: "invoices", icon: FileText },
   ],
   cashier: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
-    { id: "tab2", href: "/finance/invoices", labelKey: "invoices", icon: DollarSign },
+    { id: "tab2", href: "/finance/invoices", labelKey: "invoices", icon: FileText },
     { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   accountant: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
     { id: "tab2", href: "/finance/budget", labelKey: "budget", icon: ClipboardList },
-    { id: "tab3", href: "/finance/reports", labelKey: "reports", icon: DollarSign },
+    { id: "tab3", href: "/finance/reports", labelKey: "reports", icon: TrendingUp },
   ],
   operations_manager: [
     { id: "home", href: "/operations", labelKey: "dashboard", icon: Home },
@@ -96,12 +98,12 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   ],
   pedagogical_council_member: [
     { id: "home", href: "/academic", labelKey: "dashboard", icon: Home },
-    { id: "tab2", href: "/analytics", labelKey: "reports", icon: DollarSign },
+    { id: "tab2", href: "/analytics", labelKey: "reports", icon: TrendingUp },
     { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   parent: [
     { id: "home", href: "/parent", labelKey: "dashboard", icon: Home },
-    { id: "tab2", href: "/parent/fees", labelKey: "fees", icon: DollarSign },
+    { id: "tab2", href: "/parent/fees", labelKey: "fees", icon: CircleDollarSign },
     { id: "tab3", href: "/messages", labelKey: "messages", icon: MessageSquare },
   ],
   student: [
