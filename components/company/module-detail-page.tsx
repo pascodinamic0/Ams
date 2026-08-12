@@ -88,7 +88,7 @@ export async function ModuleDetailPage({ module }: { module: PlatformModule }) {
           </p>
           <Link
             href="/get-access"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-mkt-inverse-ink transition-transform hover:scale-[1.02]"
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-mkt-inverse px-6 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-mkt-inverse-ink transition-transform hover:scale-[1.02]"
           >
             Get access
             <ArrowRight className="h-3.5 w-3.5" />
