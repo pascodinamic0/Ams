@@ -95,23 +95,29 @@ export function SiteFooter({
             <p className="text-sm leading-relaxed text-mkt-ink/50">
               {companyIdentity.tagline} — {labels.taglineSuffix} {companyIdentity.origin}.
             </p>
-            <div className="space-y-3 text-sm text-mkt-ink/60">
-              <p className="flex items-start gap-2">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
-                <span>{companyIdentity.office.addressFormatted}</span>
+            <div className="space-y-4 text-sm text-mkt-ink/60">
+              <p className="flex items-start gap-3">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden />
+                <span className="leading-relaxed">
+                  {companyIdentity.office.addressLines.map((line) => (
+                    <span key={line} className="block">
+                      {line}
+                    </span>
+                  ))}
+                </span>
               </p>
               <a
                 href={`mailto:${companyIdentity.contact.email}`}
-                className="inline-flex items-center gap-2 font-medium transition-colors hover:text-mkt-ink"
+                className="flex items-center gap-3 font-medium transition-colors hover:text-mkt-ink"
               >
-                <Mail className="h-4 w-4 shrink-0" />
+                <Mail className="h-4 w-4 shrink-0 text-amber-500" aria-hidden />
                 <span className="break-all">{companyIdentity.contact.email}</span>
               </a>
               <a
                 href={`tel:${companyIdentity.contact.phone}`}
-                className="inline-flex items-center gap-2 font-medium transition-colors hover:text-mkt-ink"
+                className="flex items-center gap-3 font-medium transition-colors hover:text-mkt-ink"
               >
-                <Phone className="h-4 w-4 shrink-0" />
+                <Phone className="h-4 w-4 shrink-0 text-amber-500" aria-hidden />
                 {companyIdentity.contact.phoneDisplay}
               </a>
             </div>
