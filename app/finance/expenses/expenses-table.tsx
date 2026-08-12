@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { DataTable } from "@/components/ui/data-table";
 import { formatMoney, type SchoolCurrencyCode } from "@/lib/currency";
@@ -45,7 +46,18 @@ export function ExpensesTable({
     category: row.category,
     amount: formatMoney(row.amount, currencyCode),
     status: <StatusBadge status={row.status} />,
-    receipt_number: row.receipt_number ?? empty,
+    receipt_number:
+      row.status === "approved" && row.receipt_number ? (
+        <Link
+          href={`/finance/expenses/${row.id}/receipt?download=1`}
+          className="font-medium text-zinc-900 underline underline-offset-2 hover:text-zinc-700 dark:text-zinc-100 dark:hover:text-zinc-300"
+          title={t("downloadReceipt")}
+        >
+          {row.receipt_number}
+        </Link>
+      ) : (
+        row.receipt_number ?? empty
+      ),
     description: row.description ?? empty,
     actions: (
       <ExpenseActions

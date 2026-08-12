@@ -19,7 +19,9 @@
 /public/sw.js
 /public/sw.js.map
 /public/swe-worker-*.js
+/public/swe-worker-*.js.map
 /public/workbox-*.js
+/public/bun.lock.html
 
 # production
 /build

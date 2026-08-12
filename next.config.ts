@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["import-in-the-middle", "@sentry/nextjs"],
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "date-fns", "framer-motion"],
+    // Never reuse soft-navigated RSC payloads — always refetch page data.
+    staleTimes: {
+      dynamic: 0,
+      static: 0,
+    },
   },
 };
 
@@ -27,7 +32,8 @@ function withOptionalSerwist(config: NextConfig): NextConfig {
   const withSerwist = withSerwistInit({
     swSrc: "app/sw.ts",
     swDest: "public/sw.js",
-    cacheOnNavigation: true,
+    // Prefer network for navigations so PWA users see fresh server data.
+    cacheOnNavigation: false,
     reloadOnOnline: true,
     disable: false,
   });

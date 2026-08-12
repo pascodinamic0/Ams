@@ -133,6 +133,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/*
+ * Tailwind .sr-only uses position:absolute without inset.
+ * Its static position deep in tall pages extends document scrollHeight,
+ * which reveals a blank body strip below the AppShell. Pin to the
+ * containing-block origin so screen-reader text stays clipped without
+ * growing the page.
+ */
+.sr-only {
+  top: 0;
+  left: 0;
+}
+
 .font-display {
   font-family: var(--font-jakarta-sans), system-ui, sans-serif;
   font-weight: 800;

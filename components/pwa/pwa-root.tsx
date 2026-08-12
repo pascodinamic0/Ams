@@ -8,6 +8,7 @@ import {
   getPendingAttendanceSaves,
   removePendingAttendanceSave,
 } from "@/lib/pwa/attendance-offline";
+import { AutoRefreshProvider } from "@/components/layout/auto-refresh-provider";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 import { MobileSplashScreen } from "@/components/pwa/mobile-splash-screen";
 import { OfflineBanner } from "@/components/pwa/offline-banner";
@@ -93,6 +94,7 @@ export function PwaRoot({ children }: { children: React.ReactNode }) {
 
   return (
     <SerwistProvider>
+      <AutoRefreshProvider />
       <MobileSplashScreen />
       {children}
       <OfflineBanner />

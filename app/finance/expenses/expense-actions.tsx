@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DeleteExpenseButton } from "./delete-button";
 
@@ -20,10 +21,11 @@ export function ExpenseActions({
     <div className="flex flex-wrap gap-1">
       {status === "approved" && receiptNumber ? (
         <Link
-          href={`/finance/expenses/${id}/receipt`}
-          className="inline-flex h-8 items-center rounded-md px-3 text-sm hover:bg-stone-100 dark:hover:bg-stone-800"
+          href={`/finance/expenses/${id}/receipt?download=1`}
+          className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-sm hover:bg-stone-100 dark:hover:bg-stone-800"
         >
-          {t("colReceipt")}
+          <Download className="h-3.5 w-3.5" />
+          {t("downloadReceipt")}
         </Link>
       ) : null}
       {status !== "approved" ? (

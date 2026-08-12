@@ -15,10 +15,13 @@ function schoolInitials(name: string | null | undefined) {
 
 export default async function ExpenseReceiptPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ download?: string }>;
 }) {
   const { id } = await params;
+  const { download } = await searchParams;
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
 
@@ -51,6 +54,7 @@ export default async function ExpenseReceiptPage({
     ? receipt.approved_at.slice(0, 10)
     : receipt.date;
   const schoolName = receipt.school_name ?? t("expensesTitle");
+  const autoPrint = download === "1" || download === "true";
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 py-6">
@@ -61,7 +65,10 @@ export default async function ExpenseReceiptPage({
         >
           {t("backToExpenses")}
         </Link>
-        <PrintReceiptButton label={t("printReceipt")} />
+        <PrintReceiptButton
+          label={t("downloadReceipt")}
+          autoPrint={autoPrint}
+        />
       </div>
 
       <article className="expense-receipt rounded-xl border border-stone-200 bg-white p-8 text-stone-900 shadow-sm dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100">
