@@ -125,6 +125,40 @@ export async function updateSchoolTaskStatus(
   return {};
 }
 
+export async function deleteSchoolTask(id: string) {
+  const auth = await requireSchoolProfile();
+  if ("error" in auth) return auth;
+
+  const { data: task } = await auth.supabase
+    .from("school_tasks")
+    .select("id, related_type, status")
+    .eq("id", id)
+    .eq("school_id", auth.profile.school_id)
+    .maybeSingle();
+
+  if (!task) return { error: "Task not found" };
+
+  // Pending expense approvals must be decided (Approve/Reject), not deleted —
+  // otherwise finance is left with an orphaned pending expense.
+  if (task.related_type === "expense" && task.status !== "done") {
+    return {
+      error: "Reject or approve this expense instead of deleting the task",
+    };
+  }
+
+  const { error } = await auth.supabase
+    .from("school_tasks")
+    .delete()
+    .eq("id", id)
+    .eq("school_id", auth.profile.school_id);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/academic");
+  revalidatePath("/academic/tasks");
+  return {};
+}
+
 export async function createDisciplineIncident(
   input: z.infer<typeof incidentSchema>
 ) {
