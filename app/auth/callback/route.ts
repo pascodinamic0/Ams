@@ -1,26 +1,8 @@
 import { NextResponse } from "next/server";
-import {
-  authErrorRedirectPath,
-  resolveCallbackErrorMessage,
-} from "@/lib/auth/callback-errors";
+import { authErrorRedirectPath } from "@/lib/auth/callback-errors";
+import { getAuthRedirectOrigin } from "@/lib/auth/app-url";
 import { getPostAuthRedirect } from "@/lib/auth/post-auth-redirect";
 import { createRouteHandlerClient } from "@/lib/supabase/route-handler";
-
-function resolveRedirectOrigin(request: Request): string {
-  const { origin } = new URL(request.url);
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const forwardedProto = request.headers.get("x-forwarded-proto") ?? "https";
-
-  if (process.env.NODE_ENV === "development") {
-    return origin;
-  }
-
-  if (forwardedHost) {
-    return `${forwardedProto}://${forwardedHost}`;
-  }
-
-  return origin;
-}
 
 function redirectWithCookies(
   from: NextResponse,
@@ -36,23 +18,26 @@ function redirectWithCookies(
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const tokenHash = requestUrl.searchParams.get("token_hash");
   const intent = requestUrl.searchParams.get("intent");
   const redirect = requestUrl.searchParams.get("redirect");
-  const origin = resolveRedirectOrigin(request);
+  const origin = getAuthRedirectOrigin(request);
   const errorPath = authErrorRedirectPath(intent);
 
+  if (tokenHash) {
+    const confirm = new URL("/auth/confirm", origin);
+    requestUrl.searchParams.forEach((value, key) => {
+      confirm.searchParams.set(key, value);
+    });
+    return NextResponse.redirect(confirm);
+  }
+
   if (!code) {
-    const message = resolveCallbackErrorMessage(requestUrl.searchParams, {
-      intent,
-    });
-    console.error("auth callback missing code:", {
-      intent,
-      error: requestUrl.searchParams.get("error"),
-      error_description: requestUrl.searchParams.get("error_description"),
-    });
-    return NextResponse.redirect(
-      `${origin}${errorPath}?error=${encodeURIComponent(message)}`
-    );
+    // Implicit invite/recovery tokens live in the URL hash (server never sees them).
+    // Rewrite so the browser keeps the hash instead of dropping it on a login redirect.
+    const hashUrl = new URL(request.url);
+    hashUrl.pathname = "/auth/hash";
+    return NextResponse.rewrite(hashUrl);
   }
 
   const sessionResponse = NextResponse.redirect(`${origin}${errorPath}`);

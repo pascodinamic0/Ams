@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { resolveLoginDestination } from "@/lib/auth/login-redirect";
+import { userMustSetPassword } from "@/lib/auth/password-setup";
 import { shouldNeedStructureSetup } from "@/lib/auth/structure-setup";
 import { hasPaidAccess, type SubscriptionStatus } from "@/lib/billing/types";
 
@@ -25,12 +26,19 @@ export async function getPostAuthRedirect(options: {
   }
 
   const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, school_id, onboarding_completed_at")
+    .select("role, school_id, onboarding_completed_at, password_setup_required")
     .eq("id", options.userId)
     .single();
+
+  if (userMustSetPassword(user) || profile?.password_setup_required) {
+    return "/reset-password";
+  }
 
   const role = profile?.role ?? null;
   const needsSchool =

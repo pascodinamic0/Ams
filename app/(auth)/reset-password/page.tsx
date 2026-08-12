@@ -1,8 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { useFormContext } from "react-hook-form";
@@ -11,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { PasswordStrength } from "@/components/ui/password-strength";
-import { getDashboardForRole } from "@/lib/auth/rbac";
+import { completePasswordSetup } from "@/lib/actions/password-setup";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
@@ -22,9 +21,47 @@ type ResetPasswordFormData = {
 
 export default function ResetPasswordPage() {
   const t = useTranslations("auth");
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [sessionReady, setSessionReady] = useState(false);
+  const [sessionMissing, setSessionMissing] = useState(false);
   const tv = useTranslations("validation");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function ensureSession() {
+      const supabase = createClient();
+      const hash = window.location.hash.replace(/^#/, "");
+      const hashParams = new URLSearchParams(hash);
+      const accessToken = hashParams.get("access_token");
+      const refreshToken = hashParams.get("refresh_token");
+
+      if (accessToken && refreshToken) {
+        await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        window.history.replaceState(null, "", window.location.pathname);
+      }
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (cancelled) return;
+      if (!user) {
+        setSessionMissing(true);
+        setSessionReady(true);
+        return;
+      }
+      setSessionReady(true);
+    }
+
+    void ensureSession();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const resetPasswordSchema = useMemo(
     () =>
@@ -43,38 +80,42 @@ export default function ResetPasswordPage() {
   async function onSubmit(data: ResetPasswordFormData) {
     setLoading(true);
     try {
-      const supabase = createClient();
-      const { error } = await supabase.auth.updateUser({ password: data.password });
-      if (error) throw error;
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      let destination = "/login";
-
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role, onboarding_completed_at")
-          .eq("id", user.id)
-          .single();
-
-        // Invited users set a password first, then finish profile onboarding.
-        if (!profile?.onboarding_completed_at) {
-          destination = "/onboarding";
-        } else {
-          destination = getDashboardForRole(profile?.role);
-        }
-      }
+      const result = await completePasswordSetup(data.password);
+      if (result.error) throw new Error(result.error);
 
       toast.success(t("passwordUpdated"));
-      router.push(destination);
-      router.refresh();
+      window.location.assign(result.data?.destination ?? "/onboarding");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("passwordUpdateFailed"));
     } finally {
       setLoading(false);
     }
+  }
+
+  if (!sessionReady) {
+    return (
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center bg-mkt-canvas px-4 py-8">
+        <div className="h-8 w-48 animate-pulse rounded bg-mkt-ink/10" />
+        <div className="mt-3 h-4 w-full animate-pulse rounded bg-mkt-ink/5" />
+      </div>
+    );
+  }
+
+  if (sessionMissing) {
+    return (
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center bg-mkt-canvas px-4 py-8">
+        <h1 className="font-display text-2xl tracking-tight text-mkt-ink">
+          {t("inviteLinkExpiredTitle")}
+        </h1>
+        <p className="mt-2 text-muted">{t("inviteLinkExpired")}</p>
+        <Link
+          href="/login"
+          className="mt-6 block text-center text-sm text-muted transition-colors hover:text-foreground"
+        >
+          {t("backToLogin")}
+        </Link>
+      </div>
+    );
   }
 
   return (

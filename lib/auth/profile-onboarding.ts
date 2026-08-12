@@ -64,7 +64,10 @@ export async function getProfileOnboardingState(
 export const PROFILE_ONBOARDING_EXEMPT_PATHS = [
   "/onboarding",
   "/register/complete",
+  "/reset-password",
   "/auth/callback",
+  "/auth/confirm",
+  "/auth/hash",
 ];
 
 export function isProfileOnboardingExempt(pathname: string): boolean {
