@@ -25,6 +25,7 @@ import { getHomepageCtaSections, getPlatformModules } from "@/lib/i18n/modules";
 
 export function HomePage() {
   const t = useTranslations("marketing.home");
+  const tCommon = useTranslations("common");
   const tm = useTranslations("modules");
 
   const homepageModuleGrid = getPlatformModules(tm).filter(
@@ -93,7 +94,7 @@ export function HomePage() {
         {/* Vertical social rail — desktop */}
         <aside className="pointer-events-none absolute bottom-10 left-5 z-20 hidden flex-col items-center gap-4 lg:flex xl:left-8">
           <span className="pointer-events-none rotate-180 text-[10px] font-medium uppercase tracking-[0.35em] text-white/50 [writing-mode:vertical-rl]">
-            Follow
+            {tCommon("follow")}
           </span>
           <span className="h-10 w-px bg-white/25" aria-hidden />
           <div className="pointer-events-auto flex flex-col items-center gap-3">

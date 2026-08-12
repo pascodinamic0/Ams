@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { FileUpload } from "@/components/ui/file-upload";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/lib/toast";
@@ -21,6 +22,8 @@ export function SchoolImageUpload({
   value,
   onChange,
 }: SchoolImageUploadProps) {
+  const t = useTranslations("admin");
+
   return (
     <div>
       <Label>{label}</Label>
@@ -32,7 +35,7 @@ export function SchoolImageUpload({
           value={value || undefined}
           onUpload={(url) => {
             onChange(url);
-            toast.success("Image uploaded");
+            toast.success(t("imageUploaded"));
           }}
           onRemove={() => onChange("")}
           onError={(message) => toast.error(message)}

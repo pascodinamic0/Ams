@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,7 +13,7 @@ import { submitOnlineEnrollment } from "@/lib/actions/admissions";
 import type { PublicSchoolEvent } from "@/lib/db/public-events";
 import { toast } from "@/lib/toast";
 
-const STEPS = ["Student", "Family", "Review", "Campus visit"];
+const STEP_KEYS = ["stepStudent", "stepFamily", "stepReview", "stepCampusVisit"] as const;
 
 const emptyPickup = {
   full_name: "",
@@ -20,16 +21,16 @@ const emptyPickup = {
   relationship: "",
 };
 
-const pickupRelationshipOptions = [
-  { value: "uncle", label: "Uncle" },
-  { value: "aunt", label: "Aunt" },
-  { value: "grandparent", label: "Grandparent" },
-  { value: "sibling", label: "Sibling" },
-  { value: "driver", label: "Driver" },
-  { value: "nanny", label: "Nanny / caregiver" },
-  { value: "family_friend", label: "Family friend" },
-  { value: "other", label: "Other" },
-];
+const pickupRelationshipKeys = [
+  { value: "uncle", key: "relUncle" },
+  { value: "aunt", key: "relAunt" },
+  { value: "grandparent", key: "relGrandparent" },
+  { value: "sibling", key: "relSibling" },
+  { value: "driver", key: "relDriver" },
+  { value: "nanny", key: "relNanny" },
+  { value: "family_friend", key: "relFamilyFriend" },
+  { value: "other", key: "relOther" },
+] as const;
 
 export function OnlineEnrollmentForm({
   schoolId,
@@ -48,6 +49,9 @@ export function OnlineEnrollmentForm({
   campusVisitSlots?: PublicSchoolEvent[];
   hideIntro?: boolean;
 }) {
+  const t = useTranslations("schools.enrollment");
+  const tf = useTranslations("schools.forms");
+  const tc = useTranslations("common");
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [referenceId, setReferenceId] = useState<string | null>(null);
@@ -67,7 +71,12 @@ export function OnlineEnrollmentForm({
   });
 
   const hasVisitSlots = campusVisitSlots.length > 0;
-  const visibleSteps = hasVisitSlots ? STEPS : STEPS.slice(0, 3);
+  const visibleSteps = hasVisitSlots ? STEP_KEYS : STEP_KEYS.slice(0, 3);
+
+  function pickupLabel(value: string) {
+    const found = pickupRelationshipKeys.find((opt) => opt.value === value);
+    return found ? t(found.key) : value.replace(/_/g, " ");
+  }
 
   async function handleSubmit() {
     setLoading(true);
@@ -88,8 +97,8 @@ export function OnlineEnrollmentForm({
           ? result.error
           : typeof result.error === "object" && result.error !== null
             ? Object.values(result.error).flat().filter(Boolean)[0] ??
-              "Please check the form and try again"
-            : "Please check the form and try again";
+              t("checkForm")
+            : t("checkForm");
       toast.error(String(message));
       return;
     }
@@ -122,25 +131,24 @@ export function OnlineEnrollmentForm({
   if (referenceId && !hasVisitSlots) {
     return (
       <div className="mx-auto max-w-xl">
-        <h1 className="text-2xl font-bold">Application submitted</h1>
+        <h1 className="text-2xl font-bold">{t("applicationSubmitted")}</h1>
         <p className="mt-2 text-stone-600 dark:text-stone-400">
-          Thank you for starting enrollment at {schoolName}.
+          {t("thankYouEnrollment", { schoolName })}
         </p>
         <div className="mt-6 space-y-4 rounded-2xl border border-primary-200 bg-primary-light p-6 dark:border-primary-900 dark:bg-primary-light/40">
           <p className="text-sm">
-            Reference number: <span className="font-mono font-semibold">{referenceId}</span>
+            {t("referenceNumber")} <span className="font-mono font-semibold">{referenceId}</span>
           </p>
           <p className="text-sm leading-relaxed">
-            Your basic information has been received. To complete enrollment, please visit the school
-            in person with this reference number, a valid ID, and any required documents.
+            {t("basicInfoReceived")}
           </p>
           {schoolAddress && (
             <p className="text-sm">
-              <span className="font-medium">Campus address:</span> {schoolAddress}
+              <span className="font-medium">{t("campusAddress")}</span> {schoolAddress}
             </p>
           )}
           <p className="text-sm text-stone-600 dark:text-stone-400">
-            The admissions team will review your application and may contact you before your visit.
+            {t("admissionsMayContact")}
           </p>
         </div>
         <Link
@@ -148,7 +156,7 @@ export function OnlineEnrollmentForm({
           className="mt-6 inline-block text-sm font-medium hover:underline"
           style={{ color: primary }}
         >
-          Back to school website
+          {t("backToSchoolWebsite")}
         </Link>
       </div>
     );
@@ -158,27 +166,27 @@ export function OnlineEnrollmentForm({
     <div className={hideIntro ? "max-w-xl" : "mx-auto max-w-xl"}>
       {!hideIntro && (
         <>
-          <h1 className="text-2xl font-bold">Online enrollment</h1>
+          <h1 className="text-2xl font-bold">{t("onlineEnrollment")}</h1>
           <p className="mt-2 text-stone-600 dark:text-stone-400">
-            Submit your details online
+            {t("submitDetailsOnline")}
             {hasVisitSlots
-              ? ", then book a campus visit to complete enrollment in person."
-              : `, then visit ${schoolName} to complete enrollment in person.`}
+              ? t("thenBookVisit")
+              : t("thenVisitSchool", { schoolName })}
           </p>
         </>
       )}
 
       <div className={hideIntro ? "flex gap-2" : "mt-6 flex gap-2"}>
-        {visibleSteps.map((label, i) => (
+        {visibleSteps.map((key, i) => (
           <div
-            key={label}
+            key={key}
             className={`flex-1 rounded-lg px-3 py-2 text-center text-xs font-medium ${
               i <= step
                 ? "bg-primary-light text-teal-800 dark:bg-primary-light dark:text-teal-200"
                 : "bg-stone-100 text-stone-500 dark:bg-stone-900"
             }`}
           >
-            {label}
+            {t(key)}
           </div>
         ))}
       </div>
@@ -187,7 +195,7 @@ export function OnlineEnrollmentForm({
         {step === 0 && (
           <>
             <div>
-              <Label>Student full name</Label>
+              <Label>{t("studentFullName")}</Label>
               <Input
                 value={form.student_name}
                 onChange={(e) => setForm((f) => ({ ...f, student_name: e.target.value }))}
@@ -196,7 +204,7 @@ export function OnlineEnrollmentForm({
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label>Date of birth</Label>
+                <Label>{t("dateOfBirth")}</Label>
                 <Input
                   type="date"
                   value={form.dob}
@@ -205,13 +213,13 @@ export function OnlineEnrollmentForm({
                 />
               </div>
               <div>
-                <Label>Gender</Label>
+                <Label>{t("gender")}</Label>
                 <Select
                   options={[
-                    { value: "", label: "Select" },
-                    { value: "male", label: "Male" },
-                    { value: "female", label: "Female" },
-                    { value: "other", label: "Other" },
+                    { value: "", label: t("select") },
+                    { value: "male", label: t("male") },
+                    { value: "female", label: t("female") },
+                    { value: "other", label: t("other") },
                   ]}
                   value={form.gender}
                   onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}
@@ -219,11 +227,11 @@ export function OnlineEnrollmentForm({
               </div>
             </div>
             <div>
-              <Label>Grade or class applying for</Label>
+              <Label>{t("gradeOrClass")}</Label>
               <Input
                 value={form.class_applying}
                 onChange={(e) => setForm((f) => ({ ...f, class_applying: e.target.value }))}
-                placeholder="e.g. Grade 5"
+                placeholder={t("gradePlaceholder")}
                 required
               />
             </div>
@@ -233,7 +241,7 @@ export function OnlineEnrollmentForm({
         {step === 1 && (
           <>
             <div>
-              <Label>Parent or guardian name</Label>
+              <Label>{t("parentOrGuardianName")}</Label>
               <Input
                 value={form.guardian_name}
                 onChange={(e) => setForm((f) => ({ ...f, guardian_name: e.target.value }))}
@@ -242,7 +250,7 @@ export function OnlineEnrollmentForm({
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <Label>Email</Label>
+                <Label>{tc("email")}</Label>
                 <Input
                   type="email"
                   value={form.guardian_email}
@@ -251,7 +259,7 @@ export function OnlineEnrollmentForm({
                 />
               </div>
               <div>
-                <Label>Phone</Label>
+                <Label>{tc("phone")}</Label>
                 <Input
                   type="tel"
                   value={form.guardian_phone}
@@ -261,20 +269,20 @@ export function OnlineEnrollmentForm({
               </div>
             </div>
             <div>
-              <Label>Relation to student</Label>
+              <Label>{t("relationToStudent")}</Label>
               <Select
                 options={[
-                  { value: "father", label: "Father" },
-                  { value: "mother", label: "Mother" },
-                  { value: "guardian", label: "Guardian" },
-                  { value: "other", label: "Other" },
+                  { value: "father", label: t("father") },
+                  { value: "mother", label: t("mother") },
+                  { value: "guardian", label: t("guardian") },
+                  { value: "other", label: t("other") },
                 ]}
                 value={form.relation}
                 onChange={(e) => setForm((f) => ({ ...f, relation: e.target.value }))}
               />
             </div>
             <div>
-              <Label>Home address</Label>
+              <Label>{t("homeAddress")}</Label>
               <Textarea
                 value={form.address}
                 onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
@@ -283,7 +291,7 @@ export function OnlineEnrollmentForm({
               />
             </div>
             <div>
-              <Label>Additional notes (optional)</Label>
+              <Label>{t("additionalNotes")}</Label>
               <Textarea
                 value={form.notes}
                 onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
@@ -293,9 +301,9 @@ export function OnlineEnrollmentForm({
 
             <div className="space-y-3 rounded-xl border border-stone-200 p-4 dark:border-stone-800">
               <div>
-                <p className="text-sm font-medium">Who may pick up from school</p>
+                <p className="text-sm font-medium">{t("whoMayPickup")}</p>
                 <p className="mt-0.5 text-xs text-stone-500">
-                  Gate staff need a named authorized person. Mark the guardian and/or add someone else.
+                  {t("pickupHint")}
                 </p>
               </div>
               <label className="flex items-start gap-2 text-sm">
@@ -308,9 +316,9 @@ export function OnlineEnrollmentForm({
                   }
                 />
                 <span>
-                  This guardian is authorized to pick up the child from school
+                  {t("guardianAuthorizedPickupSchool")}
                   <span className="mt-0.5 block text-xs text-stone-500">
-                    Required to specify even when the guardian will collect the child.
+                    {t("guardianAuthorizedPickupRequired")}
                   </span>
                 </span>
               </label>
@@ -321,7 +329,7 @@ export function OnlineEnrollmentForm({
                   className="space-y-3 rounded-lg border border-stone-200 p-3 dark:border-stone-800"
                 >
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">Authorized person {index + 1}</p>
+                    <p className="text-sm font-medium">{t("authorizedPersonN", { n: index + 1 })}</p>
                     <Button
                       type="button"
                       variant="ghost"
@@ -333,11 +341,11 @@ export function OnlineEnrollmentForm({
                         }))
                       }
                     >
-                      Remove
+                      {tc("remove")}
                     </Button>
                   </div>
                   <div>
-                    <Label>Full name</Label>
+                    <Label>{tf("fullName")}</Label>
                     <Input
                       value={person.full_name}
                       onChange={(e) =>
@@ -353,7 +361,7 @@ export function OnlineEnrollmentForm({
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div>
-                      <Label>Phone</Label>
+                      <Label>{tc("phone")}</Label>
                       <Input
                         type="tel"
                         value={person.phone}
@@ -369,9 +377,12 @@ export function OnlineEnrollmentForm({
                       />
                     </div>
                     <div>
-                      <Label>Relationship</Label>
+                      <Label>{t("relationship")}</Label>
                       <Select
-                        options={pickupRelationshipOptions}
+                        options={pickupRelationshipKeys.map((opt) => ({
+                          value: opt.value,
+                          label: t(opt.key),
+                        }))}
                         value={person.relationship}
                         onChange={(e) =>
                           setForm((f) => ({
@@ -398,7 +409,7 @@ export function OnlineEnrollmentForm({
                   }))
                 }
               >
-                Add another authorized person
+                {t("addAnotherAuthorized")}
               </Button>
             </div>
           </>
@@ -406,23 +417,23 @@ export function OnlineEnrollmentForm({
 
         {step === 2 && (
           <div className="space-y-3 rounded-xl border border-stone-200 p-5 text-sm dark:border-stone-800">
-            <p><span className="font-medium">Student:</span> {form.student_name}</p>
-            <p><span className="font-medium">DOB:</span> {form.dob}</p>
-            <p><span className="font-medium">Class:</span> {form.class_applying}</p>
-            <p><span className="font-medium">Guardian:</span> {form.guardian_name}</p>
-            <p><span className="font-medium">Contact:</span> {form.guardian_email} / {form.guardian_phone}</p>
-            <p><span className="font-medium">Address:</span> {form.address}</p>
+            <p><span className="font-medium">{t("reviewStudent")}</span> {form.student_name}</p>
+            <p><span className="font-medium">{t("reviewDob")}</span> {form.dob}</p>
+            <p><span className="font-medium">{t("reviewClass")}</span> {form.class_applying}</p>
+            <p><span className="font-medium">{t("reviewGuardian")}</span> {form.guardian_name}</p>
+            <p><span className="font-medium">{t("reviewContact")}</span> {form.guardian_email} / {form.guardian_phone}</p>
+            <p><span className="font-medium">{t("reviewAddress")}</span> {form.address}</p>
             <p>
-              <span className="font-medium">Guardian pickup:</span>{" "}
-              {form.guardian_can_pickup ? "Authorized" : "Not authorized"}
+              <span className="font-medium">{t("reviewGuardianPickup")}</span>{" "}
+              {form.guardian_can_pickup ? t("authorized") : t("notAuthorized")}
             </p>
             {form.pickup_persons.length > 0 && (
               <div>
-                <p className="font-medium">Other authorized pickup:</p>
+                <p className="font-medium">{t("otherAuthorizedPickup")}</p>
                 <ul className="mt-1 list-inside list-disc text-stone-600 dark:text-stone-400">
                   {form.pickup_persons.map((p, i) => (
                     <li key={i}>
-                      {p.full_name} · {p.phone} · {p.relationship.replace(/_/g, " ")}
+                      {p.full_name} · {p.phone} · {pickupLabel(p.relationship)}
                     </li>
                   ))}
                 </ul>
@@ -430,8 +441,8 @@ export function OnlineEnrollmentForm({
             )}
             <p className="pt-2 text-stone-600 dark:text-stone-400">
               {hasVisitSlots
-                ? "After submitting, you will book a campus visit slot to complete enrollment in person."
-                : "After submitting, you will receive a reference number and instructions to visit the school to complete enrollment."}
+                ? t("afterSubmitBookVisit")
+                : t("afterSubmitReference")}
             </p>
           </div>
         )}
@@ -444,15 +455,15 @@ export function OnlineEnrollmentForm({
           onClick={() => setStep((s) => Math.max(0, s - 1))}
           disabled={step === 0}
         >
-          Back
+          {tc("back")}
         </Button>
         {step < 2 ? (
           <Button type="button" onClick={() => setStep((s) => s + 1)}>
-            Next
+            {tc("next")}
           </Button>
         ) : (
           <Button type="button" onClick={handleSubmit} disabled={loading} style={{ backgroundColor: primary }}>
-            {loading ? "Submitting..." : hasVisitSlots ? "Submit & book visit" : "Submit application"}
+            {loading ? tf("submitting") : hasVisitSlots ? t("submitAndBookVisit") : tf("submitApplication")}
           </Button>
         )}
       </div>

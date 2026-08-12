@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { buildClassName } from "@/lib/schools/structure-presets";
@@ -14,7 +16,7 @@ async function requireStructureAdmin() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { error: "Not authenticated" as const };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -22,9 +24,9 @@ async function requireStructureAdmin() {
     .eq("id", user.id)
     .single();
 
-  if (!profile?.school_id) return { error: "No school linked to your account" as const };
+  if (!profile?.school_id) return await actionError("noSchoolLinkedShort");
   if (profile.role !== "academic_admin") {
-    return { error: "Only school administrators can set up structure" as const };
+    return await actionError("onlyAdminsStructure");
   }
 
   const { data: school } = await supabase
@@ -33,9 +35,9 @@ async function requireStructureAdmin() {
     .eq("id", profile.school_id)
     .single();
 
-  if (!school) return { error: "School not found" as const };
+  if (!school) return await actionError("schoolNotFound");
   if (school.status !== "approved") {
-    return { error: "School must be approved before structure setup" as const };
+    return await actionError("schoolMustBeApprovedStructure");
   }
 
   let branchId = profile.branch_id;
@@ -51,7 +53,7 @@ async function requireStructureAdmin() {
     branchId = branch?.id ?? null;
   }
 
-  if (!branchId) return { error: "No campus/branch found for this school" as const };
+  if (!branchId) return await actionError("noCampusFound");
 
   return { supabase, user, profile, school, branchId };
 }
@@ -59,9 +61,7 @@ async function requireStructureAdmin() {
 export async function createSchoolStructure(input: SchoolStructureInput) {
   const parsed = schoolStructureSchema.safeParse(input);
   if (!parsed.success) {
-    return {
-      error: parsed.error.issues[0]?.message ?? "Invalid structure selection",
-    };
+    return await zodIssueError(parsed.error.issues[0]?.message);
   }
 
   const auth = await requireStructureAdmin();
@@ -72,7 +72,7 @@ export async function createSchoolStructure(input: SchoolStructureInput) {
   const uniqueSections = [...new Set(sections)];
 
   if (uniqueGrades.length === 0) {
-    return { error: "Select at least one grade" };
+    return await zodIssueError("selectAtLeastOneGrade");
   }
 
   const { data: existingSections } = await auth.supabase

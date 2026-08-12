@@ -1,17 +1,20 @@
 "use server";
 
+import { actionError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
 import { findExistingConversation } from "@/lib/db/conversations";
 import { createNotifications } from "@/lib/services/notifications";
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { z } from "zod";
 
 const newConversationSchema = z.object({
   student_id: z.string().uuid().optional(),
-  title: z.string().trim().min(1, "Topic is required").max(120),
-  participant_profile_ids: z.array(z.string().uuid()).min(1, "At least one participant required"),
-  initial_message: z.string().min(1, "First message cannot be empty"),
+  title: z.string().trim().min(1, "topicRequired").max(120),
+  participant_profile_ids: z.array(z.string().uuid()).min(1, "atLeastOneParticipant"),
+  initial_message: z.string().min(1, "firstMessageEmpty"),
 });
 
 export type NewConversationInput = z.infer<typeof newConversationSchema>;
@@ -36,7 +39,7 @@ export async function createConversation(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const existingId = await findExistingConversation(
     parsed.data.student_id ?? null,
@@ -67,7 +70,9 @@ export async function createConversation(
 
   if (convErr || !conv) {
     console.error("createConversation error:", convErr);
-    return { error: convErr?.message ?? "Failed to create conversation" };
+    return convErr?.message
+      ? { error: convErr.message }
+      : await actionError("failedCreateConversation");
   }
 
   const allParticipants = Array.from(new Set([user.id, ...parsed.data.participant_profile_ids]));
@@ -97,13 +102,13 @@ export async function sendMessage(
   conversationId: string,
   body: string
 ): Promise<{ data?: SentMessage; error?: string }> {
-  if (!body.trim()) return { error: "Message cannot be empty" };
+  if (!body.trim()) return await actionError("messageEmpty");
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: inserted, error } = await supabase
     .from("conversation_messages")
@@ -117,7 +122,9 @@ export async function sendMessage(
 
   if (error || !inserted) {
     console.error("sendMessage error:", error);
-    return { error: error?.message ?? "Failed to send message" };
+    return error?.message
+      ? { error: error.message }
+      : await actionError("failedSendMessage");
   }
 
   await supabase
@@ -125,8 +132,9 @@ export async function sendMessage(
     .update({ updated_at: new Date().toISOString() })
     .eq("id", conversationId);
 
+  const tn = await getTranslations("notifications");
   const senderProfile = inserted.profiles as { name?: string } | null;
-  const senderName = senderProfile?.name ?? "Someone";
+  const senderName = senderProfile?.name ?? tn("someone");
   const message: SentMessage = {
     id: inserted.id,
     conversation_id: inserted.conversation_id,
@@ -150,7 +158,7 @@ export async function sendMessage(
     await createNotifications(
       recipientIds.map((userId) => ({
         userId,
-        title: `New message from ${senderName}`,
+        title: tn("newMessageFrom", { name: senderName }),
         body: preview,
       }))
     );
@@ -220,7 +228,7 @@ export async function setConversationArchived(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { error } = await supabase
     .from("conversations")

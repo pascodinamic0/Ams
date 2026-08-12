@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,9 +26,14 @@ type Props = {
 export function SchoolLocaleForm({
   schoolId,
   locale,
-  title = "System language",
-  description = "This language is locked for everyone in your school—staff, teachers, parents, and students. The app will not switch to another language.",
+  title,
+  description,
 }: Props) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
+  const ta = useTranslations("admin");
+  const resolvedTitle = title ?? t("localeTitle");
+  const resolvedDescription = description ?? t("localeDescription");
   const router = useRouter();
   const initialLocale = (locale === "fr" ? "fr" : "en") as Locale;
   const [value, setValue] = useState<Locale>(initialLocale);
@@ -44,7 +50,7 @@ export function SchoolLocaleForm({
       return;
     }
 
-    toast.success("System language updated");
+    toast.success(ta("systemLanguageUpdated"));
     window.location.reload();
     router.refresh();
   }
@@ -52,13 +58,13 @@ export function SchoolLocaleForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <p className="text-sm text-stone-500 dark:text-stone-400">{description}</p>
+        <CardTitle>{resolvedTitle}</CardTitle>
+        <p className="text-sm text-stone-500 dark:text-stone-400">{resolvedDescription}</p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="school-locale">Language</Label>
+            <Label htmlFor="school-locale">{t("languageLabel")}</Label>
             <Select
               id="school-locale"
               options={(Object.entries(localeNames) as [Locale, string][]).map(
@@ -72,10 +78,10 @@ export function SchoolLocaleForm({
             />
           </div>
           <p className="text-sm text-stone-500 dark:text-stone-400">
-            After saving, every screen in the app uses {localeNames[value]} only.
+            {t("afterSavingLanguage", { language: localeNames[value] })}
           </p>
           <Button type="submit" disabled={loading || value === initialLocale}>
-            {loading ? "Saving..." : "Save language"}
+            {loading ? tc("saving") : t("saveLanguage")}
           </Button>
         </form>
       </CardContent>

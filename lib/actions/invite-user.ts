@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { sendPasswordSetupEmail } from "@/lib/auth/send-invite-email";
@@ -11,11 +13,6 @@ import {
   updateTeamMemberRoleSchema,
   type InvitableRole,
 } from "@/lib/validations/team";
-
-const ACADEMIC_ADMIN_LOCKED_ERROR =
-  "Academic admin role cannot be changed to a different role";
-const LAST_ACADEMIC_ADMIN_REMOVE_ERROR =
-  "Cannot remove the last academic admin for this school";
 
 type InviteAuth =
   | { ok: false; error: string }
@@ -32,7 +29,7 @@ async function requireSchoolAdmin(): Promise<InviteAuth> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { ok: false, error: "Not authenticated" };
+  if (!user) return { ok: false, ...(await actionError("notAuthenticated")) };
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -43,12 +40,12 @@ async function requireSchoolAdmin(): Promise<InviteAuth> {
   if (profile?.role !== "academic_admin" && profile?.role !== "super_admin") {
     return {
       ok: false,
-      error: "You do not have permission to manage team members",
+      error: (await actionError("cannotManageTeam")).error,
     };
   }
 
   if (!profile.school_id || !profile.branch_id) {
-    return { ok: false, error: "Your account is not linked to a school" };
+    return { ok: false, ...(await actionError("noSchoolLinked")) };
   }
 
   const { data: school } = await supabase
@@ -60,7 +57,7 @@ async function requireSchoolAdmin(): Promise<InviteAuth> {
   if (school?.status !== "approved" && profile.role !== "super_admin") {
     return {
       ok: false,
-      error: "Your school must be approved before you can manage team members",
+      error: (await actionError("schoolMustBeApprovedTeam")).error,
     };
   }
 
@@ -87,7 +84,7 @@ async function applySchoolTeamMemberRoleUpdate(
     input.currentRole === "academic_admin" &&
     input.role !== "academic_admin"
   ) {
-    return { error: ACADEMIC_ADMIN_LOCKED_ERROR };
+    return await actionError("lastAcademicAdminChange");
   }
 
   const updatePayload: {
@@ -124,7 +121,7 @@ export async function updateSchoolTeamMemberRole(input: {
   const parsed = updateTeamMemberRoleSchema.safeParse(input);
   if (!parsed.success) {
     const first = parsed.error.issues[0];
-    return { error: first?.message ?? "Invalid input" };
+    return await zodIssueError(first?.message);
   }
 
   const auth = await requireSchoolAdmin();
@@ -141,14 +138,11 @@ export async function updateSchoolTeamMemberRole(input: {
     .single();
 
   if (targetError || !targetProfile) {
-    return { error: "Team member not found" };
+    return await actionError("teamMemberNotFound");
   }
 
   if (targetProfile.role === "super_admin") {
-    return {
-      error:
-        "This account belongs to a platform administrator and cannot be changed",
-    };
+    return await actionError("platformAdminCannotChange");
   }
 
   if (
@@ -156,11 +150,11 @@ export async function updateSchoolTeamMemberRole(input: {
     targetProfile.role === "student" ||
     !targetProfile.school_id
   ) {
-    return { error: "This user is not a school team member" };
+    return await actionError("notSchoolTeamMember");
   }
 
   if (targetProfile.school_id !== auth.schoolId) {
-    return { error: "You can only manage team members at your school" };
+    return await actionError("onlyOwnSchoolTeam");
   }
 
   if (targetProfile.role === parsed.data.role) {
@@ -189,14 +183,14 @@ export async function removeSchoolTeamMember(input: { userId: string }) {
   const parsed = removeTeamMemberSchema.safeParse(input);
   if (!parsed.success) {
     const first = parsed.error.issues[0];
-    return { error: first?.message ?? "Invalid input" };
+    return await zodIssueError(first?.message);
   }
 
   const auth = await requireSchoolAdmin();
   if (!auth.ok) return { error: auth.error };
 
   if (parsed.data.userId === auth.user.id) {
-    return { error: "You cannot remove yourself from the team" };
+    return await actionError("cannotRemoveSelf");
   }
 
   const adminResult = requireAdminClient();
@@ -210,13 +204,12 @@ export async function removeSchoolTeamMember(input: { userId: string }) {
     .single();
 
   if (targetError || !targetProfile) {
-    return { error: "Team member not found" };
+    return await actionError("teamMemberNotFound");
   }
 
   if (targetProfile.role === "super_admin") {
     return {
-      error:
-        "This account belongs to a platform administrator and cannot be removed",
+      ...(await actionError("platformAdminCannotRemove")),
     };
   }
 
@@ -225,11 +218,11 @@ export async function removeSchoolTeamMember(input: { userId: string }) {
     targetProfile.role === "student" ||
     !targetProfile.school_id
   ) {
-    return { error: "This user is not a school team member" };
+    return await actionError("notSchoolTeamMember");
   }
 
   if (targetProfile.school_id !== auth.schoolId) {
-    return { error: "You can only manage team members at your school" };
+    return await actionError("onlyOwnSchoolTeam");
   }
 
   if (targetProfile.role === "academic_admin") {
@@ -245,7 +238,7 @@ export async function removeSchoolTeamMember(input: { userId: string }) {
     }
 
     if ((count ?? 0) <= 1) {
-      return { error: LAST_ACADEMIC_ADMIN_REMOVE_ERROR };
+      return await actionError("lastAcademicAdminRemove");
     }
   }
 
@@ -297,7 +290,7 @@ export async function inviteSchoolUser(input: {
   const parsed = inviteUserSchema.safeParse(input);
   if (!parsed.success) {
     const first = parsed.error.issues[0];
-    return { error: first?.message ?? "Invalid input" };
+    return await zodIssueError(first?.message);
   }
 
   const auth = await requireSchoolAdmin();
@@ -327,14 +320,11 @@ export async function inviteSchoolUser(input: {
       .single();
 
     if (existingProfile?.role === "super_admin") {
-      return {
-        error:
-          "This email belongs to a platform administrator and cannot be added to a school",
-      };
+      return await actionError("platformAdminCannotAdd");
     }
 
     if (existingProfile?.school_id && existingProfile.school_id !== schoolId) {
-      return { error: "This email is already linked to another school" };
+      return await actionError("emailLinkedOtherSchool");
     }
 
     if (existingProfile?.role) {
@@ -353,7 +343,7 @@ export async function inviteSchoolUser(input: {
           return {
             error:
               resent.error ||
-              "This email is already a member of your school with this role",
+              (await actionError("alreadyMemberThisRole")).error,
           };
         }
         await admin
@@ -396,10 +386,7 @@ export async function inviteSchoolUser(input: {
         };
       }
 
-      return {
-        error:
-          "This email is already registered with a different access level. Ask them to sign in with their existing account, or use a different email.",
-      };
+      return await actionError("emailRegisteredDifferentAccess");
     }
 
     const attached = await sendPasswordSetupEmail({
@@ -410,7 +397,7 @@ export async function inviteSchoolUser(input: {
       linkType: "recovery",
     });
     if (attached.error || !attached.user) {
-      return { error: attached.error ?? "Failed to send invitation email" };
+      return { error: attached.error ?? (await actionError("inviteEmailFailed")).error };
     }
 
     const { error: attachProfileError } = await admin.from("profiles").upsert(
@@ -452,7 +439,8 @@ export async function inviteSchoolUser(input: {
     if (invited.user) {
       await admin.auth.admin.deleteUser(invited.user.id);
     }
-    return { error: invited.error ?? "Failed to send invitation email" };
+    if (invited.error) return { error: invited.error };
+    return await actionError("inviteEmailFailed");
   }
 
   const { error: profileError } = await admin.from("profiles").upsert(

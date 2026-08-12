@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { normalizeRole } from "@/lib/auth/rbac";
@@ -21,7 +23,7 @@ async function requireFinanceManager() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" as const };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -30,12 +32,12 @@ async function requireFinanceManager() {
     .single();
 
   if (!profile?.school_id) {
-    return { error: "Your account is not linked to a school" as const };
+    return await actionError("noSchoolLinked");
   }
 
   const role = normalizeRole(profile.role);
   if (!FINANCE_MANAGER_ROLES.has(role)) {
-    return { error: "Only finance can manage budget plans" as const };
+    return await actionError("onlyFinanceBudget");
   }
 
   return { supabase, profile };
@@ -141,7 +143,7 @@ export async function createBudgetLineItem(
     .eq("school_id", auth.profile.school_id)
     .single();
 
-  if (!plan) return { error: "Budget plan not found" };
+  if (!plan) return await actionError("budgetPlanNotFound");
 
   const quantity = parsed.data.quantity;
   const unitCost = parsed.data.unit_cost;
@@ -187,10 +189,10 @@ export async function updateBudgetLineItem(
     .eq("id", id)
     .single();
 
-  if (!existing) return { error: "Budget line not found" };
+  if (!existing) return await actionError("budgetLineNotFound");
   const planMeta = existing.budget_plans as { school_id?: string } | null;
   if (planMeta?.school_id !== auth.profile.school_id) {
-    return { error: "Budget line not found" };
+    return await actionError("budgetLineNotFound");
   }
 
   const quantity =
@@ -245,10 +247,10 @@ export async function deleteBudgetLineItem(id: string) {
     .eq("id", id)
     .single();
 
-  if (!existing) return { error: "Budget line not found" };
+  if (!existing) return await actionError("budgetLineNotFound");
   const planMeta = existing.budget_plans as { school_id?: string } | null;
   if (planMeta?.school_id !== auth.profile.school_id) {
-    return { error: "Budget line not found" };
+    return await actionError("budgetLineNotFound");
   }
 
   const { error } = await auth.supabase
@@ -273,12 +275,12 @@ export async function createTaskFromBudgetLine(lineId: string) {
     .eq("id", lineId)
     .single();
 
-  if (!line) return { error: "Budget line not found" };
-  if (line.task_id) return { error: "A task already exists for this line" };
+  if (!line) return await actionError("budgetLineNotFound");
+  if (line.task_id) return await actionError("taskAlreadyExistsForLine");
 
   const plan = line.budget_plans as { school_id?: string } | null;
   if (!plan?.school_id || plan.school_id !== auth.profile.school_id) {
-    return { error: "Budget line not found" };
+    return await actionError("budgetLineNotFound");
   }
 
   const { data: taskId, error } = await auth.supabase.rpc(

@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminClient } from "@/lib/supabase/admin";
@@ -11,7 +13,7 @@ async function requireSuperAdmin() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" as const };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -20,7 +22,7 @@ async function requireSuperAdmin() {
     .single();
 
   if (profile?.role !== "super_admin") {
-    return { error: "You do not have permission to manage school approvals" as const };
+    return await actionError("noPermissionSchoolApprovals");
   }
 
   return { user };

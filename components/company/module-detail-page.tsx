@@ -6,6 +6,8 @@ import type { PlatformModule } from "@/lib/company/modules";
 
 export async function ModuleDetailPage({ module }: { module: PlatformModule }) {
   const t = await getTranslations("modules");
+  const tc = await getTranslations("common");
+  const ta = await getTranslations("auth");
   const Icon = module.icon;
 
   return (
@@ -16,7 +18,7 @@ export async function ModuleDetailPage({ module }: { module: PlatformModule }) {
           className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-mkt-ink/50 transition-colors hover:text-mkt-ink"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
-          Back to home
+          {tc("backToHome")}
         </Link>
 
         <header className="mt-8 border-b border-mkt-ink/10 pb-10">
@@ -36,7 +38,7 @@ export async function ModuleDetailPage({ module }: { module: PlatformModule }) {
 
         <section className="mt-10 space-y-6">
           <h2 className="font-display text-xl tracking-tight text-mkt-ink">
-            What you can do
+            {t("whatYouCanDo")}
           </h2>
           <ul className="space-y-4">
             {module.highlights.map((item) => (
@@ -53,7 +55,7 @@ export async function ModuleDetailPage({ module }: { module: PlatformModule }) {
 
         <section className="mt-12 space-y-4">
           <h2 className="font-display text-xl tracking-tight text-mkt-ink">
-            Who it&apos;s for
+            {t("whoItsForHeading")}
           </h2>
           <ul className="space-y-2">
             {module.whoItsFor.map((item) => (
@@ -80,9 +82,9 @@ export async function ModuleDetailPage({ module }: { module: PlatformModule }) {
 
         <div className="mt-14 flex flex-col gap-4 border-t border-mkt-ink/10 pt-10 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-mkt-ink/45">
-            Part of the {companyIdentity.productName} platform. See everything in{" "}
+            {t("partOfPlatform", { productName: companyIdentity.productName })}{" "}
             <Link href="/features" className="font-medium text-amber-500 hover:text-amber-400">
-              all features
+              {t("allFeatures")}
             </Link>
             .
           </p>
@@ -90,7 +92,7 @@ export async function ModuleDetailPage({ module }: { module: PlatformModule }) {
             href="/get-access"
             className="inline-flex items-center justify-center gap-2 rounded-full bg-mkt-inverse px-6 py-3 text-[11px] font-bold uppercase tracking-[0.14em] text-mkt-inverse-ink transition-transform hover:scale-[1.02]"
           >
-            Get access
+            {ta("getAccess")}
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>

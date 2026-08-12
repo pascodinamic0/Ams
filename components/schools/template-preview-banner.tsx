@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import type { WebsiteTemplateId } from "@/lib/schools/website-templates";
 
@@ -9,6 +10,7 @@ const dismissKey = (template: WebsiteTemplateId) =>
   `shuleos-template-preview-banner-${template}`;
 
 export function TemplatePreviewBanner({ template }: { template: WebsiteTemplateId }) {
+  const t = useTranslations("schools.chrome");
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -33,12 +35,12 @@ export function TemplatePreviewBanner({ template }: { template: WebsiteTemplateI
     >
       <div className="mx-auto flex max-w-4xl items-start justify-center gap-3 pr-8">
         <p>
-          Template preview - sample content only.{" "}
+          {t("templatePreviewNotice")}{" "}
           <Link
             href={`/admin/schools/new?template=${template}`}
             className="font-semibold underline underline-offset-2"
           >
-            Use this design before another school claims the look
+            {t("useThisDesign")}
           </Link>
         </p>
       </div>
@@ -46,7 +48,7 @@ export function TemplatePreviewBanner({ template }: { template: WebsiteTemplateI
         type="button"
         onClick={dismiss}
         className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-[#1a2b56]/60 hover:bg-[#1a2b56]/10 hover:text-[#1a2b56]"
-        aria-label="Dismiss preview notice"
+        aria-label={t("dismissPreviewNotice")}
       >
         <X className="h-4 w-4" />
       </button>

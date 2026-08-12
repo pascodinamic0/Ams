@@ -44,5 +44,13 @@
   "chartRevenueOutstanding": "Revenue vs outstanding (6 months)",
   "chartFeeStatus": "Fee status breakdown",
   "chartCollectionTrend": "Fee collection trend",
-  "noData": "No data"
+  "noData": "No data",
+  "unassigned": "Unassigned",
+  "notSpecified": "Not specified",
+  "male": "Male",
+  "female": "Female",
+  "other": "Other",
+  "paid": "Paid",
+  "pending": "Pending",
+  "overdue": "Overdue"
 }

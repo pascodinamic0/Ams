@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormContext, useWatch } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,15 +28,16 @@ interface Props {
 
 export function PaymentForm({ schoolId, openInvoices }: Props) {
   const router = useRouter();
+  const t = useTranslations("finance");
   const [formKey, setFormKey] = useState(0);
 
   async function onSubmit(data: PaymentFormData) {
     const result = await recordPayment(data);
     if (result.error) {
-      toast.error(typeof result.error === "string" ? result.error : "Failed to record payment");
+      toast.error(typeof result.error === "string" ? result.error : t("paymentRecordFailed"));
       return;
     }
-    toast.success("Payment recorded");
+    toast.success(t("paymentRecorded"));
     setFormKey((key) => key + 1);
     router.refresh();
   }
@@ -60,6 +62,9 @@ function PaymentFormFields({
   schoolId?: string;
   openInvoices: { id: string; label: string; balance: number }[];
 }) {
+  const t = useTranslations("finance");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const {
     register,
     setValue,
@@ -73,12 +78,13 @@ function PaymentFormFields({
 
   async function uploadProof(file: File) {
     if (!storagePath) {
-      toast.error("Assign a school to your profile before uploading payment proof");
-      throw new Error("Missing school");
+      toast.error(te("assignSchoolBeforeProof"));
+      throw new Error(te("assignSchoolBeforeProof"));
     }
     if (file.size > PROOF_MAX_BYTES) {
-      toast.error(`File too large. Max ${PROOF_MAX_BYTES / 1024 / 1024}MB`);
-      throw new Error("File too large");
+      const tooLarge = t("fileTooLarge", { max: PROOF_MAX_BYTES / 1024 / 1024 });
+      toast.error(tooLarge);
+      throw new Error(tooLarge);
     }
 
     const { createClient } = await import("@/lib/supabase/client");
@@ -95,9 +101,9 @@ function PaymentFormFields({
     setCameraUploading(true);
     try {
       await uploadProof(file);
-      toast.success("Payment proof uploaded");
+      toast.success(t("paymentProofUploaded"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      toast.error(err instanceof Error ? err.message : t("uploadFailed"));
       throw err;
     } finally {
       setCameraUploading(false);
@@ -107,52 +113,52 @@ function PaymentFormFields({
   return (
     <>
       <div className="sm:col-span-2 lg:col-span-3">
-        <Label htmlFor="invoice_id" required>Invoice</Label>
+        <Label htmlFor="invoice_id" required>{t("invoice")}</Label>
         <select
           id="invoice_id"
           {...register("invoice_id")}
           className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
-          <option value="">Select invoice</option>
+          <option value="">{t("selectInvoice")}</option>
           {openInvoices.map((inv) => (
             <option key={inv.id} value={inv.id}>
-              {inv.label} - balance {inv.balance.toFixed(2)}
+              {t("invoiceBalance", { label: inv.label, balance: inv.balance.toFixed(2) })}
             </option>
           ))}
         </select>
         {errors.invoice_id && <p className="mt-1 text-sm text-red-500">{errors.invoice_id.message}</p>}
       </div>
       <div>
-        <Label htmlFor="amount" required>Amount</Label>
+        <Label htmlFor="amount" required>{tc("amount")}</Label>
         <Input id="amount" type="number" step="0.01" {...register("amount")} error={!!errors.amount} />
         {errors.amount && <p className="mt-1 text-sm text-red-500">{errors.amount.message}</p>}
       </div>
       <div>
-        <Label htmlFor="method" required>Method</Label>
+        <Label htmlFor="method" required>{t("colMethod")}</Label>
         <select
           id="method"
           {...register("method")}
           className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
-          <option value="cash">Cash</option>
-          <option value="bank_transfer">Bank transfer</option>
-          <option value="card">Card</option>
-          <option value="mobile_money">Mobile money</option>
-          <option value="other">Other</option>
+          <option value="cash">{t("cash")}</option>
+          <option value="bank_transfer">{t("bankTransfer")}</option>
+          <option value="card">{t("card")}</option>
+          <option value="mobile_money">{t("mobileMoney")}</option>
+          <option value="other">{t("other")}</option>
         </select>
       </div>
       <div>
-        <Label htmlFor="reference">Reference</Label>
-        <Input id="reference" {...register("reference")} placeholder="Receipt or transaction ID" />
+        <Label htmlFor="reference">{t("reference")}</Label>
+        <Input id="reference" {...register("reference")} placeholder={t("receiptOrTransactionId")} />
       </div>
       <div>
-        <Label htmlFor="paid_at">Paid at</Label>
+        <Label htmlFor="paid_at">{t("paidAt")}</Label>
         <Input id="paid_at" type="datetime-local" {...register("paid_at")} />
       </div>
       <div className="sm:col-span-2 lg:col-span-3">
-        <Label htmlFor="proof_url">Payment proof</Label>
+        <Label htmlFor="proof_url">{t("paymentProof")}</Label>
         <p className="mb-2 text-xs text-stone-500 dark:text-stone-400">
-          Optional. Upload a receipt or transfer screenshot, or take a photo with your camera.
+          {t("paymentProofHint")}
         </p>
         <input type="hidden" {...register("proof_url")} />
         {storagePath ? (
@@ -165,7 +171,7 @@ function PaymentFormFields({
               value={proofUrl || undefined}
               onUpload={(url) => {
                 setValue("proof_url", url, { shouldDirty: true, shouldValidate: true });
-                toast.success("Payment proof uploaded");
+                toast.success(t("paymentProofUploaded"));
               }}
               onRemove={() => setValue("proof_url", "", { shouldDirty: true, shouldValidate: true })}
               onError={(message) => toast.error(message)}
@@ -178,7 +184,7 @@ function PaymentFormFields({
               onClick={() => setCameraOpen(true)}
             >
               <Camera className="mr-1.5 h-4 w-4" />
-              Take photo
+              {t("takePhoto")}
             </Button>
             <CameraCaptureModal
               isOpen={cameraOpen}
@@ -189,14 +195,14 @@ function PaymentFormFields({
           </div>
         ) : (
           <p className="text-sm text-amber-700 dark:text-amber-400">
-            Assign a school to your profile to attach payment proof.
+            {t("assignSchoolForProof")}
           </p>
         )}
         {errors.proof_url && <p className="mt-1 text-sm text-red-500">{errors.proof_url.message}</p>}
       </div>
       <div className="flex items-end sm:col-span-2 lg:col-span-3">
         <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting}>
-          Record payment
+          {t("recordPayment")}
         </Button>
       </div>
     </>

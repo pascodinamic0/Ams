@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,10 +33,15 @@ type Props = {
 export function SchoolCurrencyForm({
   schoolId,
   currencyCode,
-  title = "Currency",
-  description = "Choose the currency used across finance, payroll, and fee amounts for this school.",
+  title,
+  description,
   compact = false,
 }: Props) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
+  const ta = useTranslations("admin");
+  const resolvedTitle = title ?? t("currencyTitle");
+  const resolvedDescription = description ?? t("currencyDescription");
   const router = useRouter();
   const initialCode = normalizeCurrencyCode(currencyCode);
   const [code, setCode] = useState<SchoolCurrencyCode>(initialCode);
@@ -52,14 +58,14 @@ export function SchoolCurrencyForm({
       return;
     }
 
-    toast.success("Currency updated");
+    toast.success(ta("currencyUpdated"));
     router.refresh();
   }
 
   const fields = (
     <>
       <div className="space-y-2">
-        <Label htmlFor="school-currency">Currency</Label>
+        <Label htmlFor="school-currency">{t("currencyLabel")}</Label>
         <Select
           id="school-currency"
           options={SCHOOL_CURRENCIES.map((currency) => ({
@@ -71,11 +77,11 @@ export function SchoolCurrencyForm({
         />
       </div>
       <p className="text-sm text-stone-500 dark:text-stone-400">
-        Preview: {formatMoney(1234.56, code)}
+        {t("currencyPreview", { amount: formatMoney(1234.56, code) })}
       </p>
       <div className={compact ? "flex justify-end" : undefined}>
         <Button type="submit" disabled={loading || code === initialCode}>
-          {loading ? "Saving..." : "Save currency"}
+          {loading ? tc("saving") : t("saveCurrency")}
         </Button>
       </div>
     </>
@@ -87,12 +93,12 @@ export function SchoolCurrencyForm({
         onSubmit={handleSubmit}
         className="space-y-4 rounded-lg border border-stone-200 p-4 dark:border-stone-800"
       >
-        {title ? (
-          <p className="font-medium text-stone-900 dark:text-white">{title}</p>
+        {resolvedTitle ? (
+          <p className="font-medium text-stone-900 dark:text-white">{resolvedTitle}</p>
         ) : null}
-        {description ? (
+        {resolvedDescription ? (
           <p className="text-sm text-stone-500 dark:text-stone-400">
-            {description}
+            {resolvedDescription}
           </p>
         ) : null}
         {fields}
@@ -104,10 +110,10 @@ export function SchoolCurrencyForm({
     <form onSubmit={handleSubmit}>
       <Card>
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
-          {description ? (
+          <CardTitle>{resolvedTitle}</CardTitle>
+          {resolvedDescription ? (
             <p className="text-sm text-stone-500 dark:text-stone-400">
-              {description}
+              {resolvedDescription}
             </p>
           ) : null}
         </CardHeader>

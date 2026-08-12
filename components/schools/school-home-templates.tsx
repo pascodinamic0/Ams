@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import type { SchoolRow } from "@/lib/db/schools";
 import type { PublicSchoolEvent } from "@/lib/db/public-events";
 import { resolveSchoolWebsite } from "@/lib/schools/website-content";
@@ -7,13 +8,13 @@ import { PublicEventsSection } from "./public-events-section";
 
 function AdmissionsCta({
   slug,
-  label = "Apply before seats fill",
+  label,
   className = "",
   style,
   isPreview = false,
 }: {
   slug: string;
-  label?: string;
+  label: string;
   className?: string;
   style?: React.CSSProperties;
   isPreview?: boolean;
@@ -33,12 +34,18 @@ function AdmissionsCta({
   );
 }
 
-function ContactBlock({ school }: { school: SchoolRow }) {
+function ContactBlock({
+  school,
+  t,
+}: {
+  school: SchoolRow;
+  t: (key: string) => string;
+}) {
   return (
     <div className="space-y-3 text-sm">
       {school.contact_email && (
         <p>
-          <span className="font-medium">Email:</span>{" "}
+          <span className="font-medium">{t("chrome.email")}:</span>{" "}
           <a href={`mailto:${school.contact_email}`} className="hover:underline">
             {school.contact_email}
           </a>
@@ -46,12 +53,12 @@ function ContactBlock({ school }: { school: SchoolRow }) {
       )}
       {school.contact_phone && (
         <p>
-          <span className="font-medium">Phone:</span> {school.contact_phone}
+          <span className="font-medium">{t("chrome.phone")}:</span> {school.contact_phone}
         </p>
       )}
       {school.address && <p>{school.address}</p>}
       {!school.contact_email && !school.contact_phone && !school.address && (
-        <p className="text-stone-500">Contact details coming soon.</p>
+        <p className="text-stone-500">{t("chrome.contactComingSoon")}</p>
       )}
     </div>
   );
@@ -113,10 +120,12 @@ function GallerySection({
   gallery,
   primary,
   variant = "modern",
+  t,
 }: {
   gallery: { url: string; caption?: string }[];
   primary?: string;
   variant?: "modern" | "classic" | "minimal";
+  t: (key: string) => string;
 }) {
   if (gallery.length === 0) return null;
 
@@ -133,14 +142,14 @@ function GallerySection({
           }
           style={variant === "classic" && primary ? { color: primary } : undefined}
         >
-          {variant === "minimal" ? "Campus life" : "Our community"}
+          {variant === "minimal" ? t("chrome.campusLife") : t("chrome.ourCommunity")}
         </h2>
         {variant === "classic" && (
           <a
             href="#contact"
             className="text-xs font-semibold uppercase tracking-[0.16em] text-stone-500 hover:text-stone-800"
           >
-            View campus stories →
+            {t("chrome.viewCampusStoriesArrow")}
           </a>
         )}
       </div>
@@ -169,10 +178,12 @@ function ModernTemplate({
   school,
   events = [],
   isPreview = false,
+  t,
 }: {
   school: SchoolRow;
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
+  t: (key: string) => string;
 }) {
   const primary = school.theme_primary_color ?? "#0d9488";
   const secondary = school.theme_secondary_color ?? "#0f766e";
@@ -195,14 +206,13 @@ function ModernTemplate({
             {site.heroTitle}
           </h1>
           <p className="school-animate-fade-up-delay-2 mt-5 max-w-xl text-lg leading-relaxed text-white/90">
-            {site.heroSubtitle ||
-              "Every week without a clear admissions path costs families time and the school open seats."}
+            {site.heroSubtitle || t("chrome.heroFallbackModern")}
           </p>
           <div className="school-animate-fade-up-delay-2 mt-8 flex flex-wrap gap-4">
             <AdmissionsCta
               slug={school.slug}
               isPreview={isPreview}
-              label="Apply before seats fill"
+              label={t("chrome.applyBeforeSeatsFill")}
               className="inline-flex border border-white bg-white px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.14em] transition-colors hover:bg-transparent hover:text-white"
               style={{ color: primary }}
             />
@@ -210,7 +220,7 @@ function ModernTemplate({
               href="#programs"
               className="inline-flex border border-white/80 px-7 py-3.5 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-stone-900"
             >
-              Explore programs
+              {t("chrome.explorePrograms")}
             </a>
           </div>
         </div>
@@ -218,28 +228,27 @@ function ModernTemplate({
 
       <section className="px-6 py-16 text-center text-white" style={{ backgroundColor: primary }}>
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/75">
-          Rooted in community · Driven by possibility
+          {t("chrome.rootedInCommunity")}
         </p>
         <h2 className="mx-auto mt-4 max-w-3xl text-2xl font-bold tracking-tight md:text-4xl">
-          A legacy of learning families can still join this term
+          {t("chrome.legacyJoinThisTerm")}
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/90">
-          {site.about ||
-            `${school.name} builds confident learners through strong academics, character, and community. Waiting to inquire can mean waiting another year.`}
+            {site.about || t("chrome.aboutFallback", { schoolName: school.name })}
         </p>
         <a
           href="#about"
           className="mt-8 inline-flex border border-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-stone-900"
         >
-          About the school
+          {t("chrome.aboutTheSchool")}
         </a>
       </section>
 
       <div className="mx-auto max-w-6xl space-y-20 px-6 py-16 md:py-20">
         <section id="programs" className="scroll-mt-24">
-          <h2 className="text-3xl font-bold tracking-tight">Discover {school.name}</h2>
+          <h2 className="text-3xl font-bold tracking-tight">{t("chrome.discoverSchool", { schoolName: school.name })}</h2>
           <p className="mt-3 max-w-2xl text-stone-600">
-            Programs fill by division. See what is open before another family claims the place.
+            {t("chrome.programsFillByDivision")}
           </p>
           <div className="mt-8">
             <ProgramPhotoGrid programs={site.programs} accent={secondary} />
@@ -251,20 +260,20 @@ function ModernTemplate({
         <section id="about" className="scroll-mt-24">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight">About us</h2>
+              <h2 className="text-3xl font-bold tracking-tight">{t("chrome.aboutUs")}</h2>
               <p className="mt-4 leading-relaxed text-stone-600">{site.about}</p>
             </div>
             {site.gallery[0] && (
               <img
                 src={site.gallery[0].url}
-                alt="About"
+                alt={t("chrome.aboutUs")}
                 className="aspect-[4/3] w-full object-cover"
               />
             )}
           </div>
         </section>
 
-        <GallerySection gallery={site.gallery} variant="modern" />
+        <GallerySection gallery={site.gallery} variant="modern" t={t} />
 
         {!isPreview && events.length > 0 && (
           <PublicEventsSection
@@ -278,23 +287,23 @@ function ModernTemplate({
         <section id="contact" className="scroll-mt-24 bg-stone-950 px-6 py-12 text-white md:px-10">
           <div className="grid gap-8 md:grid-cols-2">
             <div>
-              <h2 className="text-3xl font-bold tracking-tight">Get in touch</h2>
+              <h2 className="text-3xl font-bold tracking-tight">{t("chrome.getInTouch")}</h2>
               <p className="mt-2 text-white/75">
-                Waiting for a campus visit can stall enrollment. Reach the office today.
+                {t("chrome.waitingForVisit")}
               </p>
               <div className="mt-6 text-white/90">
-                <ContactBlock school={school} />
+                <ContactBlock school={school} t={t} />
               </div>
             </div>
             <div className="flex flex-col justify-center border border-white/20 p-8">
-              <h3 className="text-xl font-semibold">Stop losing open seats</h3>
+              <h3 className="text-xl font-semibold">{t("chrome.stopLosingOpenSeats")}</h3>
               <p className="mt-2 text-white/80">
-                Start the application online before another family claims the place you want.
+                {t("chrome.startApplicationOnline")}
               </p>
               <AdmissionsCta
                 slug={school.slug}
                 isPreview={isPreview}
-                label="Apply before seats fill"
+                label={t("chrome.applyBeforeSeatsFill")}
                 className="mt-6 inline-flex w-fit border border-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-stone-900"
               />
             </div>
@@ -309,10 +318,12 @@ function ClassicTemplate({
   school,
   events = [],
   isPreview = false,
+  t,
 }: {
   school: SchoolRow;
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
+  t: (key: string) => string;
 }) {
   const primary = school.theme_primary_color ?? "#1a2b56";
   const accent = school.theme_secondary_color ?? "#c9a227";
@@ -331,19 +342,18 @@ function ClassicTemplate({
         <div className="relative mx-auto flex min-h-[92vh] max-w-6xl flex-col justify-end px-6 pb-14 pt-40">
           <div className="school-animate-fade-up max-w-2xl text-white">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/85">
-              Possibilities and partnerships
+              {t("chrome.possibilitiesAndPartnerships")}
             </p>
             <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-5xl">
               {site.heroTitle}
             </h1>
             <p className="mt-4 max-w-xl text-base leading-relaxed text-white/90 md:text-lg">
-              {site.heroSubtitle ||
-                "Heritage only holds if families can still find a place this year."}
+              {site.heroSubtitle || t("chrome.heroFallbackClassic")}
             </p>
             <AdmissionsCta
               slug={school.slug}
               isPreview={isPreview}
-              label="Apply now"
+              label={t("chrome.applyNow")}
               className="mt-7 inline-flex border border-white px-7 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-white hover:text-stone-900"
             />
           </div>
@@ -358,19 +368,18 @@ function ClassicTemplate({
       >
         <div className="mx-auto mb-6 h-[2px] w-16" style={{ backgroundColor: accent }} />
         <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/70">
-          A legacy of learning and leadership
+          {t("chrome.legacyLeadership")}
         </p>
         <h2 className="mx-auto mt-4 max-w-3xl text-2xl font-bold tracking-tight md:text-4xl">
-          Trusted schooling — still open for families who act this term
+          {t("chrome.trustedSchooling")}
         </h2>
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/90">
-          {site.about ||
-            `For families choosing ${school.name}, clarity beats delay. Excellence, integrity, and inclusivity only matter if your child still has a seat.`}
+            {site.about || t("chrome.classicAboutFallback", { schoolName: school.name })}
         </p>
         <AdmissionsCta
           slug={school.slug}
           isPreview={isPreview}
-          label="About admissions"
+          label={t("chrome.aboutAdmissions")}
           className="mt-8 inline-flex border border-white px-6 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-stone-900"
         />
       </section>
@@ -378,10 +387,10 @@ function ClassicTemplate({
       <div className="mx-auto max-w-6xl space-y-20 px-6 py-16 md:py-20">
         <section id="programs" className="scroll-mt-24">
           <h2 className="text-3xl font-bold tracking-tight" style={{ color: primary }}>
-            Discover our programs
+            {t("chrome.discoverOurPrograms")}
           </h2>
           <p className="mt-3 max-w-2xl text-stone-600">
-            Hover each path to see what your child would join — then apply before the division fills.
+            {t("chrome.hoverEachPath")}
           </p>
           <div className="mt-8">
             <ProgramPhotoGrid programs={site.programs} accent={accent} />
@@ -390,7 +399,7 @@ function ClassicTemplate({
 
         <StatsStrip stats={site.stats} primary={primary} variant="classic" />
 
-        <GallerySection gallery={site.gallery} primary={primary} variant="classic" />
+        <GallerySection gallery={site.gallery} primary={primary} variant="classic" t={t} />
 
         {!isPreview && events.length > 0 && (
           <PublicEventsSection
@@ -409,20 +418,20 @@ function ClassicTemplate({
       >
         <div className="border-b border-white/15 px-8 py-14 text-white md:border-b-0 md:border-r">
           <div className="mb-5 h-[2px] w-12" style={{ backgroundColor: accent }} />
-          <h2 className="text-2xl font-bold">Contact</h2>
+          <h2 className="text-2xl font-bold">{t("nav.contact")}</h2>
           <div className="mt-4 text-white/85">
-            <ContactBlock school={school} />
+            <ContactBlock school={school} t={t} />
           </div>
         </div>
         <div className="flex flex-col items-center justify-center px-8 py-14 text-center text-white">
-          <h2 className="text-2xl font-bold">Admissions</h2>
+          <h2 className="text-2xl font-bold">{t("nav.admissions")}</h2>
           <p className="mt-3 max-w-sm text-white/85">
-            Delay the application and another family may take the seat you meant to claim.
+            {t("chrome.delayTheApplication")}
           </p>
           <AdmissionsCta
             slug={school.slug}
             isPreview={isPreview}
-            label="Apply before seats fill"
+            label={t("chrome.applyBeforeSeatsFill")}
             className="mt-6 inline-flex border border-white px-8 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-stone-900"
           />
         </div>
@@ -435,10 +444,12 @@ function MinimalTemplate({
   school,
   events = [],
   isPreview = false,
+  t,
 }: {
   school: SchoolRow;
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
+  t: (key: string) => string;
 }) {
   const primary = school.theme_primary_color ?? "#1a2b56";
   const accent = school.theme_secondary_color ?? "#c9a227";
@@ -462,13 +473,12 @@ function MinimalTemplate({
             {site.heroTitle}
           </h1>
           <p className="school-animate-fade-up-delay-2 mt-5 max-w-xl text-base leading-relaxed text-white/90">
-            {site.heroSubtitle ||
-              "Quiet campuses still lose families when enrollment stays unclear."}
+            {site.heroSubtitle || t("chrome.heroFallbackMinimal")}
           </p>
           <AdmissionsCta
             slug={school.slug}
             isPreview={isPreview}
-            label="Secure a place this term"
+            label={t("chrome.secureAPlaceThisTerm")}
             className="school-animate-fade-up-delay-2 mt-8 inline-block border border-white/80 px-8 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:bg-white hover:text-stone-900"
           />
         </div>
@@ -476,18 +486,17 @@ function MinimalTemplate({
 
       <section className="px-6 py-16 text-center" style={{ backgroundColor: primary }}>
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
-          Excellence · Integrity · Inclusivity
+          {t("chrome.excellenceIntegrityInclusivity")}
         </p>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/90">
-          {site.about ||
-            `${school.name} keeps learning personal — but seats are not unlimited.`}
+          {site.about || t("chrome.seatsNotUnlimited", { schoolName: school.name })}
         </p>
       </section>
 
       <div className="mx-auto max-w-3xl space-y-16 px-6 py-16">
         <section id="programs" className="scroll-mt-24">
           <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">
-            Programs
+            {t("chrome.programs")}
           </h2>
           <div className="mt-8">
             <ProgramPhotoGrid programs={site.programs} accent={accent} />
@@ -497,11 +506,11 @@ function MinimalTemplate({
         <StatsStrip stats={site.stats} primary={primary} variant="minimal" />
 
         <section id="about" className="scroll-mt-24 border-t border-stone-200 pt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">About</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">{t("chrome.about")}</h2>
           <p className="mt-6 leading-relaxed text-stone-600">{site.about}</p>
         </section>
 
-        <GallerySection gallery={site.gallery} variant="minimal" />
+        <GallerySection gallery={site.gallery} variant="minimal" t={t} />
 
         {!isPreview && events.length > 0 && (
           <PublicEventsSection
@@ -513,14 +522,14 @@ function MinimalTemplate({
         )}
 
         <section id="contact" className="scroll-mt-24 border-t border-stone-200 pt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">Contact</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">{t("nav.contact")}</h2>
           <div className="mt-6 text-stone-600">
-            <ContactBlock school={school} />
+            <ContactBlock school={school} t={t} />
           </div>
           <AdmissionsCta
             slug={school.slug}
             isPreview={isPreview}
-            label="Apply before seats fill"
+            label={t("chrome.applyBeforeSeatsFill")}
             className="mt-8 inline-block border px-8 py-3 text-xs font-semibold uppercase tracking-[0.14em]"
             style={{ borderColor: primary, color: primary }}
           />
@@ -530,7 +539,7 @@ function MinimalTemplate({
   );
 }
 
-export function SchoolHomeTemplate({
+export async function SchoolHomeTemplate({
   school,
   events = [],
   isPreview = false,
@@ -539,14 +548,15 @@ export function SchoolHomeTemplate({
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
 }) {
+  const t = await getTranslations("schools");
   const template = school.website_template ?? "modern";
 
   switch (template) {
     case "classic":
-      return <ClassicTemplate school={school} events={events} isPreview={isPreview} />;
+      return <ClassicTemplate school={school} events={events} isPreview={isPreview} t={t} />;
     case "minimal":
-      return <MinimalTemplate school={school} events={events} isPreview={isPreview} />;
+      return <MinimalTemplate school={school} events={events} isPreview={isPreview} t={t} />;
     default:
-      return <ModernTemplate school={school} events={events} isPreview={isPreview} />;
+      return <ModernTemplate school={school} events={events} isPreview={isPreview} t={t} />;
   }
 }

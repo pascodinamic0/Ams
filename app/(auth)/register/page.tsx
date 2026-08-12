@@ -207,7 +207,7 @@ function RegisterFormFields({ loading }: { loading: boolean }) {
         </Label>
         <Input
           id="school_name"
-          placeholder="Greenfield Academy"
+          placeholder={t("schoolNamePlaceholder")}
           error={!!errors.school_name}
           {...register("school_name")}
         />

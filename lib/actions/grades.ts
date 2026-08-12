@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { gradeSchema, upsertGradesSchema, type GradeFormData } from "@/lib/validations/teacher";
@@ -10,7 +12,7 @@ export async function upsertGrade(input: GradeFormData) {
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: existing } = await supabase
     .from("grades")
@@ -61,7 +63,7 @@ export async function upsertGrades(input: { grades: GradeFormData[] }) {
 export async function deleteGrade(id: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { error } = await supabase.from("grades").delete().eq("id", id);
   if (error) return { error: error.message };

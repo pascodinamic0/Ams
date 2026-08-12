@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFormContext, useWatch } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { FormWrapper } from "@/components/forms/form-wrapper";
@@ -27,19 +28,20 @@ export function PayrollGenerateForm({
   defaultYear = new Date().getFullYear(),
 }: GenerateProps) {
   const router = useRouter();
+  const t = useTranslations("finance");
 
   async function onSubmit(data: PayrollGenerateFormData) {
     const result = await generatePayroll({ ...data, schoolId, branchId });
     if (result.error) {
-      toast.error(typeof result.error === "string" ? result.error : "Failed to generate payroll");
+      toast.error(typeof result.error === "string" ? result.error : t("generatePayrollFailed"));
       return;
     }
     const created = result.data?.created ?? 0;
     const skipped = result.data?.skipped ?? 0;
     toast.success(
       skipped > 0
-        ? `Generated payroll for ${created} staff (${skipped} excluded)`
-        : `Generated payroll for ${created} staff members`
+        ? t("payrollGeneratedWithExcluded", { created, skipped })
+        : t("payrollGenerated", { count: created })
     );
     router.push(`/finance/payroll?month=${data.month}&year=${data.year}`);
     router.refresh();
@@ -59,6 +61,7 @@ export function PayrollGenerateForm({
 
 function GenerateFields() {
   const router = useRouter();
+  const t = useTranslations("finance");
   const { register, formState: { errors, isSubmitting }, control } = useFormContext<PayrollGenerateFormData>();
   const month = useWatch({ control, name: "month" });
   const year = useWatch({ control, name: "year" });
@@ -77,7 +80,7 @@ function GenerateFields() {
   return (
     <>
       <div>
-        <Label htmlFor="gen_month" required>Month</Label>
+        <Label htmlFor="gen_month" required>{t("month")}</Label>
         <select
           id="gen_month"
           {...register("month", { valueAsNumber: true })}
@@ -94,7 +97,7 @@ function GenerateFields() {
         {errors.month && <p className="mt-1 text-sm text-red-500">{errors.month.message}</p>}
       </div>
       <div>
-        <Label htmlFor="gen_year" required>Year</Label>
+        <Label htmlFor="gen_year" required>{t("year")}</Label>
         <select
           id="gen_year"
           {...register("year", { valueAsNumber: true })}
@@ -109,11 +112,10 @@ function GenerateFields() {
         {errors.year && <p className="mt-1 text-sm text-red-500">{errors.year.message}</p>}
       </div>
       <div className="flex items-end sm:col-span-2 lg:col-span-1">
-        <Button type="submit" className="w-full" disabled={isSubmitting}>Generate payroll</Button>
+        <Button type="submit" className="w-full" disabled={isSubmitting}>{t("generatePayroll")}</Button>
       </div>
       <p className="text-xs text-stone-500 sm:col-span-2 lg:col-span-4">
-        Tick people out in Staff pay amounts for this month before generating.
-        Payroll only includes people still checked in.
+        {t("generatePayrollHint")}
       </p>
     </>
   );

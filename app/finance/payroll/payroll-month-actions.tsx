@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { deletePayrollPeriod } from "@/lib/actions/payroll";
@@ -22,30 +23,31 @@ export function PayrollMonthActions({
   branchId,
   label,
 }: PayrollMonthActionsProps) {
+  const t = useTranslations("finance");
   const router = useRouter();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   async function handleDelete() {
     const result = await deletePayrollPeriod({ month, year, schoolId, branchId });
     if (result.error) {
-      toast.error(typeof result.error === "string" ? result.error : "Failed to delete payroll");
+      toast.error(typeof result.error === "string" ? result.error : t("failedDeletePayroll"));
       return;
     }
-    toast.success(`Deleted ${label} payroll`);
+    toast.success(t("deletedPayroll", { label }));
     router.refresh();
   }
 
   return (
     <>
       <Button variant="ghost" className="text-red-600" onClick={() => setConfirmOpen(true)}>
-        Delete {label} Payroll
+        {t("deletePayrollMonth", { label })}
       </Button>
       <Dialog
         isOpen={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        title={`Delete ${label} payroll?`}
-        description="This will remove every payroll record for the selected month."
-        confirmLabel="Delete payroll month"
+        title={t("deletePayrollConfirm", { label })}
+        description={t("deletePayrollConfirmDesc")}
+        confirmLabel={t("deletePayrollMonthButton")}
         variant="danger"
         onConfirm={handleDelete}
       />

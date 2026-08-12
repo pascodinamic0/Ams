@@ -1,47 +1,47 @@
 import { z } from "zod";
 
 export const bookSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  branch_id: z.string().uuid("Branch is required"),
+  title: z.string().min(1, "titleRequired"),
+  branch_id: z.string().uuid("branchRequired"),
   author: z.string().optional(),
   isbn: z.string().optional(),
   quantity: z.coerce.number().int().min(0).default(1),
 });
 
 export const bookIssueSchema = z.object({
-  book_id: z.string().uuid("Book is required"),
-  student_id: z.string().uuid("Student is required"),
-  due_at: z.string().min(1, "Due date is required"),
+  book_id: z.string().uuid("bookRequired"),
+  student_id: z.string().uuid("studentRequired"),
+  due_at: z.string().min(1, "dueDateRequired"),
 });
 
 export const transportRouteSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  branch_id: z.string().uuid("Branch is required"),
+  name: z.string().min(1, "nameRequired"),
+  branch_id: z.string().uuid("branchRequired"),
   description: z.string().optional(),
 });
 
 export const transportVehicleSchema = z.object({
-  route_id: z.string().uuid("Route is required"),
-  name: z.string().min(1, "Name is required"),
+  route_id: z.string().uuid("routeRequired"),
+  name: z.string().min(1, "nameRequired"),
   capacity: z.coerce.number().int().positive().optional(),
 });
 
 export const transportMappingSchema = z.object({
-  student_id: z.string().uuid("Student is required"),
-  vehicle_id: z.string().uuid("Vehicle is required"),
+  student_id: z.string().uuid("studentRequired"),
+  vehicle_id: z.string().uuid("vehicleRequired"),
 });
 
 export const transportBulkMappingSchema = z.object({
-  vehicle_id: z.string().uuid("Vehicle is required"),
+  vehicle_id: z.string().uuid("vehicleRequired"),
   student_ids: z
-    .array(z.string().uuid("Invalid student"))
-    .min(1, "Select at least one student"),
+    .array(z.string().uuid("invalidStudent"))
+    .min(1, "selectAtLeastOneStudent"),
 });
 
 export const eventSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  branch_id: z.string().uuid("Branch is required"),
-  date: z.string().min(1, "Date is required"),
+  title: z.string().min(1, "titleRequired"),
+  branch_id: z.string().uuid("branchRequired"),
+  date: z.string().min(1, "dateRequired"),
   type: z.enum(["event", "holiday"]).default("event"),
   purpose: z.enum(["general", "campus_visit"]).default("general"),
   description: z.string().optional(),
@@ -54,8 +54,8 @@ export const eventSchema = z.object({
 
 export const eventRegistrationSchema = z.object({
   event_id: z.string().uuid(),
-  registrant_name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email"),
+  registrant_name: z.string().min(1, "nameRequired"),
+  email: z.string().email("invalidEmail"),
   phone: z.string().optional(),
   party_size: z.coerce.number().int().min(1).max(20).default(1),
   notes: z.string().optional(),
@@ -63,20 +63,20 @@ export const eventRegistrationSchema = z.object({
 });
 
 export const campusVisitBookingSchema = eventRegistrationSchema.extend({
-  admission_application_id: z.string().uuid("Application reference is required"),
-  guardian_email: z.string().email("Invalid email"),
+  admission_application_id: z.string().uuid("applicationReferenceRequired"),
+  guardian_email: z.string().email("invalidEmail"),
 });
 
 export const staffSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  school_id: z.string().uuid("School is required"),
+  name: z.string().min(1, "nameRequired"),
+  school_id: z.string().uuid("schoolRequired"),
   branch_id: z.string().uuid().optional().nullable(),
-  email: z.string().email("Invalid email").optional().or(z.literal("")),
+  email: z.string().email("invalidEmail").optional().or(z.literal("")),
   role: z.string().optional(),
   department: z.string().optional(),
-  monthly_salary: z.coerce.number().min(0, "Monthly salary must be zero or positive").default(0),
+  monthly_salary: z.coerce.number().min(0, "monthlySalaryZeroOrPositive").default(0),
   employment_status: z.enum(["active", "inactive"]).default("active"),
-  photo_url: z.string().url("Invalid photo URL").optional().or(z.literal("")),
+  photo_url: z.string().url("invalidPhotoUrl").optional().or(z.literal("")),
 });
 
 export type BookFormData = z.infer<typeof bookSchema>;

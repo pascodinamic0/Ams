@@ -17,5 +17,123 @@
   "pedagogical_council_member": "Pedagogical Council Member",
   "parent": "Parent",
   "student": "Student",
-  "analytics": "Analytics"
+  "analytics": "Analytics",
+  "workspace": {
+    "academic_admin": {
+      "title": "School control center",
+      "subtitle": "Configure the school, manage the team, and keep academic operations on track.",
+      "focusQuestion": "What needs school-wide control today?",
+      "manageTeam": "Manage team",
+      "schoolSettings": "School settings",
+      "addStudent": "Add student",
+      "openTaskBoard": "Open task board"
+    },
+    "admin_coordinator": {
+      "title": "Coordination board",
+      "subtitle": "Track unfinished work across departments and push follow-ups to the right people.",
+      "focusQuestion": "What is overdue across the school?",
+      "manageTasks": "Manage tasks",
+      "checkAdmissions": "Check admissions",
+      "reviewStudents": "Review students",
+      "sendOutreach": "Send outreach"
+    },
+    "principal": {
+      "title": "Leadership oversight",
+      "subtitle": "Review school health, approve key decisions, and escalate blocked work.",
+      "focusQuestion": "What needs my decision today?",
+      "approvalsTasks": "Approvals & tasks",
+      "reviewAdmissions": "Review admissions",
+      "openReports": "Open reports"
+    },
+    "registrar": {
+      "title": "Student records office",
+      "subtitle": "Keep student master data, guardians, and administrative records complete.",
+      "focusQuestion": "Which student records are incomplete?",
+      "addStudent": "Add student",
+      "studentRegistry": "Student registry",
+      "guardians": "Guardians",
+      "admissionsIntake": "Admissions intake"
+    },
+    "admissions_officer": {
+      "title": "Enrollment pipeline",
+      "subtitle": "Move applications from inquiry to enrolled students without losing follow-up.",
+      "focusQuestion": "Which applications are blocked?",
+      "reviewApplications": "Review applications",
+      "createStudent": "Create student",
+      "followUpTasks": "Follow-up tasks"
+    },
+    "pedagogy_coordinator": {
+      "title": "Academic planning",
+      "subtitle": "Organize classes, subjects, timetable, and curriculum quality.",
+      "focusQuestion": "Is teaching structure ready for this week?",
+      "buildTimetable": "Build timetable",
+      "manageClasses": "Manage classes",
+      "curriculum": "Curriculum",
+      "academicReports": "Academic reports"
+    },
+    "discipline_officer": {
+      "title": "Discipline desk",
+      "subtitle": "Log incidents, follow open cases, and escalate serious conduct issues.",
+      "focusQuestion": "Which behavior cases need follow-up?",
+      "openCases": "Open cases",
+      "findStudent": "Find student",
+      "attendancePatterns": "Attendance patterns"
+    },
+    "supervisor": {
+      "title": "Daily supervision",
+      "subtitle": "Monitor presence, report issues quickly, and keep the school day orderly.",
+      "focusQuestion": "What needs supervision right now?",
+      "reportIncident": "Report incident",
+      "todaysTimetable": "Today's timetable",
+      "attendance": "Attendance"
+    },
+    "pedagogical_council_member": {
+      "title": "Pedagogical review",
+      "subtitle": "Review academic structure and recommend improvements without day-to-day edits.",
+      "focusQuestion": "What needs council attention?",
+      "reviewCurriculum": "Review curriculum",
+      "reviewTimetable": "Review timetable",
+      "academicAnalytics": "Academic analytics"
+    },
+    "cashier": {
+      "title": "Payment desk",
+      "subtitle": "Collect fees, confirm balances, and keep daily receipts clean.",
+      "focusQuestion": "Who still needs to pay today?",
+      "recordPayment": "Record payment",
+      "unpaidList": "Unpaid list",
+      "findInvoice": "Find invoice"
+    },
+    "accountant": {
+      "title": "Finance control",
+      "subtitle": "Control fee structures, expenses, payroll, budget, and financial reporting.",
+      "focusQuestion": "Is money controlled and report-ready?",
+      "yearlyBudget": "Yearly budget",
+      "financeReports": "Finance reports",
+      "payroll": "Payroll",
+      "expenses": "Expenses",
+      "feeStructures": "Fee structures"
+    },
+    "finance_officer": {
+      "title": "Finance office",
+      "subtitle": "Manage invoices, payments, payroll, expenses, yearly budget, and fee operations.",
+      "focusQuestion": "What finance work is unfinished?",
+      "yearlyBudget": "Yearly budget",
+      "outstandingFees": "Outstanding fees",
+      "recordPayment": "Record payment",
+      "createInvoice": "Create invoice",
+      "reports": "Reports"
+    },
+    "fallback": {
+      "title": "Academic workspace",
+      "subtitle": "Manage school academic operations.",
+      "focusQuestion": "What should I finish today?",
+      "students": "Students",
+      "admissions": "Admissions"
+    }
+  },
+  "deptTeaching": "Teaching",
+  "deptFinance": "Finance",
+  "deptOperations": "Operations",
+  "deptDiscipline": "Discipline",
+  "deptAdministration": "Administration"
 }

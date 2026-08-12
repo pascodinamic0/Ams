@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,18 +19,18 @@ import { toast } from "@/lib/toast";
 
 const STATUSES = ["todo", "in_progress", "blocked", "done"] as const;
 
+const STATUS_KEYS = {
+  todo: "statusTodo",
+  in_progress: "statusInProgress",
+  blocked: "statusBlocked",
+  done: "statusDone",
+} as const;
+
 type StaffOption = {
   id: string;
   name: string;
   role: string;
 };
-
-function assigneeLabel(task: SchoolTask): string {
-  if (task.department === "everyone") return "Everyone";
-  if (task.assigned_name?.trim()) return task.assigned_name.trim();
-  if (task.assigned_to) return "Assigned";
-  return "Unassigned";
-}
 
 export function TaskBoard({
   tasks = [],
@@ -38,6 +39,10 @@ export function TaskBoard({
   tasks?: SchoolTask[];
   staff?: StaffOption[];
 }) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
+  const tRoles = useTranslations("roles");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [assignee, setAssignee] = useState("unassigned");
@@ -46,6 +51,28 @@ export function TaskBoard({
   const [loading, setLoading] = useState(false);
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  function statusLabel(status: (typeof STATUSES)[number]) {
+    return t(STATUS_KEYS[status]);
+  }
+
+  function priorityLabel(value: string) {
+    if (value === "low" || value === "medium" || value === "high") {
+      return tc(value);
+    }
+    return value;
+  }
+
+  function roleLabel(role: string) {
+    return tRoles.has(role) ? tRoles(role as Parameters<typeof tRoles>[0]) : role.replace(/_/g, " ");
+  }
+
+  function assigneeLabel(task: SchoolTask): string {
+    if (task.department === "everyone") return tc("everyone");
+    if (task.assigned_name?.trim()) return task.assigned_name.trim();
+    if (task.assigned_to) return tc("assigned");
+    return tc("unassigned");
+  }
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -61,7 +88,7 @@ export function TaskBoard({
       toast.error(result.error);
       return;
     }
-    toast.success("Task created");
+    toast.success(t("taskCreated"));
     setTitle("");
     setAssignee("unassigned");
     setDueDate("");
@@ -81,11 +108,11 @@ export function TaskBoard({
     const isPendingExpense =
       task.related_type === "expense" && task.status !== "done";
     if (isPendingExpense) {
-      toast.error("Reject or approve this expense instead of deleting the task");
+      toast.error(te("rejectOrApproveExpense"));
       return;
     }
 
-    if (!confirm(`Delete task "${task.title}"?`)) return;
+    if (!confirm(t("deleteTaskConfirm", { title: task.title }))) return;
 
     setDeletingId(task.id);
     const result = await deleteSchoolTask(task.id);
@@ -94,7 +121,7 @@ export function TaskBoard({
       toast.error(result.error);
       return;
     }
-    toast.success("Task deleted");
+    toast.success(t("taskDeleted"));
     router.refresh();
   }
 
@@ -110,11 +137,11 @@ export function TaskBoard({
       return;
     }
     if (decision === "approved" && result.data?.receiptNumber) {
-      toast.success(`Approved — receipt ${result.data.receiptNumber}`);
+      toast.success(t("expenseApprovedReceipt", { number: result.data.receiptNumber }));
     } else if (decision === "approved") {
-      toast.success("Expense approved");
+      toast.success(t("expenseApproved"));
     } else {
-      toast.success("Expense rejected");
+      toast.success(t("expenseRejected"));
     }
     router.refresh();
   }
@@ -126,50 +153,50 @@ export function TaskBoard({
         className="grid grid-cols-1 gap-3 rounded-xl border border-stone-200 p-4 dark:border-stone-800 sm:grid-cols-2 xl:grid-cols-6"
       >
         <div className="min-w-0 sm:col-span-2 xl:col-span-2">
-          <Label>Task</Label>
+          <Label>{t("taskLabel")}</Label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Follow up unpaid fees for Nursery 1"
+            placeholder={t("taskPlaceholder")}
             required
           />
         </div>
         <div className="min-w-0">
-          <Label>Assignee</Label>
+          <Label>{tc("assignee")}</Label>
           <select
             className="mt-1 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             value={assignee}
             onChange={(e) => setAssignee(e.target.value)}
           >
-            <option value="unassigned">Unassigned</option>
-            <option value="everyone">Everyone</option>
+            <option value="unassigned">{tc("unassigned")}</option>
+            <option value="everyone">{tc("everyone")}</option>
             {staff.map((member) => (
               <option key={member.id} value={member.id}>
                 {member.name}
-                {member.role ? ` (${member.role.replace(/_/g, " ")})` : ""}
+                {member.role ? ` (${roleLabel(member.role)})` : ""}
               </option>
             ))}
           </select>
         </div>
         <div className="min-w-0">
-          <Label>Priority</Label>
+          <Label>{tc("priority")}</Label>
           <select
             className="mt-1 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             value={priority}
             onChange={(e) => setPriority(e.target.value as "low" | "medium" | "high")}
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="low">{tc("low")}</option>
+            <option value="medium">{tc("medium")}</option>
+            <option value="high">{tc("high")}</option>
           </select>
         </div>
         <div className="min-w-0">
-          <Label>Due</Label>
+          <Label>{tc("due")}</Label>
           <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
         </div>
         <div className="flex min-w-0 items-end">
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Adding..." : "Add"}
+            {loading ? tc("adding") : tc("add")}
           </Button>
         </div>
       </form>
@@ -183,11 +210,11 @@ export function TaskBoard({
               className="min-w-0 rounded-xl border border-stone-200 bg-stone-50/70 p-3 dark:border-stone-800 dark:bg-stone-900/40"
             >
               <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-stone-500">
-                {status.replace(/_/g, " ")} ({column.length})
+                {statusLabel(status)} ({column.length})
               </h2>
               <div className="space-y-3">
                 {column.length === 0 ? (
-                  <p className="text-sm text-stone-400">No tasks</p>
+                  <p className="text-sm text-stone-400">{t("noTasks")}</p>
                 ) : (
                   column.map((task) => {
                     const isExpense = task.related_type === "expense";
@@ -206,7 +233,7 @@ export function TaskBoard({
                           {canDelete ? (
                             <button
                               type="button"
-                              aria-label="Delete task"
+                              aria-label={t("deleteTaskAria")}
                               disabled={deletingId === task.id}
                               onClick={() => handleDelete(task)}
                               className="shrink-0 rounded p-1 text-stone-400 hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:hover:bg-red-950/40 dark:hover:text-red-400"
@@ -217,12 +244,12 @@ export function TaskBoard({
                         </div>
                         {isExpense ? (
                           <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-amber-700 dark:text-amber-400">
-                            Finance expense approval
+                            {t("financeExpenseApproval")}
                           </p>
                         ) : null}
                         <p className="mt-1 text-xs text-stone-500">
-                          {assigneeLabel(task)} · {task.priority}
-                          {task.due_date ? ` · due ${task.due_date}` : ""}
+                          {assigneeLabel(task)} · {priorityLabel(task.priority)}
+                          {task.due_date ? ` · ${t("dueOn", { date: task.due_date })}` : ""}
                         </p>
                         {task.description ? (
                           <p className="mt-2 whitespace-pre-wrap text-xs text-stone-600 dark:text-stone-400">
@@ -237,7 +264,7 @@ export function TaskBoard({
                               disabled={decidingId === task.id}
                               onClick={() => handleExpenseDecision(task.id, "approved")}
                             >
-                              {decidingId === task.id ? "..." : "Approve"}
+                              {decidingId === task.id ? "..." : t("approve")}
                             </Button>
                             <Button
                               type="button"
@@ -246,7 +273,7 @@ export function TaskBoard({
                               disabled={decidingId === task.id}
                               onClick={() => handleExpenseDecision(task.id, "rejected")}
                             >
-                              Reject
+                              {t("reject")}
                             </Button>
                           </div>
                         ) : (
@@ -259,12 +286,12 @@ export function TaskBoard({
                                 href={`/finance/expenses/${task.related_id}/receipt`}
                                 className="rounded-full border border-stone-200 px-2 py-0.5 text-[11px] text-stone-600 hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800"
                               >
-                                Receipt {task.related_receipt_number}
+                                {t("receiptNumber", { number: task.related_receipt_number })}
                               </Link>
                             ) : null}
                             {isExpense && task.related_expense_status === "rejected" ? (
                               <span className="rounded-full border border-red-200 px-2 py-0.5 text-[11px] text-red-700 dark:border-red-900 dark:text-red-300">
-                                Rejected
+                                {tc("rejected")}
                               </span>
                             ) : null}
                             {!isExpense
@@ -275,7 +302,7 @@ export function TaskBoard({
                                     onClick={() => handleStatus(task.id, next)}
                                     className="rounded-full border border-stone-200 px-2 py-0.5 text-[11px] text-stone-600 hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800"
                                   >
-                                    {next.replace(/_/g, " ")}
+                                    {statusLabel(next)}
                                   </button>
                                 ))
                               : null}

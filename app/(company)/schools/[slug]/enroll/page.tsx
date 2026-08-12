@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { OnlineEnrollmentForm } from "@/components/schools/online-enrollment-form";
 import { SchoolInnerPage } from "@/components/schools/school-inner-page";
 import { getSchoolBySlug } from "@/lib/db";
@@ -13,20 +14,22 @@ export default async function SchoolEnrollPage({
   const school = await getSchoolBySlug(slug);
   if (!school) notFound();
 
+  const t = await getTranslations("schools.enrollment");
+  const tChrome = await getTranslations("schools.chrome");
   const campusVisitSlots = await getCampusVisitSlots(school.id);
   const hasVisitSlots = campusVisitSlots.length > 0;
 
   return (
     <SchoolInnerPage
       school={school}
-      title="Online enrollment"
+      title={t("onlineEnrollment")}
       description={
         hasVisitSlots
-          ? `Submit your details for ${school.name}, then book a campus visit to complete enrollment in person.`
-          : `Submit your details for ${school.name}, then visit the campus to complete enrollment in person.`
+          ? t("submitDetailsForThenBook", { schoolName: school.name })
+          : t("submitDetailsForThenVisit", { schoolName: school.name })
       }
       backHref={`/schools/${slug}`}
-      backLabel={`Back to ${school.name}`}
+      backLabel={tChrome("backToSchoolName", { schoolName: school.name })}
     >
       <OnlineEnrollmentForm
         schoolId={school.id}

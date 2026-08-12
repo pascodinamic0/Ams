@@ -1,5 +1,8 @@
 "use server";
 
+import { getTranslations } from "next-intl/server";
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { notifyStudentGuardians } from "@/lib/services/notifications";
@@ -17,7 +20,7 @@ export async function recordPayment(input: PaymentFormData) {
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: invoice, error: fetchError } = await supabase
     .from("fee_invoices")
@@ -26,7 +29,7 @@ export async function recordPayment(input: PaymentFormData) {
     .single();
 
   if (fetchError || !invoice) {
-    return { error: "Invoice not found" };
+    return await actionError("invoiceNotFound");
   }
 
   const currentPaid = Number(invoice.amount_paid ?? 0);
@@ -34,7 +37,9 @@ export async function recordPayment(input: PaymentFormData) {
   const remaining = invoiceAmount - currentPaid;
 
   if (parsed.data.amount > remaining) {
-    return { error: `Payment exceeds remaining balance (${remaining.toFixed(2)})` };
+    return await actionError("paymentExceedsBalance", {
+      remaining: remaining.toFixed(2),
+    });
   }
 
   const newAmountPaid = currentPaid + parsed.data.amount;
@@ -67,9 +72,13 @@ export async function recordPayment(input: PaymentFormData) {
 
   if (updateError) return { error: updateError.message };
 
+  const tn = await getTranslations("notifications");
   await notifyStudentGuardians(invoice.student_id, {
-    title: "Payment received",
-    body: `A payment of ${parsed.data.amount.toFixed(2)} was recorded. Invoice status: ${newStatus}.`,
+    title: tn("paymentReceived"),
+    body: tn("paymentReceivedBody", {
+      amount: parsed.data.amount.toFixed(2),
+      status: newStatus,
+    }),
   });
 
   revalidatePath("/finance/payments");

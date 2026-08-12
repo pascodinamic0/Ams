@@ -1,0 +1,16 @@
+{
+  "view": "View",
+  "adding": "Adding...",
+  "unassigned": "Unassigned",
+  "assigned": "Assigned",
+  "everyone": "Everyone",
+  "low": "Low",
+  "medium": "Medium",
+  "high": "High",
+  "priority": "Priority",
+  "assignee": "Assignee",
+  "optionalField": "{label} (optional)",
+  "notified": "We've been notified.",
+  "follow": "Follow",
+  "copiedToClipboard": "Copied to clipboard"
+}

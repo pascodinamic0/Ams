@@ -9,8 +9,9 @@ import { getTranslations } from "next-intl/server";
 
 export default async function AcademicDashboard() {
   const t = await getTranslations("academic");
+  const tRoles = await getTranslations("roles");
   const profile = await getCurrentProfile();
-  const workspace = getRoleWorkspace(profile?.role);
+  const workspace = getRoleWorkspace(profile?.role, tRoles);
   const schoolId = profile?.school_id ?? undefined;
 
   const [data, taskStats, disciplineStats] = await Promise.all([
@@ -30,31 +31,31 @@ export default async function AcademicDashboard() {
       key: "classes",
       label: t("classesTitle"),
       value: data.classes,
-      hint: "Configured classes",
+      hint: t("configuredClasses"),
     },
     {
       key: "admissions",
       label: t("pendingAdmissions"),
       value: data.pendingAdmissions,
-      hint: "Awaiting decision",
+      hint: t("awaitingDecision"),
     },
     {
       key: "openTasks",
-      label: "Open tasks",
+      label: t("openTasks"),
       value: taskStats.openTasks,
-      hint: `${taskStats.overdueTasks} overdue`,
+      hint: t("overdueCount", { count: taskStats.overdueTasks }),
     },
     {
       key: "overdueTasks",
-      label: "Overdue tasks",
+      label: t("overdueTasks"),
       value: taskStats.overdueTasks,
-      hint: "Need follow-up",
+      hint: t("needFollowUp"),
     },
     {
       key: "openIncidents",
-      label: "Open discipline cases",
+      label: t("openDisciplineCases"),
       value: disciplineStats.openIncidents,
-      hint: "Open / monitoring / escalated",
+      hint: t("disciplineStatusHint"),
     },
   ].filter((metric) => workspace.metricHints.includes(metric.key));
 

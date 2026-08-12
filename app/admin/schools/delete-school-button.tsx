@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { deleteSchool } from "@/lib/actions/schools";
 import { toast } from "@/lib/toast";
@@ -14,12 +15,12 @@ export function DeleteSchoolButton({
   schoolName: string;
   redirectToList?: boolean;
 }) {
+  const t = useTranslations("admin");
+  const tc = useTranslations("common");
   const router = useRouter();
 
   async function handleDelete() {
-    const confirmed = confirm(
-      `Delete "${schoolName}"? This permanently removes the school and all related data (branches, students, staff, finances, etc.). This cannot be undone.`
-    );
+    const confirmed = confirm(t("deleteSchoolConfirm", { name: schoolName }));
     if (!confirmed) return;
 
     const result = await deleteSchool(schoolId);
@@ -28,7 +29,7 @@ export function DeleteSchoolButton({
       return;
     }
 
-    toast.success("School deleted");
+    toast.success(t("schoolDeleted"));
     if (redirectToList) {
       router.push("/admin/schools");
     }
@@ -42,7 +43,7 @@ export function DeleteSchoolButton({
       className="text-red-600 hover:text-red-700"
       onClick={handleDelete}
     >
-      Delete
+      {tc("delete")}
     </Button>
   );
 }

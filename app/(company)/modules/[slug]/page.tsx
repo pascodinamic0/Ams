@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const module = getPlatformModule(slug, t);
 
   if (!module) {
-    return { title: "Module not found" };
+    return { title: t("moduleNotFound") };
   }
 
   return {

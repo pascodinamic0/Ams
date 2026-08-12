@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,15 +10,15 @@ import { bookCampusVisitSlot } from "@/lib/actions/event-registrations";
 import type { PublicSchoolEvent } from "@/lib/db/public-events";
 import { toast } from "@/lib/toast";
 
-function formatSlotDate(date: string, time: string | null) {
-  const formatted = new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
+function formatSlotDate(date: string, time: string | null, locale: string, atTime: (values: { date: string; time: string }) => string) {
+  const formatted = new Date(`${date}T00:00:00`).toLocaleDateString(locale, {
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
   });
   if (!time) return formatted;
-  return `${formatted} at ${time.slice(0, 5)}`;
+  return atTime({ date: formatted, time: time.slice(0, 5) });
 }
 
 export function CampusVisitSlotPicker({
@@ -43,6 +44,10 @@ export function CampusVisitSlotPicker({
   slug: string;
   primary: string;
 }) {
+  const t = useTranslations("schools.visit");
+  const te = useTranslations("schools.enrollment");
+  const tf = useTranslations("schools.forms");
+  const locale = useLocale();
   const [selectedId, setSelectedId] = useState<string | null>(slots[0]?.id ?? null);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -71,7 +76,7 @@ export function CampusVisitSlotPicker({
 
     if (result.error) {
       const message =
-        typeof result.error === "string" ? result.error : "Could not book this slot. Try another time.";
+        typeof result.error === "string" ? result.error : t("couldNotBookSlot");
       toast.error(message);
       return;
     }
@@ -81,36 +86,36 @@ export function CampusVisitSlotPicker({
       eventDate: selected.date,
       registrationId: result.data?.id ?? "",
     });
-    toast.success("Campus visit booked");
+    toast.success(t("campusVisitBooked"));
   }
 
   if (booked) {
     return (
       <div className="mx-auto max-w-xl">
-        <h1 className="text-2xl font-bold">You&apos;re all set</h1>
+        <h1 className="text-2xl font-bold">{t("youreAllSet")}</h1>
         <p className="mt-2 text-stone-600 dark:text-stone-400">
-          Your enrollment application and campus visit are scheduled at {schoolName}.
+          {t("scheduledAt", { schoolName })}
         </p>
         <div className="mt-6 space-y-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-6 dark:border-emerald-900 dark:bg-emerald-950/40">
           <p className="text-sm">
-            Application reference:{" "}
+            {t("applicationReference")}{" "}
             <span className="font-mono font-semibold">{admissionApplicationId}</span>
           </p>
           <p className="text-sm">
-            <span className="font-medium">Campus visit:</span> {booked.eventTitle}
+            <span className="font-medium">{t("campusVisit")}</span> {booked.eventTitle}
           </p>
           <p className="text-sm">
-            <span className="font-medium">When:</span>{" "}
-            {formatSlotDate(booked.eventDate, selected?.start_time ?? null)}
+            <span className="font-medium">{t("when")}</span>{" "}
+            {formatSlotDate(booked.eventDate, selected?.start_time ?? null, locale, (v) => t("atTime", v))}
           </p>
           {selected?.location && (
             <p className="text-sm">
-              <span className="font-medium">Where:</span> {selected.location}
+              <span className="font-medium">{t("where")}</span> {selected.location}
             </p>
           )}
           {schoolAddress && (
             <p className="text-sm">
-              <span className="font-medium">School address:</span> {schoolAddress}
+              <span className="font-medium">{t("schoolAddress")}</span> {schoolAddress}
             </p>
           )}
           {selected?.booking_procedure && (
@@ -119,8 +124,7 @@ export function CampusVisitSlotPicker({
             </p>
           )}
           <p className="text-sm text-stone-600 dark:text-stone-400">
-            Bring a valid ID and any documents for {studentName}. The admissions team may contact you
-            before your visit.
+            {t("bringId", { studentName })}
           </p>
         </div>
         <Link
@@ -128,7 +132,7 @@ export function CampusVisitSlotPicker({
           className="mt-6 inline-block text-sm font-medium hover:underline"
           style={{ color: primary }}
         >
-          Back to school website
+          {te("backToSchoolWebsite")}
         </Link>
       </div>
     );
@@ -140,12 +144,12 @@ export function CampusVisitSlotPicker({
 
   return (
     <div className="mx-auto max-w-xl">
-      <h1 className="text-2xl font-bold">Book your campus visit</h1>
+      <h1 className="text-2xl font-bold">{t("bookYourCampusVisit")}</h1>
       <p className="mt-2 text-stone-600 dark:text-stone-400">
-        Choose a time to visit {schoolName} and complete enrollment for {studentName} in person.
+        {t("chooseTime", { schoolName, studentName })}
       </p>
       <p className="mt-1 text-sm text-stone-500">
-        Application reference: <span className="font-mono">{admissionApplicationId}</span>
+        {t("applicationReference")} <span className="font-mono">{admissionApplicationId}</span>
       </p>
 
       <div className="mt-6 space-y-3">
@@ -169,7 +173,7 @@ export function CampusVisitSlotPicker({
             <div className="flex-1">
               <p className="font-medium">{slot.title}</p>
               <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-                {formatSlotDate(slot.date, slot.start_time)}
+                {formatSlotDate(slot.date, slot.start_time, locale, (v) => t("atTime", v))}
               </p>
               {slot.location && (
                 <p className="mt-1 text-sm text-stone-500">{slot.location}</p>
@@ -183,12 +187,12 @@ export function CampusVisitSlotPicker({
       </div>
 
       <div className="mt-6">
-        <Label>Notes for admissions (optional)</Label>
+        <Label>{t("notesForAdmissions")}</Label>
         <Textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
-          placeholder="Accessibility needs, preferred language, etc."
+          placeholder={tf("accessibilityNotes")}
           className="mt-1"
         />
       </div>
@@ -198,7 +202,7 @@ export function CampusVisitSlotPicker({
           href={`/schools/${slug}`}
           className="text-sm text-stone-500 hover:underline"
         >
-          Skip for now
+          {t("skipForNow")}
         </Link>
         <Button
           type="button"
@@ -206,7 +210,7 @@ export function CampusVisitSlotPicker({
           disabled={loading || !selected}
           style={{ backgroundColor: primary }}
         >
-          {loading ? "Booking..." : "Confirm campus visit"}
+          {loading ? t("booking") : t("confirmCampusVisit")}
         </Button>
       </div>
     </div>

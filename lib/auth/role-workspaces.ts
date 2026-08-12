@@ -15,175 +15,166 @@ export type RoleWorkspace = {
   metricHints: string[];
 };
 
-const WORKSPACES: Partial<Record<UserRole, RoleWorkspace>> = {
+type Translator = (key: string) => string;
+
+type ActionSpec = {
+  href: string;
+  key: string;
+  variant?: RoleQuickAction["variant"];
+};
+
+type WorkspaceSpec = {
+  role: UserRole;
+  metricHints: string[];
+  actions: ActionSpec[];
+};
+
+const SPECS: Record<string, WorkspaceSpec> = {
   academic_admin: {
     role: "academic_admin",
-    title: "School control center",
-    subtitle: "Configure the school, manage the team, and keep academic operations on track.",
-    focusQuestion: "What needs school-wide control today?",
-    quickActions: [
-      { href: "/academic/team", label: "Manage team" },
-      { href: "/academic/settings", label: "School settings", variant: "ghost" },
-      { href: "/academic/students/new", label: "Add student", variant: "ghost" },
-      { href: "/academic/tasks", label: "Open task board", variant: "outline" },
-    ],
     metricHints: ["students", "classes", "admissions", "openTasks"],
+    actions: [
+      { href: "/academic/team", key: "manageTeam" },
+      { href: "/academic/settings", key: "schoolSettings", variant: "ghost" },
+      { href: "/academic/students/new", key: "addStudent", variant: "ghost" },
+      { href: "/academic/tasks", key: "openTaskBoard", variant: "outline" },
+    ],
   },
   admin_coordinator: {
     role: "admin_coordinator",
-    title: "Coordination board",
-    subtitle: "Track unfinished work across departments and push follow-ups to the right people.",
-    focusQuestion: "What is overdue across the school?",
-    quickActions: [
-      { href: "/academic/tasks", label: "Manage tasks" },
-      { href: "/academic/admissions", label: "Check admissions", variant: "ghost" },
-      { href: "/academic/students", label: "Review students", variant: "ghost" },
-      { href: "/outreach", label: "Send outreach", variant: "outline" },
-    ],
     metricHints: ["openTasks", "overdueTasks", "admissions", "students"],
+    actions: [
+      { href: "/academic/tasks", key: "manageTasks" },
+      { href: "/academic/admissions", key: "checkAdmissions", variant: "ghost" },
+      { href: "/academic/students", key: "reviewStudents", variant: "ghost" },
+      { href: "/outreach", key: "sendOutreach", variant: "outline" },
+    ],
   },
   principal: {
     role: "principal",
-    title: "Leadership oversight",
-    subtitle: "Review school health, approve key decisions, and escalate blocked work.",
-    focusQuestion: "What needs my decision today?",
-    quickActions: [
-      { href: "/academic/tasks", label: "Approvals & tasks" },
-      { href: "/academic/admissions", label: "Review admissions", variant: "ghost" },
-      { href: "/analytics", label: "Open reports", variant: "outline" },
-    ],
     metricHints: ["admissions", "openTasks", "students"],
+    actions: [
+      { href: "/academic/tasks", key: "approvalsTasks" },
+      { href: "/academic/admissions", key: "reviewAdmissions", variant: "ghost" },
+      { href: "/analytics", key: "openReports", variant: "outline" },
+    ],
   },
   registrar: {
     role: "registrar",
-    title: "Student records office",
-    subtitle: "Keep student master data, guardians, and administrative records complete.",
-    focusQuestion: "Which student records are incomplete?",
-    quickActions: [
-      { href: "/academic/students/new", label: "Add student" },
-      { href: "/academic/students", label: "Student registry", variant: "ghost" },
-      { href: "/academic/guardians", label: "Guardians", variant: "ghost" },
-      { href: "/academic/admissions", label: "Admissions intake", variant: "outline" },
-    ],
     metricHints: ["students", "admissions", "classes"],
+    actions: [
+      { href: "/academic/students/new", key: "addStudent" },
+      { href: "/academic/students", key: "studentRegistry", variant: "ghost" },
+      { href: "/academic/guardians", key: "guardians", variant: "ghost" },
+      { href: "/academic/admissions", key: "admissionsIntake", variant: "outline" },
+    ],
   },
   admissions_officer: {
     role: "admissions_officer",
-    title: "Enrollment pipeline",
-    subtitle: "Move applications from inquiry to enrolled students without losing follow-up.",
-    focusQuestion: "Which applications are blocked?",
-    quickActions: [
-      { href: "/academic/admissions", label: "Review applications" },
-      { href: "/academic/students/new", label: "Create student", variant: "ghost" },
-      { href: "/academic/tasks", label: "Follow-up tasks", variant: "outline" },
-    ],
     metricHints: ["admissions", "students", "openTasks"],
+    actions: [
+      { href: "/academic/admissions", key: "reviewApplications" },
+      { href: "/academic/students/new", key: "createStudent", variant: "ghost" },
+      { href: "/academic/tasks", key: "followUpTasks", variant: "outline" },
+    ],
   },
   pedagogy_coordinator: {
     role: "pedagogy_coordinator",
-    title: "Academic planning",
-    subtitle: "Organize classes, subjects, timetable, and curriculum quality.",
-    focusQuestion: "Is teaching structure ready for this week?",
-    quickActions: [
-      { href: "/academic/timetable", label: "Build timetable" },
-      { href: "/academic/classes", label: "Manage classes", variant: "ghost" },
-      { href: "/academic/curriculum", label: "Curriculum", variant: "ghost" },
-      { href: "/analytics", label: "Academic reports", variant: "outline" },
-    ],
     metricHints: ["classes", "students", "admissions"],
+    actions: [
+      { href: "/academic/timetable", key: "buildTimetable" },
+      { href: "/academic/classes", key: "manageClasses", variant: "ghost" },
+      { href: "/academic/curriculum", key: "curriculum", variant: "ghost" },
+      { href: "/analytics", key: "academicReports", variant: "outline" },
+    ],
   },
   discipline_officer: {
     role: "discipline_officer",
-    title: "Discipline desk",
-    subtitle: "Log incidents, follow open cases, and escalate serious conduct issues.",
-    focusQuestion: "Which behavior cases need follow-up?",
-    quickActions: [
-      { href: "/academic/discipline", label: "Open cases" },
-      { href: "/academic/students", label: "Find student", variant: "ghost" },
-      { href: "/analytics/attendance", label: "Attendance patterns", variant: "outline" },
-    ],
     metricHints: ["openIncidents", "students", "admissions"],
+    actions: [
+      { href: "/academic/discipline", key: "openCases" },
+      { href: "/academic/students", key: "findStudent", variant: "ghost" },
+      { href: "/analytics/attendance", key: "attendancePatterns", variant: "outline" },
+    ],
   },
   supervisor: {
     role: "supervisor",
-    title: "Daily supervision",
-    subtitle: "Monitor presence, report issues quickly, and keep the school day orderly.",
-    focusQuestion: "What needs supervision right now?",
-    quickActions: [
-      { href: "/academic/discipline", label: "Report incident" },
-      { href: "/academic/timetable", label: "Today's timetable", variant: "ghost" },
-      { href: "/analytics/attendance", label: "Attendance", variant: "outline" },
-    ],
     metricHints: ["openIncidents", "students", "classes"],
+    actions: [
+      { href: "/academic/discipline", key: "reportIncident" },
+      { href: "/academic/timetable", key: "todaysTimetable", variant: "ghost" },
+      { href: "/analytics/attendance", key: "attendance", variant: "outline" },
+    ],
   },
   pedagogical_council_member: {
     role: "pedagogical_council_member",
-    title: "Pedagogical review",
-    subtitle: "Review academic structure and recommend improvements without day-to-day edits.",
-    focusQuestion: "What needs council attention?",
-    quickActions: [
-      { href: "/academic/curriculum", label: "Review curriculum" },
-      { href: "/academic/timetable", label: "Review timetable", variant: "ghost" },
-      { href: "/analytics", label: "Academic analytics", variant: "outline" },
-    ],
     metricHints: ["classes", "students", "admissions"],
+    actions: [
+      { href: "/academic/curriculum", key: "reviewCurriculum" },
+      { href: "/academic/timetable", key: "reviewTimetable", variant: "ghost" },
+      { href: "/analytics", key: "academicAnalytics", variant: "outline" },
+    ],
   },
   cashier: {
     role: "cashier",
-    title: "Payment desk",
-    subtitle: "Collect fees, confirm balances, and keep daily receipts clean.",
-    focusQuestion: "Who still needs to pay today?",
-    quickActions: [
-      { href: "/finance/payments", label: "Record payment" },
-      { href: "/finance/outstanding", label: "Unpaid list", variant: "ghost" },
-      { href: "/finance/invoices", label: "Find invoice", variant: "ghost" },
-    ],
     metricHints: ["collected", "outstanding"],
+    actions: [
+      { href: "/finance/payments", key: "recordPayment" },
+      { href: "/finance/outstanding", key: "unpaidList", variant: "ghost" },
+      { href: "/finance/invoices", key: "findInvoice", variant: "ghost" },
+    ],
   },
   accountant: {
     role: "accountant",
-    title: "Finance control",
-    subtitle: "Control fee structures, expenses, payroll, budget, and financial reporting.",
-    focusQuestion: "Is money controlled and report-ready?",
-    quickActions: [
-      { href: "/finance/budget", label: "Yearly budget" },
-      { href: "/finance/reports", label: "Finance reports", variant: "ghost" },
-      { href: "/finance/payroll", label: "Payroll", variant: "ghost" },
-      { href: "/finance/expenses", label: "Expenses", variant: "ghost" },
-      { href: "/finance/fee-structure", label: "Fee structures", variant: "outline" },
-    ],
     metricHints: ["collected", "outstanding", "payroll", "expenses", "budget"],
+    actions: [
+      { href: "/finance/budget", key: "yearlyBudget" },
+      { href: "/finance/reports", key: "financeReports", variant: "ghost" },
+      { href: "/finance/payroll", key: "payroll", variant: "ghost" },
+      { href: "/finance/expenses", key: "expenses", variant: "ghost" },
+      { href: "/finance/fee-structure", key: "feeStructures", variant: "outline" },
+    ],
   },
   finance_officer: {
     role: "finance_officer",
-    title: "Finance office",
-    subtitle:
-      "Manage invoices, payments, payroll, expenses, yearly budget, and fee operations.",
-    focusQuestion: "What finance work is unfinished?",
-    quickActions: [
-      { href: "/finance/budget", label: "Yearly budget" },
-      { href: "/finance/outstanding", label: "Outstanding fees", variant: "ghost" },
-      { href: "/finance/payments", label: "Record payment", variant: "ghost" },
-      { href: "/finance/invoices", label: "Create invoice", variant: "ghost" },
-      { href: "/finance/reports", label: "Reports", variant: "outline" },
-    ],
     metricHints: ["collected", "outstanding", "payroll", "expenses", "budget"],
+    actions: [
+      { href: "/finance/budget", key: "yearlyBudget" },
+      { href: "/finance/outstanding", key: "outstandingFees", variant: "ghost" },
+      { href: "/finance/payments", key: "recordPayment", variant: "ghost" },
+      { href: "/finance/invoices", key: "createInvoice", variant: "ghost" },
+      { href: "/finance/reports", key: "reports", variant: "outline" },
+    ],
   },
 };
 
-const FALLBACK: RoleWorkspace = {
+const FALLBACK: WorkspaceSpec = {
   role: "academic_admin",
-  title: "Academic workspace",
-  subtitle: "Manage school academic operations.",
-  focusQuestion: "What should I finish today?",
-  quickActions: [
-    { href: "/academic/students", label: "Students" },
-    { href: "/academic/admissions", label: "Admissions", variant: "ghost" },
-  ],
   metricHints: ["students", "classes", "admissions"],
+  actions: [
+    { href: "/academic/students", key: "students" },
+    { href: "/academic/admissions", key: "admissions", variant: "ghost" },
+  ],
 };
 
-export function getRoleWorkspace(role: string | null | undefined): RoleWorkspace {
+export function getRoleWorkspace(
+  role: string | null | undefined,
+  t: Translator
+): RoleWorkspace {
   const normalized = normalizeRole(role);
-  return WORKSPACES[normalized] ?? { ...FALLBACK, role: normalized };
+  const specId = normalized in SPECS ? normalized : "fallback";
+  const spec = SPECS[specId] ?? FALLBACK;
+  const prefix = `workspace.${specId}`;
+  return {
+    role: normalized,
+    title: t(`${prefix}.title`),
+    subtitle: t(`${prefix}.subtitle`),
+    focusQuestion: t(`${prefix}.focusQuestion`),
+    quickActions: spec.actions.map((action) => ({
+      href: action.href,
+      label: t(`${prefix}.${action.key}`),
+      variant: action.variant,
+    })),
+    metricHints: spec.metricHints,
+  };
 }

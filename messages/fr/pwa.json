@@ -21,5 +21,18 @@
   "updateDescription": "Une version plus récente est déjà disponible—y compris la nouvelle icône de l'application. Rester ici, c'est travailler sans le nouveau visuel et sans les derniers correctifs que les enseignants et la finance utilisent déjà.",
   "updateNow": "Mettre à jour",
   "updatingNow": "Mise à jour…",
-  "updateLater": "Pas maintenant"
+  "updateLater": "Pas maintenant",
+  "offlineAttendanceSynced": "Présences hors ligne synchronisées",
+  "offlineAttendanceSyncedCount": "{count} enregistrements de présence hors ligne synchronisés",
+  "attendanceWaitingToSync": "{count} enregistrement(s) de présence en attente de synchronisation",
+  "alreadyInstalledOnDevice": "{productName} est installé sur cet appareil.",
+  "installOnIos": "Installer sur iPhone ou iPad",
+  "tapShareThenAdd": "Appuyez sur Partager, puis choisissez Ajouter à l'écran d'accueil.",
+  "addToHomeScreen": "Ajouter à l'écran d'accueil",
+  "installFromBrowserMenu": "Installer depuis le menu du navigateur",
+  "installProduct": "Installer {productName}",
+  "iosInstallHint": "Ajoutez-le à votre écran d'accueil pour un accès rapide. Appuyez sur Partager, puis Ajouter à l'écran d'accueil.",
+  "androidInstallHint": "Installez l'application sur cet appareil pour un accès plus rapide, le plein écran et le hors ligne.",
+  "shareThenAddToHomeScreen": "Partager, puis Ajouter à l'écran d'accueil",
+  "dismissInstallPrompt": "Fermer l'invite d'installation"
 }

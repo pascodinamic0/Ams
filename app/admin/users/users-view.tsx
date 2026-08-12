@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -10,26 +11,26 @@ import type { UserListItem } from "@/lib/db/users";
 import { UserRoleBadge } from "./user-role-badge";
 
 const ROLE_FILTERS = [
-  { id: "all", label: "All users" },
-  { id: "super_admin", label: "Super admins" },
-  { id: "academic_admin", label: "Academic admins" },
-  { id: "admin_coordinator", label: "Admin coordinators" },
-  { id: "registrar", label: "Registrars" },
-  { id: "admissions_officer", label: "Admissions" },
-  { id: "pedagogy_coordinator", label: "Pedagogy" },
-  { id: "principal", label: "Principals" },
-  { id: "teacher", label: "Teachers" },
-  { id: "finance_officer", label: "Finance" },
-  { id: "cashier", label: "Cashiers" },
-  { id: "accountant", label: "Accountants" },
-  { id: "operations_manager", label: "Operations" },
-  { id: "operations_officer", label: "Operations officers" },
-  { id: "discipline_officer", label: "Discipline" },
-  { id: "supervisor", label: "Supervisors" },
-  { id: "pedagogical_council_member", label: "Pedagogical council" },
-  { id: "student", label: "Students" },
-  { id: "parent", label: "Parents" },
-  { id: "analytics", label: "Analytics" },
+  { id: "all", labelKey: "allUsers" },
+  { id: "super_admin", labelKey: "filterSuperAdmins" },
+  { id: "academic_admin", labelKey: "filterAcademicAdmins" },
+  { id: "admin_coordinator", labelKey: "filterAdminCoordinators" },
+  { id: "registrar", labelKey: "filterRegistrars" },
+  { id: "admissions_officer", labelKey: "filterAdmissions" },
+  { id: "pedagogy_coordinator", labelKey: "filterPedagogy" },
+  { id: "principal", labelKey: "filterPrincipals" },
+  { id: "teacher", labelKey: "filterTeachers" },
+  { id: "finance_officer", labelKey: "filterFinance" },
+  { id: "cashier", labelKey: "filterCashiers" },
+  { id: "accountant", labelKey: "filterAccountants" },
+  { id: "operations_manager", labelKey: "filterOperations" },
+  { id: "operations_officer", labelKey: "filterOperationsOfficers" },
+  { id: "discipline_officer", labelKey: "filterDiscipline" },
+  { id: "supervisor", labelKey: "filterSupervisors" },
+  { id: "pedagogical_council_member", labelKey: "filterPedagogicalCouncil" },
+  { id: "student", labelKey: "filterStudents" },
+  { id: "parent", labelKey: "filterParents" },
+  { id: "analytics", labelKey: "filterAnalytics" },
 ] as const;
 
 function getInitials(name: string | null, email: string): string {
@@ -44,6 +45,7 @@ function getInitials(name: string | null, email: string): string {
 }
 
 function UserCell({ name, email }: { name: string | null; email: string }) {
+  const t = useTranslations("admin");
   const initials = getInitials(name, email);
 
   return (
@@ -53,7 +55,7 @@ function UserCell({ name, email }: { name: string | null; email: string }) {
       </div>
       <div className="min-w-0">
         <p className="truncate font-medium text-stone-900 dark:text-white">
-          {name?.trim() || "Unnamed user"}
+          {name?.trim() || t("unnamedUser")}
         </p>
         <p className="truncate text-xs text-stone-500 dark:text-stone-400">{email}</p>
       </div>
@@ -68,6 +70,7 @@ function SchoolCell({
   schoolName: string | null;
   role: string;
 }) {
+  const t = useTranslations("admin");
   if (role === "super_admin") {
     return (
       <span className="inline-flex items-center gap-1.5 text-sm text-stone-500 dark:text-stone-400">
@@ -85,13 +88,13 @@ function SchoolCell({
             d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        Platform
+        {t("platform")}
       </span>
     );
   }
 
   if (!schoolName) {
-    return <span className="text-sm text-stone-400">Unassigned</span>;
+    return <span className="text-sm text-stone-400">{t("unassigned")}</span>;
   }
 
   return (
@@ -149,6 +152,8 @@ function StatCard({
 }
 
 export function UsersView({ users }: { users: UserListItem[] }) {
+  const t = useTranslations("admin");
+  const tc = useTranslations("common");
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<string>("all");
 
@@ -238,7 +243,7 @@ export function UsersView({ users }: { users: UserListItem[] }) {
     name: user.name ?? "",
     email: user.email,
     role: user.role.replace(/_/g, " "),
-    school: user.school_name ?? (user.role === "super_admin" ? "Platform" : ""),
+    school: user.school_name ?? (user.role === "super_admin" ? t("platform") : ""),
   }));
 
   if (users.length === 0) {
@@ -260,8 +265,8 @@ export function UsersView({ users }: { users: UserListItem[] }) {
             />
           </svg>
         }
-        title="No users yet"
-        description="Users will appear here once schools onboard staff, students, and guardians."
+        title={t("noUsersYet")}
+        description={t("noUsersYetDesc")}
       />
     );
   }
@@ -270,9 +275,9 @@ export function UsersView({ users }: { users: UserListItem[] }) {
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Total users"
+          label={t("totalUsers")}
           value={stats.total}
-          hint="Across all schools"
+          hint={t("acrossAllSchools")}
           color="text-primary bg-primary-light dark:text-primary dark:bg-primary-light/40"
           icon={
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,9 +291,9 @@ export function UsersView({ users }: { users: UserListItem[] }) {
           }
         />
         <StatCard
-          label="Administrators"
+          label={t("administrators")}
           value={stats.admins}
-          hint="Super & academic admins"
+          hint={t("superAndAcademicAdmins")}
           color="text-violet-600 bg-violet-50 dark:text-violet-400 dark:bg-violet-950/40"
           icon={
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -302,9 +307,9 @@ export function UsersView({ users }: { users: UserListItem[] }) {
           }
         />
         <StatCard
-          label="Staff"
+          label={t("staff")}
           value={stats.staff}
-          hint="Teachers & operations"
+          hint={t("teachersAndOperations")}
           color="text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-950/40"
           icon={
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,9 +323,9 @@ export function UsersView({ users }: { users: UserListItem[] }) {
           }
         />
         <StatCard
-          label="Learners & families"
+          label={t("learnersAndFamilies")}
           value={stats.learners}
-          hint={`${stats.schools} schools represented`}
+          hint={t("schoolsRepresented", { count: stats.schools })}
           color="text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-950/40"
           icon={
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -339,15 +344,15 @@ export function UsersView({ users }: { users: UserListItem[] }) {
         <CardHeader className="space-y-4 bg-stone-50/80 dark:bg-stone-900/50">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <CardTitle>User directory</CardTitle>
+              <CardTitle>{t("userDirectory")}</CardTitle>
               <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                {filteredUsers.length} of {users.length} users shown
+                {t("usersShown", { filtered: filteredUsers.length, total: users.length })}
               </p>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="w-full sm:w-72">
                 <SearchInput
-                  placeholder="Search name, email, school..."
+                  placeholder={t("searchUsersPlaceholder")}
                   onSearch={handleSearch}
                 />
               </div>
@@ -355,10 +360,10 @@ export function UsersView({ users }: { users: UserListItem[] }) {
                 data={exportData}
                 filename="platform-users.csv"
                 columns={[
-                  { key: "name", label: "Name" },
-                  { key: "email", label: "Email" },
-                  { key: "role", label: "Role" },
-                  { key: "school", label: "School" },
+                  { key: "name", label: tc("name") },
+                  { key: "email", label: tc("email") },
+                  { key: "role", label: t("colRole") },
+                  { key: "school", label: t("colSchool") },
                 ]}
               />
             </div>
@@ -382,7 +387,7 @@ export function UsersView({ users }: { users: UserListItem[] }) {
                       : "bg-white text-stone-600 ring-1 ring-slate-200 hover:bg-stone-50 dark:bg-stone-800 dark:text-stone-300 dark:ring-slate-700 dark:hover:bg-stone-700"
                   }`}
                 >
-                  {filter.label}
+                  {t(filter.labelKey)}
                   <span
                     className={`rounded-full px-1.5 py-0.5 text-[10px] ${
                       active
@@ -402,10 +407,10 @@ export function UsersView({ users }: { users: UserListItem[] }) {
           {filteredUsers.length === 0 ? (
             <div className="px-6 py-12 text-center">
               <p className="text-sm font-medium text-stone-900 dark:text-white">
-                No users match your filters
+                {t("noUsersMatch")}
               </p>
               <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                Try a different search term or role filter.
+                {t("tryDifferentSearch")}
               </p>
             </div>
           ) : (
@@ -414,21 +419,21 @@ export function UsersView({ users }: { users: UserListItem[] }) {
               columns={[
                 {
                   id: "user",
-                  header: "User",
+                  header: t("colUser"),
                   accessorKey: "user_display",
                 },
                 {
                   id: "role",
-                  header: "Role",
+                  header: t("colRole"),
                   accessorKey: "role_display",
                 },
                 {
                   id: "school",
-                  header: "School",
+                  header: t("colSchool"),
                   accessorKey: "school_display",
                 },
               ]}
-              emptyMessage="No users found"
+              emptyMessage={t("noUsersFound")}
             />
           )}
         </CardContent>

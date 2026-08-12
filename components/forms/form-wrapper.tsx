@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   useForm,
   FormProvider,
@@ -46,9 +46,27 @@ export function FormWrapper<T extends FieldValues>({
   className = "",
 }: FormWrapperProps<T>) {
   const t = useTranslations("common");
+  const tv = useTranslations("validation");
+  const resolver = useMemo(() => {
+    const base = zodResolver(schema);
+    return async (values: T, context: unknown, options: unknown) => {
+      // @ts-expect-error - Zod 4 / RHF resolver type mismatch
+      const result = await base(values, context, options);
+      const walk = (obj: unknown) => {
+        if (!obj || typeof obj !== "object") return;
+        const rec = obj as Record<string, unknown>;
+        if (typeof rec.message === "string" && tv.has(rec.message)) {
+          rec.message = tv(rec.message);
+        }
+        for (const value of Object.values(rec)) walk(value);
+      };
+      walk(result.errors);
+      return result;
+    };
+  }, [schema, tv]);
   const methods = useForm<T>({
     // @ts-expect-error - Zod 4 / RHF resolver type mismatch
-    resolver: zodResolver(schema),
+    resolver,
     defaultValues,
   });
 

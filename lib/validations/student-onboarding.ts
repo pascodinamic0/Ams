@@ -5,17 +5,17 @@ import { studentSchema } from "./student";
 const optionalUuid = z.union([z.string().uuid(), z.literal("")]).optional();
 
 export const pickupPersonSchema = z.object({
-  full_name: z.string().min(1, "Name is required"),
-  phone: z.string().min(1, "Phone number is required"),
-  relationship: z.string().min(1, "Relationship is required"),
+  full_name: z.string().min(1, "nameRequired"),
+  phone: z.string().min(1, "phoneRequired"),
+  relationship: z.string().min(1, "relationshipRequired"),
   notes: z.string().optional(),
 });
 
 export const guardianOnboardingSchema = z.object({
-  first_name: z.string().min(1, "First name is required"),
+  first_name: z.string().min(1, "firstNameRequired"),
   middle_name: z.string().optional(),
-  last_name: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email"),
+  last_name: z.string().min(1, "lastNameRequired"),
+  email: z.string().email("invalidEmail"),
   whatsapp: z.string().optional(),
   relation: z.enum(["father", "mother", "guardian", "other"]).default("guardian"),
   address: z.string().optional(),
@@ -41,7 +41,7 @@ export const studentOnboardingSchema = studentSchema.extend({
   if (!hasPrimary) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Primary guardian details are required",
+      message: "primaryGuardianRequired",
       path: ["primary_guardian", "first_name"],
     });
   }
@@ -51,7 +51,7 @@ export const studentOnboardingSchema = studentSchema.extend({
   ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Secondary guardian details are required",
+      message: "secondaryGuardianRequired",
       path: ["secondary_guardian", "first_name"],
     });
   }
@@ -67,7 +67,7 @@ export const studentOnboardingSchema = studentSchema.extend({
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message:
-        "Specify who may pick up this child from school — authorize a guardian and/or add another person",
+        "pickupAuthorizationOnboarding",
       path: ["pickup_persons"],
     });
   }

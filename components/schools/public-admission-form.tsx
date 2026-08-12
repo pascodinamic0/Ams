@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -9,16 +10,16 @@ import { Select } from "@/components/ui/select";
 import { createAdmission } from "@/lib/actions/admissions";
 import { toast } from "@/lib/toast";
 
-const pickupRelationshipOptions = [
-  { value: "uncle", label: "Uncle" },
-  { value: "aunt", label: "Aunt" },
-  { value: "grandparent", label: "Grandparent" },
-  { value: "sibling", label: "Sibling" },
-  { value: "driver", label: "Driver" },
-  { value: "nanny", label: "Nanny / caregiver" },
-  { value: "family_friend", label: "Family friend" },
-  { value: "other", label: "Other" },
-];
+const pickupRelationshipKeys = [
+  { value: "uncle", key: "relUncle" },
+  { value: "aunt", key: "relAunt" },
+  { value: "grandparent", key: "relGrandparent" },
+  { value: "sibling", key: "relSibling" },
+  { value: "driver", key: "relDriver" },
+  { value: "nanny", key: "relNanny" },
+  { value: "family_friend", key: "relFamilyFriend" },
+  { value: "other", key: "relOther" },
+] as const;
 
 export function PublicAdmissionForm({
   schoolId,
@@ -29,6 +30,9 @@ export function PublicAdmissionForm({
   schoolName: string;
   slug: string;
 }) {
+  const t = useTranslations("schools.enrollment");
+  const tf = useTranslations("schools.forms");
+  const tc = useTranslations("common");
   const [loading, setLoading] = useState(false);
   const [referenceId, setReferenceId] = useState<string | null>(null);
   const [guardianCanPickup, setGuardianCanPickup] = useState(false);
@@ -68,14 +72,14 @@ export function PublicAdmissionForm({
           ? result.error
           : typeof result.error === "object" && result.error !== null
             ? Object.values(result.error).flat().filter(Boolean)[0] ??
-              "Please check the form and try again"
-            : "Please check the form and try again";
+              t("checkForm")
+            : t("checkForm");
       toast.error(String(message));
       return;
     }
 
     setReferenceId(result.data?.id ?? null);
-    toast.success("Application submitted. We'll contact you soon.");
+    toast.success(t("applicationSubmittedToast"));
     e.currentTarget.reset();
     setGuardianCanPickup(false);
     setAddOtherPickup(false);
@@ -84,18 +88,18 @@ export function PublicAdmissionForm({
   if (referenceId) {
     return (
       <div className="mx-auto max-w-xl px-6 py-16">
-        <h1 className="text-2xl font-bold">Application received</h1>
+        <h1 className="text-2xl font-bold">{t("applicationReceived")}</h1>
         <p className="mt-2 text-stone-600">
-          Thank you for applying to {schoolName}.
+          {t("thankYouApplying", { schoolName })}
         </p>
         <p className="mt-6 rounded-lg border bg-stone-50 p-4 text-sm">
-          Reference: <span className="font-mono font-medium">{referenceId}</span>
+          {t("reference")} <span className="font-mono font-medium">{referenceId}</span>
         </p>
         <Link
           href={`/schools/${slug}`}
           className="mt-6 block text-center text-sm text-stone-600 hover:underline"
         >
-          Back to school
+          {t("backToSchool")}
         </Link>
       </div>
     );
@@ -103,32 +107,32 @@ export function PublicAdmissionForm({
 
   return (
     <div className="mx-auto max-w-xl px-6 py-16">
-      <h1 className="text-2xl font-bold">Admissions</h1>
-      <p className="mt-2 text-stone-600">Apply to {schoolName}</p>
+      <h1 className="text-2xl font-bold">{t("admissions")}</h1>
+      <p className="mt-2 text-stone-600">{t("applyTo", { schoolName })}</p>
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
         <div>
-          <Label>Student name</Label>
+          <Label>{t("studentName")}</Label>
           <Input name="student_name" required />
         </div>
         <div>
-          <Label>Date of birth</Label>
+          <Label>{t("dateOfBirth")}</Label>
           <Input name="dob" type="date" />
         </div>
         <div>
-          <Label>Guardian name</Label>
+          <Label>{t("guardianName")}</Label>
           <Input name="guardian_name" required />
         </div>
         <div>
-          <Label>Guardian email</Label>
+          <Label>{t("guardianEmail")}</Label>
           <Input name="guardian_email" type="email" required />
         </div>
         <div>
-          <Label>Guardian phone</Label>
+          <Label>{t("guardianPhone")}</Label>
           <Input name="guardian_phone" type="tel" />
         </div>
 
         <div className="space-y-3 rounded-lg border border-stone-200 p-4">
-          <p className="text-sm font-medium">Who may pick up from school</p>
+          <p className="text-sm font-medium">{t("whoMayPickup")}</p>
           <label className="flex items-start gap-2 text-sm">
             <input
               type="checkbox"
@@ -137,9 +141,9 @@ export function PublicAdmissionForm({
               onChange={(e) => setGuardianCanPickup(e.target.checked)}
             />
             <span>
-              This guardian is authorized to pick up the child
+              {t("guardianAuthorizedPickup")}
               <span className="mt-0.5 block text-xs text-stone-500">
-                Must be specified even when the guardian will collect the child.
+                {t("guardianAuthorizedPickupHint")}
               </span>
             </span>
           </label>
@@ -150,24 +154,27 @@ export function PublicAdmissionForm({
               checked={addOtherPickup}
               onChange={(e) => setAddOtherPickup(e.target.checked)}
             />
-            Add another authorized person
+            {t("addAnotherAuthorized")}
           </label>
           {addOtherPickup && (
             <div className="space-y-3 border-t border-stone-200 pt-3">
               <div>
-                <Label>Full name</Label>
+                <Label>{tf("fullName")}</Label>
                 <Input name="pickup_name" required={addOtherPickup} />
               </div>
               <div>
-                <Label>Phone</Label>
+                <Label>{tc("phone")}</Label>
                 <Input name="pickup_phone" type="tel" required={addOtherPickup} />
               </div>
               <div>
-                <Label>Relationship</Label>
+                <Label>{t("relationship")}</Label>
                 <Select
                   name="pickup_relationship"
-                  placeholder="Select relationship"
-                  options={pickupRelationshipOptions}
+                  placeholder={t("selectRelationship")}
+                  options={pickupRelationshipKeys.map((opt) => ({
+                    value: opt.value,
+                    label: t(opt.key),
+                  }))}
                   required={addOtherPickup}
                 />
               </div>
@@ -176,14 +183,14 @@ export function PublicAdmissionForm({
         </div>
 
         <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Submitting..." : "Submit Application"}
+          {loading ? tf("submitting") : tf("submitApplication")}
         </Button>
       </form>
       <Link
         href={`/schools/${slug}`}
         className="mt-6 block text-center text-sm text-stone-600 hover:underline"
       >
-        Back to school
+        {t("backToSchool")}
       </Link>
     </div>
   );

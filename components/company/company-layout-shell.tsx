@@ -108,7 +108,7 @@ export function CompanyLayoutShell({
           <Link
             href="/"
             className="group min-w-0 shrink-0 justify-self-start rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-mkt-ink/40 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-            aria-label="ShuleOS home"
+            aria-label={labels.home}
           >
             <motion.div
               whileHover={{ scale: 1.02, y: -1 }}

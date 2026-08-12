@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, Share, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { companyIdentity } from "@/lib/company/identity";
 import { isStandaloneMode, useIsMobile } from "@/lib/pwa/display-mode";
 import { usePwaInstall } from "@/lib/pwa/use-pwa-install";
@@ -34,6 +35,7 @@ function isAppRoute(pathname: string) {
 }
 
 export function InstallPrompt() {
+  const t = useTranslations("pwa");
   const pathname = usePathname();
   const isMobile = useIsMobile();
   const { canInstall, ios, install } = usePwaInstall();
@@ -83,12 +85,10 @@ export function InstallPrompt() {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-bold text-stone-900 dark:text-white">
-            Install {companyIdentity.productName}
+            {t("installProduct", { productName: companyIdentity.productName })}
           </p>
           <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-            {ios
-              ? "Add to your home screen for quick access. Tap Share, then Add to Home Screen."
-              : "Install the app on this device for faster access, full-screen mode, and offline support."}
+            {ios ? t("iosInstallHint") : t("androidInstallHint")}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {!ios && canInstall && (
@@ -98,13 +98,13 @@ export function InstallPrompt() {
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary"
               >
                 <Download className="h-4 w-4" />
-                Install app
+                {t("installApp")}
               </button>
             )}
             {ios && (
               <span className="inline-flex items-center gap-2 rounded-xl bg-primary-light px-3 py-2 text-xs font-semibold text-primary-hover dark:bg-primary-light/50 dark:text-primary">
                 <Share className="h-4 w-4" />
-                Share, then Add to Home Screen
+                {t("shareThenAddToHomeScreen")}
               </span>
             )}
             <button
@@ -112,7 +112,7 @@ export function InstallPrompt() {
               onClick={dismiss}
               className="rounded-xl px-4 py-2 text-sm font-semibold text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800"
             >
-              Not now
+              {t("installLater")}
             </button>
           </div>
         </div>
@@ -120,7 +120,7 @@ export function InstallPrompt() {
           type="button"
           onClick={dismiss}
           className="rounded-lg p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-600 dark:hover:bg-stone-800 dark:hover:text-stone-200"
-          aria-label="Dismiss install prompt"
+          aria-label={t("dismissInstallPrompt")}
         >
           <X className="h-4 w-4" />
         </button>

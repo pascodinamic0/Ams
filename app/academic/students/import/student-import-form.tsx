@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { importStudentsBatch } from "@/lib/actions/students-import";
@@ -95,6 +96,8 @@ function resolveClassId(
 }
 
 export function StudentImportForm({ schoolId, branchId, classes }: Props) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [fileName, setFileName] = useState<string | null>(null);
   const [preview, setPreview] = useState<StudentImportRow[]>([]);
@@ -107,6 +110,13 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
   } | null>(null);
 
   const classNames = useMemo(() => classes.map((c) => c.name).join(", "), [classes]);
+
+  function statusLabel(status: StudentImportRow["status"]) {
+    if (status === "active") return tc("active");
+    if (status === "inactive") return tc("inactive");
+    if (status === "graduated") return t("statusGraduated");
+    return status;
+  }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -127,14 +137,14 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
       const rows = parseCsv(text);
 
       if (rows.length < 2) {
-        setParseErrors(["CSV must include a header row and at least one data row."]);
+        setParseErrors([t("csvMustHaveRows")]);
         return;
       }
 
       const headers = rows[0].map(normalizeHeader);
       const missing = REQUIRED_HEADERS.filter((h) => !headers.includes(h));
       if (missing.length > 0) {
-        setParseErrors([`Missing required columns: ${missing.join(", ")}`]);
+        setParseErrors([t("csvMissingColumns", { columns: missing.join(", ") })]);
         return;
       }
 
@@ -155,18 +165,18 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
         if (!firstName && !lastName && !dob) continue;
 
         if (!firstName || !lastName || !dob) {
-          errors.push(`Row ${rowNumber}: first_name, last_name, and date_of_birth are required.`);
+          errors.push(t("csvRowRequiredFields", { row: rowNumber }));
           continue;
         }
 
         const classId = resolveClassId(classValue, classes);
         if (classValue && !classId) {
-          errors.push(`Row ${rowNumber}: unknown class "${classValue}".`);
+          errors.push(t("csvUnknownClass", { row: rowNumber, className: classValue }));
           continue;
         }
 
         if (statusRaw && !["active", "inactive", "graduated"].includes(statusRaw)) {
-          errors.push(`Row ${rowNumber}: status must be active, inactive, or graduated.`);
+          errors.push(t("csvInvalidStatus", { row: rowNumber }));
           continue;
         }
 
@@ -188,7 +198,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
 
   async function handleImport() {
     if (preview.length === 0) {
-      toast.error("No valid rows to import");
+      toast.error(t("noValidRows"));
       return;
     }
 
@@ -206,10 +216,10 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
 
     setImportResult(result);
     if (result.created > 0) {
-      toast.success(`Imported ${result.created} student${result.created === 1 ? "" : "s"}`);
+      toast.success(t("importedStudents", { count: result.created }));
     }
     if (result.failed > 0) {
-      toast.error(`${result.failed} row${result.failed === 1 ? "" : "s"} failed`);
+      toast.error(t("importFailedRows", { count: result.failed }));
     }
 
     if (result.failed === 0 && result.created > 0) {
@@ -233,26 +243,26 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
   return (
     <div className="space-y-6">
       <div className="rounded-lg border border-stone-200 p-4 dark:border-stone-700">
-        <h2 className="font-semibold">CSV format</h2>
+        <h2 className="font-semibold">{t("csvFormat")}</h2>
         <p className="mt-1 text-sm text-stone-500">
-          Columns: <code className="text-xs">first_name, middle_name, last_name, date_of_birth, class, status</code>
+          {t("csvColumns")} <code className="text-xs">first_name, middle_name, last_name, date_of_birth, class, status</code>
         </p>
         <p className="mt-2 text-sm text-stone-500">
-          <code className="text-xs">middle_name</code> and <code className="text-xs">status</code> are optional.
-          <code className="ml-2 text-xs">class</code> can be a class name or UUID.
-          {classNames ? ` Available classes: ${classNames}.` : " No classes configured yet."}
+          {t("csvMiddleNameOptional")}{" "}
+          {t("csvClassHint")}
+          {classNames ? ` ${t("csvAvailableClasses", { classes: classNames })}` : ` ${t("csvNoClasses")}`}
         </p>
         <p className="mt-2 text-sm text-stone-500">
-          <code className="text-xs">date_of_birth</code> should be YYYY-MM-DD.
-          <code className="ml-2 text-xs">status</code> is optional (defaults to active).
+          {t("csvDateFormat")}{" "}
+          {t("csvStatusOptional")}
         </p>
         <Button type="button" variant="outline" size="sm" className="mt-3" onClick={downloadTemplate}>
-          Download template
+          {t("downloadTemplate")}
         </Button>
       </div>
 
       <div>
-        <Label htmlFor="csv-file">Upload CSV</Label>
+        <Label htmlFor="csv-file">{t("uploadCsv")}</Label>
         <input
           id="csv-file"
           type="file"
@@ -261,13 +271,13 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
           className="mt-1 block w-full text-sm text-stone-500 file:mr-4 file:rounded-lg file:border-0 file:bg-primary-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-hover hover:file:bg-primary-light dark:file:bg-teal-950/50 dark:file:text-teal-200"
         />
         {fileName && (
-          <p className="mt-1 text-xs text-stone-500">Selected: {fileName}</p>
+          <p className="mt-1 text-xs text-stone-500">{t("selectedFile", { fileName })}</p>
         )}
       </div>
 
       {parseErrors.length > 0 && (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200">
-          <p className="font-medium">Parse warnings</p>
+          <p className="font-medium">{t("parseWarnings")}</p>
           <ul className="mt-2 list-inside list-disc space-y-1">
             {parseErrors.map((err) => (
               <li key={err}>{err}</li>
@@ -279,38 +289,38 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
       {preview.length > 0 && (
         <div className="space-y-3">
           <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
-            {preview.length} row{preview.length === 1 ? "" : "s"} ready to import
+            {t("rowsReady", { count: preview.length })}
           </p>
           <div className="overflow-x-auto rounded-lg border border-stone-200 dark:border-stone-700">
             <table className="w-full min-w-[600px] text-sm">
               <thead className="bg-stone-100 dark:bg-stone-800">
                 <tr>
-                  <th className="px-3 py-2 text-left font-medium">First name</th>
-                  <th className="px-3 py-2 text-left font-medium">Middle name</th>
-                  <th className="px-3 py-2 text-left font-medium">Last name</th>
-                  <th className="px-3 py-2 text-left font-medium">DOB</th>
-                  <th className="px-3 py-2 text-left font-medium">Class</th>
-                  <th className="px-3 py-2 text-left font-medium">Status</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("firstName")}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("middleName")}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("lastName")}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("dob")}</th>
+                  <th className="px-3 py-2 text-left font-medium">{t("class")}</th>
+                  <th className="px-3 py-2 text-left font-medium">{tc("status")}</th>
                 </tr>
               </thead>
               <tbody>
                 {preview.slice(0, 10).map((row, i) => (
                   <tr key={`${row.first_name}-${row.last_name}-${i}`} className="border-t border-stone-200 dark:border-stone-700">
                     <td className="px-3 py-2">{row.first_name}</td>
-                    <td className="px-3 py-2">{row.middle_name || "—"}</td>
+                    <td className="px-3 py-2">{row.middle_name || tc("emptyDash")}</td>
                     <td className="px-3 py-2">{row.last_name}</td>
                     <td className="px-3 py-2">{row.date_of_birth}</td>
                     <td className="px-3 py-2">
-                      {classes.find((c) => c.id === row.class_id)?.name ?? "-"}
+                      {classes.find((c) => c.id === row.class_id)?.name ?? tc("emptyDash")}
                     </td>
-                    <td className="px-3 py-2">{row.status}</td>
+                    <td className="px-3 py-2">{statusLabel(row.status)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
             {preview.length > 10 && (
               <p className="border-t border-stone-200 px-3 py-2 text-xs text-stone-500 dark:border-stone-700">
-                Showing first 10 of {preview.length} rows
+                {t("showingFirstRows", { count: preview.length })}
               </p>
             )}
           </div>
@@ -320,14 +330,13 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
       {importResult && (
         <div className="rounded-lg border border-stone-200 p-4 text-sm dark:border-stone-700">
           <p>
-            Created <strong>{importResult.created}</strong>, failed{" "}
-            <strong>{importResult.failed}</strong>
+            {t("importResult", { created: importResult.created, failed: importResult.failed })}
           </p>
           {importResult.errors.length > 0 && (
             <ul className="mt-2 list-inside list-disc space-y-1 text-red-600">
               {importResult.errors.map((err) => (
                 <li key={`${err.row}-${err.message}`}>
-                  Row {err.row}: {err.message}
+                  {t("importRowError", { row: err.row, message: err.message })}
                 </li>
               ))}
             </ul>
@@ -341,11 +350,11 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
           onClick={handleImport}
           disabled={importing || preview.length === 0}
         >
-          {importing ? "Importing..." : `Import ${preview.length || ""} students`}
+          {importing ? t("importing") : t("importStudentsCount", { count: preview.length })}
         </Button>
         <Link href="/academic/students">
           <Button type="button" variant="outline">
-            Back to students
+            {t("backToStudents")}
           </Button>
         </Link>
       </div>

@@ -20,6 +20,7 @@ interface Props {
 
 export function FeeStructureForm({ branchId, classes }: Props) {
   const router = useRouter();
+  const t = useTranslations("finance");
   const tc = useTranslations("common");
   const defaultYear = getCurrentSchoolYearStart();
 
@@ -29,11 +30,11 @@ export function FeeStructureForm({ branchId, classes }: Props) {
       toast.error(
         typeof result.error === "string"
           ? result.error
-          : "Failed to create fee structure"
+          : t("feeStructureCreateFailed")
       );
       return;
     }
-    toast.success("Fee structure created");
+    toast.success(t("feeStructureCreated"));
     router.refresh();
   }
 
@@ -60,6 +61,8 @@ function FeeStructureFields({
   classes: { id: string; name: string }[];
   schoolYearLabel: string;
 }) {
+  const t = useTranslations("finance");
+  const tc = useTranslations("common");
   const {
     register,
     formState: { errors, isSubmitting },
@@ -69,7 +72,7 @@ function FeeStructureFields({
     <>
       <div>
         <Label htmlFor="name" required>
-          Name
+          {tc("name")}
         </Label>
         <Input id="name" {...register("name")} error={!!errors.name} />
         {errors.name && (
@@ -78,7 +81,7 @@ function FeeStructureFields({
       </div>
       <div>
         <Label htmlFor="amount" required>
-          Amount
+          {tc("amount")}
         </Label>
         <Input
           id="amount"
@@ -98,13 +101,13 @@ function FeeStructureFields({
         {...register("school_year", { valueAsNumber: true })}
       />
       <div>
-        <Label htmlFor="class_id">Class (optional)</Label>
+        <Label htmlFor="class_id">{t("classOptional")}</Label>
         <select
           id="class_id"
           {...register("class_id")}
           className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
-          <option value="">All classes</option>
+          <option value="">{t("allClasses")}</option>
           {classes.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
@@ -113,12 +116,12 @@ function FeeStructureFields({
         </select>
       </div>
       <div>
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">{tc("description")}</Label>
         <Input id="description" {...register("description")} />
       </div>
       <div className="flex items-end">
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          Add fee structure
+          {t("addFeeStructure")}
         </Button>
       </div>
     </>

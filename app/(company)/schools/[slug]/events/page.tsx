@@ -1,18 +1,24 @@
 import { notFound } from "next/navigation";
+import { getLocale, getTranslations } from "next-intl/server";
 import { EventBookingForm } from "@/components/schools/event-booking-form";
 import { SchoolInnerPage } from "@/components/schools/school-inner-page";
 import { getSchoolBySlug } from "@/lib/db";
 import { getPublicSchoolEvents } from "@/lib/db/public-events";
 
-function formatEventDate(date: string, time: string | null) {
-  const formatted = new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
+function formatEventDate(
+  date: string,
+  time: string | null,
+  locale: string,
+  atTime: (values: { date: string; time: string }) => string
+) {
+  const formatted = new Date(`${date}T00:00:00`).toLocaleDateString(locale, {
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
   });
   if (!time) return formatted;
-  return `${formatted} at ${time.slice(0, 5)}`;
+  return atTime({ date: formatted, time: time.slice(0, 5) });
 }
 
 export default async function SchoolEventsPage({
@@ -24,20 +30,23 @@ export default async function SchoolEventsPage({
   const school = await getSchoolBySlug(slug);
   if (!school) notFound();
 
+  const t = await getTranslations("schools.chrome");
+  const tv = await getTranslations("schools.visit");
+  const locale = await getLocale();
   const events = await getPublicSchoolEvents(school.id, { upcomingOnly: true });
   const primary = school.theme_primary_color ?? "#0d9488";
 
   return (
     <SchoolInnerPage
       school={school}
-      title="School events"
-      description={`Upcoming events at ${school.name}. Register online where booking is available.`}
+      title={t("schoolEvents")}
+      description={t("upcomingEventsAt", { schoolName: school.name })}
       backHref={`/schools/${slug}`}
-      backLabel={`Back to ${school.name}`}
+      backLabel={t("backToSchoolName", { schoolName: school.name })}
     >
       {events.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-10 text-center text-stone-600 dark:border-stone-700 dark:bg-stone-900/40 dark:text-stone-400">
-          No upcoming public events right now. Check back soon.
+          {t("noUpcomingEvents")}
         </div>
       ) : (
         <div className="space-y-8">
@@ -50,11 +59,11 @@ export default async function SchoolEventsPage({
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-medium uppercase tracking-widest text-stone-400">
-                    {event.type === "holiday" ? "Holiday" : "Event"}
+                    {event.type === "holiday" ? t("holiday") : t("event")}
                   </p>
                   <h2 className="mt-1 text-2xl font-semibold">{event.title}</h2>
                   <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-                    {formatEventDate(event.date, event.start_time)}
+                    {formatEventDate(event.date, event.start_time, locale, (v) => tv("atTime", v))}
                   </p>
                   {event.location && (
                     <p className="mt-1 text-sm text-stone-500">{event.location}</p>
@@ -73,7 +82,7 @@ export default async function SchoolEventsPage({
               )}
               {event.type === "event" && !event.booking_enabled && event.booking_procedure && (
                 <div className="mt-6 rounded-xl bg-stone-50 p-4 text-sm dark:bg-stone-900">
-                  <p className="font-medium">How to attend</p>
+                  <p className="font-medium">{t("howToAttend")}</p>
                   <p className="mt-2 text-stone-600 dark:text-stone-400">
                     {event.booking_procedure}
                   </p>

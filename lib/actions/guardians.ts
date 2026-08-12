@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { guardianSchema, type GuardianFormData } from "@/lib/validations";
@@ -34,7 +36,7 @@ export async function createGuardian(
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data, error } = await supabase
     .from("guardians")
@@ -66,7 +68,7 @@ export async function updateGuardian(
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const data = parsed.data;
   const row: Record<string, unknown> = {};
@@ -118,7 +120,7 @@ export async function updateGuardian(
 export async function deleteGuardian(id: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { error } = await supabase.from("guardians").delete().eq("id", id);
 

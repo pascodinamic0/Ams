@@ -21,5 +21,18 @@
   "updateDescription": "A newer build already shipped—including the new app icon. Staying here means working without the latest look and the fixes teachers and finance are already using.",
   "updateNow": "Update now",
   "updatingNow": "Updating…",
-  "updateLater": "Not now"
+  "updateLater": "Not now",
+  "offlineAttendanceSynced": "Offline attendance synced",
+  "offlineAttendanceSyncedCount": "{count} offline attendance records synced",
+  "attendanceWaitingToSync": "{count} attendance record(s) waiting to sync",
+  "alreadyInstalledOnDevice": "{productName} is installed on this device.",
+  "installOnIos": "Install on iPhone or iPad",
+  "tapShareThenAdd": "Tap Share, then choose Add to Home Screen.",
+  "addToHomeScreen": "Add to Home Screen",
+  "installFromBrowserMenu": "Install from browser menu",
+  "installProduct": "Install {productName}",
+  "iosInstallHint": "Add to your home screen for quick access. Tap Share, then Add to Home Screen.",
+  "androidInstallHint": "Install the app on this device for faster access, full-screen mode, and offline support.",
+  "shareThenAddToHomeScreen": "Share, then Add to Home Screen",
+  "dismissInstallPrompt": "Dismiss install prompt"
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ImagePlus, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "./button";
 
 interface FileUploadProps {
@@ -28,6 +29,7 @@ export function FileUpload({
   onRemove,
   onError,
 }: FileUploadProps) {
+  const t = useTranslations("common");
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -42,7 +44,7 @@ export function FileUpload({
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > maxSize) {
-      onError?.(`File too large. Max ${maxSize / 1024 / 1024}MB`);
+      onError?.(t("fileTooLarge", { max: maxSize / 1024 / 1024 }));
       return;
     }
     setUploading(true);
@@ -59,7 +61,7 @@ export function FileUpload({
         setPreview(URL.createObjectURL(file));
       }
     } catch (err) {
-      onError?.(err instanceof Error ? err.message : "Upload failed");
+      onError?.(err instanceof Error ? err.message : t("uploadFailed"));
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -86,19 +88,19 @@ export function FileUpload({
         {displayUrl ? (
           <img
             src={displayUrl}
-            alt="Uploaded"
+            alt={t("uploadedAlt")}
             className="max-h-32 w-full rounded object-contain"
           />
         ) : uploading ? (
-          <span className="text-sm text-stone-500">Uploading...</span>
+          <span className="text-sm text-stone-500">{t("uploading")}</span>
         ) : (
           <div className="flex flex-col items-center gap-2 text-center">
             <ImagePlus className="h-8 w-8 text-stone-400" />
             <span className="text-sm text-stone-600 dark:text-stone-400">
-              Click to upload from your device
+              {t("clickToUpload")}
             </span>
             <span className="text-xs text-stone-400">
-              JPEG, PNG, WebP up to {Math.round(maxSize / 1024 / 1024)}MB
+              {t("imageFormatsUpTo", { max: Math.round(maxSize / 1024 / 1024) })}
             </span>
           </div>
         )}
@@ -116,7 +118,7 @@ export function FileUpload({
           }}
         >
           <X className="mr-1 h-4 w-4" />
-          Remove image
+          {t("removeImage")}
         </Button>
       )}
     </div>

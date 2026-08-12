@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -94,6 +95,9 @@ function Section({
 }
 
 export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
+  const t = useTranslations("admin");
+  const te = useTranslations("schools.editor");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState(() => schoolToEditorState(school));
@@ -158,22 +162,22 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
       return;
     }
 
-    toast.success("Website saved");
+    toast.success(t("websiteSaved"));
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <Section title="Publishing" description="Control whether the public site is live.">
+      <Section title={te("publishing")} description={te("publishingDescription")}>
         <Checkbox
-          label="Public site enabled"
+          label={te("publicSiteEnabled")}
           checked={form.public_site_enabled}
           onChange={(e) =>
             setForm((f) => ({ ...f, public_site_enabled: e.target.checked }))
           }
         />
         <div>
-          <Label>Public URL slug</Label>
+          <Label>{te("publicUrlSlug")}</Label>
           <div className="mt-1 flex items-center gap-2">
             <span className="text-sm text-stone-500">/schools/</span>
             <Input
@@ -184,26 +188,26 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
           </div>
         </div>
         <div>
-          <Label>Custom domain (optional)</Label>
+          <Label>{te("customDomainOptional")}</Label>
           <Input
-            placeholder="www.yourschool.edu"
+            placeholder={te("customDomainPlaceholder")}
             value={form.custom_domain}
             onChange={(e) => setForm((f) => ({ ...f, custom_domain: e.target.value }))}
           />
         </div>
       </Section>
 
-      <Section title="Hero" description="The first thing visitors see on your homepage.">
+      <Section title={te("hero")} description={te("heroDescription")}>
         <div>
-          <Label>Hero title</Label>
+          <Label>{te("heroTitle")}</Label>
           <Input
             value={form.hero_title}
             onChange={(e) => setForm((f) => ({ ...f, hero_title: e.target.value }))}
-            placeholder={`Welcome to ${school.name}`}
+            placeholder={te("welcomeTo", { schoolName: school.name })}
           />
         </div>
         <div>
-          <Label>Hero subtitle</Label>
+          <Label>{te("heroSubtitle")}</Label>
           <Textarea
             value={form.hero_subtitle}
             onChange={(e) => setForm((f) => ({ ...f, hero_subtitle: e.target.value }))}
@@ -213,23 +217,23 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
         <SchoolImageUpload
           schoolId={school.id}
           folder="hero"
-          label="Hero background image"
+          label={te("heroBackgroundImage")}
           value={form.cover_image_url}
           onChange={(cover_image_url) => setForm((f) => ({ ...f, cover_image_url }))}
         />
       </Section>
 
-      <Section title="Branding">
+      <Section title={te("branding")}>
         <SchoolImageUpload
           schoolId={school.id}
           folder="logo"
-          label="School logo"
+          label={te("schoolLogo")}
           value={form.logo_url}
           onChange={(logo_url) => setForm((f) => ({ ...f, logo_url }))}
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label>Primary color</Label>
+            <Label>{te("primaryColor")}</Label>
             <div className="mt-1 flex items-center gap-2">
               <input
                 type="color"
@@ -248,7 +252,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
             </div>
           </div>
           <div>
-            <Label>Secondary color</Label>
+            <Label>{te("secondaryColor")}</Label>
             <div className="mt-1 flex items-center gap-2">
               <input
                 type="color"
@@ -269,20 +273,20 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
         </div>
       </Section>
 
-      <Section title="About">
+      <Section title={te("about")}>
         <Textarea
           value={form.about}
           onChange={(e) => setForm((f) => ({ ...f, about: e.target.value }))}
           rows={5}
-          placeholder="Tell families about your school..."
+          placeholder={te("aboutPlaceholder")}
         />
       </Section>
 
-      <Section title="Programs" description="Highlight key academic and extracurricular offerings.">
+      <Section title={te("programs")} description={te("programsDescription")}>
         {form.programs.map((program, i) => (
           <div key={i} className="rounded-xl border border-zinc-100 p-4 dark:border-stone-800">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-stone-500">Program {i + 1}</span>
+              <span className="text-sm font-medium text-stone-500">{te("programN", { n: i + 1 })}</span>
               <Button
                 type="button"
                 variant="ghost"
@@ -294,17 +298,17 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
                   }))
                 }
               >
-                Remove
+                {tc("remove")}
               </Button>
             </div>
             <div className="mt-3 space-y-3">
               <Input
-                placeholder="Title"
+                placeholder={te("title")}
                 value={program.title}
                 onChange={(e) => updateProgram(i, { title: e.target.value })}
               />
               <Textarea
-                placeholder="Description"
+                placeholder={tc("description")}
                 value={program.description}
                 onChange={(e) => updateProgram(i, { description: e.target.value })}
                 rows={2}
@@ -312,7 +316,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
               <SchoolImageUpload
                 schoolId={school.id}
                 folder={`programs/${i}`}
-                label="Program image"
+                label={te("programImage")}
                 value={program.image_url}
                 onChange={(image_url) => updateProgram(i, { image_url })}
               />
@@ -332,20 +336,20 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
             }))
           }
         >
-          Add program
+          {te("addProgram")}
         </Button>
       </Section>
 
-      <Section title="Stats" description="Quick facts shown on the homepage.">
+      <Section title={te("stats")} description={te("statsDescription")}>
         {form.stats.map((stat, i) => (
           <div key={i} className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
             <Input
-              placeholder="Label"
+              placeholder={te("label")}
               value={stat.label}
               onChange={(e) => updateStat(i, { label: e.target.value })}
             />
             <Input
-              placeholder="Value"
+              placeholder={te("value")}
               value={stat.value}
               onChange={(e) => updateStat(i, { value: e.target.value })}
             />
@@ -359,7 +363,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
                 }))
               }
             >
-              Remove
+              {tc("remove")}
             </Button>
           </div>
         ))}
@@ -373,15 +377,15 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
             }))
           }
         >
-          Add stat
+          {te("addStat")}
         </Button>
       </Section>
 
-      <Section title="Photo gallery">
+      <Section title={te("photoGallery")}>
         {form.gallery.map((item, i) => (
           <div key={i} className="rounded-xl border border-zinc-100 p-4 dark:border-stone-800">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-stone-500">Photo {i + 1}</span>
+              <span className="text-sm font-medium text-stone-500">{te("photoN", { n: i + 1 })}</span>
               <Button
                 type="button"
                 variant="ghost"
@@ -393,22 +397,22 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
                   }))
                 }
               >
-                Remove
+                {tc("remove")}
               </Button>
             </div>
             <div className="mt-3 space-y-3">
               <SchoolImageUpload
                 schoolId={school.id}
                 folder={`gallery/${i}`}
-                label="Photo"
+                label={te("photo")}
                 value={item.url}
                 onChange={(url) => updateGallery(i, { url })}
               />
               <div>
-                <Label>Caption</Label>
+                <Label>{te("caption")}</Label>
                 <Input
                   className="mt-1"
-                  placeholder="Optional caption"
+                  placeholder={te("optionalCaption")}
                   value={item.caption ?? ""}
                   onChange={(e) => updateGallery(i, { caption: e.target.value })}
                 />
@@ -426,14 +430,14 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
             }))
           }
         >
-          Add photo
+          {te("addPhoto")}
         </Button>
       </Section>
 
-      <Section title="Contact">
+      <Section title={te("contact")}>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <Label>Email</Label>
+            <Label>{te("email")}</Label>
             <Input
               type="email"
               value={form.contact_email}
@@ -441,7 +445,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
             />
           </div>
           <div>
-            <Label>Phone</Label>
+            <Label>{te("phone")}</Label>
             <Input
               value={form.contact_phone}
               onChange={(e) => setForm((f) => ({ ...f, contact_phone: e.target.value }))}
@@ -449,7 +453,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
           </div>
         </div>
         <div>
-          <Label>Address</Label>
+          <Label>{te("address")}</Label>
           <Textarea
             value={form.address}
             onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
@@ -458,9 +462,9 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
         </div>
       </Section>
 
-      <Section title="Footer & social">
+      <Section title={te("footerAndSocial")}>
         <div>
-          <Label>Footer tagline</Label>
+          <Label>{te("footerTagline")}</Label>
           <Input
             value={form.footer_tagline}
             onChange={(e) => setForm((f) => ({ ...f, footer_tagline: e.target.value }))}
@@ -468,21 +472,21 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
         </div>
         <div className="grid gap-4 sm:grid-cols-3">
           <div>
-            <Label>Facebook URL</Label>
+            <Label>{te("facebookUrl")}</Label>
             <Input
               value={form.social_facebook}
               onChange={(e) => setForm((f) => ({ ...f, social_facebook: e.target.value }))}
             />
           </div>
           <div>
-            <Label>Instagram URL</Label>
+            <Label>{te("instagramUrl")}</Label>
             <Input
               value={form.social_instagram}
               onChange={(e) => setForm((f) => ({ ...f, social_instagram: e.target.value }))}
             />
           </div>
           <div>
-            <Label>Twitter / X URL</Label>
+            <Label>{te("twitterUrl")}</Label>
             <Input
               value={form.social_twitter}
               onChange={(e) => setForm((f) => ({ ...f, social_twitter: e.target.value }))}
@@ -491,7 +495,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
         </div>
       </Section>
 
-      <Section title="Design template">
+      <Section title={te("designTemplate")}>
         <TemplatePicker
           value={form.website_template}
           onChange={(website_template) => setForm((f) => ({ ...f, website_template }))}
@@ -502,7 +506,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
 
       <div className="sticky bottom-0 flex items-center gap-3 border-t border-stone-200 bg-white/95 py-4 backdrop-blur dark:border-stone-800 dark:bg-stone-950/95">
         <Button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Save website"}
+          {loading ? tc("saving") : te("saveWebsite")}
         </Button>
         {form.public_site_enabled && (
           <a
@@ -511,7 +515,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
             rel="noopener noreferrer"
             className="text-sm font-medium text-primary hover:underline dark:text-primary"
           >
-            Preview live site
+            {te("previewLiveSite")}
           </a>
         )}
       </div>

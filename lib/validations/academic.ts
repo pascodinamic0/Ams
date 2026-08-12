@@ -1,43 +1,43 @@
 import { z } from "zod";
 
 export const sectionSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  branch_id: z.string().uuid("Branch is required"),
+  name: z.string().min(1, "nameRequired"),
+  branch_id: z.string().uuid("branchRequired"),
 });
 
 export const classSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  branch_id: z.string().uuid("Branch is required"),
+  name: z.string().min(1, "nameRequired"),
+  branch_id: z.string().uuid("branchRequired"),
   grade: z.string().optional(),
   section_id: z.string().optional(),
   capacity: z.coerce.number().int().positive().optional(),
 });
 
 export const subjectSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  branch_id: z.string().uuid("Branch is required"),
+  name: z.string().min(1, "nameRequired"),
+  branch_id: z.string().uuid("branchRequired"),
 });
 
 export const branchSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  school_id: z.string().uuid("School is required"),
+  name: z.string().min(1, "nameRequired"),
+  school_id: z.string().uuid("schoolRequired"),
   address: z.string().optional(),
 });
 
 export const admissionPickupPersonSchema = z.object({
-  full_name: z.string().min(1, "Name is required"),
-  phone: z.string().min(1, "Phone number is required"),
-  relationship: z.string().min(1, "Relationship is required"),
+  full_name: z.string().min(1, "nameRequired"),
+  phone: z.string().min(1, "phoneRequired"),
+  relationship: z.string().min(1, "relationshipRequired"),
   notes: z.string().optional(),
 });
 
 const admissionBaseSchema = z.object({
-  student_name: z.string().min(1, "Student name is required"),
+  student_name: z.string().min(1, "studentNameRequired"),
   dob: z.string().optional(),
   gender: z.string().optional(),
   class_applying: z.string().optional(),
-  guardian_name: z.string().min(1, "Guardian name is required"),
-  guardian_email: z.string().email("Invalid email"),
+  guardian_name: z.string().min(1, "guardianNameRequired"),
+  guardian_email: z.string().email("invalidEmail"),
   guardian_phone: z.string().optional(),
   relation: z.enum(["father", "mother", "guardian", "other"]).default("guardian"),
   address: z.string().optional(),
@@ -54,7 +54,7 @@ function refinePickupAuthorization<T extends {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message:
-        "Specify who may pick up this child from school — authorize the guardian and/or add another person",
+        "pickupAuthorizationRequired",
       path: ["pickup_persons"],
     });
   }
@@ -64,15 +64,15 @@ export const admissionSchema = admissionBaseSchema.superRefine(refinePickupAutho
 
 export const onlineEnrollmentSchema = admissionBaseSchema
   .extend({
-    dob: z.string().min(1, "Date of birth is required"),
-    class_applying: z.string().min(1, "Grade or class is required"),
-    guardian_phone: z.string().min(1, "Phone number is required"),
-    address: z.string().min(1, "Address is required"),
+    dob: z.string().min(1, "dobRequired"),
+    class_applying: z.string().min(1, "gradeOrClassRequired"),
+    guardian_phone: z.string().min(1, "phoneRequired"),
+    address: z.string().min(1, "addressRequired"),
   })
   .superRefine(refinePickupAuthorization);
 const timeStringSchema = z
   .string()
-  .regex(/^\d{2}:\d{2}(:\d{2})?$/, "Invalid time")
+  .regex(/^\d{2}:\d{2}(:\d{2})?$/, "invalidTime")
   .nullable();
 
 export const timetableSlotEntrySchema = z.object({
@@ -100,17 +100,17 @@ export const timetableSlotSchema = z.object({
 });
 
 export const curriculumSchema = z.object({
-  branch_id: z.string().uuid("Branch is required"),
-  grade: z.string().min(1, "Grade is required"),
-  subject_id: z.string().uuid("Subject is required"),
+  branch_id: z.string().uuid("branchRequired"),
+  grade: z.string().min(1, "gradeRequired"),
+  subject_id: z.string().uuid("subjectRequired"),
   syllabus: z.string().optional(),
 });
 
 export const studentImportRowSchema = z.object({
-  first_name: z.string().min(1, "First name is required"),
+  first_name: z.string().min(1, "firstNameRequired"),
   middle_name: z.string().optional(),
-  last_name: z.string().min(1, "Last name is required"),
-  date_of_birth: z.string().min(1, "Date of birth is required"),
+  last_name: z.string().min(1, "lastNameRequired"),
+  date_of_birth: z.string().min(1, "dobRequired"),
   class_id: z.string().uuid().optional(),
   status: z.enum(["active", "graduated", "inactive"]).default("active"),
 });

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +15,13 @@ import { toast } from "@/lib/toast";
 
 const STATUSES = ["open", "monitoring", "escalated", "resolved"] as const;
 
+const STATUS_KEYS = {
+  open: "statusOpen",
+  monitoring: "statusMonitoring",
+  escalated: "statusEscalated",
+  resolved: "statusResolved",
+} as const;
+
 export function DisciplineBoard({
   incidents,
   students,
@@ -21,12 +29,26 @@ export function DisciplineBoard({
   incidents: DisciplineIncident[];
   students: { id: string; name: string }[];
 }) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [severity, setSeverity] = useState<"low" | "medium" | "high">("medium");
   const [studentId, setStudentId] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
+
+  function statusLabel(status: string) {
+    const key = STATUS_KEYS[status as keyof typeof STATUS_KEYS];
+    return key ? t(key) : status;
+  }
+
+  function severityLabel(value: string) {
+    if (value === "low" || value === "medium" || value === "high") {
+      return tc(value);
+    }
+    return value;
+  }
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
@@ -42,7 +64,7 @@ export function DisciplineBoard({
       toast.error(result.error);
       return;
     }
-    toast.success("Incident logged");
+    toast.success(t("incidentLogged"));
     setTitle("");
     setDescription("");
     setStudentId("");
@@ -65,22 +87,22 @@ export function DisciplineBoard({
         className="grid gap-3 rounded-xl border border-stone-200 p-4 dark:border-stone-800 sm:grid-cols-2 lg:grid-cols-4"
       >
         <div className="lg:col-span-2">
-          <Label>Incident</Label>
+          <Label>{t("incident")}</Label>
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Late arrival / classroom disruption"
+            placeholder={t("incidentPlaceholder")}
             required
           />
         </div>
         <div>
-          <Label>Student</Label>
+          <Label>{t("student")}</Label>
           <select
             className="mt-1 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             value={studentId}
             onChange={(e) => setStudentId(e.target.value)}
           >
-            <option value="">Optional</option>
+            <option value="">{tc("optional")}</option>
             {students.map((student) => (
               <option key={student.id} value={student.id}>
                 {student.name}
@@ -89,35 +111,35 @@ export function DisciplineBoard({
           </select>
         </div>
         <div>
-          <Label>Severity</Label>
+          <Label>{t("severity")}</Label>
           <select
             className="mt-1 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             value={severity}
             onChange={(e) => setSeverity(e.target.value as "low" | "medium" | "high")}
           >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+            <option value="low">{tc("low")}</option>
+            <option value="medium">{tc("medium")}</option>
+            <option value="high">{tc("high")}</option>
           </select>
         </div>
         <div className="lg:col-span-3">
-          <Label>Notes</Label>
+          <Label>{tc("notes")}</Label>
           <Input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="What happened and what follow-up is needed"
+            placeholder={t("incidentNotesPlaceholder")}
           />
         </div>
         <div className="flex items-end">
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Saving..." : "Log incident"}
+            {loading ? tc("saving") : t("logIncident")}
           </Button>
         </div>
       </form>
 
       <div className="space-y-3">
         {incidents.length === 0 ? (
-          <p className="text-sm text-stone-500">No discipline cases yet.</p>
+          <p className="text-sm text-stone-500">{t("noDisciplineCases")}</p>
         ) : (
           incidents.map((incident) => (
             <div
@@ -130,7 +152,7 @@ export function DisciplineBoard({
                     {incident.title}
                   </p>
                   <p className="mt-1 text-sm text-stone-500">
-                    {incident.student_name ?? "No student linked"} · {incident.severity} ·{" "}
+                    {incident.student_name ?? t("noStudentLinked")} · {severityLabel(incident.severity)} ·{" "}
                     {incident.incident_date}
                   </p>
                   {incident.description && (
@@ -140,7 +162,7 @@ export function DisciplineBoard({
                   )}
                 </div>
                 <span className="rounded-full bg-stone-100 px-2.5 py-1 text-xs font-medium capitalize text-stone-700 dark:bg-stone-800 dark:text-stone-200">
-                  {incident.status}
+                  {statusLabel(incident.status)}
                 </span>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -151,7 +173,7 @@ export function DisciplineBoard({
                     onClick={() => handleStatus(incident.id, status)}
                     className="rounded-full border border-stone-200 px-2.5 py-1 text-xs text-stone-600 hover:bg-stone-100 dark:border-stone-700 dark:text-stone-300 dark:hover:bg-stone-800"
                   >
-                    Mark {status}
+                    {t("markStatus", { status: statusLabel(status) })}
                   </button>
                 ))}
               </div>

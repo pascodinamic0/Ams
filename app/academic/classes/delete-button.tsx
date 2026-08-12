@@ -8,19 +8,20 @@ import { deleteClass } from "@/lib/actions/classes";
 import { toast } from "@/lib/toast";
 
 export function DeleteClassButton({ id, name }: { id: string; name: string }) {
+  const t = useTranslations("academic");
   const tc = useTranslations("common");
   const router = useRouter();
 
   async function handleDelete() {
-    if (!confirm(`Delete class "${name}"?`)) return;
+    if (!confirm(t("deleteClassConfirm", { name }))) return;
 
     const result = await deleteClass(id);
     if (result.error) {
-      toast.error(typeof result.error === "string" ? result.error : "Failed to delete class");
+      toast.error(typeof result.error === "string" ? result.error : t("deleteFailed"));
       return;
     }
 
-    toast.success("Class deleted");
+    toast.success(t("classDeleted"));
     router.refresh();
   }
 

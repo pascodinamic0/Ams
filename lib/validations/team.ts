@@ -22,8 +22,8 @@ export const INVITABLE_ROLES = [
 export type InvitableRole = (typeof INVITABLE_ROLES)[number];
 
 export const inviteUserSchema = z.object({
-  email: z.string().email("Invalid email"),
-  name: z.string().min(1, "Name is required"),
+  email: z.string().email("invalidEmail"),
+  name: z.string().min(1, "nameRequired"),
   role: z.enum([
     "academic_admin",
     "admin_coordinator",
@@ -47,7 +47,7 @@ export const inviteUserSchema = z.object({
 export type InviteUserFormData = z.infer<typeof inviteUserSchema>;
 
 export const updateTeamMemberRoleSchema = z.object({
-  userId: z.string().uuid("Invalid user ID"),
+  userId: z.string().uuid("invalidUserId"),
   role: inviteUserSchema.shape.role,
 });
 
@@ -56,7 +56,7 @@ export type UpdateTeamMemberRoleFormData = z.infer<
 >;
 
 export const removeTeamMemberSchema = z.object({
-  userId: z.string().uuid("Invalid user ID"),
+  userId: z.string().uuid("invalidUserId"),
 });
 
 export type RemoveTeamMemberFormData = z.infer<typeof removeTeamMemberSchema>;

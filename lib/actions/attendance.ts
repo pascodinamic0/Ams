@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { saveAttendanceSchema } from "@/lib/validations/teacher";
@@ -18,7 +20,7 @@ export async function saveAttendance(input: {
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const period = parsed.data.period;
   const rows = parsed.data.records.map((r) => ({
@@ -41,7 +43,7 @@ export async function saveAttendance(input: {
 export async function markAllPresent(classId: string, date: string, period = 0) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: students, error: studentsError } = await supabase
     .from("students")
@@ -50,7 +52,7 @@ export async function markAllPresent(classId: string, date: string, period = 0) 
     .eq("status", "active");
 
   if (studentsError) return { error: studentsError.message };
-  if (!students?.length) return { error: "No students in class" };
+  if (!students?.length) return await actionError("noStudentsInClass");
 
   const rows = students.map((s) => ({
     student_id: s.id,

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -34,6 +35,8 @@ export function StaffPayAmountsPanel({
   excludedStaffIds: string[];
 }) {
   const router = useRouter();
+  const t = useTranslations("finance");
+  const tc = useTranslations("common");
   const [syncing, setSyncing] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -68,7 +71,9 @@ export function StaffPayAmountsPanel({
       return;
     }
     toast.success(
-      `Staff roster synced${result.data ? ` (${result.data.created} added)` : ""}`
+      result.data
+        ? t("staffRosterSyncedAdded", { count: result.data.created })
+        : t("staffRosterSynced")
     );
     router.refresh();
   }
@@ -84,7 +89,7 @@ export function StaffPayAmountsPanel({
       toast.error(result.error);
       return;
     }
-    toast.success("Pay amount saved");
+    toast.success(t("payAmountSaved"));
     router.refresh();
   }
 
@@ -119,8 +124,8 @@ export function StaffPayAmountsPanel({
 
     toast.success(
       included
-        ? `Included in ${monthLabel} payroll`
-        : `Excluded from ${monthLabel} payroll`
+        ? t("includedInPayroll", { month: monthLabel })
+        : t("excludedFromMonthPayroll", { month: monthLabel })
     );
     router.refresh();
   }
@@ -132,37 +137,38 @@ export function StaffPayAmountsPanel({
     <div className="space-y-4 rounded-xl border border-stone-200 p-4 dark:border-stone-800">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold">Staff pay amounts</h2>
+          <h2 className="text-lg font-semibold">{t("staffPayAmounts")}</h2>
           <p className="mt-1 text-sm text-stone-500">
-            Set how much each person should be paid, then tick out anyone finance
-            should skip for {monthLabel}. Generate payroll after amounts and
-            inclusions are set.
+            {t("staffPayAmountsHint", { month: monthLabel })}
           </p>
           <p className="mt-1 text-xs text-stone-500">
-            {includedCount} included · {excludedCount} excluded for {monthLabel}
+            {t("includedExcludedCount", {
+              included: includedCount,
+              excluded: excludedCount,
+              month: monthLabel,
+            })}
           </p>
         </div>
         <Button type="button" variant="outline" onClick={handleSync} disabled={syncing}>
-          {syncing ? "Syncing..." : "Refresh staff roster"}
+          {syncing ? t("syncing") : t("refreshStaffRoster")}
         </Button>
       </div>
 
       {staff.length === 0 ? (
         <p className="text-sm text-stone-500">
-          No staff on the payroll roster yet. Click Refresh staff roster to pull
-          the school team, or add people in Operations.
+          {t("noStaffOnRoster")}
         </p>
       ) : (
         <div className="overflow-x-auto rounded-lg border">
           <table className="min-w-full divide-y divide-stone-200 text-sm dark:divide-stone-800">
             <thead className="bg-stone-50 dark:bg-stone-900/60">
               <tr>
-                <th className="px-3 py-2 text-left">Pay this month</th>
-                <th className="px-3 py-2 text-left">Staff</th>
-                <th className="px-3 py-2 text-left">Role</th>
-                <th className="px-3 py-2 text-left">Department</th>
-                <th className="px-3 py-2 text-left">Amount to pay</th>
-                <th className="px-3 py-2 text-left">Actions</th>
+                <th className="px-3 py-2 text-left">{t("payThisMonth")}</th>
+                <th className="px-3 py-2 text-left">{t("colStaff")}</th>
+                <th className="px-3 py-2 text-left">{t("colRole")}</th>
+                <th className="px-3 py-2 text-left">{t("department")}</th>
+                <th className="px-3 py-2 text-left">{t("amountToPay")}</th>
+                <th className="px-3 py-2 text-left">{tc("actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
@@ -181,7 +187,7 @@ export function StaffPayAmountsPanel({
                         onChange={(e) =>
                           handleIncludeToggle(member.id, e.target.checked)
                         }
-                        label={isExcluded ? "Excluded" : "Included"}
+                        label={isExcluded ? t("excluded") : t("included")}
                       />
                     </td>
                     <td className="px-3 py-2">
@@ -199,12 +205,12 @@ export function StaffPayAmountsPanel({
                         </div>
                       </div>
                     </td>
-                    <td className="px-3 py-2">{member.role ?? "Staff"}</td>
+                    <td className="px-3 py-2">{member.role ?? t("colStaff")}</td>
                     <td className="px-3 py-2">{member.department ?? "-"}</td>
                     <td className="px-3 py-2">
                       <div className="flex max-w-xs items-center gap-2">
                         <Label htmlFor={`staff-amount-${member.id}`} className="sr-only">
-                          Amount
+                          {tc("amount")}
                         </Label>
                         <Input
                           id={`staff-amount-${member.id}`}
@@ -232,7 +238,7 @@ export function StaffPayAmountsPanel({
                         onClick={() => handleSave(member.id)}
                         disabled={savingId === member.id || isExcluded}
                       >
-                        {savingId === member.id ? "Saving..." : "Save amount"}
+                        {savingId === member.id ? tc("saving") : t("saveAmount")}
                       </Button>
                     </td>
                   </tr>

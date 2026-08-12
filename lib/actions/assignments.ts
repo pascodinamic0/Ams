@@ -1,5 +1,8 @@
 "use server";
 
+import { getTranslations } from "next-intl/server";
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createNotification, notifyStudentGuardians } from "@/lib/services/notifications";
@@ -17,7 +20,7 @@ export async function createAssignment(input: AssignmentFormData) {
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data, error } = await supabase
     .from("assignments")
@@ -43,7 +46,7 @@ export async function updateAssignment(id: string, updates: Partial<AssignmentFo
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { error } = await supabase
     .from("assignments")
@@ -63,7 +66,7 @@ export async function updateAssignment(id: string, updates: Partial<AssignmentFo
 export async function deleteAssignment(id: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { error } = await supabase
     .from("assignments")
@@ -85,7 +88,7 @@ export async function gradeSubmission(input: { submissionId: string; grade: numb
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: submission, error: fetchError } = await supabase
     .from("assignment_submissions")
@@ -97,7 +100,7 @@ export async function gradeSubmission(input: { submissionId: string; grade: numb
     .eq("id", parsed.data.submissionId)
     .single();
 
-  if (fetchError || !submission) return { error: "Submission not found" };
+  if (fetchError || !submission) return await actionError("submissionNotFound");
 
   const assignmentRaw = submission.assignments as
     | { id: string; title: string; teacher_id: string }
@@ -106,7 +109,7 @@ export async function gradeSubmission(input: { submissionId: string; grade: numb
   const assignment = Array.isArray(assignmentRaw) ? assignmentRaw[0] : assignmentRaw;
 
   if (!assignment || assignment.teacher_id !== user.id) {
-    return { error: "Not authorized to grade this submission" };
+    return await actionError("notAuthorizedGradeSubmission");
   }
 
   const { error } = await supabase
@@ -116,9 +119,13 @@ export async function gradeSubmission(input: { submissionId: string; grade: numb
 
   if (error) return { error: error.message };
 
+  const tn = await getTranslations("notifications");
   const gradeText = `${parsed.data.grade}%`;
-  const title = "Assignment graded";
-  const body = `Your submission for "${assignment.title}" was graded: ${gradeText}.`;
+  const title = tn("assignmentGraded");
+  const body = tn("assignmentGradedBody", {
+    title: assignment.title,
+    grade: gradeText,
+  });
 
   const { data: student } = await supabase
     .from("students")
@@ -132,7 +139,10 @@ export async function gradeSubmission(input: { submissionId: string; grade: numb
 
   await notifyStudentGuardians(submission.student_id, {
     title,
-    body: `An assignment submission was graded: ${gradeText} for "${assignment.title}".`,
+    body: tn("assignmentGradedGuardianBody", {
+      grade: gradeText,
+      title: assignment.title,
+    }),
   });
 
   revalidatePath("/teacher/assignments");

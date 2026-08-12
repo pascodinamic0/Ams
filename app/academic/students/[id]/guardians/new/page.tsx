@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { AddGuardianForm } from "@/components/forms/add-guardian-form";
 import { getStudentById } from "@/lib/db/students";
@@ -11,6 +12,7 @@ export default async function AddStudentGuardianPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const t = await getTranslations("academic");
   const { id: studentId } = await params;
   const [student, profile] = await Promise.all([
     getStudentById(studentId),
@@ -27,11 +29,11 @@ export default async function AddStudentGuardianPage({
         <p className="text-sm text-stone-500">
           {formatPersonName(student)}
         </p>
-        <h1 className="text-2xl font-bold">Add guardian</h1>
+        <h1 className="text-2xl font-bold">{t("addGuardianTitle")}</h1>
       </div>
       <AddGuardianForm studentId={studentId} schoolId={schoolId} />
       <Link href={`/academic/students/${studentId}`}>
-        <Button variant="ghost">Back to student</Button>
+        <Button variant="ghost">{t("backToStudent")}</Button>
       </Link>
     </div>
   );

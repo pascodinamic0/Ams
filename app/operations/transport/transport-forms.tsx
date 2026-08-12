@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,7 +18,14 @@ import {
 } from "@/lib/actions/transport";
 import { toast } from "@/lib/toast";
 
+function toastActionError(error: unknown, fallback: string) {
+  toast.error(typeof error === "string" ? error : fallback);
+}
+
 export function RouteForm({ branchId }: { branchId: string }) {
+  const t = useTranslations("operations");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -33,10 +41,10 @@ export function RouteForm({ branchId }: { branchId: string }) {
     });
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to create route");
+      toastActionError(result.error, te("failedCreateRoute"));
       return;
     }
-    toast.success("Route created");
+    toast.success(t("routeCreated"));
     setName("");
     setDescription("");
     router.refresh();
@@ -45,15 +53,15 @@ export function RouteForm({ branchId }: { branchId: string }) {
   return (
     <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-3">
       <div>
-        <Label>Route name</Label>
+        <Label>{t("routeName")}</Label>
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
       <div>
-        <Label>Description</Label>
+        <Label>{tc("description")}</Label>
         <Input value={description} onChange={(e) => setDescription(e.target.value)} />
       </div>
       <div className="flex items-end">
-        <Button type="submit" disabled={loading} className="w-full">Add route</Button>
+        <Button type="submit" disabled={loading} className="w-full">{t("addRoute")}</Button>
       </div>
     </form>
   );
@@ -64,6 +72,8 @@ export function VehicleForm({
 }: {
   routes: { id: string; name: string }[];
 }) {
+  const t = useTranslations("operations");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [routeId, setRouteId] = useState(routes[0]?.id ?? "");
   const [name, setName] = useState("");
@@ -79,7 +89,7 @@ export function VehicleForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!routeId) {
-      toast.error("Create a route first");
+      toast.error(te("createRouteFirst"));
       return;
     }
     setLoading(true);
@@ -90,23 +100,23 @@ export function VehicleForm({
     });
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to add vehicle");
+      toastActionError(result.error, te("failedAddVehicle"));
       return;
     }
-    toast.success("Vehicle added");
+    toast.success(t("vehicleAdded"));
     setName("");
     setCapacity("");
     router.refresh();
   }
 
   if (routes.length === 0) {
-    return <p className="text-sm text-stone-500">Create a route before adding vehicles.</p>;
+    return <p className="text-sm text-stone-500">{t("createRouteBeforeVehicles")}</p>;
   }
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-4">
       <div>
-        <Label>Route</Label>
+        <Label>{t("colRoute")}</Label>
         <select
           value={routeId}
           onChange={(e) => setRouteId(e.target.value)}
@@ -119,15 +129,15 @@ export function VehicleForm({
         </select>
       </div>
       <div>
-        <Label>Vehicle name</Label>
+        <Label>{t("vehicleName")}</Label>
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
       <div>
-        <Label>Capacity</Label>
+        <Label>{t("colCapacity")}</Label>
         <Input type="number" min={1} value={capacity} onChange={(e) => setCapacity(e.target.value)} />
       </div>
       <div className="flex items-end">
-        <Button type="submit" disabled={loading} className="w-full">Add vehicle</Button>
+        <Button type="submit" disabled={loading} className="w-full">{t("addVehicle")}</Button>
       </div>
     </form>
   );
@@ -142,6 +152,9 @@ export function StudentMappingForm({
   students: { id: string; name: string }[];
   assignedStudentIds?: string[];
 }) {
+  const t = useTranslations("operations");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [vehicleId, setVehicleId] = useState(vehicles[0]?.id ?? "");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -186,7 +199,7 @@ export function StudentMappingForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (selectedIds.size === 0) {
-      toast.error("Select at least one student");
+      toast.error(t("selectAtLeastOneStudent"));
       return;
     }
     setLoading(true);
@@ -196,20 +209,20 @@ export function StudentMappingForm({
     });
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to assign students");
+      toastActionError(result.error, te("failedAssignStudents"));
       return;
     }
     toast.success(
       selectedIds.size === 1
-        ? "Student assigned"
-        : `${selectedIds.size} students assigned`
+        ? t("studentAssigned")
+        : t("studentsAssigned", { count: selectedIds.size })
     );
     setSelectedIds(new Set());
     router.refresh();
   }
 
   if (vehicles.length === 0 || students.length === 0) {
-    return <p className="text-sm text-stone-500">Add vehicles and students before mapping.</p>;
+    return <p className="text-sm text-stone-500">{t("addVehiclesAndStudentsFirst")}</p>;
   }
 
   const unassignedCount = students.filter((s) => !assignedSet.has(s.id)).length;
@@ -218,7 +231,7 @@ export function StudentMappingForm({
     <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border p-4">
       <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <Label>Vehicle</Label>
+          <Label>{t("colVehicle")}</Label>
           <select
             value={vehicleId}
             onChange={(e) => setVehicleId(e.target.value)}
@@ -233,9 +246,9 @@ export function StudentMappingForm({
           </select>
         </div>
         <div>
-          <Label>Search students</Label>
+          <Label>{t("searchStudents")}</Label>
           <SearchInput
-            placeholder="Filter by name..."
+            placeholder={t("filterByName")}
             value={search}
             onSearch={setSearch}
           />
@@ -245,7 +258,7 @@ export function StudentMappingForm({
       <div className="flex flex-wrap items-center gap-3 text-sm">
         <Checkbox
           id="unassigned-only"
-          label={`Show unassigned only (${unassignedCount})`}
+          label={t("showUnassignedOnly", { count: unassignedCount })}
           checked={unassignedOnly}
           onChange={(e) => setUnassignedOnly(e.target.checked)}
         />
@@ -256,7 +269,7 @@ export function StudentMappingForm({
           className="text-primary hover:underline"
           disabled={filteredStudents.length === 0}
         >
-          Select all visible ({filteredStudents.length})
+          {t("selectAllVisible", { count: filteredStudents.length })}
         </button>
         <button
           type="button"
@@ -264,11 +277,11 @@ export function StudentMappingForm({
           className="text-stone-500 hover:underline"
           disabled={selectedIds.size === 0}
         >
-          Clear selection
+          {tc("clearSelection")}
         </button>
         {selectedIds.size > 0 && (
           <span className="font-medium text-stone-700 dark:text-stone-300">
-            {selectedIds.size} selected
+            {t("selectedCount", { count: selectedIds.size })}
           </span>
         )}
       </div>
@@ -277,8 +290,8 @@ export function StudentMappingForm({
         {filteredStudents.length === 0 ? (
           <p className="p-4 text-sm text-stone-500">
             {unassignedOnly && unassignedCount === 0
-              ? "All students are already assigned."
-              : "No students match your search."}
+              ? t("allStudentsAssigned")
+              : t("noStudentsMatchSearch")}
           </p>
         ) : (
           <ul className="divide-y dark:divide-stone-700">
@@ -295,7 +308,7 @@ export function StudentMappingForm({
                     />
                     <span className="text-sm">{student.name}</span>
                     {isAssigned && (
-                      <span className="ml-auto text-xs text-stone-400">assigned elsewhere</span>
+                      <span className="ml-auto text-xs text-stone-400">{t("assignedElsewhere")}</span>
                     )}
                   </label>
                 </li>
@@ -307,66 +320,72 @@ export function StudentMappingForm({
 
       <Button type="submit" disabled={loading || selectedIds.size === 0}>
         {loading
-          ? "Assigning..."
+          ? t("assigning")
           : selectedIds.size === 0
-            ? "Assign students"
-            : selectedIds.size === 1
-              ? "Assign 1 student"
-              : `Assign ${selectedIds.size} students`}
+            ? t("assignStudents")
+            : t("assignStudentsCount", { count: selectedIds.size })}
       </Button>
     </form>
   );
 }
 
 export function DeleteRouteButton({ id }: { id: string }) {
+  const t = useTranslations("operations");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm("Delete this route and its vehicles?")) return;
+    if (!confirm(t("deleteRouteConfirm"))) return;
     setLoading(true);
     const result = await deleteTransportRoute(id);
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to delete route");
+      toastActionError(result.error, te("failedDeleteRoute"));
       return;
     }
-    toast.success("Route deleted");
+    toast.success(t("routeDeleted"));
     router.refresh();
   }
 
   return (
     <Button size="sm" variant="ghost" onClick={handleDelete} disabled={loading}>
-      Delete
+      {tc("delete")}
     </Button>
   );
 }
 
 export function DeleteVehicleButton({ id }: { id: string }) {
+  const t = useTranslations("operations");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm("Delete this vehicle?")) return;
+    if (!confirm(t("deleteVehicleConfirm"))) return;
     setLoading(true);
     const result = await deleteTransportVehicle(id);
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to delete vehicle");
+      toastActionError(result.error, te("failedDeleteVehicle"));
       return;
     }
-    toast.success("Vehicle deleted");
+    toast.success(t("vehicleDeleted"));
     router.refresh();
   }
 
   return (
     <Button size="sm" variant="ghost" onClick={handleDelete} disabled={loading}>
-      Delete
+      {tc("delete")}
     </Button>
   );
 }
 
 export function UnassignButton({ mappingId }: { mappingId: string }) {
+  const t = useTranslations("operations");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -375,16 +394,16 @@ export function UnassignButton({ mappingId }: { mappingId: string }) {
     const result = await unassignStudentFromVehicle(mappingId);
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to unassign student");
+      toastActionError(result.error, te("failedUnassignStudent"));
       return;
     }
-    toast.success("Student unassigned");
+    toast.success(t("studentUnassigned"));
     router.refresh();
   }
 
   return (
     <Button size="sm" variant="ghost" onClick={handleUnassign} disabled={loading}>
-      Unassign
+      {t("unassign")}
     </Button>
   );
 }

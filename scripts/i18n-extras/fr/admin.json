@@ -1,0 +1,22 @@
+{
+  "schoolIdentity": "Identité de l'école",
+  "schoolName": "Nom de l'école",
+  "urlSlug": "Identifiant d'URL",
+  "urlSlugHint": "Utilisé dans l'URL du site public",
+  "contactInformation": "Coordonnées",
+  "schoolUpdated": "École mise à jour",
+  "schoolDeleted": "École supprimée",
+  "addSchoolFirst": "Ajoutez une école avant de créer des campus.",
+  "address": "Adresse",
+  "addBranch": "Ajouter un campus",
+  "branchCreated": "Campus créé",
+  "platform": "Plateforme",
+  "unassigned": "Non assigné",
+  "userDirectory": "Annuaire des utilisateurs",
+  "noUsersMatch": "Aucun utilisateur ne correspond à vos filtres",
+  "tryDifferentSearch": "Essayez un autre terme de recherche ou filtre de rôle.",
+  "systemLanguageUpdated": "Langue du système mise à jour",
+  "currencyUpdated": "Devise mise à jour",
+  "websiteSaved": "Site enregistré",
+  "imageUploaded": "Image téléversée"
+}

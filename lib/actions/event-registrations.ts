@@ -1,8 +1,11 @@
 "use server";
 
+import { actionError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminClient } from "@/lib/supabase/admin";
+import { getTranslations } from "next-intl/server";
 import {
   campusVisitBookingSchema,
   eventRegistrationSchema,
@@ -27,18 +30,18 @@ export async function createEventRegistration(input: EventRegistrationFormData) 
     .maybeSingle();
 
   if (eventError || !event) {
-    return { error: "This event or visit slot is no longer available." };
+    return await actionError("slotUnavailable");
   }
 
   if (!event.booking_enabled) {
-    return { error: "Booking is closed for this slot." };
+    return await actionError("bookingClosed");
   }
 
   const isBookable =
     event.purpose === "campus_visit" || event.public_on_website === true;
 
   if (!isBookable) {
-    return { error: "This event is not open for online booking." };
+    return await actionError("eventNotOpenBooking");
   }
 
   const branches = event.branches as
@@ -50,7 +53,7 @@ export async function createEventRegistration(input: EventRegistrationFormData) 
   const school = Array.isArray(schoolsRaw) ? schoolsRaw[0] : schoolsRaw;
 
   if (!school?.public_site_enabled || school.status !== "approved") {
-    return { error: "Online booking is not available for this school." };
+    return await actionError("onlineBookingUnavailable");
   }
 
   const { data, error } = await supabase
@@ -96,15 +99,15 @@ export async function bookCampusVisitSlot(input: CampusVisitBookingFormData) {
     .maybeSingle();
 
   if (admissionError || !admission) {
-    return { error: "Application not found. Please submit enrollment again." };
+    return await actionError("applicationNotFoundEnroll");
   }
 
   if (admission.guardian_email.toLowerCase() !== parsed.data.guardian_email.toLowerCase()) {
-    return { error: "Email does not match your enrollment application." };
+    return await actionError("emailMismatchEnrollment");
   }
 
   if (!admission.requires_campus_visit) {
-    return { error: "This application is not eligible for campus visit booking." };
+    return await actionError("applicationNotEligibleVisit");
   }
 
   const { data: event, error: eventError } = await admin
@@ -114,7 +117,7 @@ export async function bookCampusVisitSlot(input: CampusVisitBookingFormData) {
     .maybeSingle();
 
   if (eventError || !event) {
-    return { error: "Visit slot not found." };
+    return await actionError("visitSlotNotFound");
   }
 
   const branches = event.branches as
@@ -129,7 +132,7 @@ export async function bookCampusVisitSlot(input: CampusVisitBookingFormData) {
     !event.booking_enabled ||
     eventSchoolId !== admission.school_id
   ) {
-    return { error: "This slot is not available for enrollment visits." };
+    return await actionError("slotNotForEnrollmentVisits");
   }
 
   const { data: existing } = await admin
@@ -139,10 +142,14 @@ export async function bookCampusVisitSlot(input: CampusVisitBookingFormData) {
     .maybeSingle();
 
   if (existing) {
-    return { error: "A campus visit is already booked for this application." };
+    return await actionError("visitAlreadyBooked");
   }
 
-  const enrollmentNote = `Enrollment application for ${admission.student_name} (ref ${admission.id.slice(0, 8)})`;
+  const te = await getTranslations("errors");
+  const enrollmentNote = te("enrollmentApplicationNote", {
+    studentName: admission.student_name,
+    ref: admission.id.slice(0, 8),
+  });
   const notes = parsed.data.notes
     ? `${enrollmentNote}. ${parsed.data.notes}`
     : enrollmentNote;

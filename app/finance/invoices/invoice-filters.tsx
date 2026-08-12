@@ -1,10 +1,13 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 export function InvoiceFilters() {
+  const t = useTranslations("finance");
+  const tc = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const status = searchParams.get("status") ?? "";
@@ -20,25 +23,25 @@ export function InvoiceFilters() {
   return (
     <div className="flex flex-wrap gap-4">
       <div>
-        <Label htmlFor="status-filter">Status</Label>
+        <Label htmlFor="status-filter">{tc("status")}</Label>
         <select
           id="status-filter"
           value={status}
           onChange={(e) => updateParams("status", e.target.value)}
           className="mt-1 w-full min-w-[140px] rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
-          <option value="">All</option>
-          <option value="pending">Pending</option>
-          <option value="paid">Paid</option>
-          <option value="overdue">Overdue</option>
+          <option value="">{tc("all")}</option>
+          <option value="pending">{tc("pending")}</option>
+          <option value="paid">{tc("paid")}</option>
+          <option value="overdue">{t("overdue")}</option>
         </select>
       </div>
       <div className="min-w-[200px] flex-1">
-        <Label htmlFor="search-filter">Search</Label>
+        <Label htmlFor="search-filter">{tc("search")}</Label>
         <Input
           id="search-filter"
           defaultValue={search}
-          placeholder="Student name or ID"
+          placeholder={t("searchStudentNameOrId")}
           onBlur={(e) => updateParams("search", e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") updateParams("search", e.currentTarget.value);

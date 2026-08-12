@@ -44,5 +44,13 @@
   "chartRevenueOutstanding": "Revenus vs impayés (6 mois)",
   "chartFeeStatus": "Répartition des statuts de frais",
   "chartCollectionTrend": "Tendance de recouvrement des frais",
-  "noData": "Aucune donnée"
+  "noData": "Aucune donnée",
+  "unassigned": "Non assigné",
+  "notSpecified": "Non précisé",
+  "male": "Masculin",
+  "female": "Féminin",
+  "other": "Autre",
+  "paid": "Payé",
+  "pending": "En attente",
+  "overdue": "En retard"
 }

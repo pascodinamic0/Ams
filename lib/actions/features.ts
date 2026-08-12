@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { SCHOOL_FEATURE_KEYS, schoolFeatureKey } from "@/lib/db/features";
@@ -38,12 +40,12 @@ export async function toggleSchoolFeature(
   enabled: boolean
 ) {
   if (!schoolId) {
-    return { error: "School is required" };
+    return await actionError("schoolRequired");
   }
 
   const validKey = SCHOOL_FEATURE_KEYS.some((f) => f.key === featureKey);
   if (!validKey) {
-    return { error: "Unknown feature" };
+    return await actionError("unknownFeature");
   }
 
   const supabase = await createClient();
@@ -51,7 +53,7 @@ export async function toggleSchoolFeature(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return { error: "Not authenticated" };
+    return await actionError("notAuthenticated");
   }
 
   const { data: profile } = await supabase
@@ -62,7 +64,7 @@ export async function toggleSchoolFeature(
 
   if (profile?.role !== "super_admin") {
     if (profile?.role !== "academic_admin" || profile.school_id !== schoolId) {
-      return { error: "Not authorized to manage features for this school" };
+      return await actionError("notAuthorizedManageFeatures");
     }
   }
 

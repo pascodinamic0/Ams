@@ -1,11 +1,14 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export function AuditFilters({ entityTypes }: { entityTypes: string[] }) {
+  const t = useTranslations("admin");
+  const tc = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const entityType = searchParams.get("entityType") ?? "";
@@ -24,14 +27,14 @@ export function AuditFilters({ entityTypes }: { entityTypes: string[] }) {
   return (
     <div className="flex flex-wrap items-end gap-4">
       <div>
-        <Label htmlFor="entity-type">Entity type</Label>
+        <Label htmlFor="entity-type">{t("entityType")}</Label>
         <select
           id="entity-type"
           value={entityType}
           onChange={(e) => applyFilters({ entityType: e.target.value })}
           className="mt-1 w-full min-w-[160px] rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
-          <option value="">All entities</option>
+          <option value="">{t("allEntities")}</option>
           {entityTypes.map((type) => (
             <option key={type} value={type}>
               {type}
@@ -40,7 +43,7 @@ export function AuditFilters({ entityTypes }: { entityTypes: string[] }) {
         </select>
       </div>
       <div>
-        <Label htmlFor="start-date">From</Label>
+        <Label htmlFor="start-date">{tc("from")}</Label>
         <Input
           id="start-date"
           type="date"
@@ -50,7 +53,7 @@ export function AuditFilters({ entityTypes }: { entityTypes: string[] }) {
         />
       </div>
       <div>
-        <Label htmlFor="end-date">To</Label>
+        <Label htmlFor="end-date">{tc("to")}</Label>
         <Input
           id="end-date"
           type="date"
@@ -64,7 +67,7 @@ export function AuditFilters({ entityTypes }: { entityTypes: string[] }) {
         size="sm"
         onClick={() => router.push("/admin/audit")}
       >
-        Clear filters
+        {t("clearFilters")}
       </Button>
     </div>
   );

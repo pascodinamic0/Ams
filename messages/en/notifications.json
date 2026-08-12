@@ -8,5 +8,14 @@
   "unread": "Unread",
   "unreadCount": "{count, plural, one {# unread notification} other {# unread notifications}}",
   "allCaughtUp": "You're all caught up",
-  "view": "View"
+  "view": "View",
+  "paymentReceived": "Payment received",
+  "paymentReceivedBody": "A payment of {amount} was recorded. Invoice status: {status}.",
+  "admissionApproved": "Admission approved",
+  "admissionApprovedBody": "{studentName}'s admission application has been approved.",
+  "assignmentGraded": "Assignment graded",
+  "assignmentGradedBody": "Your submission for \"{title}\" was graded: {grade}.",
+  "assignmentGradedGuardianBody": "An assignment submission was graded: {grade} for \"{title}\".",
+  "newMessageFrom": "New message from {name}",
+  "someone": "Someone"
 }

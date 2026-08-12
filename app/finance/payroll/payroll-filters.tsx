@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -12,6 +13,8 @@ interface PayrollFiltersProps {
 export function PayrollFilters({ positions, departments }: PayrollFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("finance");
+  const tc = useTranslations("common");
 
   function updateParam(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -23,11 +26,11 @@ export function PayrollFilters({ positions, departments }: PayrollFiltersProps) 
   return (
     <div className="grid gap-3 rounded-lg border p-4 md:grid-cols-2 lg:grid-cols-6">
       <div>
-        <Label htmlFor="payroll-search">Search</Label>
+        <Label htmlFor="payroll-search">{tc("search")}</Label>
         <Input
           id="payroll-search"
           defaultValue={searchParams.get("search") ?? ""}
-          placeholder="Name, staff ID, position, department, status"
+          placeholder={t("payrollSearchPlaceholder")}
           onBlur={(e) => updateParam("search", e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") updateParam("search", e.currentTarget.value);
@@ -35,27 +38,27 @@ export function PayrollFilters({ positions, departments }: PayrollFiltersProps) 
         />
       </div>
       <div>
-        <Label htmlFor="payroll-status">Status</Label>
+        <Label htmlFor="payroll-status">{tc("status")}</Label>
         <select
           id="payroll-status"
           value={searchParams.get("status") ?? ""}
           onChange={(e) => updateParam("status", e.target.value)}
           className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
-          <option value="">All</option>
-          <option value="pending">Pending</option>
-          <option value="paid">Paid</option>
+          <option value="">{tc("all")}</option>
+          <option value="pending">{tc("pending")}</option>
+          <option value="paid">{tc("paid")}</option>
         </select>
       </div>
       <div>
-        <Label htmlFor="payroll-position">Position</Label>
+        <Label htmlFor="payroll-position">{t("position")}</Label>
         <select
           id="payroll-position"
           value={searchParams.get("position") ?? ""}
           onChange={(e) => updateParam("position", e.target.value)}
           className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
-          <option value="">All</option>
+          <option value="">{tc("all")}</option>
           {positions.map((position) => (
             <option key={position} value={position}>
               {position}
@@ -64,7 +67,7 @@ export function PayrollFilters({ positions, departments }: PayrollFiltersProps) 
         </select>
       </div>
       <div>
-        <Label htmlFor="payroll-month">Month</Label>
+        <Label htmlFor="payroll-month">{t("month")}</Label>
         <Input
           id="payroll-month"
           type="number"
@@ -78,7 +81,7 @@ export function PayrollFilters({ positions, departments }: PayrollFiltersProps) 
         />
       </div>
       <div>
-        <Label htmlFor="payroll-year">Year</Label>
+        <Label htmlFor="payroll-year">{t("year")}</Label>
         <Input
           id="payroll-year"
           type="number"
@@ -92,14 +95,14 @@ export function PayrollFilters({ positions, departments }: PayrollFiltersProps) 
         />
       </div>
       <div>
-        <Label htmlFor="payroll-department">Department</Label>
+        <Label htmlFor="payroll-department">{t("department")}</Label>
         <select
           id="payroll-department"
           value={searchParams.get("department") ?? ""}
           onChange={(e) => updateParam("department", e.target.value)}
           className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
-          <option value="">All</option>
+          <option value="">{tc("all")}</option>
           {departments.map((department) => (
             <option key={department} value={department}>
               {department}

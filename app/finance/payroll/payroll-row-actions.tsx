@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +37,9 @@ interface PayrollRowActionsProps {
 
 export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
   const router = useRouter();
+  const t = useTranslations("finance");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const [viewOpen, setViewOpen] = useState(false);
   const [payOpen, setPayOpen] = useState(false);
   const [amountOpen, setAmountOpen] = useState(false);
@@ -51,6 +55,15 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
   const [referenceNumber, setReferenceNumber] = useState("");
   const [notes, setNotes] = useState("");
 
+  const paymentMethodLabel =
+    row.payment_method === "cash"
+      ? t("cash")
+      : row.payment_method === "bank"
+        ? t("bank")
+        : row.payment_method === "mobile_money"
+          ? t("mobileMoney")
+          : "-";
+
   async function handlePay() {
     setLoading(true);
     const result = await markPayrollPaid(row.id, {
@@ -64,12 +77,12 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
 
     if (result.error) {
       toast.error(
-        typeof result.error === "string" ? result.error : "Failed to mark payroll as paid"
+        typeof result.error === "string" ? result.error : t("payrollMarkPaidFailed")
       );
       return;
     }
 
-    toast.success("Payroll marked as paid");
+    toast.success(t("payrollMarkedPaid"));
     setPayOpen(false);
     router.refresh();
   }
@@ -82,7 +95,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
       toast.error(result.error);
       return;
     }
-    toast.success("Pay amount updated");
+    toast.success(t("payAmountUpdated"));
     setAmount(editAmount);
     setAmountOpen(false);
     router.refresh();
@@ -90,14 +103,10 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
 
   async function handleExclude() {
     if (!schoolId) {
-      toast.error("School is required to exclude someone from payroll");
+      toast.error(te("schoolRequiredExcludePayroll"));
       return;
     }
-    if (
-      !window.confirm(
-        `Exclude ${row.staff_name} from this month's payroll? They will not be paid unless you tick them back in.`
-      )
-    ) {
+    if (!window.confirm(t("excludeFromPayrollConfirm", { name: row.staff_name }))) {
       return;
     }
 
@@ -116,7 +125,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
       return;
     }
 
-    toast.success(`${row.staff_name} excluded from this month's payroll`);
+    toast.success(t("excludedFromPayroll", { name: row.staff_name }));
     router.refresh();
   }
 
@@ -124,7 +133,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
     <>
       <div className="flex flex-wrap gap-2">
         <Button size="sm" variant="ghost" onClick={() => setViewOpen(true)}>
-          View
+          {tc("view")}
         </Button>
         {row.status === "pending" ? (
           <>
@@ -136,10 +145,10 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
                 setAmountOpen(true);
               }}
             >
-              Set amount
+              {t("setAmount")}
             </Button>
             <Button size="sm" variant="ghost" onClick={() => setPayOpen(true)}>
-              Pay
+              {t("pay")}
             </Button>
             {schoolId ? (
               <Button
@@ -148,40 +157,40 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
                 onClick={handleExclude}
                 disabled={loading}
               >
-                Don&apos;t pay
+                {t("dontPay")}
               </Button>
             ) : null}
           </>
         ) : null}
       </div>
 
-      <Modal isOpen={viewOpen} onClose={() => setViewOpen(false)} title="Payroll details">
+      <Modal isOpen={viewOpen} onClose={() => setViewOpen(false)} title={t("payrollDetails")}>
         <div className="space-y-3 text-sm">
           <div className="flex items-center gap-3">
             <UserAvatar name={row.staff_name} avatarUrl={row.staff_photo_url} />
             <div>
               <p className="font-semibold">{row.staff_name}</p>
-              <p className="text-stone-500">{row.staff_position ?? "Staff"}</p>
+              <p className="text-stone-500">{row.staff_position ?? t("colStaff")}</p>
             </div>
           </div>
-          <p><span className="font-medium">Department:</span> {row.staff_department ?? "-"}</p>
-          <p><span className="font-medium">Monthly Salary:</span> {row.amount.toLocaleString()}</p>
-          <p><span className="font-medium">Status:</span> {row.status === "paid" ? "Paid" : "Pending"}</p>
-          <p><span className="font-medium">Payment Date:</span> {row.payment_date ?? "-"}</p>
-          <p><span className="font-medium">Payment Method:</span> {row.payment_method ?? "-"}</p>
-          <p><span className="font-medium">Reference Number:</span> {row.reference_number ?? "-"}</p>
-          <p><span className="font-medium">Notes:</span> {row.notes ?? "-"}</p>
+          <p><span className="font-medium">{t("department")}:</span> {row.staff_department ?? "-"}</p>
+          <p><span className="font-medium">{t("monthlySalary")}:</span> {row.amount.toLocaleString()}</p>
+          <p><span className="font-medium">{tc("status")}:</span> {row.status === "paid" ? t("statusPaid") : t("statusPending")}</p>
+          <p><span className="font-medium">{t("paymentDate")}:</span> {row.payment_date ?? "-"}</p>
+          <p><span className="font-medium">{t("paymentMethod")}:</span> {paymentMethodLabel}</p>
+          <p><span className="font-medium">{t("referenceNumber")}:</span> {row.reference_number ?? "-"}</p>
+          <p><span className="font-medium">{tc("notes")}:</span> {row.notes ?? "-"}</p>
         </div>
       </Modal>
 
       <Modal
         isOpen={amountOpen}
         onClose={() => setAmountOpen(false)}
-        title={`Set amount for ${row.staff_name}`}
+        title={t("setAmountFor", { name: row.staff_name })}
       >
         <div className="space-y-3">
           <div>
-            <Label htmlFor={`edit-amount-${row.id}`}>Amount to pay</Label>
+            <Label htmlFor={`edit-amount-${row.id}`}>{t("amountToPay")}</Label>
             <Input
               id={`edit-amount-${row.id}`}
               type="number"
@@ -193,19 +202,19 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
           </div>
           <div className="flex flex-wrap justify-end gap-2">
             <Button variant="ghost" onClick={() => setAmountOpen(false)}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button onClick={handleSetAmount} disabled={loading}>
-              Save amount
+              {t("saveAmount")}
             </Button>
           </div>
         </div>
       </Modal>
 
-      <Modal isOpen={payOpen} onClose={() => setPayOpen(false)} title={`Pay ${row.staff_name}`}>
+      <Modal isOpen={payOpen} onClose={() => setPayOpen(false)} title={t("payStaff", { name: row.staff_name })}>
         <div className="space-y-3">
           <div>
-            <Label htmlFor={`amount-${row.id}`}>Amount</Label>
+            <Label htmlFor={`amount-${row.id}`}>{tc("amount")}</Label>
             <Input
               id={`amount-${row.id}`}
               type="number"
@@ -216,7 +225,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
             />
           </div>
           <div>
-            <Label htmlFor={`date-${row.id}`}>Payment Date</Label>
+            <Label htmlFor={`date-${row.id}`}>{t("paymentDate")}</Label>
             <Input
               id={`date-${row.id}`}
               type="date"
@@ -225,7 +234,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
             />
           </div>
           <div>
-            <Label htmlFor={`method-${row.id}`}>Payment Method</Label>
+            <Label htmlFor={`method-${row.id}`}>{t("paymentMethod")}</Label>
             <select
               id={`method-${row.id}`}
               value={paymentMethod}
@@ -234,36 +243,36 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
               }
               className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             >
-              <option value="cash">Cash</option>
-              <option value="bank">Bank</option>
-              <option value="mobile_money">Mobile Money</option>
+              <option value="cash">{t("cash")}</option>
+              <option value="bank">{t("bank")}</option>
+              <option value="mobile_money">{t("mobileMoney")}</option>
             </select>
           </div>
           <div>
-            <Label htmlFor={`reference-${row.id}`}>Reference Number</Label>
+            <Label htmlFor={`reference-${row.id}`}>{t("referenceNumber")}</Label>
             <Input
               id={`reference-${row.id}`}
               value={referenceNumber}
               onChange={(e) => setReferenceNumber(e.target.value)}
-              placeholder="Optional"
+              placeholder={tc("optional")}
             />
           </div>
           <div>
-            <Label htmlFor={`notes-${row.id}`}>Notes</Label>
+            <Label htmlFor={`notes-${row.id}`}>{tc("notes")}</Label>
             <textarea
               id={`notes-${row.id}`}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Optional"
+              placeholder={tc("optional")}
               className="min-h-20 w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             />
           </div>
           <div className="flex flex-wrap justify-end gap-2">
             <Button variant="ghost" onClick={() => setPayOpen(false)}>
-              Cancel
+              {tc("cancel")}
             </Button>
             <Button onClick={handlePay} disabled={loading}>
-              Mark as Paid
+              {t("markAsPaid")}
             </Button>
           </div>
         </div>

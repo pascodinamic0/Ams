@@ -1,88 +1,55 @@
+import { getTranslations } from "next-intl/server";
 import { LegalPage } from "@/components/company/legal-page";
 import { companyIdentity } from "@/lib/company/identity";
 
-const { productName } = companyIdentity;
+export default async function TermsOfServicePage() {
+  const t = await getTranslations("marketing.legal");
+  const { productName } = companyIdentity;
 
-export default function TermsOfServicePage() {
   return (
     <LegalPage
-      title="Terms of Service"
-      description={`The agreement between your school and ${productName} when using our platform.`}
+      title={t("termsTitle")}
+      description={t("termsDescription", { productName })}
       lastUpdated="June 8, 2026"
     >
-      <h2>1. Acceptance of terms</h2>
-      <p>
-        By creating an account, accessing {productName}, or using any part of the service,
-        you agree to these Terms of Service on behalf of yourself and your school.
-        If you do not agree, do not use the platform.
-      </p>
+      <h2>{t("termsH1")}</h2>
+      <p>{t("termsP1", { productName })}</p>
 
-      <h2>2. The service</h2>
-      <p>
-        {productName} provides cloud-based tools for academic management, finance, staff
-        operations, parent communication, analytics, and school websites. Features
-        may change as we improve the product.
-      </p>
+      <h2>{t("termsH2")}</h2>
+      <p>{t("termsP2", { productName })}</p>
 
-      <h2>3. Accounts &amp; responsibilities</h2>
+      <h2>{t("termsH3")}</h2>
       <ul>
-        <li>School administrators are responsible for user invitations and permissions.</li>
-        <li>Users must keep login credentials confidential.</li>
-        <li>You are responsible for the accuracy of data entered into {productName}.</li>
-        <li>You must not misuse the platform, attempt unauthorized access, or violate applicable laws.</li>
+        <li>{t("termsLi1")}</li>
+        <li>{t("termsLi2")}</li>
+        <li>{t("termsLi3", { productName })}</li>
+        <li>{t("termsLi4")}</li>
       </ul>
 
-      <h2>4. School data ownership</h2>
-      <p>
-        Your school retains ownership of the data you upload. {productName} processes that
-        data solely to provide the service. Upon termination, export options will
-        be made available subject to your plan and applicable law.
-      </p>
+      <h2>{t("termsH4")}</h2>
+      <p>{t("termsP4", { productName })}</p>
 
-      <h2>5. Fees &amp; billing</h2>
-      <p>
-        Paid plans, if applicable, are billed according to the pricing agreed at
-        signup. Failure to pay may result in suspension after reasonable notice.
-        Taxes and payment processor fees may apply.
-      </p>
+      <h2>{t("termsH5")}</h2>
+      <p>{t("termsP5")}</p>
 
-      <h2>6. Availability &amp; support</h2>
-      <p>
-        We aim for high availability but do not guarantee uninterrupted service.
-        Scheduled maintenance and force majeure events may cause temporary
-        downtime. Support is provided via documentation and email during business
-        hours.
-      </p>
+      <h2>{t("termsH6")}</h2>
+      <p>{t("termsP6")}</p>
 
-      <h2>7. Limitation of liability</h2>
-      <p>
-        To the maximum extent permitted by law, {productName} is not liable for indirect,
-        incidental, or consequential damages arising from use of the service. Our
-        total liability is limited to fees paid in the twelve months preceding
-        the claim.
-      </p>
+      <h2>{t("termsH7")}</h2>
+      <p>{t("termsP7", { productName })}</p>
 
-      <h2>8. Termination</h2>
-      <p>
-        Either party may terminate with written notice. We may suspend access
-        immediately for security risks or material breach. Sections on data,
-        liability, and governing law survive termination.
-      </p>
+      <h2>{t("termsH8")}</h2>
+      <p>{t("termsP8")}</p>
 
-      <h2>9. Governing law</h2>
-      <p>
-        These terms are governed by the laws of the Democratic Republic of the Congo. Any disputes
-        shall be subject to the exclusive jurisdiction of the courts of{" "}
-        {companyIdentity.office.city}.
-      </p>
+      <h2>{t("termsH9")}</h2>
+      <p>{t("termsP9", { city: companyIdentity.office.city })}</p>
 
-      <h2>10. Contact</h2>
+      <h2>{t("termsH10")}</h2>
       <p>
-        Legal enquiries:{" "}
-        <a href={`mailto:${companyIdentity.contact.legalEmail}`}>
-          {companyIdentity.contact.legalEmail}
-        </a>
-        . Postal address: {companyIdentity.office.addressFormatted}.
+        {t("termsP10", {
+          email: companyIdentity.contact.legalEmail,
+          address: companyIdentity.office.addressFormatted,
+        })}
       </p>
     </LegalPage>
   );

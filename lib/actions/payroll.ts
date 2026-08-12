@@ -1,5 +1,8 @@
 "use server";
 
+import { getLocale, getTranslations } from "next-intl/server";
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -16,42 +19,29 @@ import {
 } from "@/lib/validations/finance";
 
 const amountSchema = z.object({
-  amount: z.coerce.number().min(0, "Amount must be zero or positive"),
+  amount: z.coerce.number().min(0, "amountZeroOrPositive"),
 });
 
-const ROLE_LABELS: Record<string, string> = {
-  academic_admin: "Academic Admin",
-  admin_coordinator: "Admin Coordinator",
-  registrar: "Registrar",
-  admissions_officer: "Admissions Officer",
-  pedagogy_coordinator: "Pedagogy Coordinator",
-  principal: "Principal",
-  teacher: "Teacher",
-  finance_officer: "Finance Officer",
-  cashier: "Cashier",
-  accountant: "Accountant",
-  operations_manager: "Operations Manager",
-  operations_officer: "Operations Officer",
-  discipline_officer: "Discipline Officer",
-  supervisor: "Supervisor",
-  pedagogical_council_member: "Pedagogical Council Member",
-  analytics: "Analytics",
-};
+async function roleLabel(role: string): Promise<string> {
+  const t = await getTranslations("roles");
+  return t.has(role) ? t(role) : role.replace(/_/g, " ");
+}
 
-function departmentForRole(role: string): string {
+async function departmentForRole(role: string): Promise<string> {
+  const t = await getTranslations("roles");
   if (role === "teacher" || role === "pedagogy_coordinator" || role === "pedagogical_council_member") {
-    return "Teaching";
+    return t("deptTeaching");
   }
   if (role === "finance_officer" || role === "accountant" || role === "cashier") {
-    return "Finance";
+    return t("deptFinance");
   }
   if (role === "operations_manager" || role === "operations_officer") {
-    return "Operations";
+    return t("deptOperations");
   }
   if (role === "discipline_officer" || role === "supervisor") {
-    return "Discipline";
+    return t("deptDiscipline");
   }
-  return "Administration";
+  return t("deptAdministration");
 }
 
 function revalidatePayrollPaths() {
@@ -66,7 +56,7 @@ async function requireFinanceManager() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" as const };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -74,7 +64,7 @@ async function requireFinanceManager() {
     .eq("id", user.id)
     .single();
 
-  if (!profile) return { error: "Profile not found" as const };
+  if (!profile) return await actionError("profileNotFound");
 
   const role = normalizeRole(profile.role);
   const canManage =
@@ -82,10 +72,10 @@ async function requireFinanceManager() {
     role === "finance_officer" ||
     role === "accountant";
   if (!canManage) {
-    return { error: "Only finance admins can manage payroll amounts" as const };
+    return await actionError("onlyFinancePayroll");
   }
   if (!profile.school_id && role !== "super_admin") {
-    return { error: "Your account is not linked to a school" as const };
+    return await actionError("noSchoolLinked");
   }
 
   return { supabase, profile, role };
@@ -104,7 +94,7 @@ export async function syncSchoolTeamPayees(schoolId: string, branchId?: string |
     auth.profile.school_id &&
     auth.profile.school_id !== schoolId
   ) {
-    return { error: "You can only sync staff for your school" };
+    return await actionError("onlyOwnSchoolStaffSync");
   }
 
   const { data: profiles, error: profileError } = await auth.supabase.rpc(
@@ -131,8 +121,8 @@ export async function syncSchoolTeamPayees(schoolId: string, branchId?: string |
 
   for (const profile of profiles ?? []) {
     const role = String(profile.role) as UserRole;
-    const label = ROLE_LABELS[role] ?? role.replace(/_/g, " ");
-    const department = departmentForRole(role);
+    const label = await roleLabel(role);
+    const department = await departmentForRole(role);
     const existingRow = byProfile.get(profile.id);
 
     if (existingRow) {
@@ -206,7 +196,7 @@ export async function syncSchoolAdminPayees(
 export async function setStaffPayrollAmount(staffId: string, amount: number) {
   const parsed = amountSchema.safeParse({ amount });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid amount" };
+    return await zodIssueError(parsed.error.issues[0]?.message);
   }
 
   const auth = await requireFinanceManager();
@@ -218,13 +208,13 @@ export async function setStaffPayrollAmount(staffId: string, amount: number) {
     .eq("id", staffId)
     .single();
 
-  if (staffError || !staff) return { error: "Staff member not found" };
+  if (staffError || !staff) return await actionError("staffNotFound");
   if (
     auth.role !== "super_admin" &&
     auth.profile.school_id &&
     staff.school_id !== auth.profile.school_id
   ) {
-    return { error: "Staff member is not in your school" };
+    return await actionError("staffNotInSchool");
   }
 
   const { error } = await auth.supabase
@@ -256,7 +246,7 @@ export async function setStaffPayrollAmount(staffId: string, amount: number) {
 export async function setPendingPayrollAmount(payrollId: string, amount: number) {
   const parsed = amountSchema.safeParse({ amount });
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid amount" };
+    return await zodIssueError(parsed.error.issues[0]?.message);
   }
 
   const auth = await requireFinanceManager();
@@ -268,9 +258,9 @@ export async function setPendingPayrollAmount(payrollId: string, amount: number)
     .eq("id", payrollId)
     .single();
 
-  if (rowError || !row) return { error: "Payroll record not found" };
+  if (rowError || !row) return await actionError("payrollNotFound");
   if (row.status !== "pending") {
-    return { error: "Only pending payroll amounts can be edited" };
+    return await actionError("onlyPendingPayrollEdit");
   }
 
   const staff = row.staff as { school_id?: string } | null;
@@ -280,7 +270,7 @@ export async function setPendingPayrollAmount(payrollId: string, amount: number)
     staff?.school_id &&
     staff.school_id !== auth.profile.school_id
   ) {
-    return { error: "Payroll record is not in your school" };
+    return await actionError("payrollNotInSchool");
   }
 
   const { error } = await auth.supabase
@@ -342,7 +332,7 @@ export async function setStaffPayrollMonthInclusion(input: {
 }) {
   const parsed = monthInclusionSchema.safeParse(input);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+    return await zodIssueError(parsed.error.issues[0]?.message);
   }
 
   const auth = await requireFinanceManager();
@@ -353,7 +343,7 @@ export async function setStaffPayrollMonthInclusion(input: {
     auth.profile.school_id &&
     auth.profile.school_id !== parsed.data.schoolId
   ) {
-    return { error: "You can only manage payroll for your school" };
+    return await actionError("onlyOwnSchoolPayroll");
   }
 
   const { data: staff, error: staffError } = await auth.supabase
@@ -362,9 +352,9 @@ export async function setStaffPayrollMonthInclusion(input: {
     .eq("id", parsed.data.staffId)
     .single();
 
-  if (staffError || !staff) return { error: "Staff member not found" };
+  if (staffError || !staff) return await actionError("staffNotFound");
   if (staff.school_id !== parsed.data.schoolId) {
-    return { error: "Staff member is not in this school" };
+    return await actionError("staffNotInThisSchool");
   }
 
   if (!parsed.data.included) {
@@ -378,7 +368,7 @@ export async function setStaffPayrollMonthInclusion(input: {
 
     if (existingLine?.status === "paid") {
       return {
-        error: "This person is already paid for this month. Undo payment before excluding them.",
+        error: (await actionError("alreadyPaidUndoFirst")).error,
       };
     }
 
@@ -484,7 +474,7 @@ export async function generatePayroll(
 
   const schoolId = input.schoolId ?? auth.profile.school_id ?? undefined;
   if (!schoolId) {
-    return { error: "School is required to generate payroll" };
+    return await actionError("schoolRequiredGeneratePayroll");
   }
 
   const sync = await syncSchoolTeamPayees(schoolId, input.branchId ?? auth.profile.branch_id);
@@ -496,7 +486,7 @@ export async function generatePayroll(
   });
 
   if (staff.length === 0) {
-    return { error: "No active staff found for payroll generation" };
+    return await actionError("noActiveStaffPayroll");
   }
 
   const { data: exclusions } = await auth.supabase
@@ -510,10 +500,7 @@ export async function generatePayroll(
   const payees = staff.filter((member) => !excludedIds.has(member.id));
 
   if (payees.length === 0) {
-    return {
-      error:
-        "Everyone is ticked out for this month. Include at least one person before generating payroll.",
-    };
+    return await actionError("everyoneTickedOut");
   }
 
   const { data: existing } = await auth.supabase
@@ -528,11 +515,12 @@ export async function generatePayroll(
   });
 
   if (alreadyGenerated) {
-    return {
-      error: `Payroll for ${new Date(
-        Date.UTC(parsed.data.year, parsed.data.month - 1, 1)
-      ).toLocaleDateString(undefined, { month: "long", year: "numeric" })} has already been generated.`,
-    };
+    const te = await getTranslations("errors");
+    const locale = await getLocale();
+    const period = new Date(
+      Date.UTC(parsed.data.year, parsed.data.month - 1, 1)
+    ).toLocaleDateString(locale, { month: "long", year: "numeric" });
+    return { error: te("payrollAlreadyGenerated", { period }) };
   }
 
   const periodStart = new Date(Date.UTC(parsed.data.year, parsed.data.month - 1, 1));
@@ -589,9 +577,9 @@ export async function markPayrollPaid(
     .eq("id", id)
     .single();
 
-  if (payrollError || !payrollRow) return { error: "Payroll record not found" };
+  if (payrollError || !payrollRow) return await actionError("payrollNotFound");
   if (payrollRow.status === "paid") {
-    return { error: "Payroll has already been marked as paid" };
+    return await actionError("payrollAlreadyPaid");
   }
 
   const { error } = await auth.supabase
@@ -613,15 +601,21 @@ export async function markPayrollPaid(
   let branchId = rowStaff?.branch_id ?? auth.profile.branch_id ?? null;
 
   if (branchId) {
+    const locale = await getLocale();
     const periodLabel = new Date(
       Date.UTC(payrollRow.payroll_year, payrollRow.payroll_month - 1, 1)
-    ).toLocaleDateString(undefined, { month: "long", year: "numeric" });
+    ).toLocaleDateString(locale, { month: "long", year: "numeric" });
+    const te = await getTranslations("errors");
     await auth.supabase.from("expenses").insert({
       branch_id: branchId,
       category: "Payroll",
       amount: parsed.data.amount,
       date: parsed.data.payment_date,
-      description: `Payroll paid: ${payrollRow.staff_full_name} (${payrollRow.staff_position ?? "Staff"}) - ${periodLabel}`,
+      description: te("payrollPaidDescription", {
+        name: payrollRow.staff_full_name,
+        position: payrollRow.staff_position ?? te("staffFallback"),
+        period: periodLabel,
+      }),
       status: "pending",
       created_by: auth.profile.id,
     });
@@ -674,7 +668,7 @@ export async function deletePayrollPeriod(input: {
     })
     .map((row) => row.id);
 
-  if (toDelete.length === 0) return { error: "No payroll records found for this month" };
+  if (toDelete.length === 0) return await actionError("noPayrollRecordsMonth");
 
   const { error: deleteError } = await auth.supabase
     .from("payroll")

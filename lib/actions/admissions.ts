@@ -1,5 +1,6 @@
 "use server";
 
+import { actionError } from "@/lib/i18n/action-error";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -9,6 +10,7 @@ import {
   type OnlineEnrollmentFormData,
 } from "@/lib/validations/academic";
 import { revalidateSchoolWebsiteBySchoolId } from "@/lib/schools/revalidate-website";
+import { getTranslations } from "next-intl/server";
 import { createNotification } from "@/lib/services/notifications";
 import { sendAdmissionApprovedEmail } from "@/lib/services/email";
 import { splitPersonName } from "@/lib/utils";
@@ -67,7 +69,7 @@ async function notifyAdmissionApproved(
       .eq("school_id", schoolId)
       .eq("email", guardianEmail)
       .maybeSingle(),
-    supabase.from("schools").select("name").eq("id", schoolId).maybeSingle(),
+    supabase.from("schools").select("name, locale").eq("id", schoolId).maybeSingle(),
   ]);
 
   if (guardianEmail) {
@@ -76,6 +78,7 @@ async function notifyAdmissionApproved(
       studentName,
       schoolName: school?.name,
       applicationId,
+      locale: school?.locale,
     });
     if (!emailResult.success) {
       console.error("Admission approved email failed:", emailResult.error);
@@ -84,10 +87,11 @@ async function notifyAdmissionApproved(
 
   if (!guardian?.auth_user_id) return;
 
+  const tn = await getTranslations("notifications");
   await createNotification({
     userId: guardian.auth_user_id,
-    title: "Admission approved",
-    body: `${studentName}'s admission application has been approved.`,
+    title: tn("admissionApproved"),
+    body: tn("admissionApprovedBody", { studentName }),
   });
 }
 
@@ -136,7 +140,7 @@ export async function convertAdmissionToStudent(
     .eq("id", admissionId)
     .single();
 
-  if (error || !app) return { error: "Application not found" };
+  if (error || !app) return await actionError("applicationNotFound");
 
   const studentName = splitPersonName(app.student_name);
   const guardianName = splitPersonName(app.guardian_name);
@@ -194,7 +198,12 @@ export async function convertAdmissionToStudent(
   });
 
   if (studentResult.error || !studentResult.data) {
-    return { error: typeof studentResult.error === "string" ? studentResult.error : "Failed to create student" };
+    return {
+      error:
+        typeof studentResult.error === "string"
+          ? studentResult.error
+          : (await actionError("failedCreateStudent")).error,
+    };
   }
 
   const { error: statusError } = await updateAdmissionStatus(admissionId, "approved");

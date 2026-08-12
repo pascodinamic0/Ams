@@ -20,9 +20,10 @@ import {
 
 export default async function FinanceDashboard() {
   const t = await getTranslations("finance");
+  const tRoles = await getTranslations("roles");
   const profile = await getCurrentProfile();
   const role = normalizeRole(profile?.role);
-  const workspace = getRoleWorkspace(role);
+  const workspace = getRoleWorkspace(role, tRoles);
   const scope = {
     schoolId: profile?.school_id ?? undefined,
     branchId: profile?.branch_id ?? undefined,

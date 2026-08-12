@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +15,9 @@ interface Props {
 }
 
 export function BranchForm({ schools }: Props) {
+  const t = useTranslations("admin");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [name, setName] = useState("");
   const [schoolId, setSchoolId] = useState(schools[0]?.id ?? "");
@@ -23,7 +27,7 @@ export function BranchForm({ schools }: Props) {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!schoolId) {
-      toast.error("Select a school");
+      toast.error(te("selectASchool"));
       return;
     }
     setLoading(true);
@@ -34,10 +38,10 @@ export function BranchForm({ schools }: Props) {
     });
     setLoading(false);
     if (result.error) {
-      toast.error(typeof result.error === "string" ? result.error : "Failed to create branch");
+      toast.error(typeof result.error === "string" ? result.error : t("failedCreateBranch"));
       return;
     }
-    toast.success("Branch created");
+    toast.success(t("branchCreated"));
     setName("");
     setAddress("");
     router.refresh();
@@ -45,7 +49,7 @@ export function BranchForm({ schools }: Props) {
 
   if (schools.length === 0) {
     return (
-      <p className="text-sm text-stone-500">Add a school before creating branches.</p>
+      <p className="text-sm text-stone-500">{t("addSchoolFirst")}</p>
     );
   }
 
@@ -55,11 +59,11 @@ export function BranchForm({ schools }: Props) {
       className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-4"
     >
       <div>
-        <Label>Name</Label>
+        <Label>{tc("name")}</Label>
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
       <div>
-        <Label>School</Label>
+        <Label>{t("schoolLabel")}</Label>
         <Select
           options={schools.map((s) => ({ value: s.id, label: s.name }))}
           value={schoolId}
@@ -68,12 +72,12 @@ export function BranchForm({ schools }: Props) {
         />
       </div>
       <div>
-        <Label>Address</Label>
+        <Label>{t("address")}</Label>
         <Input value={address} onChange={(e) => setAddress(e.target.value)} />
       </div>
       <div className="flex items-end">
         <Button type="submit" disabled={loading} className="w-full">
-          Add branch
+          {t("addBranch")}
         </Button>
       </div>
     </form>

@@ -8,5 +8,14 @@
   "unread": "Non lu",
   "unreadCount": "{count, plural, one {# notification non lue} other {# notifications non lues}}",
   "allCaughtUp": "Vous êtes à jour",
-  "view": "Voir"
+  "view": "Voir",
+  "paymentReceived": "Paiement reçu",
+  "paymentReceivedBody": "Un paiement de {amount} a été enregistré. Statut de la facture : {status}.",
+  "admissionApproved": "Admission approuvée",
+  "admissionApprovedBody": "La candidature d'admission de {studentName} a été approuvée.",
+  "assignmentGraded": "Devoir noté",
+  "assignmentGradedBody": "Votre remise pour « {title} » a été notée : {grade}.",
+  "assignmentGradedGuardianBody": "Une remise de devoir a été notée : {grade} pour « {title} ».",
+  "newMessageFrom": "Nouveau message de {name}",
+  "someone": "Quelqu'un"
 }

@@ -17,5 +17,123 @@
   "pedagogical_council_member": "Membre du conseil pédagogique",
   "parent": "Parent",
   "student": "Élève",
-  "analytics": "Analytique"
+  "analytics": "Analytique",
+  "workspace": {
+    "academic_admin": {
+      "title": "Centre de contrôle de l'école",
+      "subtitle": "Configurez l'école, gérez l'équipe et gardez les opérations académiques sur les rails.",
+      "focusQuestion": "Qu'est-ce qui nécessite un contrôle à l'échelle de l'école aujourd'hui ?",
+      "manageTeam": "Gérer l'équipe",
+      "schoolSettings": "Paramètres de l'école",
+      "addStudent": "Ajouter un élève",
+      "openTaskBoard": "Ouvrir le tableau des tâches"
+    },
+    "admin_coordinator": {
+      "title": "Tableau de coordination",
+      "subtitle": "Suivez le travail inachevé entre les services et relancez les bonnes personnes.",
+      "focusQuestion": "Qu'est-ce qui est en retard dans l'école ?",
+      "manageTasks": "Gérer les tâches",
+      "checkAdmissions": "Vérifier les admissions",
+      "reviewStudents": "Revoir les élèves",
+      "sendOutreach": "Envoyer une communication"
+    },
+    "principal": {
+      "title": "Supervision de direction",
+      "subtitle": "Examinez la santé de l'école, approuvez les décisions clés et escaladez le travail bloqué.",
+      "focusQuestion": "Qu'est-ce qui nécessite ma décision aujourd'hui ?",
+      "approvalsTasks": "Approbations et tâches",
+      "reviewAdmissions": "Revoir les admissions",
+      "openReports": "Ouvrir les rapports"
+    },
+    "registrar": {
+      "title": "Bureau des dossiers élèves",
+      "subtitle": "Gardez les données élèves, tuteurs et dossiers administratifs complets.",
+      "focusQuestion": "Quels dossiers élèves sont incomplets ?",
+      "addStudent": "Ajouter un élève",
+      "studentRegistry": "Registre des élèves",
+      "guardians": "Tuteurs",
+      "admissionsIntake": "Accueil des admissions"
+    },
+    "admissions_officer": {
+      "title": "Pipeline d'inscription",
+      "subtitle": "Faites passer les candidatures de la demande à l'élève inscrit sans perdre le suivi.",
+      "focusQuestion": "Quelles candidatures sont bloquées ?",
+      "reviewApplications": "Revoir les candidatures",
+      "createStudent": "Créer un élève",
+      "followUpTasks": "Tâches de suivi"
+    },
+    "pedagogy_coordinator": {
+      "title": "Planification académique",
+      "subtitle": "Organisez les classes, matières, emploi du temps et qualité du programme.",
+      "focusQuestion": "La structure d'enseignement est-elle prête pour cette semaine ?",
+      "buildTimetable": "Construire l'emploi du temps",
+      "manageClasses": "Gérer les classes",
+      "curriculum": "Programme",
+      "academicReports": "Rapports académiques"
+    },
+    "discipline_officer": {
+      "title": "Bureau de discipline",
+      "subtitle": "Enregistrez les incidents, suivez les cas ouverts et escaladez les problèmes de conduite graves.",
+      "focusQuestion": "Quels cas de comportement nécessitent un suivi ?",
+      "openCases": "Cas ouverts",
+      "findStudent": "Trouver un élève",
+      "attendancePatterns": "Tendances de présence"
+    },
+    "supervisor": {
+      "title": "Supervision quotidienne",
+      "subtitle": "Surveillez la présence, signalez rapidement les problèmes et gardez la journée scolaire ordonnée.",
+      "focusQuestion": "Qu'est-ce qui nécessite une supervision maintenant ?",
+      "reportIncident": "Signaler un incident",
+      "todaysTimetable": "Emploi du temps du jour",
+      "attendance": "Présence"
+    },
+    "pedagogical_council_member": {
+      "title": "Revue pédagogique",
+      "subtitle": "Examinez la structure académique et recommandez des améliorations sans modifications quotidiennes.",
+      "focusQuestion": "Qu'est-ce qui nécessite l'attention du conseil ?",
+      "reviewCurriculum": "Revoir le programme",
+      "reviewTimetable": "Revoir l'emploi du temps",
+      "academicAnalytics": "Analytique académique"
+    },
+    "cashier": {
+      "title": "Guichet de paiement",
+      "subtitle": "Encaisser les frais, confirmer les soldes et tenir les reçus du jour.",
+      "focusQuestion": "Qui doit encore payer aujourd'hui ?",
+      "recordPayment": "Enregistrer un paiement",
+      "unpaidList": "Liste des impayés",
+      "findInvoice": "Trouver une facture"
+    },
+    "accountant": {
+      "title": "Contrôle financier",
+      "subtitle": "Contrôlez les structures tarifaires, dépenses, paie, budget et reporting financier.",
+      "focusQuestion": "L'argent est-il contrôlé et prêt à être rapporté ?",
+      "yearlyBudget": "Budget annuel",
+      "financeReports": "Rapports financiers",
+      "payroll": "Paie",
+      "expenses": "Dépenses",
+      "feeStructures": "Structures tarifaires"
+    },
+    "finance_officer": {
+      "title": "Bureau finance",
+      "subtitle": "Gérez factures, paiements, paie, dépenses, budget annuel et opérations de frais.",
+      "focusQuestion": "Quel travail finance est inachevé ?",
+      "yearlyBudget": "Budget annuel",
+      "outstandingFees": "Frais en souffrance",
+      "recordPayment": "Enregistrer un paiement",
+      "createInvoice": "Créer une facture",
+      "reports": "Rapports"
+    },
+    "fallback": {
+      "title": "Espace académique",
+      "subtitle": "Gérez les opérations académiques de l'école.",
+      "focusQuestion": "Que dois-je terminer aujourd'hui ?",
+      "students": "Élèves",
+      "admissions": "Admissions"
+    }
+  },
+  "deptTeaching": "Enseignement",
+  "deptFinance": "Finance",
+  "deptOperations": "Opérations",
+  "deptDiscipline": "Discipline",
+  "deptAdministration": "Administration"
 }

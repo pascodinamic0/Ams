@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { getAppOrigin } from "@/lib/auth/app-url";
 import { hasPaidAccess } from "@/lib/billing/types";
@@ -24,7 +26,7 @@ async function requireBillingManager() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" as const };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -33,7 +35,7 @@ async function requireBillingManager() {
     .single();
 
   if (!profile?.school_id) {
-    return { error: "No school linked to this account" as const };
+    return await actionError("noSchoolLinkedShort");
   }
 
   const isManager =
@@ -50,7 +52,7 @@ async function requireBillingManager() {
 
     if (school?.owner_id !== user.id) {
       return {
-        error: "Only school admins can manage billing for this school",
+        error: (await actionError("onlySchoolAdminsBilling")).error,
       } as const;
     }
   }
@@ -63,10 +65,7 @@ export async function createBillingCheckoutSession(): Promise<{
   url?: string;
 }> {
   if (!isStripeConfigured()) {
-    return {
-      error:
-        "Online billing is not configured yet. Contact ShuleOS support to activate your school.",
-    };
+    return await actionError("onlineBillingNotConfigured");
   }
 
   const auth = await requireBillingManager();
@@ -81,12 +80,12 @@ export async function createBillingCheckoutSession(): Promise<{
     .eq("id", auth.schoolId)
     .single();
 
-  if (!school) return { error: "School not found" };
+  if (!school) return await actionError("schoolNotFound");
   if (school.status !== "approved") {
-    return { error: "Your school must be approved before you can subscribe" };
+    return await actionError("schoolMustBeApprovedSubscribe");
   }
   if (hasPaidAccess(school)) {
-    return { error: "This school already has access. Use Manage billing instead." };
+    return await actionError("schoolAlreadyHasAccess");
   }
 
   const stripe = getStripe();
@@ -131,7 +130,7 @@ export async function createBillingCheckoutSession(): Promise<{
   });
 
   if (!session.url) {
-    return { error: "Could not create checkout session" };
+    return await actionError("checkoutSessionFailed");
   }
 
   return { url: session.url };
@@ -142,7 +141,7 @@ export async function createBillingPortalSession(): Promise<{
   url?: string;
 }> {
   if (!isStripeConfigured()) {
-    return { error: "Online billing is not configured yet." };
+    return await actionError("onlineBillingNotConfiguredShort");
   }
 
   const auth = await requireBillingManager();
@@ -156,7 +155,7 @@ export async function createBillingPortalSession(): Promise<{
     .single();
 
   if (!school?.stripe_customer_id) {
-    return { error: "No billing customer found. Start a subscription first." };
+    return await actionError("noBillingCustomer");
   }
 
   const stripe = getStripe();
@@ -177,7 +176,7 @@ export async function setSchoolBillingExempt(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -186,7 +185,7 @@ export async function setSchoolBillingExempt(
     .single();
 
   if (profile?.role !== "super_admin") {
-    return { error: "Only platform administrators can change billing exemption" };
+    return await actionError("onlyPlatformAdminsBillingExempt");
   }
 
   const adminResult = requireAdminClient();

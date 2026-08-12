@@ -2,34 +2,21 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createCampaign, sendCampaign } from "@/lib/actions/campaigns";
 
-const CHANNEL_OPTIONS = [
-  { id: "whatsapp", label: "WhatsApp", description: "Delivered directly to parents' WhatsApp" },
-  { id: "in_app", label: "In-App Alert", description: "Notification inside the parent portal" },
-];
-
-const TARGET_OPTIONS = [
-  { id: "all_parents", label: "All Parents", description: "Every guardian in the school" },
-  { id: "class", label: "Specific Class", description: "Enter a class ID to target" },
-];
-
-const VARIABLE_HINTS = [
-  { var: "{guardian_name}", desc: "Parent's full name" },
-  { var: "{student_name}", desc: "Student's full name" },
-  { var: "{amount}", desc: "Fee balance" },
-  { var: "{due_date}", desc: "Invoice due date" },
-];
-
 interface Props {
   schoolId: string;
 }
 
 export function CampaignForm({ schoolId }: Props) {
+  const t = useTranslations("outreach");
+  const te = useTranslations("errors");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
@@ -39,14 +26,31 @@ export function CampaignForm({ schoolId }: Props) {
   const [sendNow, setSendNow] = useState(true);
   const [loading, setLoading] = useState(false);
 
+  const channelOptions = [
+    { id: "whatsapp", label: t("channelWhatsappLabel"), description: t("channelWhatsappDesc") },
+    { id: "in_app", label: t("channelInAppLabel"), description: t("channelInAppDesc") },
+  ];
+
+  const targetOptions = [
+    { id: "all_parents", label: t("targetAllParents"), description: t("targetAllParentsDesc") },
+    { id: "class", label: t("targetClass"), description: t("targetClassDesc") },
+  ];
+
+  const variableHints = [
+    { var: "{guardian_name}" },
+    { var: "{student_name}" },
+    { var: "{amount}" },
+    { var: "{due_date}" },
+  ];
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!schoolId) {
-      toast.error("No school associated with your account");
+      toast.error(te("noSchoolAssociated"));
       return;
     }
     if (!title.trim() || !body.trim()) {
-      toast.error("Title and message are required");
+      toast.error(te("titleAndMessageRequired"));
       return;
     }
 
@@ -62,14 +66,14 @@ export function CampaignForm({ schoolId }: Props) {
       });
 
       if (result.error) {
-        toast.error(typeof result.error === "string" ? result.error : "Failed to create campaign");
+        toast.error(typeof result.error === "string" ? result.error : t("failedCreateCampaign"));
         return;
       }
 
       const campaignId = result.data!.id;
 
       if (sendNow) {
-        toast.loading("Sending messages...", { id: "sending" });
+        toast.loading(t("sendingMessages"), { id: "sending" });
         const sendResult = await sendCampaign(campaignId);
         toast.dismiss("sending");
 
@@ -77,11 +81,16 @@ export function CampaignForm({ schoolId }: Props) {
           toast.error(sendResult.error);
         } else {
           toast.success(
-            `Sent to ${sendResult.sent} recipients${sendResult.failed ? ` (${sendResult.failed} failed)` : ""}`
+            sendResult.failed
+              ? t("sentToRecipientsWithFailed", {
+                  sent: sendResult.sent,
+                  failed: sendResult.failed,
+                })
+              : t("sentToRecipients", { sent: sendResult.sent })
           );
         }
       } else {
-        toast.success("Campaign saved as draft");
+        toast.success(t("campaignSavedDraft"));
       }
 
       router.push("/outreach");
@@ -96,9 +105,9 @@ export function CampaignForm({ schoolId }: Props) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label>Delivery Channel</Label>
+        <Label>{t("deliveryChannel")}</Label>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {CHANNEL_OPTIONS.map((opt) => (
+          {channelOptions.map((opt) => (
             <button
               key={opt.id}
               type="button"
@@ -117,9 +126,9 @@ export function CampaignForm({ schoolId }: Props) {
       </div>
 
       <div className="space-y-2">
-        <Label>Recipient Target</Label>
+        <Label>{t("recipientTarget")}</Label>
         <div className="flex gap-3">
-          {TARGET_OPTIONS.map((opt) => (
+          {targetOptions.map((opt) => (
             <button
               key={opt.id}
               type="button"
@@ -137,7 +146,7 @@ export function CampaignForm({ schoolId }: Props) {
         </div>
         {targetType === "class" && (
           <Input
-            placeholder="Enter class ID"
+            placeholder={t("enterClassId")}
             value={classId}
             onChange={(e) => setClassId(e.target.value)}
           />
@@ -145,13 +154,13 @@ export function CampaignForm({ schoolId }: Props) {
       </div>
 
       <div className="space-y-1.5">
-        <Label htmlFor="title" required>Campaign Title</Label>
+        <Label htmlFor="title" required>{t("campaignTitle")}</Label>
         <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
       </div>
 
       <div className="space-y-1.5">
         <div className="flex items-center justify-between">
-          <Label htmlFor="body" required>Message</Label>
+          <Label htmlFor="body" required>{t("message")}</Label>
           <span className={`text-xs ${charCount > whatsappLimit * 0.9 ? "text-red-500" : "text-stone-400"}`}>
             {charCount} / {whatsappLimit}
           </span>
@@ -164,7 +173,7 @@ export function CampaignForm({ schoolId }: Props) {
           className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm dark:border-stone-700 dark:bg-stone-900 dark:text-white"
         />
         <div className="flex flex-wrap gap-2">
-          {VARIABLE_HINTS.map((v) => (
+          {variableHints.map((v) => (
             <button
               key={v.var}
               type="button"
@@ -185,15 +194,15 @@ export function CampaignForm({ schoolId }: Props) {
           onChange={(e) => setSendNow(e.target.checked)}
           className="h-4 w-4 rounded"
         />
-        <label htmlFor="send-now" className="text-sm">Send immediately</label>
+        <label htmlFor="send-now" className="text-sm">{t("sendImmediately")}</label>
       </div>
 
       <div className="flex justify-end gap-3 border-t pt-4">
         <Button type="button" variant="ghost" onClick={() => router.push("/outreach")} disabled={loading}>
-          Cancel
+          {tc("cancel")}
         </Button>
         <Button type="submit" disabled={loading}>
-          {loading ? "Sending..." : sendNow ? "Send Campaign" : "Save as Draft"}
+          {loading ? t("sending") : sendNow ? t("sendCampaign") : t("saveAsDraft")}
         </Button>
       </div>
     </form>

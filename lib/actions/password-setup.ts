@@ -1,16 +1,18 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import { getDashboardForRole } from "@/lib/auth/rbac";
 
-const passwordSchema = z.string().min(8, "Password must be at least 8 characters");
+const passwordSchema = z.string().min(8, "passwordMinLength");
 
 export async function completePasswordSetup(password: string) {
   const parsed = passwordSchema.safeParse(password);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid password" };
+    return await zodIssueError(parsed.error.issues[0]?.message);
   }
 
   const supabase = await createClient();
@@ -19,10 +21,7 @@ export async function completePasswordSetup(password: string) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return {
-      error:
-        "This invite link is invalid or expired. Ask your admin to send a new invitation.",
-    };
+    return await actionError("inviteExpired");
   }
 
   const { error } = await supabase.auth.updateUser({ password: parsed.data });

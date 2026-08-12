@@ -1,0 +1,16 @@
+{
+  "view": "Voir",
+  "adding": "Ajout...",
+  "unassigned": "Non assigné",
+  "assigned": "Assigné",
+  "everyone": "Tout le monde",
+  "low": "Basse",
+  "medium": "Moyenne",
+  "high": "Haute",
+  "priority": "Priorité",
+  "assignee": "Assigné à",
+  "optionalField": "{label} (facultatif)",
+  "notified": "Nous avons été informés.",
+  "follow": "Suivre",
+  "copiedToClipboard": "Copié dans le presse-papiers"
+}

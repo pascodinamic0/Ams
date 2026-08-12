@@ -1,25 +1,28 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { BrandLogo } from "@/components/company/brand-logo";
 import { EmptyState } from "@/components/ui/empty-state";
+import { companyIdentity } from "@/lib/company/identity";
 import { getSchools } from "@/lib/db";
 
 export default async function SchoolsDirectoryPage() {
   const schools = await getSchools({ publicOnly: true });
+  const t = await getTranslations("schools.chrome");
 
   return (
     <div className="marketing-surface min-h-screen">
       <header className="border-b border-white/10">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
           <div className="flex items-center gap-6">
-            <Link href="/" aria-label="ShuleOS home">
+            <Link href="/" aria-label={t("homeAria", { productName: companyIdentity.productName })}>
               <BrandLogo size={32} variant="light" />
             </Link>
             <div className="hidden sm:block">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
-                Directory
+                {t("directory")}
               </p>
               <h1 className="font-display text-lg tracking-tight text-white">
-                Find a School
+                {t("findASchool")}
               </h1>
             </div>
           </div>
@@ -27,7 +30,7 @@ export default async function SchoolsDirectoryPage() {
             href="/login"
             className="rounded-full border border-white/30 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white transition-colors hover:border-white hover:bg-white/5"
           >
-            Staff login
+            {t("staffLogin")}
           </Link>
         </div>
       </header>
@@ -35,21 +38,21 @@ export default async function SchoolsDirectoryPage() {
       <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
         <div className="sm:hidden">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
-            Directory
+            {t("directory")}
           </p>
           <h1 className="mt-2 font-display text-2xl tracking-tight text-white">
-            Find a School
+            {t("findASchool")}
           </h1>
         </div>
         <p className="mt-3 max-w-xl text-sm uppercase tracking-[0.14em] text-white/50 sm:mt-0">
-          Browse schools with public websites
+          {t("browsePublicSites")}
         </p>
 
         {schools.length === 0 ? (
           <div className="mt-12 border border-white/10 p-8">
             <EmptyState
-              title="No schools yet"
-              description="Schools will appear here when they enable their public site"
+              title={t("noSchoolsYet")}
+              description={t("noSchoolsDesc")}
             />
           </div>
         ) : (
@@ -70,7 +73,7 @@ export default async function SchoolsDirectoryPage() {
                 ) : null}
                 <h3 className="font-semibold text-white">{s.name}</h3>
                 <p className="mt-2 line-clamp-2 text-sm text-white/50">
-                  {s.about ?? "Visit our school website"}
+                  {s.about ?? t("visitOurWebsite")}
                 </p>
               </Link>
             ))}
@@ -78,9 +81,9 @@ export default async function SchoolsDirectoryPage() {
         )}
 
         <p className="mt-12 text-center text-sm text-white/40">
-          Looking for the platform?{" "}
+          {t("lookingForPlatform")}{" "}
           <Link href="/get-access" className="text-amber-500 hover:text-amber-400">
-            Get access for your school
+            {t("getAccessForYourSchool")}
           </Link>
         </p>
       </main>

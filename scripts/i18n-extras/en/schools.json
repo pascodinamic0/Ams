@@ -1,0 +1,62 @@
+{
+  "chrome": {
+    "email": "Email",
+    "phone": "Phone",
+    "contactComingSoon": "Contact details coming soon.",
+    "applyBeforeSeatsFill": "Apply before seats fill",
+    "viewCampusStories": "View campus stories",
+    "explorePrograms": "Explore programs",
+    "excellenceIntegrityCommunity": "Excellence · Integrity · Community",
+    "programs": "Programs",
+    "about": "About",
+    "events": "Events",
+    "bookAVisit": "Book a visit",
+    "directory": "Directory",
+    "findASchool": "Find a School",
+    "staffLogin": "Staff login"
+  },
+  "editor": {
+    "publicUrlSlug": "Public URL slug",
+    "customDomainOptional": "Custom domain (optional)",
+    "heroTitle": "Hero title",
+    "heroSubtitle": "Hero subtitle",
+    "primaryColor": "Primary color",
+    "secondaryColor": "Secondary color",
+    "caption": "Caption",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "footerTagline": "Footer tagline",
+    "facebookUrl": "Facebook URL",
+    "instagramUrl": "Instagram URL",
+    "twitterUrl": "Twitter / X URL"
+  },
+  "enrollment": {
+    "applicationSubmitted": "Application submitted",
+    "referenceNumber": "Reference number:",
+    "campusAddress": "Campus address:",
+    "backToSchoolWebsite": "Back to school website",
+    "onlineEnrollment": "Online enrollment",
+    "applicationReceived": "Application received",
+    "reference": "Reference:",
+    "backToSchool": "Back to school",
+    "admissions": "Admissions",
+    "studentName": "Student name",
+    "applicationSubmittedToast": "Application submitted. We'll contact you soon."
+  },
+  "visit": {
+    "youreAllSet": "You're all set",
+    "campusVisit": "Campus visit:",
+    "schoolAddress": "School address:",
+    "bookYourCampusVisit": "Book your campus visit",
+    "campusVisitBooked": "Campus visit booked"
+  },
+  "booking": {
+    "bookingReceived": "Booking received",
+    "bookThisEvent": "Book this event",
+    "yourName": "Your name",
+    "numberOfAttendees": "Number of attendees",
+    "notesOptional": "Notes (optional)",
+    "bookingSubmitted": "Booking request submitted"
+  }
+}

@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCampaignTargetGuardians } from "@/lib/db/campaigns";
@@ -8,8 +10,8 @@ import { sendWhatsAppBulk, interpolateTemplate } from "@/lib/services/whatsapp";
 import { z } from "zod";
 
 const campaignSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  body: z.string().min(1, "Message body is required"),
+  title: z.string().min(1, "titleRequired"),
+  body: z.string().min(1, "messageBodyRequired"),
   channel: z.enum(["whatsapp", "sms", "in_app"]),
   target: z.string().min(1),
 });
@@ -24,12 +26,12 @@ export async function createCampaign(
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
   if (parsed.data.channel === "sms") {
-    return { error: "SMS campaigns are not available yet. Use WhatsApp or in-app alerts." };
+    return await actionError("smsCampaignsUnavailable");
   }
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data, error } = await supabase
     .from("campaigns")
@@ -63,7 +65,7 @@ export async function sendCampaign(
 ): Promise<{ sent?: number; failed?: number; error?: string }> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: campaign, error: campErr } = await supabase
     .from("campaigns")
@@ -71,11 +73,11 @@ export async function sendCampaign(
     .eq("id", campaignId)
     .single();
 
-  if (campErr || !campaign) return { error: "Campaign not found" };
-  if (campaign.status === "sent") return { error: "Campaign already sent" };
+  if (campErr || !campaign) return await actionError("campaignNotFound");
+  if (campaign.status === "sent") return await actionError("campaignAlreadySent");
 
   if (campaign.channel === "sms") {
-    return { error: "SMS campaigns are not available yet. Use WhatsApp or in-app alerts." };
+    return await actionError("smsCampaignsUnavailable");
   }
 
   await supabase
@@ -98,8 +100,8 @@ export async function sendCampaign(
     return {
       error:
         campaign.channel === "in_app"
-          ? "No recipients with portal accounts found for this target"
-          : "No recipients with phone numbers found for this target",
+          ? (await actionError("noRecipientsPortal")).error
+          : (await actionError("noRecipientsPhone")).error,
     };
   }
 
@@ -139,7 +141,7 @@ export async function sendCampaign(
         .update({
           status: created > 0 ? "delivered" : "failed",
           sent_at: created > 0 ? sentAt : null,
-          error: created > 0 ? null : "Failed to create notifications",
+          error: created > 0 ? null : (await actionError("failedCreateNotifications")).error,
         })
         .eq("campaign_id", campaignId);
     }
@@ -166,7 +168,7 @@ export async function sendCampaign(
         failed++;
         await supabase
           .from("campaign_recipients")
-          .update({ status: "failed", error: result.error ?? "Unknown error" })
+          .update({ status: "failed", error: result.error ?? (await actionError("unknownError")).error })
           .eq("campaign_id", campaignId)
           .eq("guardian_id", result.id!);
       }
@@ -193,7 +195,7 @@ export async function sendCampaign(
 export async function deleteCampaign(id: string): Promise<{ error?: string }> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { error } = await supabase.from("campaigns").delete().eq("id", id);
   if (error) return { error: error.message };

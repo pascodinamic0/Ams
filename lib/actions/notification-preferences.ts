@@ -1,5 +1,6 @@
 "use server";
 
+import { actionError } from "@/lib/i18n/action-error";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 
@@ -44,7 +45,7 @@ export async function updateNotificationPreferences(
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Unauthorized" };
+  if (!user) return await actionError("notAuthenticated");
 
   const current = await getNotificationPreferences();
   const next = {
@@ -58,7 +59,7 @@ export async function updateNotificationPreferences(
   };
 
   if (next.class_reminder_minutes < 1 || next.class_reminder_minutes > 60) {
-    return { error: "Reminder lead time must be between 1 and 60 minutes" };
+    return await actionError("reminderLeadTime");
   }
 
   const { error } = await supabase

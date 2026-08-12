@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { localeNames, type Locale } from "@/i18n/config";
 import { setLocale } from "@/lib/i18n/actions";
 import { cn } from "@/lib/utils";
@@ -19,6 +19,7 @@ export function LanguageSwitcher({
   tone = "default",
 }: LanguageSwitcherProps) {
   const locale = useLocale() as Locale;
+  const t = useTranslations("settings");
   const [isPending, startTransition] = useTransition();
 
   function handleChange(nextLocale: Locale) {
@@ -37,6 +38,8 @@ export function LanguageSwitcher({
             "flex gap-1 rounded-full border border-stone-200 bg-stone-100 p-1 dark:border-white/10 dark:bg-white/5",
             className
           )}
+          role="group"
+          aria-label={t("language")}
         >
           {(Object.keys(localeNames) as Locale[]).map((code) => (
             <button
@@ -59,7 +62,11 @@ export function LanguageSwitcher({
     }
 
     return (
-      <div className={cn("flex gap-1 rounded-lg bg-stone-100 p-1 dark:bg-stone-800", className)}>
+      <div
+        className={cn("flex gap-1 rounded-lg bg-stone-100 p-1 dark:bg-stone-800", className)}
+        role="group"
+        aria-label={t("language")}
+      >
         {(Object.keys(localeNames) as Locale[]).map((code) => (
           <button
             key={code}
@@ -89,7 +96,7 @@ export function LanguageSwitcher({
         "rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm font-medium text-stone-700 shadow-sm transition-colors hover:border-stone-300 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200",
         className
       )}
-      aria-label="Language"
+      aria-label={t("language")}
     >
       {(Object.entries(localeNames) as [Locale, string][]).map(([code, name]) => (
         <option key={code} value={code}>

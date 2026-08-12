@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -77,13 +79,6 @@ async function insertPickupPersons(
   return {};
 }
 
-function firstZodIssueMessage(error: z.ZodError): string {
-  const issue = error.issues[0];
-  if (!issue) return "Invalid form data";
-  const path = issue.path.length ? `${issue.path.join(".")}: ` : "";
-  return `${path}${issue.message}`;
-}
-
 const STUDENT_ONBOARDING_ROLES = new Set([
   "super_admin",
   "academic_admin",
@@ -108,12 +103,12 @@ export async function createStudentWithGuardians(
 
     const parsed = studentOnboardingSchema.safeParse(normalized);
     if (!parsed.success) {
-      return { error: firstZodIssueMessage(parsed.error) };
+      return await zodIssueError(parsed.error.issues[0]?.message);
     }
 
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { error: "Not authenticated" };
+    if (!user) return await actionError("notAuthenticated");
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -123,7 +118,7 @@ export async function createStudentWithGuardians(
 
     const role = profile?.role ?? "";
     if (!STUDENT_ONBOARDING_ROLES.has(role)) {
-      return { error: "You do not have permission to onboard students" };
+      return await actionError("noPermissionOnboardStudents");
     }
 
     const data = parsed.data;
@@ -212,7 +207,7 @@ export async function createStudentWithGuardians(
   } catch (err) {
     console.error("createStudentWithGuardians unexpected error:", err);
     return {
-      error: err instanceof Error ? err.message : "Failed to onboard student",
+      error: err instanceof Error ? err.message : (await actionError("failedOnboardStudent")).error,
     };
   }
 }
@@ -224,10 +219,10 @@ export async function addGuardianToStudent(
 ) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const result = await insertGuardian(supabase, schoolId, guardian);
-  if (result.error || !result.data) return { error: result.error ?? "Failed to create guardian" };
+  if (result.error || !result.data) return { error: result.error ?? (await actionError("failedCreateGuardian")).error };
 
   const linkResult = await linkGuardian(
     supabase,

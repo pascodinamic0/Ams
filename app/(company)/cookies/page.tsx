@@ -1,67 +1,45 @@
+import { getTranslations } from "next-intl/server";
 import { LegalPage } from "@/components/company/legal-page";
 import { companyIdentity } from "@/lib/company/identity";
 
-const { productName } = companyIdentity;
+export default async function CookiePolicyPage() {
+  const t = await getTranslations("marketing.legal");
+  const { productName } = companyIdentity;
 
-export default function CookiePolicyPage() {
   return (
     <LegalPage
-      title="Cookie Policy"
-      description={`How ${productName} uses cookies and similar technologies on our website.`}
+      title={t("cookiesTitle")}
+      description={t("cookiesDescription", { productName })}
       lastUpdated="June 8, 2026"
     >
-      <h2>1. What are cookies?</h2>
-      <p>
-        Cookies are small text files stored on your device when you visit a
-        website. They help us keep you signed in, remember preferences, and
-        understand how the site is used.
-      </p>
+      <h2>{t("cookiesH1")}</h2>
+      <p>{t("cookiesP1")}</p>
 
-      <h2>2. Cookies we use</h2>
+      <h2>{t("cookiesH2")}</h2>
       <ul>
         <li>
-          <strong>Essential cookies:</strong> required for authentication,
-          session management, and security. The platform cannot function without
-          these.
+          <strong>{t("cookiesEssential")}</strong> {t("cookiesEssentialBody")}
         </li>
         <li>
-          <strong>Preference cookies:</strong> remember settings such as theme
-          or language where supported.
+          <strong>{t("cookiesPreference")}</strong> {t("cookiesPreferenceBody")}
         </li>
         <li>
-          <strong>Analytics cookies:</strong> help us measure usage and improve
-          performance. These are only set where consent or legitimate interest
-          applies.
+          <strong>{t("cookiesAnalytics")}</strong> {t("cookiesAnalyticsBody")}
         </li>
       </ul>
 
-      <h2>3. Third-party cookies</h2>
-      <p>
-        Some integrated services (such as authentication or error monitoring)
-        may set their own cookies. We review subprocessors for compliance with
-        our privacy standards.
-      </p>
+      <h2>{t("cookiesH3")}</h2>
+      <p>{t("cookiesP3")}</p>
 
-      <h2>4. Managing cookies</h2>
-      <p>
-        You can control cookies through your browser settings. Disabling
-        essential cookies may prevent you from logging in or using core {productName}
-        features.
-      </p>
+      <h2>{t("cookiesH4")}</h2>
+      <p>{t("cookiesP4", { productName })}</p>
 
-      <h2>5. Updates</h2>
-      <p>
-        We may update this policy as our technology changes. Material updates
-        will be reflected on this page with a revised &quot;Last updated&quot; date.
-      </p>
+      <h2>{t("cookiesH5")}</h2>
+      <p>{t("cookiesP5")}</p>
 
-      <h2>6. Contact</h2>
+      <h2>{t("cookiesH6")}</h2>
       <p>
-        Questions? Email{" "}
-        <a href={`mailto:${companyIdentity.contact.privacyEmail}`}>
-          {companyIdentity.contact.privacyEmail}
-        </a>
-        .
+        {t("cookiesP6", { email: companyIdentity.contact.privacyEmail })}
       </p>
     </LegalPage>
   );

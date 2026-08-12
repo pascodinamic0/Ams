@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
@@ -42,7 +44,7 @@ export async function createInvoice(input: InvoiceFormData) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const feeStructureId = parsed.data.fee_structure_id || null;
   const amount = await resolveInvoiceAmount(
@@ -85,7 +87,7 @@ export async function updateInvoice(
     .eq("id", id)
     .single();
 
-  if (!existing) return { error: "Invoice not found" };
+  if (!existing) return await actionError("invoiceNotFound");
 
   const feeStructureId =
     parsed.data.fee_structure_id === undefined
@@ -144,14 +146,14 @@ export async function generateInvoicesFromFeeStructure(input: {
   const feeStructureId = input.fee_structure_id;
   const dueDate = input.due_date;
   if (!feeStructureId || !dueDate) {
-    return { error: "Fee structure and due date are required" };
+    return await actionError("feeStructureDueRequired");
   }
 
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const profile = await getCurrentProfile();
   const schoolId = profile?.school_id ?? undefined;
@@ -163,7 +165,9 @@ export async function generateInvoicesFromFeeStructure(input: {
     .single();
 
   if (structureError || !structure) {
-    return { error: structureError?.message ?? "Fee structure not found" };
+    return structureError?.message
+      ? { error: structureError.message }
+      : await actionError("feeStructureNotFound");
   }
 
   const students = await getStudentsForBilling({
@@ -173,7 +177,7 @@ export async function generateInvoicesFromFeeStructure(input: {
   });
 
   if (students.length === 0) {
-    return { error: "No active students found to invoice" };
+    return await actionError("noActiveStudentsInvoice");
   }
 
   const amount = Number(structure.amount);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { saveAttendance } from "@/lib/actions/attendance";
 import {
@@ -15,7 +16,7 @@ import { OfflineBanner } from "@/components/pwa/offline-banner";
 import { PushPermissionPrompt } from "@/components/pwa/push-permission-prompt";
 import { SerwistProvider } from "@/components/pwa/serwist-provider";
 
-async function syncPendingAttendance() {
+async function syncPendingAttendance(t: (key: string, values?: Record<string, number>) => string) {
   const pending = await getPendingAttendanceSaves();
   if (pending.length === 0) return;
 
@@ -37,21 +38,23 @@ async function syncPendingAttendance() {
   if (synced > 0) {
     toast.success(
       synced === 1
-        ? "Offline attendance synced"
-        : `${synced} offline attendance records synced`
+        ? t("offlineAttendanceSynced")
+        : t("offlineAttendanceSyncedCount", { count: synced })
     );
   }
 }
 
 function OfflineSyncManager() {
+  const t = useTranslations("pwa");
+
   useEffect(() => {
     // Defer offline sync until after first paint so it doesn't compete with hydration.
     const run = () => {
       if (!navigator.onLine) return;
-      void syncPendingAttendance();
+      void syncPendingAttendance(t);
       void getPendingAttendanceCount().then((count) => {
         if (count > 0 && navigator.onLine) {
-          toast.message(`${count} attendance record(s) waiting to sync`);
+          toast.message(t("attendanceWaitingToSync", { count }));
         }
       });
     };
@@ -71,7 +74,7 @@ function OfflineSyncManager() {
     }
 
     async function handleOnline() {
-      await syncPendingAttendance();
+      await syncPendingAttendance(t);
     }
 
     window.addEventListener("online", handleOnline);
@@ -84,7 +87,7 @@ function OfflineSyncManager() {
       }
       window.removeEventListener("online", handleOnline);
     };
-  }, []);
+  }, [t]);
 
   return null;
 }

@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError } from "@/lib/i18n/action-error";
+
 import { requireAdminClient } from "@/lib/supabase/admin";
 import {
   DEFAULT_BRANCH_NAME,
@@ -11,6 +13,7 @@ import {
 } from "@/lib/schools/website-content";
 import { isValidLocale, type Locale } from "@/i18n/config";
 import { setLocale } from "@/lib/i18n/actions";
+import { getTranslations } from "next-intl/server";
 
 export type RegisterSchoolInput = {
   userId: string;
@@ -44,7 +47,7 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
     .single();
 
   if (existingProfile?.school_id) {
-    return { error: "This account is already linked to a school." };
+    return await actionError("accountAlreadyLinkedSchool");
   }
 
   const { data: ownedSchool } = await admin
@@ -54,7 +57,7 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
     .maybeSingle();
 
   if (ownedSchool) {
-    return { error: "You have already registered a school with this account." };
+    return await actionError("alreadyRegisteredSchool");
   }
 
   const slug = await resolveUniqueSchoolSlug(admin, schoolName);
@@ -85,7 +88,9 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
 
   if (schoolError || !school) {
     console.error("registerSchoolOrganization school error:", schoolError);
-    return { error: schoolError?.message ?? "Failed to create school" };
+    return schoolError?.message
+      ? { error: schoolError.message }
+      : await actionError("failedCreateSchool");
   }
 
   const { data: branch, error: branchError } = await admin
@@ -101,11 +106,14 @@ export async function registerSchoolOrganization(input: RegisterSchoolInput) {
   if (branchError || !branch) {
     console.error("registerSchoolOrganization branch error:", branchError);
     await admin.from("schools").delete().eq("id", school.id);
-    return { error: branchError?.message ?? "Failed to create school campus" };
+    return branchError?.message
+      ? { error: branchError.message }
+      : await actionError("failedCreateCampus");
   }
 
+  const tc = await getTranslations("common");
   const displayName =
-    adminName?.trim() || adminEmail.split("@")[0] || "School Admin";
+    adminName?.trim() || adminEmail.split("@")[0] || tc("schoolAdmin");
 
   const { error: profileError } = await admin.from("profiles").upsert(
     {

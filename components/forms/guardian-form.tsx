@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,8 @@ import { guardianSchema, type GuardianFormData } from "@/lib/validations";
 import { toast } from "@/lib/toast";
 
 export function GuardianForm({ schoolId }: { schoolId: string }) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -22,10 +25,10 @@ export function GuardianForm({ schoolId }: { schoolId: string }) {
     try {
       const result = await createGuardian({ ...data, school_id: schoolId });
       if (result.error) {
-        toast.error(typeof result.error === "string" ? result.error : "Failed to create guardian");
+        toast.error(typeof result.error === "string" ? result.error : t("failedCreateGuardian"));
         return;
       }
-      toast.success("Guardian created");
+      toast.success(t("guardianCreated"));
       router.push("/academic/guardians");
       router.refresh();
     } finally {
@@ -37,9 +40,9 @@ export function GuardianForm({ schoolId }: { schoolId: string }) {
     <FormWrapper schema={guardianSchema} defaultValues={{ relation: "guardian", first_name: "", middle_name: "", last_name: "" }} onSubmit={onSubmit}>
       <Card>
         <CardHeader>
-          <CardTitle>Guardian details</CardTitle>
+          <CardTitle>{t("guardianDetails")}</CardTitle>
           <p className="text-sm text-stone-500 dark:text-stone-400">
-            Contact information and relationship to the student.
+            {t("guardianDetailsDesc")}
           </p>
         </CardHeader>
         <CardContent className="space-y-8">
@@ -52,10 +55,10 @@ export function GuardianForm({ schoolId }: { schoolId: string }) {
             disabled={loading}
             onClick={() => router.push("/academic/guardians")}
           >
-            Cancel
+            {tc("cancel")}
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create guardian"}
+            {loading ? tc("creating") : t("createGuardian")}
           </Button>
         </CardFooter>
       </Card>
@@ -115,30 +118,32 @@ function Field({
 }
 
 function GuardianFormFields() {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const { register, formState: { errors } } = useFormContext<GuardianFormData>();
 
   return (
     <>
-      <FormSection title="Contact information" description="How the school can reach this guardian">
+      <FormSection title={t("contactInformation")} description={t("contactInformationDesc")}>
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="First name" htmlFor="first_name" required error={errors.first_name?.message}>
+          <Field label={t("firstName")} htmlFor="first_name" required error={errors.first_name?.message}>
             <Input id="first_name" {...register("first_name")} error={!!errors.first_name} />
           </Field>
-          <Field label="Middle name" htmlFor="middle_name" error={errors.middle_name?.message}>
+          <Field label={t("middleName")} htmlFor="middle_name" error={errors.middle_name?.message}>
             <Input id="middle_name" {...register("middle_name")} error={!!errors.middle_name} />
           </Field>
-          <Field label="Last name" htmlFor="last_name" required error={errors.last_name?.message}>
+          <Field label={t("lastName")} htmlFor="last_name" required error={errors.last_name?.message}>
             <Input id="last_name" {...register("last_name")} error={!!errors.last_name} />
           </Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Email" htmlFor="email" required error={errors.email?.message}>
+          <Field label={tc("email")} htmlFor="email" required error={errors.email?.message}>
             <Input id="email" type="email" {...register("email")} error={!!errors.email} />
           </Field>
           <Field
-            label="Phone"
+            label={tc("phone")}
             htmlFor="phone"
-            hint="Used for SMS and WhatsApp notifications"
+            hint={t("phoneHintSms")}
           >
             <Input id="phone" type="tel" {...register("phone")} />
           </Field>
@@ -147,15 +152,15 @@ function GuardianFormFields() {
 
       <div className="border-t border-stone-200 dark:border-stone-800" />
 
-      <FormSection title="Relationship" description="How this person is related to the student">
-        <Field label="Relation to student" htmlFor="relation" error={errors.relation?.message}>
+      <FormSection title={t("relationshipSection")} description={t("relationshipSectionDesc")}>
+        <Field label={t("relationToStudent")} htmlFor="relation" error={errors.relation?.message}>
           <Select
             id="relation"
             options={[
-              { value: "father", label: "Father" },
-              { value: "mother", label: "Mother" },
-              { value: "guardian", label: "Guardian" },
-              { value: "other", label: "Other" },
+              { value: "father", label: t("relationFather") },
+              { value: "mother", label: t("relationMother") },
+              { value: "guardian", label: t("relationGuardian") },
+              { value: "other", label: t("relationOther") },
             ]}
             error={!!errors.relation}
             {...register("relation")}

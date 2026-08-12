@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import { JetBrains_Mono, Outfit, Plus_Jakarta_Sans, Source_Serif_4 } from "next/font/google";
-import { getLocale, getMessages, getTimeZone } from "next-intl/server";
+import { getLocale, getMessages, getTimeZone, getTranslations } from "next-intl/server";
 import { AppIntlProvider } from "@/components/i18n/app-intl-provider";
 import { AppToaster } from "@/components/ui/app-toaster";
 import { PwaRoot } from "@/components/pwa/pwa-root";
@@ -39,31 +39,33 @@ const outfit = Outfit({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: companyIdentity.productFullName,
-  description:
-    `${companyIdentity.productName} — school management platform built for DRC schools. Academics, fees, mobile money payments, and parent communication in one place.`,
-  applicationName: companyIdentity.productName,
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: companyIdentity.productName,
-  },
-  formatDetection: {
-    telephone: false,
-  },
-  verification: {
-    google: "q1glprMjA9uq5ly27fzf-bVzUhZVZkU-v9vFXAtunII",
-  },
-  icons: {
-    icon: [
-      { url: withPwaAssetRevision("/favicon.ico"), sizes: "32x32" },
-      { url: pwaIconPath(192), sizes: "192x192", type: "image/png" },
-      { url: pwaIconPath(512), sizes: "512x512", type: "image/png" },
-    ],
-    apple: [{ url: pwaAppleTouchIconPath, sizes: "180x180", type: "image/png" }],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("marketing");
+  return {
+    title: companyIdentity.productFullName,
+    description: t("metaDescription"),
+    applicationName: companyIdentity.productName,
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: companyIdentity.productName,
+    },
+    formatDetection: {
+      telephone: false,
+    },
+    verification: {
+      google: "q1glprMjA9uq5ly27fzf-bVzUhZVZkU-v9vFXAtunII",
+    },
+    icons: {
+      icon: [
+        { url: withPwaAssetRevision("/favicon.ico"), sizes: "32x32" },
+        { url: pwaIconPath(192), sizes: "192x192", type: "image/png" },
+        { url: pwaIconPath(512), sizes: "512x512", type: "image/png" },
+      ],
+      apple: [{ url: pwaAppleTouchIconPath, sizes: "180x180", type: "image/png" }],
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [

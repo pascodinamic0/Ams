@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
@@ -10,8 +12,8 @@ import type { SubscriptionStatus } from "@/lib/billing/types";
 const nameSchema = z
   .string()
   .trim()
-  .min(1, "Name is required")
-  .max(120, "Name is too long");
+  .min(1, "nameRequired")
+  .max(120, "nameTooLong");
 
 async function requireAuthenticatedProfile() {
   const supabase = await createClient();
@@ -19,7 +21,7 @@ async function requireAuthenticatedProfile() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { error: "Not authenticated" as const };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -27,7 +29,7 @@ async function requireAuthenticatedProfile() {
     .eq("id", user.id)
     .single();
 
-  if (!profile?.role) return { error: "Profile not found" as const };
+  if (!profile?.role) return await actionError("profileNotFound");
 
   return { supabase, user, profile };
 }
@@ -35,7 +37,7 @@ async function requireAuthenticatedProfile() {
 export async function updateProfileName(name: string) {
   const parsed = nameSchema.safeParse(name);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid name" };
+    return await zodIssueError(parsed.error.issues[0]?.message);
   }
 
   const auth = await requireAuthenticatedProfile();

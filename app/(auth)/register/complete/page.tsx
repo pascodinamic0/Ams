@@ -14,15 +14,17 @@ import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 import { localeNames, type Locale } from "@/i18n/config";
 import { Select } from "@/components/ui/select";
+import { useTranslations } from "next-intl";
 
 const completeSchema = z.object({
-  school_name: z.string().min(2, "School name is required"),
+  school_name: z.string().min(2, "schoolNameRequired"),
   locale: z.enum(["en", "fr"]),
 });
 
 type CompleteFormData = z.infer<typeof completeSchema>;
 
 export default function RegisterCompletePage() {
+  const t = useTranslations("auth");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
@@ -78,7 +80,7 @@ export default function RegisterCompletePage() {
       } = await supabase.auth.getUser();
 
       if (!user?.email) {
-        throw new Error("Your Google account must include an email address.");
+        throw new Error(t("googleEmailRequired"));
       }
 
       const org = await registerSchoolOrganization({
@@ -96,7 +98,7 @@ export default function RegisterCompletePage() {
       window.location.assign("/pending");
       return;
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Registration failed");
+      toast.error(err instanceof Error ? err.message : t("registrationFailed"));
     } finally {
       setLoading(false);
     }
@@ -115,12 +117,12 @@ export default function RegisterCompletePage() {
       <div className="w-full max-w-md">
         <div className="mb-8">
           <h1 className="font-display text-2xl tracking-tight text-mkt-ink">
-            Finish school setup
+            {t("finishSchoolSetup")}
           </h1>
           <p className="mt-2 text-sm text-muted">
-            You signed in with Google
-            {adminEmail ? ` as ${adminEmail}` : ""}. Enter your school name to
-            complete registration.
+            {adminEmail
+              ? t("signedInWithGoogle", { email: adminEmail })
+              : t("signedInWithGoogleNoEmail")}
           </p>
         </div>
 
@@ -134,9 +136,9 @@ export default function RegisterCompletePage() {
         </FormWrapper>
 
         <p className="mt-6 text-center text-sm text-muted">
-          Wrong account?{" "}
+          {t("wrongAccount")}{" "}
           <Link href="/login" className="font-medium text-primary hover:text-primary-hover">
-            Sign in with a different account
+            {t("signInDifferentAccount")}
           </Link>
         </p>
       </div>
@@ -145,6 +147,7 @@ export default function RegisterCompletePage() {
 }
 
 function CompleteFormFields({ loading }: { loading: boolean }) {
+  const t = useTranslations("auth");
   const {
     register,
     formState: { errors },
@@ -154,11 +157,11 @@ function CompleteFormFields({ loading }: { loading: boolean }) {
     <>
       <div>
         <Label htmlFor="school_name" required>
-          School name
+          {t("schoolName")}
         </Label>
         <Input
           id="school_name"
-          placeholder="Greenfield Academy"
+          placeholder={t("schoolNamePlaceholder")}
           error={!!errors.school_name}
           {...register("school_name")}
         />
@@ -171,7 +174,7 @@ function CompleteFormFields({ loading }: { loading: boolean }) {
 
       <div>
         <Label htmlFor="locale" required>
-          System language
+          {t("systemLanguage")}
         </Label>
         <Select
           id="locale"
@@ -182,12 +185,12 @@ function CompleteFormFields({ loading }: { loading: boolean }) {
           {...register("locale")}
         />
         <p className="mt-1.5 text-xs text-muted">
-          Everyone in your school will only see the app in this language.
+          {t("systemLanguageHint")}
         </p>
       </div>
 
       <Button type="submit" className="w-full" size="lg" disabled={loading}>
-        {loading ? "Creating school..." : "Complete registration"}
+        {loading ? t("creatingSchool") : t("completeRegistration")}
       </Button>
     </>
   );

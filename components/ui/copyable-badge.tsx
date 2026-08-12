@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "@/lib/toast";
 
 interface CopyableBadgeProps {
@@ -14,12 +15,13 @@ export function CopyableBadge({
   label,
   variant = "badge",
 }: CopyableBadgeProps) {
+  const t = useTranslations("common");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(value);
     setCopied(true);
-    toast.success("Copied to clipboard");
+    toast.success(t("copiedToClipboard"));
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -33,7 +35,7 @@ export function CopyableBadge({
       type="button"
       onClick={handleCopy}
       className={`${baseClass} hover:bg-stone-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer`}
-      title="Copy to clipboard"
+      title={t("copyToClipboard")}
     >
       <span className="min-w-0 truncate">{label ?? value}</span>
       {copied ? (

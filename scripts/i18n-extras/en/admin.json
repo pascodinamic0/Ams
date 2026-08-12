@@ -1,0 +1,22 @@
+{
+  "schoolIdentity": "School identity",
+  "schoolName": "School name",
+  "urlSlug": "URL slug",
+  "urlSlugHint": "Used in the public site URL",
+  "contactInformation": "Contact information",
+  "schoolUpdated": "School updated",
+  "schoolDeleted": "School deleted",
+  "addSchoolFirst": "Add a school before creating branches.",
+  "address": "Address",
+  "addBranch": "Add branch",
+  "branchCreated": "Branch created",
+  "platform": "Platform",
+  "unassigned": "Unassigned",
+  "userDirectory": "User directory",
+  "noUsersMatch": "No users match your filters",
+  "tryDifferentSearch": "Try a different search term or role filter.",
+  "systemLanguageUpdated": "System language updated",
+  "currencyUpdated": "Currency updated",
+  "websiteSaved": "Website saved",
+  "imageUploaded": "Image uploaded"
+}

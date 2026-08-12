@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +15,8 @@ interface StaffFormProps {
 }
 
 export function StaffForm({ schoolId, campusId }: StaffFormProps) {
+  const t = useTranslations("operations");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -38,11 +41,11 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
       const message =
         typeof result.error === "string"
           ? result.error
-          : Object.values(result.error).flat().join(", ") || "Failed to add staff member";
+          : Object.values(result.error).flat().join(", ") || t("staffCreateFailed");
       toast.error(message);
       return;
     }
-    toast.success("Staff member added — set their pay amount in Finance payroll");
+    toast.success(t("staffAddedPayrollHint"));
     setName("");
     setEmail("");
     setRole("");
@@ -53,33 +56,33 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
   return (
     <form onSubmit={handleSubmit} className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-4">
       <div>
-        <Label>Name</Label>
+        <Label>{tc("name")}</Label>
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
       </div>
       <div>
-        <Label>Email</Label>
+        <Label>{tc("email")}</Label>
         <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
       </div>
       <div>
-        <Label>Role</Label>
-        <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="e.g. Librarian" />
+        <Label>{t("colRole")}</Label>
+        <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder={t("rolePlaceholder")} />
       </div>
       <div>
-        <Label>Employment Status</Label>
+        <Label>{t("employmentStatus")}</Label>
         <select
           value={employmentStatus}
           onChange={(e) => setEmploymentStatus(e.target.value as "active" | "inactive")}
           className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="active">{tc("active")}</option>
+          <option value="inactive">{tc("inactive")}</option>
         </select>
       </div>
       <p className="sm:col-span-2 lg:col-span-4 text-xs text-stone-500">
-        Pay amounts are set only by Finance on the payroll page.
+        {t("payAmountsSetByFinance")}
       </p>
       <div className="flex items-end sm:col-span-2 lg:col-span-4">
-        <Button type="submit" disabled={loading} className="w-full sm:w-auto">Add staff</Button>
+        <Button type="submit" disabled={loading} className="w-full sm:w-auto">{t("addStaff")}</Button>
       </div>
     </form>
   );
@@ -102,6 +105,9 @@ export function EditStaffButton({
   schoolId: string;
   campusId?: string;
 }) {
+  const t = useTranslations("operations");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(member.name);
@@ -126,39 +132,39 @@ export function EditStaffButton({
     setLoading(false);
     if (result.error) {
       toast.error(
-        typeof result.error === "string" ? result.error : "Failed to update staff member"
+        typeof result.error === "string" ? result.error : t("staffUpdateFailed")
       );
       return;
     }
-    toast.success("Staff updated");
+    toast.success(t("staffUpdated"));
     setEditing(false);
     router.refresh();
   }
 
   async function handleDelete() {
     if (member.is_admin_payee) {
-      toast.error("School team members synced to payroll are managed from Finance payroll");
+      toast.error(te("staffPayrollManagedInFinance"));
       return;
     }
-    if (!confirm("Delete this staff member?")) return;
+    if (!confirm(t("deleteStaffConfirm"))) return;
     setLoading(true);
     const result = await deleteStaff(member.id);
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to delete staff member");
+      toast.error(typeof result.error === "string" ? result.error : te("failedDeleteStaff"));
       return;
     }
-    toast.success("Staff deleted");
+    toast.success(t("staffDeleted"));
     router.refresh();
   }
 
   if (!editing) {
     return (
       <div className="flex gap-2">
-        <Button size="sm" variant="ghost" onClick={() => setEditing(true)}>Edit</Button>
+        <Button size="sm" variant="ghost" onClick={() => setEditing(true)}>{tc("edit")}</Button>
         {!member.is_admin_payee ? (
           <Button size="sm" variant="ghost" onClick={handleDelete} disabled={loading}>
-            Delete
+            {tc("delete")}
           </Button>
         ) : null}
       </div>
@@ -168,22 +174,22 @@ export function EditStaffButton({
   return (
     <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
       <Input value={name} onChange={(e) => setName(e.target.value)} />
-      <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" />
-      <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role" />
+      <Input value={email} onChange={(e) => setEmail(e.target.value)} placeholder={tc("email")} />
+      <Input value={role} onChange={(e) => setRole(e.target.value)} placeholder={t("colRole")} />
       <select
         value={employmentStatus}
         onChange={(e) => setEmploymentStatus(e.target.value as "active" | "inactive")}
         className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
       >
-        <option value="active">Active</option>
-        <option value="inactive">Inactive</option>
+        <option value="active">{tc("active")}</option>
+        <option value="inactive">{tc("inactive")}</option>
       </select>
       <p className="sm:col-span-2 lg:col-span-4 text-[11px] text-stone-500">
-        Pay amount: {member.monthly_salary.toLocaleString()} (set by Finance only)
+        {t("payAmountSetByFinanceOnly", { amount: member.monthly_salary.toLocaleString() })}
       </p>
       <div className="flex gap-2">
-        <Button size="sm" onClick={handleSave} disabled={loading}>Save</Button>
-        <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>Cancel</Button>
+        <Button size="sm" onClick={handleSave} disabled={loading}>{tc("save")}</Button>
+        <Button size="sm" variant="ghost" onClick={() => setEditing(false)}>{tc("cancel")}</Button>
       </div>
     </div>
   );

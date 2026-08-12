@@ -1,0 +1,8 @@
+{
+  "deliveryChannel": "Canal d'envoi",
+  "recipientTarget": "Destinataires",
+  "campaignTitle": "Titre de la campagne",
+  "message": "Message",
+  "sendImmediately": "Envoyer immédiatement",
+  "campaignSavedDraft": "Campagne enregistrée en brouillon"
+}

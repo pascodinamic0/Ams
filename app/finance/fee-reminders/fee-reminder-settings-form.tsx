@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +23,9 @@ export function FeeReminderSettingsForm({
   initialSettings,
   defaultCurrencySymbol = "$",
 }: Props) {
+  const t = useTranslations("finance");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const s = initialSettings;
   const [enabled, setEnabled] = useState(s?.enabled ?? true);
   const [gracePeriod, setGracePeriod] = useState(String(s?.grace_period_days ?? 7));
@@ -45,7 +49,7 @@ export function FeeReminderSettingsForm({
 
     const graceDays = parseInt(gracePeriod, 10);
     if (isNaN(graceDays) || graceDays < 0) {
-      toast.error("Grace period must be a valid number of days");
+      toast.error(te("gracePeriodInvalid"));
       return;
     }
 
@@ -65,7 +69,7 @@ export function FeeReminderSettingsForm({
       if (result.error) {
         toast.error(result.error);
       } else {
-        toast.success("Reminder settings saved");
+        toast.success(t("reminderSettingsSaved"));
       }
     } finally {
       setSaving(false);
@@ -73,11 +77,11 @@ export function FeeReminderSettingsForm({
   }
 
   const TEMPLATE_VARS = [
-    { var: "{guardian_name}", desc: "Parent's name" },
-    { var: "{student_name}", desc: "Student's name" },
-    { var: "{amount}", desc: "Balance owed" },
-    { var: "{currency}", desc: "Currency symbol" },
-    { var: "{due_date}", desc: "Original due date" },
+    { var: "{guardian_name}", desc: t("varGuardianName") },
+    { var: "{student_name}", desc: t("varStudentName") },
+    { var: "{amount}", desc: t("varAmount") },
+    { var: "{currency}", desc: t("varCurrency") },
+    { var: "{due_date}", desc: t("varDueDate") },
   ];
 
   return (
@@ -85,8 +89,8 @@ export function FeeReminderSettingsForm({
       {/* Enable toggle */}
       <div className="flex items-center justify-between rounded-xl border border-stone-200 bg-white p-4 dark:border-stone-700 dark:bg-stone-900">
         <div>
-          <p className="font-medium text-stone-900 dark:text-white">Enable Automatic Reminders</p>
-          <p className="text-sm text-stone-500">When disabled, no WhatsApp messages will be sent by the cron job.</p>
+          <p className="font-medium text-stone-900 dark:text-white">{t("enableAutomaticReminders")}</p>
+          <p className="text-sm text-stone-500">{t("remindersDisabledHint")}</p>
         </div>
         <button
           type="button"
@@ -103,11 +107,11 @@ export function FeeReminderSettingsForm({
 
       {/* Timing section */}
       <div className="rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900 space-y-4">
-        <h3 className="font-semibold text-stone-900 dark:text-white">Timing Rules</h3>
+        <h3 className="font-semibold text-stone-900 dark:text-white">{t("timingRules")}</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
-            <Label htmlFor="grace-period">Grace Period (days after due date)</Label>
+            <Label htmlFor="grace-period">{t("gracePeriodDays")}</Label>
             <Input
               id="grace-period"
               type="number"
@@ -117,12 +121,12 @@ export function FeeReminderSettingsForm({
               onChange={(e) => setGracePeriod(e.target.value)}
             />
             <p className="text-xs text-stone-500">
-              After this many days, the final warning is sent and student may be barred.
+              {t("gracePeriodHint")}
             </p>
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="currency">Currency Symbol</Label>
+            <Label htmlFor="currency">{t("currencySymbol")}</Label>
             <Input
               id="currency"
               placeholder="GHS, $, NGN..."
@@ -133,7 +137,7 @@ export function FeeReminderSettingsForm({
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="days-before">Remind X days before due date</Label>
+          <Label htmlFor="days-before">{t("remindDaysBefore")}</Label>
           <Input
             id="days-before"
             placeholder="3, 1"
@@ -141,7 +145,7 @@ export function FeeReminderSettingsForm({
             onChange={(e) => setRemindDaysBefore(e.target.value)}
           />
           <p className="text-xs text-stone-500">
-            Comma-separated list. E.g. "3, 1" sends a reminder 3 days before and 1 day before due date.
+            {t("remindDaysBeforeHint")}
           </p>
         </div>
 
@@ -149,14 +153,14 @@ export function FeeReminderSettingsForm({
           {[
             {
               id: "remind-on-due",
-              label: "Send reminder on the due date itself",
+              label: t("remindOnDueDate"),
               checked: remindOnDue,
               setter: setRemindOnDue,
             },
             {
               id: "remind-on-expiry",
-              label: "Send final warning when grace period expires",
-              sub: "This is the 'do not bring student to school' message",
+              label: t("remindOnGraceExpiry"),
+              sub: t("remindOnGraceExpiryHint"),
               checked: remindOnExpiry,
               setter: setRemindOnExpiry,
             },
@@ -181,7 +185,7 @@ export function FeeReminderSettingsForm({
       {/* Message templates */}
       <div className="rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900 space-y-5">
         <div>
-          <h3 className="font-semibold text-stone-900 dark:text-white">Message Templates</h3>
+          <h3 className="font-semibold text-stone-900 dark:text-white">{t("messageTemplates")}</h3>
           <div className="mt-2 flex flex-wrap gap-2">
             {TEMPLATE_VARS.map((v) => (
               <span
@@ -196,7 +200,7 @@ export function FeeReminderSettingsForm({
         </div>
 
         <div className="space-y-1.5">
-          <Label htmlFor="morning-template">Standard Reminder Message</Label>
+          <Label htmlFor="morning-template">{t("standardReminderMessage")}</Label>
           <textarea
             id="morning-template"
             rows={4}
@@ -204,12 +208,12 @@ export function FeeReminderSettingsForm({
             onChange={(e) => setMorningTemplate(e.target.value)}
             className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2.5 text-sm text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
           />
-          <p className="text-xs text-stone-500">Used for reminders before or on the due date.</p>
+          <p className="text-xs text-stone-500">{t("standardReminderHint")}</p>
         </div>
 
         <div className="space-y-1.5">
           <Label htmlFor="final-template">
-            <span className="text-red-600">⚠</span> Final Warning Message (after grace period)
+            <span className="text-red-600">⚠</span> {t("finalWarningMessage")}
           </Label>
           <textarea
             id="final-template"
@@ -219,13 +223,13 @@ export function FeeReminderSettingsForm({
             className="w-full rounded-lg border border-red-300 bg-white px-3 py-2.5 text-sm text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 dark:border-red-800 dark:bg-stone-900 dark:text-white"
           />
           <p className="text-xs text-stone-500">
-            Sent when grace period expires. Should clearly state the student should not come to school.
+            {t("finalWarningHint")}
           </p>
         </div>
 
         {/* Preview */}
         <div className="rounded-xl bg-emerald-50 p-4 dark:bg-stone-800/60">
-          <p className="mb-2 text-xs font-medium text-stone-600 dark:text-stone-400">Final warning preview:</p>
+          <p className="mb-2 text-xs font-medium text-stone-600 dark:text-stone-400">{t("finalWarningPreview")}</p>
           <div className="flex items-start gap-2">
             <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white text-xs font-bold">A</div>
             <div className="rounded-2xl rounded-tl-none bg-white px-4 py-2.5 shadow-sm dark:bg-stone-700 max-w-sm">
@@ -245,7 +249,7 @@ export function FeeReminderSettingsForm({
       {/* Save */}
       <div className="flex justify-end">
         <Button type="submit" disabled={saving || !schoolId}>
-          {saving ? "Saving..." : "Save Settings"}
+          {saving ? tc("saving") : t("saveSettings")}
         </Button>
       </div>
     </form>

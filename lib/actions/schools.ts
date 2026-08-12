@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient, requireAdminClient } from "@/lib/supabase/admin";
@@ -31,7 +33,7 @@ export async function createSchool(input: CreateSchoolInput) {
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    return { error: "Not authenticated" };
+    return await actionError("notAuthenticated");
   }
 
   const { data: profile } = await supabase
@@ -41,7 +43,7 @@ export async function createSchool(input: CreateSchoolInput) {
     .single();
 
   if (profile?.role !== "super_admin") {
-    return { error: "Only platform administrators can add schools from the admin panel" };
+    return await actionError("onlyPlatformAdminsAddSchools");
   }
 
   const adminResult = requireAdminClient();
@@ -119,7 +121,7 @@ export async function updateSchool(
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    return { error: "Not authenticated" };
+    return await actionError("notAuthenticated");
   }
 
   const { data: profile } = await supabase
@@ -130,10 +132,10 @@ export async function updateSchool(
 
   if (profile?.role === "academic_admin") {
     if (profile.school_id !== id) {
-      return { error: "You can only edit your own school's website" };
+      return await actionError("onlyEditOwnWebsite");
     }
   } else if (profile?.role !== "super_admin") {
-    return { error: "Not authorized to update school website" };
+    return await actionError("notAuthorizedWebsite");
   }
 
   if (updates.slug) {
@@ -144,7 +146,7 @@ export async function updateSchool(
       .neq("id", id)
       .maybeSingle();
     if (existing) {
-      return { error: "Slug already in use" };
+      return await actionError("slugInUse");
     }
   }
 
@@ -196,7 +198,7 @@ export async function updateSchoolCurrency(
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return { error: "Not authenticated" };
+    return await actionError("notAuthenticated");
   }
 
   const { data: profile } = await supabase
@@ -206,15 +208,15 @@ export async function updateSchoolCurrency(
     .single();
 
   if (!profile || !CURRENCY_MANAGERS.has(profile.role)) {
-    return { error: "Not authorized to update school currency" };
+    return await actionError("notAuthorizedCurrency");
   }
 
   if (profile.role !== "super_admin" && profile.school_id !== schoolId) {
-    return { error: "You can only update currency for your own school" };
+    return await actionError("onlyOwnSchoolCurrency");
   }
 
   if (!SCHOOL_CURRENCIES.some((currency) => currency.code === currencyCode)) {
-    return { error: "Invalid currency" };
+    return await actionError("invalidCurrency");
   }
 
   const { error } = await supabase
@@ -248,7 +250,7 @@ const LOCALE_MANAGERS = new Set([
 
 export async function updateSchoolLocale(schoolId: string, locale: Locale) {
   if (!isValidLocale(locale)) {
-    return { error: "Invalid language" };
+    return await actionError("invalidLanguage");
   }
 
   const supabase = await createClient();
@@ -257,7 +259,7 @@ export async function updateSchoolLocale(schoolId: string, locale: Locale) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return { error: "Not authenticated" };
+    return await actionError("notAuthenticated");
   }
 
   const { data: profile } = await supabase
@@ -267,11 +269,11 @@ export async function updateSchoolLocale(schoolId: string, locale: Locale) {
     .single();
 
   if (!profile || !LOCALE_MANAGERS.has(profile.role)) {
-    return { error: "Not authorized to update school language" };
+    return await actionError("notAuthorizedLocale");
   }
 
   if (profile.role !== "super_admin" && profile.school_id !== schoolId) {
-    return { error: "You can only update language for your own school" };
+    return await actionError("onlyOwnSchoolLocale");
   }
 
   const { error } = await supabase
@@ -300,7 +302,7 @@ export async function deleteSchool(id: string) {
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
-    return { error: "Not authenticated" };
+    return await actionError("notAuthenticated");
   }
 
   const { data: profile } = await supabase
@@ -310,7 +312,7 @@ export async function deleteSchool(id: string) {
     .single();
 
   if (profile?.role !== "super_admin") {
-    return { error: "Only platform administrators can delete schools" };
+    return await actionError("onlyPlatformAdminsDeleteSchools");
   }
 
   const admin = createAdminClient();
@@ -325,7 +327,10 @@ export async function deleteSchool(id: string) {
     const configError = getServiceRoleConfigError();
     if (!admin && configError) {
       return {
-        error: `Could not delete school: ${error.message}. ${configError}`,
+        error: (await actionError("couldNotDeleteSchool", {
+          message: error.message,
+          configError,
+        })).error,
       };
     }
     return { error: error.message };

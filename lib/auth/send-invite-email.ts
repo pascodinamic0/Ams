@@ -3,6 +3,8 @@ import {
   buildPasswordSetupUrl,
   getServerRequestOrigin,
 } from "@/lib/auth/app-url";
+import { getLocale } from "next-intl/server";
+import { actionError } from "@/lib/i18n/action-error";
 import { sendInvitePasswordEmail } from "@/lib/services/email";
 
 async function markMustSetPassword(admin: SupabaseClient, user: User) {
@@ -54,7 +56,7 @@ export async function sendPasswordSetupEmail(options: {
   if (error || !data?.user || !data.properties?.hashed_token) {
     console.error("sendPasswordSetupEmail generateLink:", error);
     return {
-      error: error?.message ?? "Failed to create the invitation link",
+      error: error?.message ?? (await actionError("inviteLinkFailed")).error,
     };
   }
 
@@ -70,12 +72,13 @@ export async function sendPasswordSetupEmail(options: {
     to: options.email,
     name: options.name,
     setupUrl,
+    locale: await getLocale(),
   });
 
   if (!sent.success) {
     return {
       user: data.user,
-      error: sent.error ?? "Failed to send the invitation email",
+      error: sent.error ?? (await actionError("inviteEmailFailed")).error,
     };
   }
 

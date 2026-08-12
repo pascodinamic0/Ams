@@ -1,6 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 
 export async function getAdminDashboardData() {
+  const t = await getTranslations("analytics");
+  const tc = await getTranslations("common");
+  const tr = await getTranslations("roles");
   const supabase = await createClient();
 
   const [schoolsResult, profilesResult, studentsResult] = await Promise.all([
@@ -21,20 +25,20 @@ export async function getAdminDashboardData() {
     roleCounts[role] = (roleCounts[role] ?? 0) + 1;
   }
   const usersByRole = Object.entries(roleCounts).map(([name, value]) => ({
-    name: name.replace(/_/g, " "),
+    name: tr.has(name) ? tr(name) : name.replace(/_/g, " "),
     value,
   }));
   if (usersByRole.length === 0) {
-    usersByRole.push({ name: "No data", value: 0 });
+    usersByRole.push({ name: t("noData"), value: 0 });
   }
 
   // Schools by status (public_site_enabled = active/inactive)
   const { data: schools } = await supabase
     .from("schools")
     .select("public_site_enabled");
-  const statusCounts: Record<string, number> = { Active: 0, Inactive: 0 };
+  const statusCounts: Record<string, number> = { [tc("active")]: 0, [tc("inactive")]: 0 };
   for (const s of schools ?? []) {
-    const status = s.public_site_enabled ? "Active" : "Inactive";
+    const status = s.public_site_enabled ? tc("active") : tc("inactive");
     statusCounts[status]++;
   }
   const schoolsByStatus = Object.entries(statusCounts).map(([name, value]) => ({

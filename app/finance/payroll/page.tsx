@@ -33,6 +33,7 @@ type PageProps = {
 
 export default async function PayrollPage({ searchParams }: PageProps) {
   const t = await getTranslations("finance");
+  const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   const params = await searchParams;
   const scope = {
@@ -127,37 +128,37 @@ export default async function PayrollPage({ searchParams }: PageProps) {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
-          <CardHeader><CardTitle>Total Employees</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("totalEmployees")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{totalEmployees}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Paid Employees</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("paidEmployees")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-green-600">{paidEmployees}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Pending Employees</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("pendingEmployees")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{pendingEmployees}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Total Payroll Amount</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("totalPayrollAmount")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(payrollRequired)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Total Amount Paid</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("totalAmountPaid")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-green-600">{formatCurrency(payrollPaid)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Remaining Payroll</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("remainingPayroll")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(remainingPayroll)}</p>
           </CardContent>
@@ -166,37 +167,37 @@ export default async function PayrollPage({ searchParams }: PageProps) {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
-          <CardHeader><CardTitle>School Fees Collected</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("schoolFeesCollected")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(financeKpis.collected)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Outstanding School Fees</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("outstandingSchoolFees")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(financeKpis.outstanding)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Payroll Required</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("payrollRequired")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(payrollRequired)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Payroll Paid</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("payrollPaid")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(payrollPaid)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Operating Expenses</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("operatingExpenses")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(operatingExpenses)}</p>
           </CardContent>
         </Card>
         <Card>
-          <CardHeader><CardTitle>Cash Available</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("cashAvailable")}</CardTitle></CardHeader>
           <CardContent>
             <p className="text-2xl font-bold">{formatCurrency(cashAvailable)}</p>
           </CardContent>
@@ -207,7 +208,7 @@ export default async function PayrollPage({ searchParams }: PageProps) {
 
       <div className="grid gap-4 lg:grid-cols-[240px,1fr]">
         <Card>
-          <CardHeader><CardTitle>Payroll</CardTitle></CardHeader>
+          <CardHeader><CardTitle>{t("payrollTitle")}</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {Object.entries(monthsByYear)
               .sort(([a], [b]) => Number(b) - Number(a))
@@ -249,20 +250,20 @@ export default async function PayrollPage({ searchParams }: PageProps) {
           {payroll.length === 0 ? (
             <EmptyState
               title={t("noPayroll")}
-              description="No payroll records for this month yet."
+              description={t("noPayrollThisMonth")}
             />
           ) : (
             <div className="overflow-x-auto rounded-lg border">
               <table className="min-w-full divide-y divide-stone-200 text-sm dark:divide-stone-800">
                 <thead className="bg-stone-50 dark:bg-stone-900/60">
                   <tr>
-                    <th className="px-3 py-2 text-left">Photo</th>
-                    <th className="px-3 py-2 text-left">Full Name</th>
-                    <th className="px-3 py-2 text-left">Position</th>
-                    <th className="px-3 py-2 text-left">Monthly Salary</th>
-                    <th className="px-3 py-2 text-left">Status</th>
-                    <th className="px-3 py-2 text-left">Payment Date</th>
-                    <th className="px-3 py-2 text-left">Actions</th>
+                    <th className="px-3 py-2 text-left">{t("photo")}</th>
+                    <th className="px-3 py-2 text-left">{t("fullName")}</th>
+                    <th className="px-3 py-2 text-left">{t("position")}</th>
+                    <th className="px-3 py-2 text-left">{t("monthlySalary")}</th>
+                    <th className="px-3 py-2 text-left">{tc("status")}</th>
+                    <th className="px-3 py-2 text-left">{t("paymentDate")}</th>
+                    <th className="px-3 py-2 text-left">{tc("actions")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
@@ -272,13 +273,13 @@ export default async function PayrollPage({ searchParams }: PageProps) {
                         <UserAvatar name={row.staff_name} avatarUrl={row.staff_photo_url} size="sm" />
                       </td>
                       <td className="px-3 py-2">{row.staff_name}</td>
-                      <td className="px-3 py-2">{row.staff_position ?? "Staff"}</td>
+                      <td className="px-3 py-2">{row.staff_position ?? t("colStaff")}</td>
                       <td className="px-3 py-2">{formatCurrency(row.amount)}</td>
                       <td className="px-3 py-2">
                         {row.status === "paid" ? (
-                          <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">Paid</span>
+                          <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">{t("statusPaid")}</span>
                         ) : (
-                          <span className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-700">Pending</span>
+                          <span className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-700">{t("statusPending")}</span>
                         )}
                       </td>
                       <td className="px-3 py-2">{row.payment_date ?? "—"}</td>

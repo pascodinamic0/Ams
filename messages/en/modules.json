@@ -1,5 +1,9 @@
 {
   "builtForLocalSchools": "Stop the leaks · Built for DRC schools",
+  "whatYouCanDo": "What you can do",
+  "whoItsForHeading": "Who it's for",
+  "partOfPlatform": "Part of the {productName} platform. See everything in",
+  "allFeatures": "all features",
   "homepageCta": {
     "academic": "Grades & report cards",
     "finance": "Fees & payments",
@@ -146,5 +150,6 @@
       "2": "Schools whose front office becomes a help desk every fee season"
     },
     "localContext": "Most Congolese parents manage school life from their phone. Without a portal, they miss fee balances, grades, and absences until the office queue or a crisis—and you pay in trust, time, and delayed payments."
-  }
+  },
+  "moduleNotFound": "Module not found"
 }

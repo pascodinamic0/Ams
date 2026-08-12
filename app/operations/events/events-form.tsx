@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,14 +10,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { createEvent, deleteEvent } from "@/lib/actions/events";
 import { toast } from "@/lib/toast";
 
-const DEFAULT_BOOKING_PROCEDURE =
-  "Complete the online registration form below. Our team will confirm your booking by email. Please arrive 15 minutes before the event starts.";
-
-const DEFAULT_CAMPUS_VISIT_PROCEDURE =
-  "Bring a valid ID and any required documents for your child. Check in at the front office 10 minutes before your scheduled time.";
-
 export function EventForm({ branchId }: { branchId: string }) {
+  const t = useTranslations("operations");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const router = useRouter();
+  const defaultBookingProcedure = t("defaultBookingProcedure");
+  const defaultCampusVisitProcedure = t("defaultCampusVisitProcedure");
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [startTime, setStartTime] = useState("");
@@ -26,7 +26,7 @@ export function EventForm({ branchId }: { branchId: string }) {
   const [description, setDescription] = useState("");
   const [publicOnWebsite, setPublicOnWebsite] = useState(true);
   const [bookingEnabled, setBookingEnabled] = useState(false);
-  const [bookingProcedure, setBookingProcedure] = useState(DEFAULT_BOOKING_PROCEDURE);
+  const [bookingProcedure, setBookingProcedure] = useState(defaultBookingProcedure);
   const [loading, setLoading] = useState(false);
 
   const isHoliday = type === "holiday";
@@ -49,22 +49,22 @@ export function EventForm({ branchId }: { branchId: string }) {
       booking_procedure: isHoliday
         ? undefined
         : isCampusVisit
-          ? bookingProcedure || DEFAULT_CAMPUS_VISIT_PROCEDURE
+          ? bookingProcedure || defaultCampusVisitProcedure
           : bookingEnabled || bookingProcedure
-            ? bookingProcedure || DEFAULT_BOOKING_PROCEDURE
+            ? bookingProcedure || defaultBookingProcedure
             : undefined,
     });
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to create event");
+      toast.error(typeof result.error === "string" ? result.error : te("failedCreateEvent"));
       return;
     }
     toast.success(
       isCampusVisit
-        ? "Campus visit slot created — visible on the public Book a visit page"
+        ? t("campusVisitSlotCreated")
         : publicOnWebsite && !isHoliday
-          ? "Event published to school website"
-          : "Event created"
+          ? t("eventPublished")
+          : t("eventCreated")
     );
     setTitle("");
     setDate("");
@@ -74,34 +74,34 @@ export function EventForm({ branchId }: { branchId: string }) {
     setPurpose("general");
     setPublicOnWebsite(true);
     setBookingEnabled(false);
-    setBookingProcedure(DEFAULT_BOOKING_PROCEDURE);
+    setBookingProcedure(defaultBookingProcedure);
     router.refresh();
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border p-4">
       <div>
-        <h2 className="text-lg font-semibold">Add event or holiday</h2>
+        <h2 className="text-lg font-semibold">{t("addEventOrHoliday")}</h2>
         <p className="text-sm text-stone-500">
-          Events marked for the website appear on the school&apos;s public site automatically.
+          {t("eventsMarkedForWebsite")}
         </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <Label>Title</Label>
+          <Label>{t("colTitle")}</Label>
           <Input value={title} onChange={(e) => setTitle(e.target.value)} required />
         </div>
         <div>
-          <Label>Date</Label>
+          <Label>{tc("date")}</Label>
           <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
         </div>
         <div>
-          <Label>Start time (optional)</Label>
+          <Label>{t("startTimeOptional")}</Label>
           <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
         </div>
         <div>
-          <Label>Type</Label>
+          <Label>{t("colType")}</Label>
           <select
             value={type}
             onChange={(e) => {
@@ -111,13 +111,13 @@ export function EventForm({ branchId }: { branchId: string }) {
             }}
             className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
           >
-            <option value="event">Event</option>
-            <option value="holiday">Holiday</option>
+            <option value="event">{t("eventTypeEvent")}</option>
+            <option value="holiday">{t("holiday")}</option>
           </select>
         </div>
         {!isHoliday && (
           <div>
-            <Label>Purpose</Label>
+            <Label>{t("purpose")}</Label>
             <select
               value={purpose}
               onChange={(e) => {
@@ -126,51 +126,49 @@ export function EventForm({ branchId }: { branchId: string }) {
                 if (next === "campus_visit") {
                   setPublicOnWebsite(false);
                   setBookingEnabled(true);
-                  setBookingProcedure(DEFAULT_CAMPUS_VISIT_PROCEDURE);
-                  if (!title) setTitle("Campus visit");
+                  setBookingProcedure(defaultCampusVisitProcedure);
+                  if (!title) setTitle(t("purposeCampusVisit"));
                 }
               }}
               className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             >
-              <option value="general">General event</option>
-              <option value="campus_visit">Campus visit slot (public Book a visit page)</option>
+              <option value="general">{t("generalEvent")}</option>
+              <option value="campus_visit">{t("campusVisitSlot")}</option>
             </select>
           </div>
         )}
         <div className="sm:col-span-2">
-          <Label>Location (optional)</Label>
+          <Label>{t("locationOptional")}</Label>
           <Input
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder="e.g. Main hall, sports field"
+            placeholder={t("locationPlaceholder")}
           />
         </div>
         <div className="sm:col-span-2 lg:col-span-3">
-          <Label>Description</Label>
+          <Label>{tc("description")}</Label>
           <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={2}
-            placeholder="What families should know about this event"
+            placeholder={t("eventDescriptionPlaceholder")}
           />
         </div>
       </div>
 
       {!isHoliday && isCampusVisit && (
         <div className="space-y-3 rounded-lg border border-dashed border-amber-200 bg-amber-50/50 p-4 dark:border-amber-900 dark:bg-amber-950/20">
-          <p className="text-sm font-medium">Campus visit slot</p>
+          <p className="text-sm font-medium">{t("campusVisitSlotTitle")}</p>
           <p className="text-sm text-stone-600 dark:text-stone-400">
-            This slot appears on the school&apos;s public Book a visit page for anyone to reserve.
-            It also appears during online enrollment after families submit an application. Set a start
-            time so visitors know when to arrive.
+            {t("campusVisitSlotDesc")}
           </p>
           <div>
-            <Label>Visit instructions (shown after booking)</Label>
+            <Label>{t("visitInstructions")}</Label>
             <Textarea
               value={bookingProcedure}
               onChange={(e) => setBookingProcedure(e.target.value)}
               rows={3}
-              placeholder={DEFAULT_CAMPUS_VISIT_PROCEDURE}
+              placeholder={defaultCampusVisitProcedure}
             />
           </div>
         </div>
@@ -178,7 +176,7 @@ export function EventForm({ branchId }: { branchId: string }) {
 
       {!isHoliday && !isCampusVisit && (
         <div className="space-y-3 rounded-lg border border-dashed p-4 dark:border-stone-700">
-          <p className="text-sm font-medium">School website</p>
+          <p className="text-sm font-medium">{t("schoolWebsite")}</p>
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -186,7 +184,7 @@ export function EventForm({ branchId }: { branchId: string }) {
               onChange={(e) => setPublicOnWebsite(e.target.checked)}
               className="rounded"
             />
-            Show on public school website
+            {t("showOnPublicWebsite")}
           </label>
           {publicOnWebsite && (
             <>
@@ -197,17 +195,17 @@ export function EventForm({ branchId }: { branchId: string }) {
                   onChange={(e) => setBookingEnabled(e.target.checked)}
                   className="rounded"
                 />
-                Allow online registration / booking
+                {t("allowOnlineRegistration")}
               </label>
               <div>
                 <Label>
-                  {bookingEnabled ? "Booking instructions (shown after registration)" : "How to attend"}
+                  {bookingEnabled ? t("bookingInstructions") : t("howToAttend")}
                 </Label>
                 <Textarea
                   value={bookingProcedure}
                   onChange={(e) => setBookingProcedure(e.target.value)}
                   rows={3}
-                  placeholder={DEFAULT_BOOKING_PROCEDURE}
+                  placeholder={defaultBookingProcedure}
                 />
               </div>
             </>
@@ -216,32 +214,35 @@ export function EventForm({ branchId }: { branchId: string }) {
       )}
 
       <Button type="submit" disabled={loading}>
-        {loading ? "Saving..." : "Add event"}
+        {loading ? tc("saving") : t("addEvent")}
       </Button>
     </form>
   );
 }
 
 export function DeleteEventButton({ id }: { id: string }) {
+  const t = useTranslations("operations");
+  const tc = useTranslations("common");
+  const te = useTranslations("errors");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm("Delete this event?")) return;
+    if (!confirm(t("deleteEventConfirm"))) return;
     setLoading(true);
     const result = await deleteEvent(id);
     setLoading(false);
     if (result.error) {
-      toast.error("Failed to delete event");
+      toast.error(typeof result.error === "string" ? result.error : te("failedDeleteEvent"));
       return;
     }
-    toast.success("Event deleted");
+    toast.success(t("eventDeleted"));
     router.refresh();
   }
 
   return (
     <Button size="sm" variant="ghost" onClick={handleDelete} disabled={loading}>
-      Delete
+      {tc("delete")}
     </Button>
   );
 }

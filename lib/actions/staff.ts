@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { staffSchema, type StaffFormData } from "@/lib/validations/operations";
@@ -42,7 +44,7 @@ export async function updateStaff(id: string, input: StaffFormData) {
     .eq("id", id)
     .single();
 
-  if (!existing) return { error: "Staff member not found" };
+  if (!existing) return await actionError("staffNotFound");
 
   const payload = {
     ...parsed.data,

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormContext, useWatch, type FieldErrors } from "react-hook-form";
 import { Camera } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -45,17 +46,6 @@ const emptyPickupPerson = {
   notes: "",
 };
 
-const pickupRelationshipOptions = [
-  { value: "uncle", label: "Uncle" },
-  { value: "aunt", label: "Aunt" },
-  { value: "grandparent", label: "Grandparent" },
-  { value: "sibling", label: "Sibling" },
-  { value: "driver", label: "Driver" },
-  { value: "nanny", label: "Nanny / caregiver" },
-  { value: "family_friend", label: "Family friend" },
-  { value: "other", label: "Other" },
-];
-
 function firstErrorMessage(error: unknown): string | undefined {
   if (!error) return undefined;
   if (typeof error === "string") return error;
@@ -78,17 +68,19 @@ function firstErrorMessage(error: unknown): string | undefined {
   return undefined;
 }
 
-function formatActionError(error: unknown): string {
-  return firstErrorMessage(error) ?? "Failed to onboard student";
-}
-
-function onInvalid(errors: FieldErrors<StudentOnboardingData>) {
-  toast.error(formatActionError(errors) ?? "Please complete all required fields");
-}
-
 export function StudentForm({ schoolId, branchId, classes, existingGuardians }: Props) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  function formatActionError(error: unknown): string {
+    return firstErrorMessage(error) ?? t("failedToOnboard");
+  }
+
+  function onInvalid(errors: FieldErrors<StudentOnboardingData>) {
+    toast.error(formatActionError(errors) ?? t("completeRequiredFields"));
+  }
 
   async function onSubmit(data: StudentOnboardingData) {
     setLoading(true);
@@ -106,12 +98,12 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
         toast.error(formatActionError(result.error));
         return;
       }
-      toast.success(`Student onboarded (${result.data?.student_id ?? ""})`);
+      toast.success(t("studentOnboarded", { studentId: result.data?.student_id ?? "" }));
       router.push(`/academic/students/${result.data?.id}`);
       router.refresh();
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to onboard student"
+        err instanceof Error ? err.message : t("failedToOnboard")
       );
     } finally {
       setLoading(false);
@@ -134,9 +126,9 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
     >
       <Card>
         <CardHeader>
-          <CardTitle>Student onboarding</CardTitle>
+          <CardTitle>{t("studentOnboarding")}</CardTitle>
           <p className="text-sm text-stone-500 dark:text-stone-400">
-            Register the child, guardian(s), and who is authorized to pick them up from school.
+            {t("studentOnboardingDesc")}
           </p>
         </CardHeader>
         <CardContent className="space-y-8">
@@ -153,10 +145,10 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
             disabled={loading}
             onClick={() => router.push("/academic/students")}
           >
-            Cancel
+            {tc("cancel")}
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? "Saving..." : "Complete onboarding"}
+            {loading ? tc("saving") : t("completeOnboarding")}
           </Button>
         </CardFooter>
       </Card>
@@ -215,13 +207,6 @@ function Field({
   );
 }
 
-const relationOptions = [
-  { value: "father", label: "Father" },
-  { value: "mother", label: "Mother" },
-  { value: "guardian", label: "Guardian" },
-  { value: "other", label: "Other" },
-];
-
 function GuardianFields({
   prefix,
   errors,
@@ -229,45 +214,53 @@ function GuardianFields({
   prefix: "primary_guardian" | "secondary_guardian";
   errors: Record<string, unknown>;
 }) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const { register } = useFormContext<StudentOnboardingData>();
   const guardianErrors = (errors[prefix] ?? {}) as Record<string, { message?: string }>;
+  const relationOptions = [
+    { value: "father", label: t("relationFather") },
+    { value: "mother", label: t("relationMother") },
+    { value: "guardian", label: t("relationGuardian") },
+    { value: "other", label: t("relationOther") },
+  ];
 
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-3">
-        <Field label="First name" htmlFor={`${prefix}.first_name`} required error={guardianErrors.first_name?.message}>
+        <Field label={t("firstName")} htmlFor={`${prefix}.first_name`} required error={guardianErrors.first_name?.message}>
           <Input id={`${prefix}.first_name`} {...register(`${prefix}.first_name`)} error={!!guardianErrors.first_name} />
         </Field>
-        <Field label="Middle name" htmlFor={`${prefix}.middle_name`} error={guardianErrors.middle_name?.message}>
+        <Field label={t("middleName")} htmlFor={`${prefix}.middle_name`} error={guardianErrors.middle_name?.message}>
           <Input id={`${prefix}.middle_name`} {...register(`${prefix}.middle_name`)} error={!!guardianErrors.middle_name} />
         </Field>
-        <Field label="Last name" htmlFor={`${prefix}.last_name`} required error={guardianErrors.last_name?.message}>
+        <Field label={t("lastName")} htmlFor={`${prefix}.last_name`} required error={guardianErrors.last_name?.message}>
           <Input id={`${prefix}.last_name`} {...register(`${prefix}.last_name`)} error={!!guardianErrors.last_name} />
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Email" htmlFor={`${prefix}.email`} required error={guardianErrors.email?.message}>
+        <Field label={tc("email")} htmlFor={`${prefix}.email`} required error={guardianErrors.email?.message}>
           <Input id={`${prefix}.email`} type="email" {...register(`${prefix}.email`)} error={!!guardianErrors.email} />
         </Field>
         <Field
-          label="WhatsApp number"
+          label={t("whatsappNumber")}
           htmlFor={`${prefix}.whatsapp`}
-          hint="Used for fee reminders and school messages"
+          hint={t("whatsappHint")}
         >
           <Input id={`${prefix}.whatsapp`} type="tel" {...register(`${prefix}.whatsapp`)} />
         </Field>
       </div>
-      <Field label="Relation to child" htmlFor={`${prefix}.relation`}>
+      <Field label={t("relationToChild")} htmlFor={`${prefix}.relation`}>
         <Select
           id={`${prefix}.relation`}
           options={relationOptions}
           {...register(`${prefix}.relation`)}
         />
       </Field>
-      <Field label="Home address" htmlFor={`${prefix}.address`}>
+      <Field label={t("homeAddress")} htmlFor={`${prefix}.address`}>
         <Textarea id={`${prefix}.address`} rows={2} {...register(`${prefix}.address`)} />
       </Field>
-      <Field label="Workplace" htmlFor={`${prefix}.workplace`}>
+      <Field label={t("workplace")} htmlFor={`${prefix}.workplace`}>
         <Input id={`${prefix}.workplace`} {...register(`${prefix}.workplace`)} />
       </Field>
       <label className="flex items-start gap-2 text-sm text-stone-700 dark:text-stone-300">
@@ -277,9 +270,9 @@ function GuardianFields({
           {...register(`${prefix}.can_pickup`)}
         />
         <span>
-          Authorized to pick up this child from school
+          {t("authorizedPickup")}
           <span className="mt-0.5 block text-xs text-stone-500 dark:text-stone-400">
-            Must be specified even when this person is a parent or guardian.
+            {t("pickupMustSpecify")}
           </span>
         </span>
       </label>
@@ -288,9 +281,21 @@ function GuardianFields({
 }
 
 function PickupPersonsFields() {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const { register, setValue, formState: { errors } } = useFormContext<StudentOnboardingData>();
   const pickupPersons =
     useWatch<StudentOnboardingData, "pickup_persons">({ name: "pickup_persons" }) ?? [];
+  const pickupRelationshipOptions = [
+    { value: "uncle", label: t("pickupUncle") },
+    { value: "aunt", label: t("pickupAunt") },
+    { value: "grandparent", label: t("pickupGrandparent") },
+    { value: "sibling", label: t("pickupSibling") },
+    { value: "driver", label: t("pickupDriver") },
+    { value: "nanny", label: t("pickupNanny") },
+    { value: "family_friend", label: t("pickupFamilyFriend") },
+    { value: "other", label: t("pickupOther") },
+  ];
 
   function addPerson() {
     setValue("pickup_persons", [...pickupPersons, { ...emptyPickupPerson }], {
@@ -309,8 +314,8 @@ function PickupPersonsFields() {
 
   return (
     <FormSection
-      title="Who may pick up from school"
-      description="Authorize guardians above and/or list other people who may collect this child. Gate staff need a name, phone, and relationship for each person."
+      title={t("whoMayPickup")}
+      description={t("whoMayPickupDesc")}
     >
       {errors.pickup_persons?.message && (
         <p className="text-sm text-red-500">{errors.pickup_persons.message}</p>
@@ -331,15 +336,15 @@ function PickupPersonsFields() {
           >
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-stone-900 dark:text-white">
-                Authorized person {index + 1}
+                {t("authorizedPerson", { number: index + 1 })}
               </p>
               <Button type="button" variant="ghost" size="sm" onClick={() => removePerson(index)}>
-                Remove
+                {tc("remove")}
               </Button>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field
-                label="Full name"
+                label={t("fullName")}
                 htmlFor={`pickup_persons.${index}.full_name`}
                 required
                 error={personErrors.full_name?.message}
@@ -351,7 +356,7 @@ function PickupPersonsFields() {
                 />
               </Field>
               <Field
-                label="Phone"
+                label={tc("phone")}
                 htmlFor={`pickup_persons.${index}.phone`}
                 required
                 error={personErrors.phone?.message}
@@ -365,22 +370,22 @@ function PickupPersonsFields() {
               </Field>
             </div>
             <Field
-              label="Relationship to child"
+              label={t("relationshipToChild")}
               htmlFor={`pickup_persons.${index}.relationship`}
               required
               error={personErrors.relationship?.message}
             >
               <Select
                 id={`pickup_persons.${index}.relationship`}
-                placeholder="Select relationship"
+                placeholder={t("selectRelationship")}
                 options={pickupRelationshipOptions}
                 {...register(`pickup_persons.${index}.relationship`)}
               />
             </Field>
-            <Field label="Notes (optional)" htmlFor={`pickup_persons.${index}.notes`}>
+            <Field label={tc("optionalField", { label: tc("notes") })} htmlFor={`pickup_persons.${index}.notes`}>
               <Input
                 id={`pickup_persons.${index}.notes`}
-                placeholder="e.g. Only after 3pm, carries school ID card"
+                placeholder={t("pickupNotesPlaceholder")}
                 {...register(`pickup_persons.${index}.notes`)}
               />
             </Field>
@@ -389,7 +394,7 @@ function PickupPersonsFields() {
       })}
 
       <Button type="button" variant="outline" size="sm" onClick={addPerson}>
-        Add authorized pickup person
+        {t("addPickupPerson")}
       </Button>
     </FormSection>
   );
@@ -404,6 +409,8 @@ function StudentFormFields({
   classes: { id: string; name: string }[];
   existingGuardians: { id: string; name: string }[];
 }) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const { register, setValue, formState: { errors } } = useFormContext<StudentOnboardingData>();
   const existingGuardianId = useWatch({ name: "existing_guardian_id" });
   const addSecondary = useWatch({ name: "add_secondary_guardian" });
@@ -418,7 +425,7 @@ function StudentFormFields({
 
   async function handleCameraCapture(file: File) {
     if (file.size > STUDENT_PHOTO_MAX_BYTES) {
-      toast.error(`File too large. Max ${STUDENT_PHOTO_MAX_BYTES / 1024 / 1024}MB`);
+      toast.error(t("fileTooLarge", { max: STUDENT_PHOTO_MAX_BYTES / 1024 / 1024 }));
       throw new Error("File too large");
     }
 
@@ -432,9 +439,9 @@ function StudentFormFields({
       if (error) throw error;
       const { data } = supabase.storage.from("school-assets").getPublicUrl(filePath);
       setValue("photo_url", data.publicUrl, { shouldDirty: true, shouldValidate: true });
-      toast.success("Photo uploaded");
+      toast.success(t("photoUploaded"));
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed");
+      toast.error(err instanceof Error ? err.message : t("uploadFailed"));
       throw err;
     } finally {
       setCameraUploading(false);
@@ -443,40 +450,40 @@ function StudentFormFields({
 
   return (
     <>
-      <FormSection title="Child information" description="Basic details for the student">
+      <FormSection title={t("childInformation")} description={t("childInformationDesc")}>
         <div className="grid gap-4 sm:grid-cols-3">
-          <Field label="First name" htmlFor="first_name" required error={errors.first_name?.message}>
+          <Field label={t("firstName")} htmlFor="first_name" required error={errors.first_name?.message}>
             <Input id="first_name" {...register("first_name")} error={!!errors.first_name} />
           </Field>
-          <Field label="Middle name" htmlFor="middle_name" error={errors.middle_name?.message}>
+          <Field label={t("middleName")} htmlFor="middle_name" error={errors.middle_name?.message}>
             <Input id="middle_name" {...register("middle_name")} error={!!errors.middle_name} />
           </Field>
-          <Field label="Last name" htmlFor="last_name" required error={errors.last_name?.message}>
+          <Field label={t("lastName")} htmlFor="last_name" required error={errors.last_name?.message}>
             <Input id="last_name" {...register("last_name")} error={!!errors.last_name} />
           </Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Date of birth" htmlFor="date_of_birth" required error={errors.date_of_birth?.message}>
+          <Field label={t("dateOfBirth")} htmlFor="date_of_birth" required error={errors.date_of_birth?.message}>
             <Input id="date_of_birth" type="date" {...register("date_of_birth")} error={!!errors.date_of_birth} />
           </Field>
-          <Field label="Gender" htmlFor="gender">
+          <Field label={t("gender")} htmlFor="gender">
             <Select
               id="gender"
-              placeholder="Select (optional)"
+              placeholder={t("selectOptional")}
               options={[
-                { value: "male", label: "Male" },
-                { value: "female", label: "Female" },
-                { value: "other", label: "Other" },
+                { value: "male", label: t("genderMale") },
+                { value: "female", label: t("genderFemale") },
+                { value: "other", label: t("genderOther") },
               ]}
               {...register("gender")}
             />
           </Field>
         </div>
         <Field
-          label="Student photo"
+          label={t("studentPhoto")}
           htmlFor="photo_url"
           error={errors.photo_url?.message}
-          hint="Optional. Upload a file or take a photo with the webcam."
+          hint={t("studentPhotoHint")}
         >
           <input type="hidden" {...register("photo_url")} />
           <div className="space-y-2">
@@ -488,7 +495,7 @@ function StudentFormFields({
               value={photoUrl || undefined}
               onUpload={(url) => {
                 setValue("photo_url", url, { shouldDirty: true, shouldValidate: true });
-                toast.success("Photo uploaded");
+                toast.success(t("photoUploaded"));
               }}
               onRemove={() => setValue("photo_url", "", { shouldDirty: true, shouldValidate: true })}
               onError={(message) => toast.error(message)}
@@ -501,7 +508,7 @@ function StudentFormFields({
               onClick={() => setCameraOpen(true)}
             >
               <Camera className="mr-1.5 h-4 w-4" />
-              Take photo
+              {t("takePhoto")}
             </Button>
           </div>
           <CameraCaptureModal
@@ -515,23 +522,23 @@ function StudentFormFields({
 
       <div className="border-t border-stone-200 dark:border-stone-800" />
 
-      <FormSection title="Enrollment" description="Class and status">
+      <FormSection title={t("enrollment")} description={t("enrollmentDesc")}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label="Class" htmlFor="class_id">
+          <Field label={t("class")} htmlFor="class_id">
             <Select
               id="class_id"
-              placeholder="Select class (optional)"
+              placeholder={t("selectClassOptional")}
               options={classes.map((c) => ({ value: c.id, label: c.name }))}
               {...register("class_id")}
             />
           </Field>
-          <Field label="Status" htmlFor="status" error={errors.status?.message}>
+          <Field label={tc("status")} htmlFor="status" error={errors.status?.message}>
             <Select
               id="status"
               options={[
-                { value: "active", label: "Active" },
-                { value: "inactive", label: "Inactive" },
-                { value: "graduated", label: "Graduated" },
+                { value: "active", label: tc("active") },
+                { value: "inactive", label: tc("inactive") },
+                { value: "graduated", label: t("statusGraduated") },
               ]}
               {...register("status")}
             />
@@ -541,7 +548,7 @@ function StudentFormFields({
 
       <div className="border-t border-stone-200 dark:border-stone-800" />
 
-      <FormSection title="Child home & health" description="Where the child lives and any care notes">
+      <FormSection title={t("childHomeHealth")} description={t("childHomeHealthDesc")}>
         <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
           <input
             type="checkbox"
@@ -554,9 +561,9 @@ function StudentFormFields({
               }
             }}
           />
-          Same address as primary guardian
+          {t("sameAddressAsGuardian")}
         </label>
-        <Field label="Child home address" htmlFor="home_address">
+        <Field label={t("childHomeAddress")} htmlFor="home_address">
           <Textarea
             id="home_address"
             rows={2}
@@ -565,32 +572,32 @@ function StudentFormFields({
           />
         </Field>
         <Field
-          label="Notes about the child"
+          label={t("notesAboutChild")}
           htmlFor="notes"
-          hint="Allergies, sickness history, medications, or other information staff should know"
+          hint={t("notesAboutChildHint")}
         >
-          <Textarea id="notes" rows={3} {...register("notes")} placeholder="e.g. Asthma — inhaler in school bag" />
+          <Textarea id="notes" rows={3} {...register("notes")} placeholder={t("notesAboutChildPlaceholder")} />
         </Field>
       </FormSection>
 
       <div className="border-t border-stone-200 dark:border-stone-800" />
 
-      <FormSection title="Primary guardian" description="Parent or guardian responsible for this child">
+      <FormSection title={t("primaryGuardian")} description={t("primaryGuardianDesc")}>
         {existingGuardians.length > 0 && (
           <Field
-            label="Link existing guardian (optional)"
+            label={t("linkExistingGuardian")}
             htmlFor="existing_guardian_id"
             error={errors.existing_guardian_id?.message}
           >
             <Select
               id="existing_guardian_id"
-              placeholder="Create new guardian"
+              placeholder={t("createNewGuardian")}
               options={existingGuardians.map((g) => ({ value: g.id, label: g.name }))}
               error={!!errors.existing_guardian_id}
               {...register("existing_guardian_id")}
             />
             <p className="text-xs text-stone-500 dark:text-stone-400">
-              Choose an existing guardian when enrolling a sibling.
+              {t("linkExistingGuardianHint")}
             </p>
           </Field>
         )}
@@ -602,9 +609,9 @@ function StudentFormFields({
               {...register("existing_guardian_can_pickup")}
             />
             <span>
-              This guardian is authorized to pick up this child from school
+              {t("existingGuardianPickup")}
               <span className="mt-0.5 block text-xs text-stone-500 dark:text-stone-400">
-                Must be specified even when linking an existing parent or guardian.
+                {t("existingGuardianPickupHint")}
               </span>
             </span>
           </label>
@@ -615,14 +622,14 @@ function StudentFormFields({
 
       <div className="border-t border-stone-200 dark:border-stone-800" />
 
-      <FormSection title="Second guardian" description="Optional additional contact">
+      <FormSection title={t("secondGuardian")} description={t("secondGuardianDesc")}>
         <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
           <input
             type="checkbox"
             className="rounded border-stone-300"
             {...register("add_secondary_guardian")}
           />
-          Add a second guardian
+          {t("addSecondGuardian")}
         </label>
         {addSecondary && <GuardianFields prefix="secondary_guardian" errors={errors} />}
       </FormSection>

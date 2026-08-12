@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormContext } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,8 @@ interface Props {
 }
 
 export function AddGuardianForm({ studentId, schoolId }: Props) {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -31,7 +34,7 @@ export function AddGuardianForm({ studentId, schoolId }: Props) {
         toast.error(result.error);
         return;
       }
-      toast.success("Guardian added");
+      toast.success(t("guardianAdded"));
       router.push(`/academic/students/${studentId}`);
       router.refresh();
     } finally {
@@ -53,8 +56,8 @@ export function AddGuardianForm({ studentId, schoolId }: Props) {
     >
       <Card>
         <CardHeader>
-          <CardTitle>Add guardian</CardTitle>
-          <p className="text-sm text-stone-500">Link a new guardian to this student.</p>
+          <CardTitle>{t("addGuardianTitle")}</CardTitle>
+          <p className="text-sm text-stone-500">{t("addGuardianDesc")}</p>
         </CardHeader>
         <CardContent className="space-y-4">
           <AddGuardianFields />
@@ -66,10 +69,10 @@ export function AddGuardianForm({ studentId, schoolId }: Props) {
             disabled={loading}
             onClick={() => router.push(`/academic/students/${studentId}`)}
           >
-            Cancel
+            {tc("cancel")}
           </Button>
           <Button type="submit" disabled={loading}>
-            {loading ? "Adding..." : "Add guardian"}
+            {loading ? tc("adding") : t("addGuardian")}
           </Button>
         </CardFooter>
       </Card>
@@ -78,57 +81,59 @@ export function AddGuardianForm({ studentId, schoolId }: Props) {
 }
 
 function AddGuardianFields() {
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const { register, formState: { errors } } = useFormContext<GuardianOnboardingData>();
 
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-1.5">
-          <Label htmlFor="first_name" required>First name</Label>
+          <Label htmlFor="first_name" required>{t("firstName")}</Label>
           <Input id="first_name" {...register("first_name")} error={!!errors.first_name} />
           {errors.first_name && <p className="text-sm text-red-500">{errors.first_name.message}</p>}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="middle_name">Middle name</Label>
+          <Label htmlFor="middle_name">{t("middleName")}</Label>
           <Input id="middle_name" {...register("middle_name")} error={!!errors.middle_name} />
           {errors.middle_name && <p className="text-sm text-red-500">{errors.middle_name.message}</p>}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="last_name" required>Last name</Label>
+          <Label htmlFor="last_name" required>{t("lastName")}</Label>
           <Input id="last_name" {...register("last_name")} error={!!errors.last_name} />
           {errors.last_name && <p className="text-sm text-red-500">{errors.last_name.message}</p>}
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="email" required>Email</Label>
+          <Label htmlFor="email" required>{tc("email")}</Label>
           <Input id="email" type="email" {...register("email")} error={!!errors.email} />
           {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="whatsapp">WhatsApp number</Label>
+          <Label htmlFor="whatsapp">{t("whatsappNumber")}</Label>
           <Input id="whatsapp" type="tel" {...register("whatsapp")} />
         </div>
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="relation">Relation to child</Label>
+        <Label htmlFor="relation">{t("relationToChild")}</Label>
         <Select
           id="relation"
           options={[
-            { value: "father", label: "Father" },
-            { value: "mother", label: "Mother" },
-            { value: "guardian", label: "Guardian" },
-            { value: "other", label: "Other" },
+            { value: "father", label: t("relationFather") },
+            { value: "mother", label: t("relationMother") },
+            { value: "guardian", label: t("relationGuardian") },
+            { value: "other", label: t("relationOther") },
           ]}
           {...register("relation")}
         />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="address">Home address</Label>
+        <Label htmlFor="address">{t("homeAddress")}</Label>
         <Textarea id="address" rows={2} {...register("address")} />
       </div>
       <div className="space-y-1.5">
-        <Label htmlFor="workplace">Workplace</Label>
+        <Label htmlFor="workplace">{t("workplace")}</Label>
         <Input id="workplace" {...register("workplace")} />
       </div>
       <label className="flex items-start gap-2 text-sm text-stone-700 dark:text-stone-300">
@@ -138,9 +143,9 @@ function AddGuardianFields() {
           {...register("can_pickup")}
         />
         <span>
-          Authorized to pick up this child from school
+          {t("authorizedPickup")}
           <span className="mt-0.5 block text-xs text-stone-500 dark:text-stone-400">
-            Must be specified even when this person is a parent or guardian.
+            {t("pickupMustSpecify")}
           </span>
         </span>
       </label>

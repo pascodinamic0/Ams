@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -15,7 +17,7 @@ export async function createCurriculum(input: CurriculumFormData) {
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const result = await insertCurriculum({
     branch_id: parsed.data.branch_id,
@@ -36,7 +38,7 @@ export async function updateCurriculum(id: string, updates: Partial<CurriculumFo
 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const result = await updateCurriculumDb(id, {
     ...parsed.data,
@@ -52,7 +54,7 @@ export async function updateCurriculum(id: string, updates: Partial<CurriculumFo
 export async function deleteCurriculum(id: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const result = await deleteCurriculumDb(id);
   if (result.error) return { error: result.error };

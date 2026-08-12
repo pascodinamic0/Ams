@@ -1,5 +1,9 @@
 {
   "builtForLocalSchools": "Stoppez les fuites · Conçu pour la RDC",
+  "whatYouCanDo": "Ce que vous pouvez faire",
+  "whoItsForHeading": "Pour qui c'est fait",
+  "partOfPlatform": "Fait partie de la plateforme {productName}. Voir tout dans",
+  "allFeatures": "toutes les fonctionnalités",
   "homepageCta": {
     "academic": "Notes et bulletins",
     "finance": "Frais et paiements",
@@ -146,5 +150,6 @@
       "2": "Écoles dont le bureau devient un help desk chaque saison de frais"
     },
     "localContext": "La plupart des parents congolais gèrent la vie scolaire depuis leur téléphone. Sans portail, ils ratent soldes, notes et absences jusqu'à la file au bureau ou une crise—et vous payez en confiance, temps et paiements retardés."
-  }
+  },
+  "moduleNotFound": "Module introuvable"
 }

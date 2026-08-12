@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,6 +20,9 @@ import type { SchoolRow } from "@/lib/db/schools";
 import { toast } from "@/lib/toast";
 
 export function SchoolEditForm({ school }: { school: SchoolRow }) {
+  const t = useTranslations("admin");
+  const tc = useTranslations("common");
+  const ts = useTranslations("schools.templates");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -53,7 +57,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
       toast.error(result.error);
       return;
     }
-    toast.success("School updated");
+    toast.success(t("schoolUpdated"));
     router.refresh();
   }
 
@@ -61,12 +65,12 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>School identity</CardTitle>
+          <CardTitle>{t("schoolIdentity")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="name">School name</Label>
+              <Label htmlFor="name">{t("schoolName")}</Label>
               <Input
                 id="name"
                 value={form.name}
@@ -75,7 +79,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="slug">URL slug</Label>
+              <Label htmlFor="slug">{t("urlSlug")}</Label>
               <div className="relative">
                 <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-stone-400">
                   /schools/
@@ -89,7 +93,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
                 />
               </div>
               <p className="text-xs text-stone-500">
-                Used in the public site URL
+                {t("urlSlugHint")}
               </p>
             </div>
           </div>
@@ -98,12 +102,12 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Contact information</CardTitle>
+          <CardTitle>{t("contactInformation")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="contact_email">Contact email</Label>
+              <Label htmlFor="contact_email">{t("contactEmail")}</Label>
               <Input
                 id="contact_email"
                 type="email"
@@ -115,7 +119,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="contact_phone">Contact phone</Label>
+              <Label htmlFor="contact_phone">{t("contactPhone")}</Label>
               <Input
                 id="contact_phone"
                 placeholder="+1 (555) 000-0000"
@@ -127,7 +131,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
             </div>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
+            <Label htmlFor="address">{t("address")}</Label>
             <Input
               id="address"
               placeholder="123 Education Lane"
@@ -140,12 +144,12 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Public website</CardTitle>
+          <CardTitle>{t("publicWebsite")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="custom_domain">Custom domain</Label>
+              <Label htmlFor="custom_domain">{t("customDomain")}</Label>
               <Input
                 id="custom_domain"
                 value={form.custom_domain}
@@ -155,16 +159,16 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
                 placeholder="www.school.edu"
               />
               <p className="text-xs text-stone-500">
-                Optional — connect your own domain
+                {t("customDomainOptionalHint")}
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="website_template">Website template</Label>
+              <Label htmlFor="website_template">{t("websiteTemplate")}</Label>
               <Select
                 options={[
-                  { value: "modern", label: "Modern" },
-                  { value: "classic", label: "Classic" },
-                  { value: "minimal", label: "Minimal" },
+                  { value: "modern", label: ts("modern") },
+                  { value: "classic", label: ts("classic") },
+                  { value: "minimal", label: ts("minimal") },
                 ]}
                 value={form.website_template}
                 onChange={(e) =>
@@ -186,16 +190,16 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
               onChange={(e) =>
                 setForm((f) => ({ ...f, public_site_enabled: e.target.checked }))
               }
-              label="Public site enabled"
+              label={t("publicSiteEnabled")}
             />
             <p className="mt-2 pl-6 text-xs text-stone-500">
-              When disabled, the school website is hidden from visitors
+              {t("publicSiteEnabledHint")}
             </p>
           </div>
         </CardContent>
         <CardFooter className="justify-end">
           <Button type="submit" disabled={loading}>
-            {loading ? "Saving…" : "Save changes"}
+            {loading ? tc("saving") : t("saveChanges")}
           </Button>
         </CardFooter>
       </Card>

@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { canAccessPath, normalizeRole } from "@/lib/auth/rbac";
 import { getStudents } from "@/lib/db";
@@ -7,6 +8,7 @@ import { DisciplineBoard } from "./discipline-board";
 import { formatPersonName } from "@/lib/utils";
 
 export default async function AcademicDisciplinePage() {
+  const t = await getTranslations("academic");
   const profile = await getCurrentProfile();
   if (!profile?.school_id) redirect("/academic");
   if (normalizeRole(profile.role) === "teacher") redirect("/teacher/discipline");
@@ -20,9 +22,9 @@ export default async function AcademicDisciplinePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Discipline desk</h1>
+        <h1 className="text-2xl font-bold">{t("disciplineDeskTitle")}</h1>
         <p className="mt-1 text-sm text-stone-500">
-          Log incidents, track open cases, and escalate what needs leadership attention.
+          {t("disciplineDeskSubtitle")}
         </p>
       </div>
       <DisciplineBoard

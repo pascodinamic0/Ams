@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { expenseSchema, type ExpenseFormData } from "@/lib/validations/finance";
@@ -20,7 +22,7 @@ async function requireProfile() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" as const };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -28,7 +30,7 @@ async function requireProfile() {
     .eq("id", user.id)
     .single();
 
-  if (!profile) return { error: "Profile not found" as const };
+  if (!profile) return await actionError("profileNotFound");
   return { supabase, profile };
 }
 
@@ -86,9 +88,9 @@ export async function updateExpense(id: string, updates: Partial<ExpenseFormData
     .eq("id", id)
     .single();
 
-  if (!existing) return { error: "Expense not found" };
+  if (!existing) return await actionError("expenseNotFound");
   if (existing.status === "approved") {
-    return { error: "Approved expenses cannot be edited. Reject and resubmit if needed." };
+    return await actionError("approvedExpenseNoEdit");
   }
 
   const { error } = await auth.supabase
@@ -116,9 +118,9 @@ export async function deleteExpense(id: string) {
     .eq("id", id)
     .single();
 
-  if (!existing) return { error: "Expense not found" };
+  if (!existing) return await actionError("expenseNotFound");
   if (existing.status === "approved") {
-    return { error: "Approved expenses cannot be deleted" };
+    return await actionError("approvedExpensesCannotDelete");
   }
 
   if (existing.task_id) {
@@ -145,10 +147,10 @@ export async function decideExpenseTask(
 
   const role = normalizeRole(auth.profile.role);
   if (!TASK_APPROVER_ROLES.has(role)) {
-    return { error: "Only academic admins can approve expense tasks" };
+    return await actionError("onlyAcademicAdminsApproveExpense");
   }
   if (!auth.profile.school_id) {
-    return { error: "Your account is not linked to a school" };
+    return await actionError("noSchoolLinked");
   }
 
   const { data: task } = await auth.supabase
@@ -158,12 +160,12 @@ export async function decideExpenseTask(
     .eq("school_id", auth.profile.school_id)
     .single();
 
-  if (!task) return { error: "Task not found" };
+  if (!task) return await actionError("taskNotFound");
   if (task.related_type !== "expense" || !task.related_id) {
-    return { error: "This task is not linked to an expense" };
+    return await actionError("taskNotLinkedExpense");
   }
   if (task.status === "done") {
-    return { error: "This expense task was already decided" };
+    return await actionError("expenseAlreadyDecided");
   }
 
   const { data: expense } = await auth.supabase
@@ -172,14 +174,14 @@ export async function decideExpenseTask(
     .eq("id", task.related_id)
     .single();
 
-  if (!expense) return { error: "Linked expense not found" };
+  if (!expense) return await actionError("linkedExpenseNotFound");
   if (expense.status !== "pending") {
-    return { error: "Expense is no longer pending approval" };
+    return await actionError("expenseNoLongerPending");
   }
 
   const branch = expense.branches as { school_id?: string } | null;
   if (branch?.school_id && branch.school_id !== auth.profile.school_id) {
-    return { error: "Expense does not belong to your school" };
+    return await actionError("expenseNotInSchool");
   }
 
   let receiptNumber: string | null = null;

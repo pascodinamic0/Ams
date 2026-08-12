@@ -9,7 +9,7 @@ export const defaultTimeZone = "Africa/Kinshasa";
 
 export const localeNames: Record<Locale, string> = {
   en: "English",
-  fr: "Francais",
+  fr: "Français",
 };
 
 export const LOCALE_COOKIE = "AMS_LOCALE";

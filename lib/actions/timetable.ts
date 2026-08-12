@@ -1,5 +1,8 @@
 "use server";
 
+import { getTranslations } from "next-intl/server";
+import { actionError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import {
   deleteTimetableSlotsForCell,
@@ -16,7 +19,7 @@ import {
 
 export async function saveTimetableCell(input: TimetableCellFormData) {
   const parsed = timetableCellSchema.safeParse(input);
-  if (!parsed.success) return { error: "Invalid slot data" };
+  if (!parsed.success) return await actionError("invalidSlotData");
 
   const { class_id, day, period, entries } = parsed.data;
   const activeEntries = entries.filter((e) => e.subject_id || e.teacher_id);
@@ -37,9 +40,10 @@ export async function saveTimetableCell(input: TimetableCellFormData) {
       entry.id
     );
     if (conflict) {
-      const className = conflict.class_name ?? "another class";
+      const te = await getTranslations("errors");
+      const className = conflict.class_name ?? te("anotherClass");
       return {
-        error: `A teacher is already scheduled in ${className} at this time.`,
+        error: te("teacherAlreadyScheduled", { className }),
         warning: true,
       };
     }
@@ -57,7 +61,7 @@ export async function saveTimetableCell(input: TimetableCellFormData) {
 /** @deprecated Use saveTimetableCell */
 export async function upsertTimetableSlot(input: TimetableSlotFormData) {
   const parsed = timetableSlotSchema.safeParse(input);
-  if (!parsed.success) return { error: "Invalid slot data" };
+  if (!parsed.success) return await actionError("invalidSlotData");
 
   const { class_id, day, period, subject_id, teacher_id } = parsed.data;
 
@@ -68,8 +72,12 @@ export async function upsertTimetableSlot(input: TimetableSlotFormData) {
   if (teacher_id) {
     const conflict = await findTeacherTimetableConflict(teacher_id, day, period, class_id);
     if (conflict) {
-      const className = conflict.class_name ?? "another class";
-      return { error: `This teacher is already scheduled in ${className} at this time.`, warning: true };
+      const t = await getTranslations("errors");
+      const className = conflict.class_name ?? t("anotherClass");
+      return {
+        error: t("teacherAlreadyScheduled", { className }),
+        warning: true,
+      };
     }
   }
 

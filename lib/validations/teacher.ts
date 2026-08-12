@@ -33,7 +33,7 @@ export const upsertGradesSchema = z.object({
 
 export const assignmentSchema = z.object({
   class_id: z.string().uuid(),
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "titleRequired"),
   description: z.string().optional(),
   due_date: z.string().optional().nullable(),
 });

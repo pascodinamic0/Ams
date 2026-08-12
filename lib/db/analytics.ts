@@ -1,4 +1,6 @@
 import { format, subDays, endOfWeek, eachWeekOfInterval, parseISO } from "date-fns";
+import { enUS, fr } from "date-fns/locale";
+import { getLocale, getTranslations } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { getFinanceKPIs } from "./invoices";
 import { formatPersonName } from "@/lib/utils";
@@ -62,7 +64,22 @@ function isOverdue(status: string, dueDate: string): boolean {
   return new Date(dueDate) < new Date(new Date().toDateString());
 }
 
+async function chartCopy() {
+  const t = await getTranslations("analytics");
+  const locale = await getLocale();
+  const dateLocale = locale.startsWith("fr") ? fr : enUS;
+  const genderLabel = (raw: string | null | undefined) => {
+    const key = (raw ?? "").trim().toLowerCase();
+    if (key === "male") return t("male");
+    if (key === "female") return t("female");
+    if (key === "other") return t("other");
+    return t("notSpecified");
+  };
+  return { t, dateLocale, genderLabel };
+}
+
 export async function getAnalyticsOverview(scope?: Scope): Promise<AnalyticsOverview> {
+  const { t, dateLocale, genderLabel } = await chartCopy();
   const supabase = await createClient();
 
   let studentsQuery = supabase.from("students").select("id, status, gender, class_id, classes(name, grade)");
@@ -100,7 +117,7 @@ export async function getAnalyticsOverview(scope?: Scope): Promise<AnalyticsOver
 
   const classCounts: Record<string, number> = {};
   for (const s of students.filter((st) => st.status === "active")) {
-    const className = (s.classes as { name?: string } | null)?.name ?? "Unassigned";
+    const className = (s.classes as { name?: string } | null)?.name ?? t("unassigned");
     classCounts[className] = (classCounts[className] ?? 0) + 1;
   }
   const enrollmentByClass = Object.entries(classCounts)
@@ -109,15 +126,14 @@ export async function getAnalyticsOverview(scope?: Scope): Promise<AnalyticsOver
 
   const genderCounts: Record<string, number> = {};
   for (const s of students) {
-    const gender = (s.gender as string) || "Not specified";
-    const label = gender.charAt(0).toUpperCase() + gender.slice(1);
+    const label = genderLabel(s.gender as string | null);
     genderCounts[label] = (genderCounts[label] ?? 0) + 1;
   }
   const genderDistribution = Object.entries(genderCounts).map(([name, value]) => ({ name, value }));
 
   const gradeCounts: Record<string, number> = {};
   for (const s of students.filter((st) => st.status === "active")) {
-    const grade = (s.classes as { grade?: string } | null)?.grade ?? "Unassigned";
+    const grade = (s.classes as { grade?: string } | null)?.grade ?? t("unassigned");
     gradeCounts[grade] = (gradeCounts[grade] ?? 0) + 1;
   }
   const gradeDistribution = Object.entries(gradeCounts).map(([name, value]) => ({ name, value }));
@@ -134,7 +150,7 @@ export async function getAnalyticsOverview(scope?: Scope): Promise<AnalyticsOver
     });
     const weekPresent = weekRecords.filter((r) => r.status === "present").length;
     const rate = weekRecords.length > 0 ? Math.round((weekPresent / weekRecords.length) * 100) : 0;
-    return { name: format(weekStart, "MMM d"), value: rate };
+    return { name: format(weekStart, "MMM d", { locale: dateLocale }), value: rate };
   });
 
   return {
@@ -142,10 +158,10 @@ export async function getAnalyticsOverview(scope?: Scope): Promise<AnalyticsOver
     activeStudents,
     attendanceRate,
     revenue: financeKpis.collected,
-    enrollmentByClass: enrollmentByClass.length ? enrollmentByClass : [{ name: "No data", value: 0 }],
-    attendanceTrend: attendanceTrend.length ? attendanceTrend : [{ name: "No data", value: 0 }],
-    genderDistribution: genderDistribution.length ? genderDistribution : [{ name: "No data", value: 0 }],
-    gradeDistribution: gradeDistribution.length ? gradeDistribution : [{ name: "No data", value: 0 }],
+    enrollmentByClass: enrollmentByClass.length ? enrollmentByClass : [{ name: t("noData"), value: 0 }],
+    attendanceTrend: attendanceTrend.length ? attendanceTrend : [{ name: t("noData"), value: 0 }],
+    genderDistribution: genderDistribution.length ? genderDistribution : [{ name: t("noData"), value: 0 }],
+    gradeDistribution: gradeDistribution.length ? gradeDistribution : [{ name: t("noData"), value: 0 }],
   };
 }
 
@@ -212,6 +228,7 @@ export async function getBranchAnalytics(scope?: Scope): Promise<BranchPerforman
 }
 
 export async function getStudentAnalytics(options?: Scope & { classId?: string }): Promise<StudentAnalyticsData> {
+  const { t } = await chartCopy();
   const supabase = await createClient();
 
   let studentsQuery = supabase
@@ -242,7 +259,7 @@ export async function getStudentAnalytics(options?: Scope & { classId?: string }
 
   const studentsByClass: Record<string, number> = {};
   for (const s of students) {
-    const className = (s.classes as { name?: string } | null)?.name ?? "Unassigned";
+    const className = (s.classes as { name?: string } | null)?.name ?? t("unassigned");
     studentsByClass[className] = (studentsByClass[className] ?? 0) + 1;
   }
 
@@ -303,7 +320,7 @@ export async function getStudentAnalytics(options?: Scope & { classId?: string }
   for (const g of grades) {
     if (g.marks === null) continue;
     const student = students.find((s) => s.id === g.student_id);
-    const className = (student?.classes as { name?: string } | null)?.name ?? "Unassigned";
+    const className = (student?.classes as { name?: string } | null)?.name ?? t("unassigned");
     if (!passFailByClass[className]) passFailByClass[className] = { pass: 0, fail: 0 };
     if (Number(g.marks) >= 50) passFailByClass[className].pass += 1;
     else passFailByClass[className].fail += 1;
@@ -328,6 +345,7 @@ export async function getAttendanceAnalytics(options?: Scope & {
   startDate?: string;
   endDate?: string;
 }): Promise<AttendanceAnalyticsData> {
+  const { t, dateLocale } = await chartCopy();
   const supabase = await createClient();
   const endDate = options?.endDate ?? format(new Date(), "yyyy-MM-dd");
   const startDate = options?.startDate ?? format(subDays(parseISO(endDate), 29), "yyyy-MM-dd");
@@ -371,14 +389,14 @@ export async function getAttendanceAnalytics(options?: Scope & {
   const dailyAttendance = Object.entries(daily)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([date, { present, total }]) => ({
-      name: format(parseISO(date), "MMM d"),
+      name: format(parseISO(date), "MMM d", { locale: dateLocale }),
       value: total > 0 ? Math.round((present / total) * 100) : 0,
     }));
 
   const classStats: Record<string, { present: number; total: number }> = {};
   for (const r of records) {
     const student = r.students as { class_id?: string; classes?: { name?: string } } | null;
-    const className = student?.classes?.name ?? classMap.get(student?.class_id ?? "") ?? "Unassigned";
+    const className = student?.classes?.name ?? classMap.get(student?.class_id ?? "") ?? t("unassigned");
     if (!classStats[className]) classStats[className] = { present: 0, total: 0 };
     classStats[className].total += 1;
     if (r.status === "present") classStats[className].present += 1;
@@ -420,14 +438,15 @@ export async function getAttendanceAnalytics(options?: Scope & {
   const overallRate = records.length > 0 ? Math.round((overallPresent / records.length) * 100) : 0;
 
   return {
-    dailyAttendance: dailyAttendance.length ? dailyAttendance : [{ name: "No data", value: 0 }],
-    classAttendance: classAttendance.length ? classAttendance : [{ name: "No data", value: 0 }],
+    dailyAttendance: dailyAttendance.length ? dailyAttendance : [{ name: t("noData"), value: 0 }],
+    classAttendance: classAttendance.length ? classAttendance : [{ name: t("noData"), value: 0 }],
     lowAttendanceStudents,
     overallRate,
   };
 }
 
 export async function getFinanceAnalytics(scope?: Scope): Promise<FinanceAnalyticsData> {
+  const { t, dateLocale } = await chartCopy();
   const supabase = await createClient();
   const kpis = await getFinanceKPIs(scope);
 
@@ -460,13 +479,13 @@ export async function getFinanceAnalytics(scope?: Scope): Promise<FinanceAnalyti
   const monthlyRevenueMap: Record<string, number> = {};
   const monthlyCollectionMap: Record<string, number> = {};
   for (let i = 5; i >= 0; i--) {
-    const month = format(subDays(new Date(), i * 30), "MMM yyyy");
+    const month = format(subDays(new Date(), i * 30), "MMM yyyy", { locale: dateLocale });
     monthlyRevenueMap[month] = 0;
     monthlyCollectionMap[month] = 0;
   }
 
   for (const p of payments) {
-    const month = format(parseISO(p.paid_at), "MMM yyyy");
+    const month = format(parseISO(p.paid_at), "MMM yyyy", { locale: dateLocale });
     monthlyCollectionMap[month] = (monthlyCollectionMap[month] ?? 0) + Number(p.amount);
     monthlyRevenueMap[month] = (monthlyRevenueMap[month] ?? 0) + Number(p.amount);
   }
@@ -488,9 +507,9 @@ export async function getFinanceAnalytics(scope?: Scope): Promise<FinanceAnalyti
     else pending += 1;
   }
   const feeStatusBreakdown = [
-    { name: "Paid", value: paid },
-    { name: "Pending", value: pending },
-    { name: "Overdue", value: overdue },
+    { name: t("paid"), value: paid },
+    { name: t("pending"), value: pending },
+    { name: t("overdue"), value: overdue },
   ];
 
   const monthlyCollection = Object.entries(monthlyCollectionMap).map(([name, value]) => ({

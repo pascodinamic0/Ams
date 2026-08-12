@@ -37,7 +37,8 @@ function weekdayFromDate(date: Date): number {
 }
 
 export function TimetableView({ slots, title }: TimetableViewProps) {
-  const t = useTranslations("common");
+  const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const [selectedDate, setSelectedDate] = useState(() => startOfDay(new Date()));
   const byCell = groupSlotsByCell(slots);
   const maxPeriod = slots.reduce((max, s) => Math.max(max, s.period), 0);
@@ -48,7 +49,7 @@ export function TimetableView({ slots, title }: TimetableViewProps) {
   if (slots.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-stone-200 bg-stone-50 p-8 text-center dark:border-stone-700 dark:bg-stone-800/50">
-        <p className="text-sm text-stone-500">No timetable has been set up yet.</p>
+        <p className="text-sm text-stone-500">{t("noTimetableYet")}</p>
       </div>
     );
   }
@@ -68,14 +69,14 @@ export function TimetableView({ slots, title }: TimetableViewProps) {
           </p>
         </div>
         <div className="w-full min-w-[200px] max-w-xs sm:w-auto">
-          <Label className="text-xs text-stone-500">{t("date")}</Label>
+          <Label className="text-xs text-stone-500">{tc("date")}</Label>
           <div className="mt-1">
             <DatePicker
               value={selectedDate}
               onChange={(d) => {
                 if (d) setSelectedDate(startOfDay(d));
               }}
-              placeholder={t("today")}
+              placeholder={tc("today")}
             />
           </div>
         </div>
@@ -83,7 +84,7 @@ export function TimetableView({ slots, title }: TimetableViewProps) {
 
       {!isSchoolDay && (
         <p className="rounded-lg border border-dashed border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-500 dark:border-stone-700 dark:bg-stone-800/50">
-          {t("noClassesOnSelectedDay")}
+          {tc("noClassesOnSelectedDay")}
         </p>
       )}
 
@@ -91,7 +92,7 @@ export function TimetableView({ slots, title }: TimetableViewProps) {
         <table className="min-w-full text-sm">
           <thead>
             <tr className="border-b border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800/50">
-              <th className="px-3 py-2 text-left font-medium text-stone-500">Period</th>
+              <th className="px-3 py-2 text-left font-medium text-stone-500">{t("period")}</th>
               {WEEKDAYS.map((day) => {
                 const isSelected = isSchoolDay && day === selectedWeekday;
                 return (
@@ -106,7 +107,7 @@ export function TimetableView({ slots, title }: TimetableViewProps) {
                     {DAY_LABELS[day]}
                     {isSelected && isToday ? (
                       <span className="ml-1 text-[10px] font-semibold uppercase tracking-wide">
-                        {t("today")}
+                        {tc("today")}
                       </span>
                     ) : null}
                   </th>

@@ -1,12 +1,14 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { DISCIPLINE_ROLES, normalizeRole } from "@/lib/auth/rbac";
 
 const taskSchema = z.object({
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "titleRequired"),
   description: z.string().optional(),
   /** "unassigned" | "everyone" | profile uuid */
   assignee: z
@@ -17,7 +19,7 @@ const taskSchema = z.object({
 });
 
 const incidentSchema = z.object({
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "titleRequired"),
   description: z.string().optional(),
   severity: z.enum(["low", "medium", "high"]).default("medium"),
   student_id: z.string().uuid().optional(),
@@ -29,7 +31,7 @@ async function requireSchoolProfile() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" as const };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -38,7 +40,7 @@ async function requireSchoolProfile() {
     .single();
 
   if (!profile?.school_id) {
-    return { error: "Your account is not linked to a school" as const };
+    return await actionError("noSchoolLinked");
   }
 
   return { supabase, profile };
@@ -50,7 +52,7 @@ async function requireDisciplineProfile() {
 
   const role = normalizeRole(auth.profile.role);
   if (role !== "super_admin" && !DISCIPLINE_ROLES.includes(role)) {
-    return { error: "Discipline is only available on teacher-level accounts" as const };
+    return await actionError("disciplineTeacherOnly");
   }
 
   return auth;
@@ -59,7 +61,7 @@ async function requireDisciplineProfile() {
 export async function createSchoolTask(input: z.infer<typeof taskSchema>) {
   const parsed = taskSchema.safeParse(input);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid task" };
+    return await zodIssueError(parsed.error.issues[0]?.message);
   }
 
   const auth = await requireSchoolProfile();
@@ -82,7 +84,7 @@ export async function createSchoolTask(input: z.infer<typeof taskSchema>) {
       .maybeSingle();
 
     if (memberError) return { error: memberError.message };
-    if (!member) return { error: "Selected staff member was not found" };
+    if (!member) return await actionError("selectedStaffNotFound");
 
     assignedTo = member.id;
   }
@@ -136,13 +138,13 @@ export async function deleteSchoolTask(id: string) {
     .eq("school_id", auth.profile.school_id)
     .maybeSingle();
 
-  if (!task) return { error: "Task not found" };
+  if (!task) return await actionError("taskNotFound");
 
   // Pending expense approvals must be decided (Approve/Reject), not deleted —
   // otherwise finance is left with an orphaned pending expense.
   if (task.related_type === "expense" && task.status !== "done") {
     return {
-      error: "Reject or approve this expense instead of deleting the task",
+      error: (await actionError("rejectOrApproveExpense")).error,
     };
   }
 
@@ -164,7 +166,7 @@ export async function createDisciplineIncident(
 ) {
   const parsed = incidentSchema.safeParse(input);
   if (!parsed.success) {
-    return { error: parsed.error.issues[0]?.message ?? "Invalid incident" };
+    return await zodIssueError(parsed.error.issues[0]?.message);
   }
 
   const auth = await requireDisciplineProfile();

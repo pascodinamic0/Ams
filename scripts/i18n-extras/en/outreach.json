@@ -1,0 +1,8 @@
+{
+  "deliveryChannel": "Delivery channel",
+  "recipientTarget": "Recipient target",
+  "campaignTitle": "Campaign title",
+  "message": "Message",
+  "sendImmediately": "Send immediately",
+  "campaignSavedDraft": "Campaign saved as draft"
+}

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,7 @@ type Props = {
 };
 
 export function FeatureToggleGrid({ schools, isSuperAdmin, defaultSchoolId }: Props) {
+  const t = useTranslations("admin");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -55,17 +57,17 @@ export function FeatureToggleGrid({ schools, isSuperAdmin, defaultSchoolId }: Pr
       toast.error(result.error);
       return;
     }
-    toast.success(enabled ? "Feature enabled" : "Feature disabled");
+    toast.success(enabled ? t("featureEnabled") : t("featureDisabled"));
     router.refresh();
   }
 
   if (schools.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-stone-300 p-6 dark:border-stone-700">
-        <p className="text-sm text-stone-500">No schools configured yet.</p>
+        <p className="text-sm text-stone-500">{t("noSchoolsConfigured")}</p>
         {isSuperAdmin ? (
           <Link href="/admin/schools/new" className="mt-3 inline-block">
-            <Button size="sm">Add school</Button>
+            <Button size="sm">{t("addSchool")}</Button>
           </Link>
         ) : null}
       </div>
@@ -76,7 +78,7 @@ export function FeatureToggleGrid({ schools, isSuperAdmin, defaultSchoolId }: Pr
     <div className="space-y-6">
       {isSuperAdmin ? (
         <div className="max-w-md space-y-2">
-          <Label htmlFor="feature-school-select">School</Label>
+          <Label htmlFor="feature-school-select">{t("schoolLabel")}</Label>
           <Select
             id="feature-school-select"
             options={schools.map((s) => ({ value: s.school_id, label: s.school_name }))}
@@ -84,12 +86,12 @@ export function FeatureToggleGrid({ schools, isSuperAdmin, defaultSchoolId }: Pr
             onChange={(e) => handleSchoolChange(e.target.value)}
           />
           <p className="text-sm text-stone-500 dark:text-stone-400">
-            Select which school&apos;s modules to enable or disable.
+            {t("selectSchoolModules")}
           </p>
         </div>
       ) : selectedSchool ? (
         <p className="text-sm text-stone-600 dark:text-stone-400">
-          Managing features for{" "}
+          {t("managingFeaturesFor")}{" "}
           <span className="font-medium text-stone-900 dark:text-white">
             {selectedSchool.school_name}
           </span>
@@ -120,10 +122,14 @@ export function FeatureToggleGrid({ schools, isSuperAdmin, defaultSchoolId }: Pr
                 />
                 <span>
                   <span className="block text-sm font-medium text-stone-900 dark:text-white">
-                    {feature.label}
+                    {t.has(`features.${feature.key}.label`)
+                      ? t(`features.${feature.key}.label`)
+                      : feature.label}
                   </span>
                   <span className="mt-0.5 block text-xs text-stone-500">
-                    {feature.description}
+                    {t.has(`features.${feature.key}.description`)
+                      ? t(`features.${feature.key}.description`)
+                      : feature.description}
                   </span>
                 </span>
               </label>
@@ -131,7 +137,7 @@ export function FeatureToggleGrid({ schools, isSuperAdmin, defaultSchoolId }: Pr
           </div>
         </div>
       ) : (
-        <p className="text-sm text-stone-500">Select a school to manage its features.</p>
+        <p className="text-sm text-stone-500">{t("selectSchoolToManage")}</p>
       )}
     </div>
   );

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 interface ModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+  const t = useTranslations("common");
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -52,7 +54,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
               type="button"
               onClick={onClose}
               className="shrink-0 rounded p-2 text-muted hover:bg-secondary hover:text-foreground"
-              aria-label="Close modal"
+              aria-label={t("closeModal")}
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

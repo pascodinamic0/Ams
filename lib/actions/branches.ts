@@ -1,5 +1,7 @@
 "use server";
 
+import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { branchSchema, type BranchFormData } from "@/lib/validations/academic";
@@ -12,7 +14,7 @@ export async function createBranch(input: BranchFormData) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return { error: "Not authenticated" };
+  if (!user) return await actionError("notAuthenticated");
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -21,7 +23,7 @@ export async function createBranch(input: BranchFormData) {
     .single();
 
   if (profile?.role !== "super_admin") {
-    return { error: "Only platform administrators can manage branches" };
+    return await actionError("onlyPlatformAdminsBranches");
   }
 
   const { count } = await supabase
@@ -30,9 +32,7 @@ export async function createBranch(input: BranchFormData) {
     .eq("school_id", parsed.data.school_id);
 
   if ((count ?? 0) >= 1) {
-    return {
-      error: "Each school is limited to one campus. Contact platform support for multi-campus setup.",
-    };
+    return await actionError("oneCampusLimit");
   }
 
   const { data, error } = await supabase

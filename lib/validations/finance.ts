@@ -1,25 +1,25 @@
 import { z } from "zod";
 
 export const feeStructureSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  branch_id: z.string().uuid("Branch is required"),
-  amount: z.coerce.number().min(0, "Amount must be zero or positive"),
+  name: z.string().min(1, "nameRequired"),
+  branch_id: z.string().uuid("branchRequired"),
+  amount: z.coerce.number().min(0, "amountZeroOrPositive"),
   class_id: z.string().uuid().optional().or(z.literal("")),
   description: z.string().optional(),
   school_year: z.coerce.number().int().min(2000).max(2100),
 });
 
 export const invoiceSchema = z.object({
-  student_id: z.string().uuid("Student is required"),
+  student_id: z.string().uuid("studentRequired"),
   fee_structure_id: z.string().uuid().optional().or(z.literal("")),
-  amount: z.coerce.number().min(0, "Amount must be zero or positive"),
-  due_date: z.string().min(1, "Due date is required"),
+  amount: z.coerce.number().min(0, "amountZeroOrPositive"),
+  due_date: z.string().min(1, "dueDateRequired"),
   description: z.string().optional(),
 });
 
 export const paymentSchema = z.object({
-  invoice_id: z.string().uuid("Invoice is required"),
-  amount: z.coerce.number().positive("Amount must be greater than zero"),
+  invoice_id: z.string().uuid("invoiceRequired"),
+  amount: z.coerce.number().positive("amountGreaterThanZero"),
   method: z.enum([
     "cash",
     "bank_transfer",
@@ -34,31 +34,31 @@ export const paymentSchema = z.object({
 });
 
 export const expenseSchema = z.object({
-  branch_id: z.string().uuid("Branch is required"),
-  category: z.string().min(1, "Category is required"),
-  amount: z.coerce.number().min(0, "Amount must be zero or positive"),
+  branch_id: z.string().uuid("branchRequired"),
+  category: z.string().min(1, "categoryRequired"),
+  amount: z.coerce.number().min(0, "amountZeroOrPositive"),
   description: z.string().optional(),
-  date: z.string().min(1, "Date is required"),
+  date: z.string().min(1, "dateRequired"),
 });
 
 export const payrollSchema = z.object({
-  staff_id: z.string().uuid("Staff member is required"),
-  period_start: z.string().min(1, "Start date is required"),
-  period_end: z.string().min(1, "End date is required"),
-  amount: z.coerce.number().min(0, "Amount must be zero or positive"),
+  staff_id: z.string().uuid("staffRequired"),
+  period_start: z.string().min(1, "startDateRequired"),
+  period_end: z.string().min(1, "endDateRequired"),
+  amount: z.coerce.number().min(0, "amountZeroOrPositive"),
   status: z.enum(["pending", "paid"]).optional(),
 });
 
 export const payrollGenerateSchema = z.object({
-  month: z.coerce.number().int().min(1, "Month is required").max(12, "Month is invalid"),
-  year: z.coerce.number().int().min(2000, "Year is required").max(2100, "Year is invalid"),
+  month: z.coerce.number().int().min(1, "monthRequired").max(12, "monthInvalid"),
+  year: z.coerce.number().int().min(2000, "yearRequired").max(2100, "yearInvalid"),
 });
 
 export const payrollPaymentSchema = z.object({
-  amount: z.coerce.number().min(0, "Amount must be zero or positive"),
-  payment_date: z.string().min(1, "Payment date is required"),
+  amount: z.coerce.number().min(0, "amountZeroOrPositive"),
+  payment_date: z.string().min(1, "paymentDateRequired"),
   payment_method: z.enum(["cash", "bank", "mobile_money"], {
-    message: "Payment method is required",
+    message: "paymentMethodRequired",
   }),
   reference_number: z.string().optional(),
   notes: z.string().optional(),
@@ -67,20 +67,20 @@ export const payrollPaymentSchema = z.object({
 /** `year` is the school-year start (e.g. 2026 for 2026 - 2027). */
 export const budgetPlanSchema = z.object({
   year: z.coerce.number().int().min(2000).max(2100),
-  title: z.string().min(1, "Title is required"),
+  title: z.string().min(1, "titleRequired"),
   label: z.string().optional(),
   notes: z.string().optional(),
   status: z.enum(["draft", "active", "archived"]).optional(),
 });
 
 export const budgetLineItemSchema = z.object({
-  category: z.string().min(1, "Category is required"),
-  name: z.string().min(1, "Item name is required"),
+  category: z.string().min(1, "categoryRequired"),
+  name: z.string().min(1, "itemNameRequired"),
   description: z.string().optional(),
-  quantity: z.coerce.number().min(0, "Quantity must be zero or positive"),
-  unit_cost: z.coerce.number().min(0, "Unit cost must be zero or positive"),
+  quantity: z.coerce.number().min(0, "quantityZeroOrPositive"),
+  unit_cost: z.coerce.number().min(0, "unitCostZeroOrPositive"),
   period_type: z.enum(["year", "quarter", "trimester", "month"]),
-  period_key: z.string().min(1, "Period is required"),
+  period_key: z.string().min(1, "periodRequired"),
   sort_order: z.coerce.number().int().optional(),
   status: z.enum(["planned", "in_progress", "done", "cancelled"]).optional(),
 });
