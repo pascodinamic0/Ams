@@ -44,14 +44,14 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
-          <div className="flex items-center justify-between border-b border-border px-6 py-4">
-            <h2 id="modal-title" className="text-lg font-semibold text-foreground">
+          <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-4 sm:px-6">
+            <h2 id="modal-title" className="min-w-0 truncate text-lg font-semibold text-foreground">
               {title}
             </h2>
             <button
               type="button"
               onClick={onClose}
-              className="rounded p-2 text-muted hover:bg-secondary hover:text-foreground"
+              className="shrink-0 rounded p-2 text-muted hover:bg-secondary hover:text-foreground"
               aria-label="Close modal"
             >
               <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,7 +60,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             </button>
           </div>
         )}
-        <div className="px-6 py-4">{children}</div>
+        <div className="px-4 py-4 sm:px-6">{children}</div>
       </div>
     </div>
   );

@@ -20,5 +20,6 @@
   "updateTitle": "Vous êtes encore sur une ancienne version de ShuleOS",
   "updateDescription": "Une version plus récente est déjà disponible. Rester ici, c'est travailler sans les derniers correctifs que les enseignants et la finance utilisent déjà.",
   "updateNow": "Mettre à jour",
+  "updatingNow": "Mise à jour…",
   "updateLater": "Pas maintenant"
 }

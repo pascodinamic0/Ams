@@ -19,7 +19,7 @@ export function InvoiceActions({
       {!locked ? (
         <Link
           href={`/finance/invoices?edit=${id}`}
-          className="inline-flex h-8 items-center rounded-md px-3 text-sm hover:bg-stone-100 dark:hover:bg-stone-800"
+          className="inline-flex min-h-8 max-w-full items-center overflow-hidden whitespace-nowrap rounded-md px-3 text-xs hover:bg-stone-100 sm:text-sm dark:hover:bg-stone-800"
         >
           {t("editInvoice")}
         </Link>

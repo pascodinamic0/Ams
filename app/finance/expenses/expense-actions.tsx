@@ -22,7 +22,7 @@ export function ExpenseActions({
       {status === "approved" && receiptNumber ? (
         <Link
           href={`/finance/expenses/${id}/receipt?download=1`}
-          className="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-sm hover:bg-stone-100 dark:hover:bg-stone-800"
+          className="inline-flex min-h-8 max-w-full items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md px-3 text-xs hover:bg-stone-100 sm:text-sm dark:hover:bg-stone-800"
         >
           <Download className="h-3.5 w-3.5" />
           {t("downloadReceipt")}
@@ -32,7 +32,7 @@ export function ExpenseActions({
         <>
           <Link
             href={`/finance/expenses?edit=${id}`}
-            className="inline-flex h-8 items-center rounded-md px-3 text-sm hover:bg-stone-100 dark:hover:bg-stone-800"
+            className="inline-flex min-h-8 max-w-full items-center overflow-hidden whitespace-nowrap rounded-md px-3 text-xs hover:bg-stone-100 sm:text-sm dark:hover:bg-stone-800"
           >
             {tc("edit")}
           </Link>

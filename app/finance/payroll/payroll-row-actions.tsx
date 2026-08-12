@@ -191,7 +191,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
               onChange={(e) => setEditAmount(e.target.value)}
             />
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
             <Button variant="ghost" onClick={() => setAmountOpen(false)}>
               Cancel
             </Button>
@@ -258,7 +258,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
               className="min-h-20 w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
             />
           </div>
-          <div className="flex justify-end gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
             <Button variant="ghost" onClick={() => setPayOpen(false)}>
               Cancel
             </Button>

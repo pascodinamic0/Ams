@@ -100,13 +100,13 @@ export function SchoolSetupGuide({ progress, schoolId }: SchoolSetupGuideProps) 
     <Card className="border-primary-200 bg-gradient-to-br from-teal-50/80 to-white dark:border-primary-900 dark:from-teal-950/30 dark:to-slate-900">
       <CardHeader className="pb-3">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0 flex-1">
             <CardTitle className="text-lg">{t("gettingStarted")}</CardTitle>
             <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
               {t("guideDescription")}
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
             <Button variant="ghost" size="sm" onClick={toggleCollapsed}>
               {collapsed ? tc("expand") : tc("collapse")}
             </Button>

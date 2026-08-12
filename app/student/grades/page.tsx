@@ -36,11 +36,11 @@ export default async function StudentGradesPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold text-stone-900 dark:text-white">{t("gradesTitle")}</h1>
           <p className="mt-1 text-sm text-stone-500">{t("gradesSubtitle")}</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           {student.student_id && (
             <CopyableBadge value={student.student_id} label={t("idLabel", { id: student.student_id })} />
           )}

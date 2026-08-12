@@ -25,8 +25,8 @@ export function CopyableBadge({
 
   const baseClass =
     variant === "badge"
-      ? "inline-flex items-center gap-1.5 rounded-md bg-stone-100 px-2.5 py-1 text-xs font-medium text-zinc-800 dark:bg-stone-800 dark:text-zinc-200"
-      : "inline-flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-2 text-sm dark:border-stone-700";
+      ? "inline-flex max-w-full min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-md bg-stone-100 px-2.5 py-1 text-xs font-medium text-zinc-800 dark:bg-stone-800 dark:text-zinc-200"
+      : "inline-flex max-w-full min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap rounded-lg border border-stone-200 px-3 py-2 text-sm dark:border-stone-700";
 
   return (
     <button
@@ -35,7 +35,7 @@ export function CopyableBadge({
       className={`${baseClass} hover:bg-stone-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer`}
       title="Copy to clipboard"
     >
-      <span>{label ?? value}</span>
+      <span className="min-w-0 truncate">{label ?? value}</span>
       {copied ? (
         <svg className="h-3.5 w-3.5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />

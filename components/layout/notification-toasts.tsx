@@ -67,6 +67,7 @@ export function NotificationToasts() {
               bumpRef.current(1);
             }
             refreshRef.current();
+            router.refresh();
 
             if (
               typeof document !== "undefined" &&

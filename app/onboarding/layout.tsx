@@ -14,7 +14,7 @@ export default async function OnboardingLayout({
 
   return (
     <AppIntlProvider locale={locale} timeZone={timeZone} messages={messages}>
-      <div className="marketing-surface flex min-h-[100dvh] flex-col">
+      <div className="marketing-surface flex min-h-[100dvh] flex-col bg-mkt-canvas text-mkt-ink">
         <header className="relative z-10 shrink-0 px-4 pt-[calc(env(safe-area-inset-top)+1rem)] pb-2 md:px-6">
           <Link href="/" className="inline-flex">
             <BrandLogo size={36} />

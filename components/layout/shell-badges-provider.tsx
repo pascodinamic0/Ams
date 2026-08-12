@@ -13,6 +13,7 @@ import { fetchUnreadNotificationCount } from "@/app/notifications/actions";
 import { NotificationToasts } from "@/components/layout/notification-toasts";
 import { fetchUnreadConversationCount } from "@/lib/actions/conversations";
 import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
+import { LIVE_REFRESH_EVENT } from "@/lib/live-sync";
 
 const MESSAGING_ROLES = new Set([...MESSAGING_STAFF_ROLES, "parent"]);
 
@@ -75,11 +76,17 @@ export function ShellBadgesProvider({
     }
 
     void run();
-    const interval = window.setInterval(() => void run(), 60_000);
+    const interval = window.setInterval(() => void run(), 15_000);
+
+    const onLiveRefresh = () => {
+      void run();
+    };
+    window.addEventListener(LIVE_REFRESH_EVENT, onLiveRefresh);
 
     return () => {
       active = false;
       window.clearInterval(interval);
+      window.removeEventListener(LIVE_REFRESH_EVENT, onLiveRefresh);
     };
   }, [role, pathname]);
 

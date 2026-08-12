@@ -12,6 +12,9 @@ interface DialogProps {
   cancelLabel?: string;
   onConfirm: () => void | Promise<void>;
   variant?: "primary" | "danger";
+  /** When false, the dialog stays open after confirm (e.g. a reload is coming). */
+  closeOnConfirm?: boolean;
+  confirmBusy?: boolean;
 }
 
 export function Dialog({
@@ -23,27 +26,31 @@ export function Dialog({
   cancelLabel = "Cancel",
   onConfirm,
   variant = "primary",
+  closeOnConfirm = true,
+  confirmBusy = false,
 }: DialogProps) {
   const handleConfirm = async () => {
+    if (confirmBusy) return;
     await onConfirm();
-    onClose();
+    if (closeOnConfirm) onClose();
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title}>
+    <Modal isOpen={isOpen} onClose={confirmBusy ? () => {} : onClose} title={title}>
       <div className="space-y-4">
         {description && (
           <p className="text-sm text-stone-600 dark:text-stone-400">
             {description}
           </p>
         )}
-        <div className="flex justify-end gap-2">
-          <Button variant="ghost" onClick={onClose}>
+        <div className="flex flex-wrap justify-end gap-2">
+          <Button variant="ghost" onClick={onClose} disabled={confirmBusy}>
             {cancelLabel}
           </Button>
           <Button
             variant={variant === "danger" ? "danger" : "primary"}
             onClick={handleConfirm}
+            disabled={confirmBusy}
           >
             {confirmLabel}
           </Button>

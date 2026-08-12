@@ -64,8 +64,8 @@ export default async function ConversationPage({ params, searchParams }: PagePro
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden md:gap-4 md:h-[calc(100vh-8rem)] md:flex-row">
       <div className="hidden w-72 shrink-0 flex-col rounded-xl border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-900 lg:flex">
-        <div className="flex items-center justify-between border-b border-stone-200 px-4 py-3 dark:border-stone-700">
-          <h2 className="font-semibold text-stone-900 dark:text-white">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 px-4 py-3 dark:border-stone-700">
+          <h2 className="min-w-0 font-semibold text-stone-900 dark:text-white">
             {showArchived ? t("archivedConversations") : t("conversations")}
           </h2>
           <NewConversationButton

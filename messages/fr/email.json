@@ -1,0 +1,18 @@
+{
+  "invite": {
+    "subject": "Définissez votre mot de passe ShuleOS avant de perdre l'invitation",
+    "greeting": "Bonjour {name},",
+    "greetingFallback": "bonjour",
+    "body": "Votre école vous a déjà ajouté à ShuleOS. Tant que vous n'avez pas défini de mot de passe, vous ne pouvez pas vous connecter — et votre rôle reste bloqué hors des frais, des classes et des messages.",
+    "cta": "Définir mon mot de passe maintenant",
+    "expiry": "Ce lien expire. S'il est expiré, demandez à votre admin d'envoyer une nouvelle invitation et utilisez le dernier e-mail.",
+    "text": "Bonjour {name},\n\nVotre école vous a déjà ajouté à ShuleOS. Tant que vous n'avez pas défini de mot de passe, vous ne pouvez pas vous connecter.\n\nDéfinir votre mot de passe : {url}\n\nCe lien expire. S'il est expiré, demandez à votre admin d'envoyer une nouvelle invitation."
+  },
+  "admissionApproved": {
+    "subject": "Admission approuvée - {studentName}",
+    "intro": "Bonne nouvelle.",
+    "body": "La candidature d'admission de {studentName} à {schoolName} a été approuvée.",
+    "next": "Si vous avez un compte, connectez-vous pour les prochaines étapes. Si vous avez besoin d'aide, répondez à cet e-mail ou contactez le secrétariat de l'école.",
+    "yourSchool": "votre école"
+  }
+}

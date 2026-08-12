@@ -88,9 +88,9 @@ export default async function StudentDetailPage({
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex min-w-0 items-center gap-4">
           <UserAvatar name={fullName} avatarUrl={student.photo_url} size="lg" />
-          <div>
+          <div className="min-w-0">
             <h1 className="text-2xl font-bold">{fullName}</h1>
             <div className="mt-1 flex flex-wrap items-center gap-2">
               {student.student_id ? (
@@ -110,7 +110,7 @@ export default async function StudentDetailPage({
             </div>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex shrink-0 flex-wrap gap-2">
           <Link href="/academic/students">
             <Button variant="ghost" size="sm">
               {tc("back")}
@@ -189,9 +189,9 @@ export default async function StudentDetailPage({
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            <CardTitle>{t("guardians")}</CardTitle>
-            <Link href={`/academic/students/${id}/guardians/new`}>
+          <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 space-y-0">
+            <CardTitle className="flex-1">{t("guardians")}</CardTitle>
+            <Link href={`/academic/students/${id}/guardians/new`} className="shrink-0">
               <Button size="sm" variant="outline">
                 {t("addGuardian")}
               </Button>
@@ -236,14 +236,14 @@ export default async function StudentDetailPage({
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
-          <div>
+        <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 space-y-0">
+          <div className="min-w-0 flex-1">
             <CardTitle>{t("academicHistory")}</CardTitle>
             <p className="mt-1 text-sm font-normal text-stone-500">
               {t("academicHistoryDesc")}
             </p>
           </div>
-          <Link href={`/academic/students/${id}/report-card`}>
+          <Link href={`/academic/students/${id}/report-card`} className="shrink-0">
             <Button size="sm" variant="outline">
               {t("viewReportCard")}
             </Button>

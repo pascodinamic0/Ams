@@ -4,10 +4,17 @@ import { useEffect, useRef, useState } from "react";
 import type { Serwist } from "@serwist/window";
 import { UpdatePrompt } from "@/components/pwa/update-prompt";
 
+const RELOAD_FALLBACK_MS = 500;
+
+function reloadToNewBuild() {
+  window.location.reload();
+}
+
 export function SerwistProvider({ children }: { children: React.ReactNode }) {
   const serwistRef = useRef<Serwist | null>(null);
-  const reloadOnControlRef = useRef(false);
+  const reloadingRef = useRef(false);
   const [updateAvailable, setUpdateAvailable] = useState(false);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") return;
@@ -15,6 +22,13 @@ export function SerwistProvider({ children }: { children: React.ReactNode }) {
 
     let cancelled = false;
     let removeListeners: (() => void) | undefined;
+
+    const onControllerChange = () => {
+      if (!reloadingRef.current) return;
+      reloadToNewBuild();
+    };
+
+    navigator.serviceWorker.addEventListener("controllerchange", onControllerChange);
 
     void import("@serwist/window").then(({ Serwist }) => {
       if (cancelled) return;
@@ -27,15 +41,23 @@ export function SerwistProvider({ children }: { children: React.ReactNode }) {
       });
 
       serwist.addEventListener("controlling", () => {
-        if (reloadOnControlRef.current) {
-          window.location.reload();
+        if (reloadingRef.current) {
+          reloadToNewBuild();
         }
       });
 
-      void serwist.register();
+      void serwist.register().then((registration) => {
+        if (cancelled) return;
+        if (registration?.waiting) {
+          setUpdateAvailable(true);
+        }
+      });
 
       const checkForUpdate = () => {
         void serwist.update();
+        void navigator.serviceWorker.getRegistration().then((registration) => {
+          if (registration?.waiting) setUpdateAvailable(true);
+        });
       };
 
       const handleVisibility = () => {
@@ -62,17 +84,26 @@ export function SerwistProvider({ children }: { children: React.ReactNode }) {
       cancelled = true;
       removeListeners?.();
       serwistRef.current = null;
+      navigator.serviceWorker.removeEventListener("controllerchange", onControllerChange);
     };
   }, []);
 
   function handleUpdate() {
-    const serwist = serwistRef.current;
-    if (!serwist) return;
-    reloadOnControlRef.current = true;
-    serwist.messageSkipWaiting();
+    if (reloadingRef.current) return;
+    reloadingRef.current = true;
+    setUpdating(true);
+
+    serwistRef.current?.messageSkipWaiting();
+
+    void navigator.serviceWorker?.getRegistration().then((registration) => {
+      registration?.waiting?.postMessage({ type: "SKIP_WAITING" });
+    });
+
+    window.setTimeout(reloadToNewBuild, RELOAD_FALLBACK_MS);
   }
 
   function handleDismiss() {
+    if (updating) return;
     setUpdateAvailable(false);
   }
 
@@ -81,6 +112,7 @@ export function SerwistProvider({ children }: { children: React.ReactNode }) {
       {children}
       <UpdatePrompt
         open={updateAvailable}
+        updating={updating}
         onUpdate={handleUpdate}
         onDismiss={handleDismiss}
       />

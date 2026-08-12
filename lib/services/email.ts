@@ -13,6 +13,7 @@
  */
 
 import { Resend } from "resend";
+import { tEmail } from "@/lib/i18n/email-copy";
 
 export type SendEmailInput = {
   to: string | string[];
@@ -107,19 +108,31 @@ export async function sendAdmissionApprovedEmail(opts: {
   studentName: string;
   schoolName?: string | null;
   applicationId?: string;
+  locale?: string | null;
 }): Promise<SendEmailResult> {
+  const locale = opts.locale;
   const student = escapeHtml(opts.studentName);
-  const school = opts.schoolName ? escapeHtml(opts.schoolName) : "your school";
+  const schoolName =
+    opts.schoolName?.trim() || tEmail(locale, "admissionApproved.yourSchool");
+  const school = escapeHtml(schoolName);
 
   return sendEmail({
     to: opts.to,
-    subject: `Admission approved - ${opts.studentName}`,
+    subject: tEmail(locale, "admissionApproved.subject", {
+      studentName: opts.studentName,
+    }),
     html: `
-      <p>Good news.</p>
-      <p><strong>${student}</strong>'s admission application at <strong>${school}</strong> has been approved.</p>
-      <p>If you have an account, sign in to complete the next steps. If you need help, reply to this email or contact the school office.</p>
+      <p>${tEmail(locale, "admissionApproved.intro")}</p>
+      <p>${tEmail(locale, "admissionApproved.body", {
+        studentName: `<strong>${student}</strong>`,
+        schoolName: `<strong>${school}</strong>`,
+      })}</p>
+      <p>${tEmail(locale, "admissionApproved.next")}</p>
     `,
-    text: `${opts.studentName}'s admission application at ${opts.schoolName ?? "your school"} has been approved.`,
+    text: tEmail(locale, "admissionApproved.body", {
+      studentName: opts.studentName,
+      schoolName,
+    }),
     idempotencyKey: opts.applicationId
       ? `admission-approved/${opts.applicationId}`
       : undefined,
@@ -130,20 +143,26 @@ export async function sendInvitePasswordEmail(opts: {
   to: string;
   name: string;
   setupUrl: string;
+  locale?: string | null;
 }): Promise<SendEmailResult> {
-  const name = escapeHtml(opts.name.trim() || "there");
+  const locale = opts.locale;
+  const displayName = opts.name.trim() || tEmail(locale, "invite.greetingFallback");
+  const name = escapeHtml(displayName);
   const url = escapeHtml(opts.setupUrl);
 
   return sendEmail({
     to: opts.to,
-    subject: "Set your ShuleOS password before you lose the invite",
+    subject: tEmail(locale, "invite.subject"),
     html: `
-      <p>Hi ${name},</p>
-      <p>Your school already added you to ShuleOS. Until you set a password, you cannot sign in — and your role stays locked out of fees, classes, and messages.</p>
-      <p><a href="${url}">Set your password now</a></p>
-      <p>This link expires. If it does, ask your admin to send a new invite and use the latest email.</p>
+      <p>${tEmail(locale, "invite.greeting", { name })}</p>
+      <p>${tEmail(locale, "invite.body")}</p>
+      <p><a href="${url}">${tEmail(locale, "invite.cta")}</a></p>
+      <p>${tEmail(locale, "invite.expiry")}</p>
     `,
-    text: `Hi ${opts.name.trim() || "there"},\n\nYour school already added you to ShuleOS. Until you set a password, you cannot sign in.\n\nSet your password: ${opts.setupUrl}\n\nThis link expires. If it does, ask your admin to send a new invite.`,
+    text: tEmail(locale, "invite.text", {
+      name: displayName,
+      url: opts.setupUrl,
+    }),
   });
 }
 

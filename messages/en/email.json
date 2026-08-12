@@ -1,0 +1,18 @@
+{
+  "invite": {
+    "subject": "Set your ShuleOS password before you lose the invite",
+    "greeting": "Hi {name},",
+    "greetingFallback": "there",
+    "body": "Your school already added you to ShuleOS. Until you set a password, you cannot sign in — and your role stays locked out of fees, classes, and messages.",
+    "cta": "Set your password now",
+    "expiry": "This link expires. If it does, ask your admin to send a new invite and use the latest email.",
+    "text": "Hi {name},\n\nYour school already added you to ShuleOS. Until you set a password, you cannot sign in.\n\nSet your password: {url}\n\nThis link expires. If it does, ask your admin to send a new invite."
+  },
+  "admissionApproved": {
+    "subject": "Admission approved - {studentName}",
+    "intro": "Good news.",
+    "body": "{studentName}'s admission application at {schoolName} has been approved.",
+    "next": "If you have an account, sign in to complete the next steps. If you need help, reply to this email or contact the school office.",
+    "yourSchool": "your school"
+  }
+}

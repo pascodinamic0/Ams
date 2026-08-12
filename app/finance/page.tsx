@@ -151,14 +151,14 @@ export default async function FinanceDashboard() {
 
       {showBudget ? (
         <Card>
-          <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0">
-            <div>
+          <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 space-y-0">
+            <div className="min-w-0 flex-1">
               <CardTitle>{t("dashboardBudgetTitle")}</CardTitle>
               <p className="mt-1 text-sm text-stone-500">
                 {t("dashboardBudgetSubtitle")}
               </p>
             </div>
-            <Link href="/finance/budget">
+            <Link href="/finance/budget" className="shrink-0">
               <Button size="sm" variant="outline">
                 {t("viewAllBudgets")}
               </Button>
@@ -167,7 +167,7 @@ export default async function FinanceDashboard() {
           <CardContent>
             {featuredBudget ? (
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div className="space-y-1">
+                <div className="min-w-0 space-y-1">
                   <p className="text-lg font-semibold text-stone-900 dark:text-white">
                     {featuredBudget.title}
                   </p>
@@ -185,7 +185,7 @@ export default async function FinanceDashboard() {
                     })}
                   </p>
                 </div>
-                <Link href={`/finance/budget/${featuredBudget.id}`}>
+                <Link href={`/finance/budget/${featuredBudget.id}`} className="shrink-0">
                   <Button size="sm">{t("openBudgetPlan")}</Button>
                 </Link>
               </div>
@@ -194,7 +194,7 @@ export default async function FinanceDashboard() {
                 <p className="text-sm text-stone-500">
                   {t("dashboardBudgetEmpty")}
                 </p>
-                <Link href="/finance/budget">
+                <Link href="/finance/budget" className="shrink-0">
                   <Button size="sm">{t("createBudgetPlan")}</Button>
                 </Link>
               </div>

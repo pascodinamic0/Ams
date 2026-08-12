@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Camera, Check, ImagePlus, Sparkles, UserRound } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -30,17 +30,21 @@ const STEP_ICONS = {
 } as const;
 
 const ambientByStep = [
-  "bg-amber-500/15 left-[8%] top-[18%]",
-  "bg-amber-400/12 right-[6%] top-[28%]",
-  "bg-orange-500/10 left-[20%] bottom-[12%]",
+  "bg-amber-500/20 left-[8%] top-[18%]",
+  "bg-amber-400/15 right-[6%] top-[28%]",
+  "bg-orange-500/15 left-[20%] bottom-[12%]",
 ];
 
-export default function OnboardingPage() {
+function OnboardingPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations("onboarding");
   const tRoles = useTranslations("roles");
   const tc = useTranslations("common");
   const reduceMotion = useReducedMotion();
+  const isDevPreview =
+    process.env.NODE_ENV === "development" &&
+    searchParams.get("preview") === "1";
 
   const [loading, setLoading] = useState(true);
   const [stepIndex, setStepIndex] = useState(0);
@@ -57,6 +61,16 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     async function loadProfile() {
+      if (isDevPreview) {
+        setUserId("preview-user");
+        setEmail("preview@example.com");
+        setRole("teacher");
+        setName("Alex Morgan");
+        setAvatarUrl(null);
+        setLoading(false);
+        return;
+      }
+
       const supabase = createClient();
       const {
         data: { user },
@@ -91,7 +105,7 @@ export default function OnboardingPage() {
     }
 
     void loadProfile();
-  }, [router]);
+  }, [router, isDevPreview]);
 
   const currentStep = STEPS[stepIndex];
   const isLastStep = stepIndex === STEPS.length - 1;
@@ -110,6 +124,12 @@ export default function OnboardingPage() {
       const trimmed = name.trim();
       if (!trimmed) {
         toast.error(t("account.nameRequired"));
+        return;
+      }
+
+      if (isDevPreview) {
+        setName(trimmed);
+        goToStep(stepIndex + 1);
         return;
       }
 
@@ -133,6 +153,11 @@ export default function OnboardingPage() {
   }
 
   async function handleComplete() {
+    if (isDevPreview) {
+      toast.success(t("account.completeSuccess"));
+      return;
+    }
+
     setSaving(true);
     try {
       const result = await completeProfileOnboarding();
@@ -153,6 +178,12 @@ export default function OnboardingPage() {
   async function uploadPhoto(file: File) {
     if (!userId) {
       throw new Error(t("account.photoUploadFailed"));
+    }
+
+    if (isDevPreview) {
+      setAvatarUrl(URL.createObjectURL(file));
+      toast.success(t("account.photoUploaded"));
+      return;
     }
 
     setUploading(true);
@@ -220,10 +251,10 @@ export default function OnboardingPage() {
   if (loading) {
     return (
       <div className="space-y-5">
-        <div className="h-3 w-28 animate-pulse rounded-full bg-white/10" />
-        <div className="h-10 w-64 animate-pulse rounded-lg bg-white/10" />
-        <div className="h-4 w-full max-w-sm animate-pulse rounded bg-white/5" />
-        <div className="h-56 animate-pulse rounded-2xl border border-white/10 bg-white/[0.03]" />
+        <div className="h-3 w-28 animate-pulse rounded-full bg-mkt-ink/10" />
+        <div className="h-10 w-64 animate-pulse rounded-lg bg-mkt-ink/10" />
+        <div className="h-4 w-full max-w-sm animate-pulse rounded bg-mkt-ink/5" />
+        <div className="h-56 animate-pulse rounded-2xl border border-mkt-ink/10 bg-mkt-ink/[0.03]" />
       </div>
     );
   }
@@ -253,20 +284,20 @@ export default function OnboardingPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-500">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-600 dark:text-amber-500">
             {t("account.badge")}
           </p>
-          <h1 className="mt-2 font-display text-3xl tracking-tight text-white sm:text-4xl">
+          <h1 className="mt-2 font-display text-3xl tracking-tight text-mkt-ink sm:text-4xl">
             {t("account.title")}
           </h1>
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-white/50">
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-mkt-ink/55">
             {t("account.subtitle")}
           </p>
         </motion.div>
 
         {/* Progress rail */}
         <div className="space-y-3">
-          <div className="relative h-px bg-white/10">
+          <div className="relative h-px bg-mkt-ink/10">
             <motion.div
               className="absolute inset-y-0 left-0 origin-left bg-amber-500"
               initial={false}
@@ -298,24 +329,19 @@ export default function OnboardingPage() {
                   aria-current={active ? "step" : undefined}
                 >
                   <motion.span
-                    animate={{
-                      scale: active ? 1.08 : 1,
-                      borderColor: active || complete ? "rgb(245 158 11)" : "rgba(255,255,255,0.15)",
-                      backgroundColor:
-                        complete
-                          ? "rgb(245 158 11)"
-                          : active
-                            ? "rgba(245,158,11,0.12)"
-                            : "rgba(0,0,0,0)",
-                      color:
-                        complete
-                          ? "rgb(0 0 0)"
-                          : active
-                            ? "rgb(245 158 11)"
-                            : "rgba(255,255,255,0.35)",
-                    }}
+                    animate={{ scale: active ? 1.08 : 1 }}
                     transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border"
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-full border transition-colors",
+                      complete &&
+                        "border-amber-500 bg-amber-500 text-black",
+                      active &&
+                        !complete &&
+                        "border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-500",
+                      !active &&
+                        !complete &&
+                        "border-mkt-ink/20 text-mkt-ink/40"
+                    )}
                   >
                     {complete ? (
                       <Check className="h-4 w-4" strokeWidth={2.5} />
@@ -326,7 +352,7 @@ export default function OnboardingPage() {
                   <span
                     className={cn(
                       "hidden text-[10px] font-semibold uppercase tracking-[0.16em] sm:block",
-                      active || complete ? "text-white/70" : "text-white/30"
+                      active || complete ? "text-mkt-ink/70" : "text-mkt-ink/35"
                     )}
                   >
                     {t(`account.steps.${step}.title`)}
@@ -336,7 +362,7 @@ export default function OnboardingPage() {
             })}
           </div>
 
-          <p className="text-center text-xs text-white/40 sm:text-left">
+          <p className="text-center text-xs text-mkt-ink/45 sm:text-left">
             {t("account.stepProgress", {
               current: stepIndex + 1,
               total: STEPS.length,
@@ -346,7 +372,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Step stage */}
-        <div className="relative min-h-[240px] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03]">
+        <div className="relative min-h-[240px] overflow-hidden rounded-2xl border border-mkt-ink/10 bg-mkt-ink/[0.03]">
           <AnimatePresence mode="wait" custom={direction} initial={false}>
             <motion.div
               key={currentStep}
@@ -366,27 +392,27 @@ export default function OnboardingPage() {
                   initial={reduceMotion ? false : { rotate: -8, scale: 0.9 }}
                   animate={{ rotate: 0, scale: 1 }}
                   transition={{ type: "spring", stiffness: 220, damping: 16 }}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-amber-500/40 text-amber-500"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-amber-500/50 text-amber-600 dark:text-amber-500"
                 >
                   <StepIcon className="h-5 w-5" />
                 </motion.div>
                 <div>
-                  <h2 className="text-lg font-semibold text-white">
+                  <h2 className="text-lg font-semibold text-mkt-ink">
                     {t(`account.steps.${currentStep}.title`)}
                   </h2>
-                  <p className="mt-1 text-sm leading-relaxed text-white/50">
+                  <p className="mt-1 text-sm leading-relaxed text-mkt-ink/55">
                     {t(`account.steps.${currentStep}.description`)}
                   </p>
                 </div>
               </div>
 
               {currentStep === "welcome" && (
-                <div className="space-y-3 border border-white/10 bg-black/40 p-4">
-                  <p className="text-sm leading-relaxed text-white/70">
+                <div className="space-y-3 border border-mkt-ink/10 bg-mkt-canvas/80 p-4">
+                  <p className="text-sm leading-relaxed text-mkt-ink/75">
                     {t("account.welcomeBody", { role: roleLabel })}
                   </p>
                   {email ? (
-                    <p className="text-xs uppercase tracking-[0.14em] text-white/40">
+                    <p className="text-xs uppercase tracking-[0.14em] text-mkt-ink/45">
                       {t("account.signedInAs", { email })}
                     </p>
                   ) : null}
@@ -395,7 +421,7 @@ export default function OnboardingPage() {
 
               {currentStep === "profile" && (
                 <div>
-                  <Label htmlFor="display_name" required>
+                  <Label htmlFor="display_name" required className="text-mkt-ink">
                     {t("account.displayName")}
                   </Label>
                   <Input
@@ -403,10 +429,10 @@ export default function OnboardingPage() {
                     value={name}
                     onChange={(event) => setName(event.target.value)}
                     placeholder={t("account.displayNamePlaceholder")}
-                    className="mt-1.5 border-white/15 bg-black/50 text-white placeholder:text-white/30 focus:ring-amber-500"
+                    className="mt-1.5 border-mkt-ink/20 bg-mkt-canvas text-mkt-ink placeholder:text-mkt-ink/35 focus:ring-amber-500"
                     autoFocus
                   />
-                  <p className="mt-2 text-xs text-white/40">
+                  <p className="mt-2 text-xs text-mkt-ink/45">
                     {t("account.displayNameHint")}
                   </p>
                 </div>
@@ -420,12 +446,12 @@ export default function OnboardingPage() {
                     transition={{ type: "spring", stiffness: 200, damping: 16 }}
                     className="relative"
                   >
-                    <div className="absolute -inset-3 rounded-full bg-amber-500/10 blur-xl" />
+                    <div className="absolute -inset-3 rounded-full bg-amber-500/15 blur-xl" />
                     <UserAvatar
                       name={name}
                       avatarUrl={avatarUrl}
                       size="lg"
-                      className="relative h-20 w-20 text-2xl ring-2 ring-amber-500/30"
+                      className="relative h-20 w-20 text-2xl ring-2 ring-amber-500/35"
                     />
                   </motion.div>
                   <input
@@ -437,8 +463,8 @@ export default function OnboardingPage() {
                     disabled={uploading}
                   />
                   <div>
-                    <p className="font-medium text-white">{name}</p>
-                    <p className="mt-1 text-sm text-white/45">
+                    <p className="font-medium text-mkt-ink">{name}</p>
+                    <p className="mt-1 text-sm text-mkt-ink/50">
                       {uploading
                         ? t("account.photoUploading")
                         : avatarUrl
@@ -452,7 +478,7 @@ export default function OnboardingPage() {
                       variant="outline"
                       onClick={() => fileRef.current?.click()}
                       disabled={uploading}
-                      className="w-full rounded-full border-white/25 bg-transparent text-white hover:bg-white/5 sm:w-auto"
+                      className="w-full rounded-full border-mkt-ink/30 bg-transparent text-mkt-ink hover:bg-mkt-ink/5 sm:w-auto"
                     >
                       <ImagePlus className="mr-1.5 h-4 w-4" />
                       {t("account.uploadPhoto")}
@@ -462,7 +488,7 @@ export default function OnboardingPage() {
                       variant="outline"
                       onClick={() => setCameraOpen(true)}
                       disabled={uploading}
-                      className="w-full rounded-full border-white/25 bg-transparent text-white hover:bg-white/5 sm:w-auto"
+                      className="w-full rounded-full border-mkt-ink/30 bg-transparent text-mkt-ink hover:bg-mkt-ink/5 sm:w-auto"
                     >
                       <Camera className="mr-1.5 h-4 w-4" />
                       {t("account.takePhoto")}
@@ -485,7 +511,7 @@ export default function OnboardingPage() {
             variant="ghost"
             onClick={() => goToStep(Math.max(stepIndex - 1, 0))}
             disabled={stepIndex === 0 || saving || uploading}
-            className="rounded-full text-white/60 hover:bg-white/5 hover:text-white"
+            className="rounded-full text-mkt-ink/60 hover:bg-mkt-ink/5 hover:text-mkt-ink"
           >
             {tc("back")}
           </Button>
@@ -493,7 +519,7 @@ export default function OnboardingPage() {
             <Button
               onClick={handleComplete}
               disabled={saving || uploading}
-              className="rounded-full bg-white px-6 text-black hover:bg-white/90 focus:ring-amber-500"
+              className="rounded-full bg-mkt-inverse px-6 text-mkt-inverse-ink hover:opacity-90 focus:ring-amber-500"
             >
               {saving ? tc("saving") : t("account.finish")}
             </Button>
@@ -501,7 +527,7 @@ export default function OnboardingPage() {
             <Button
               onClick={handleNext}
               disabled={saving || uploading}
-              className="rounded-full bg-white px-6 text-black hover:bg-white/90 focus:ring-amber-500"
+              className="rounded-full bg-mkt-inverse px-6 text-mkt-inverse-ink hover:opacity-90 focus:ring-amber-500"
             >
               {saving ? tc("saving") : tc("next")}
             </Button>
@@ -509,5 +535,24 @@ export default function OnboardingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function OnboardingFallback() {
+  return (
+    <div className="space-y-5">
+      <div className="h-3 w-28 animate-pulse rounded-full bg-mkt-ink/10" />
+      <div className="h-10 w-64 animate-pulse rounded-lg bg-mkt-ink/10" />
+      <div className="h-4 w-full max-w-sm animate-pulse rounded bg-mkt-ink/5" />
+      <div className="h-56 animate-pulse rounded-2xl border border-mkt-ink/10 bg-mkt-ink/[0.03]" />
+    </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense fallback={<OnboardingFallback />}>
+      <OnboardingPageContent />
+    </Suspense>
   );
 }
