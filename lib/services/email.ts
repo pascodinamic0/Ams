@@ -126,6 +126,27 @@ export async function sendAdmissionApprovedEmail(opts: {
   });
 }
 
+export async function sendInvitePasswordEmail(opts: {
+  to: string;
+  name: string;
+  setupUrl: string;
+}): Promise<SendEmailResult> {
+  const name = escapeHtml(opts.name.trim() || "there");
+  const url = escapeHtml(opts.setupUrl);
+
+  return sendEmail({
+    to: opts.to,
+    subject: "Set your ShuleOS password before you lose the invite",
+    html: `
+      <p>Hi ${name},</p>
+      <p>Your school already added you to ShuleOS. Until you set a password, you cannot sign in — and your role stays locked out of fees, classes, and messages.</p>
+      <p><a href="${url}">Set your password now</a></p>
+      <p>This link expires. If it does, ask your admin to send a new invite and use the latest email.</p>
+    `,
+    text: `Hi ${opts.name.trim() || "there"},\n\nYour school already added you to ShuleOS. Until you set a password, you cannot sign in.\n\nSet your password: ${opts.setupUrl}\n\nThis link expires. If it does, ask your admin to send a new invite.`,
+  });
+}
+
 export async function sendPlainTextEmail(opts: {
   to: string;
   subject: string;

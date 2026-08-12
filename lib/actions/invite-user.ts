@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { buildAuthCallbackUrl } from "@/lib/auth/app-url";
+import { sendPasswordSetupEmail } from "@/lib/auth/send-invite-email";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import {
@@ -342,8 +342,35 @@ export async function inviteSchoolUser(input: {
       const sameRole = existingProfile.role === parsed.data.role;
 
       if (sameSchool && sameRole) {
+        const resent = await sendPasswordSetupEmail({
+          admin,
+          email,
+          name: parsed.data.name,
+          role: parsed.data.role,
+          linkType: "recovery",
+        });
+        if (resent.error) {
+          return {
+            error:
+              resent.error ||
+              "This email is already a member of your school with this role",
+          };
+        }
+        await admin
+          .from("profiles")
+          .update({
+            password_setup_required: true,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", existing.id);
+        revalidatePath("/academic/team");
+        revalidatePath("/admin/users");
         return {
-          error: "This email is already a member of your school with this role",
+          data: {
+            userId: existing.id,
+            emailSent: true as const,
+            resent: true as const,
+          },
         };
       }
 
@@ -374,27 +401,58 @@ export async function inviteSchoolUser(input: {
           "This email is already registered with a different access level. Ask them to sign in with their existing account, or use a different email.",
       };
     }
-  }
 
-  const redirectTo = buildAuthCallbackUrl({
-    intent: "invite",
-    redirect: "/reset-password",
-  });
+    const attached = await sendPasswordSetupEmail({
+      admin,
+      email,
+      name: parsed.data.name,
+      role: parsed.data.role,
+      linkType: "recovery",
+    });
+    if (attached.error || !attached.user) {
+      return { error: attached.error ?? "Failed to send invitation email" };
+    }
 
-  const { data: invited, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
-    email,
-    {
-      redirectTo,
-      data: {
+    const { error: attachProfileError } = await admin.from("profiles").upsert(
+      {
+        id: existing.id,
         name: parsed.data.name,
         role: parsed.data.role,
+        school_id: schoolId,
+        branch_id: branchId,
+        password_setup_required: true,
+        updated_at: new Date().toISOString(),
       },
+      { onConflict: "id" }
+    );
+    if (attachProfileError) {
+      return { error: attachProfileError.message };
     }
-  );
 
-  if (inviteError || !invited.user) {
-    console.error("inviteSchoolUser invite error:", inviteError);
-    return { error: inviteError?.message ?? "Failed to send invitation email" };
+    revalidatePath("/academic/team");
+    revalidatePath("/admin/users");
+    return {
+      data: {
+        userId: existing.id,
+        emailSent: true as const,
+      },
+    };
+  }
+
+  const invited = await sendPasswordSetupEmail({
+    admin,
+    email,
+    name: parsed.data.name,
+    role: parsed.data.role,
+    linkType: "invite",
+  });
+
+  if (invited.error || !invited.user) {
+    console.error("inviteSchoolUser invite error:", invited.error);
+    if (invited.user) {
+      await admin.auth.admin.deleteUser(invited.user.id);
+    }
+    return { error: invited.error ?? "Failed to send invitation email" };
   }
 
   const { error: profileError } = await admin.from("profiles").upsert(
@@ -404,6 +462,7 @@ export async function inviteSchoolUser(input: {
       role: parsed.data.role,
       school_id: schoolId,
       branch_id: branchId,
+      password_setup_required: true,
       updated_at: new Date().toISOString(),
     },
     { onConflict: "id" }

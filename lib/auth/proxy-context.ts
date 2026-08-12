@@ -13,6 +13,7 @@ export type ProxyAuthContext = {
   subscriptionStatus: SubscriptionStatus | null;
   needsOnboarding: boolean;
   needsStructureSetup: boolean;
+  passwordSetupRequired: boolean;
   name: string;
   email: string;
   avatarUrl: string | null;
@@ -41,7 +42,7 @@ export async function getProxyAuthContext(
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("name, role, school_id, avatar_url, onboarding_completed_at")
+    .select("name, role, school_id, avatar_url, onboarding_completed_at, password_setup_required")
     .eq("id", user.id)
     .single();
 
@@ -83,6 +84,7 @@ export async function getProxyAuthContext(
       schoolStatus,
       structureSetupCompletedAt,
     }),
+    passwordSetupRequired: Boolean(profile.password_setup_required),
     name,
     email: user.email ?? "",
     avatarUrl: profile.avatar_url ?? null,

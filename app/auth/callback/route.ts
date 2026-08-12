@@ -1,26 +1,8 @@
 import { NextResponse } from "next/server";
-import {
-  authErrorRedirectPath,
-  resolveCallbackErrorMessage,
-} from "@/lib/auth/callback-errors";
+import { authErrorRedirectPath } from "@/lib/auth/callback-errors";
+import { getAuthRedirectOrigin } from "@/lib/auth/app-url";
 import { getPostAuthRedirect } from "@/lib/auth/post-auth-redirect";
 import { createRouteHandlerClient } from "@/lib/supabase/route-handler";
-
-function resolveRedirectOrigin(request: Request): string {
-  const { origin } = new URL(request.url);
-  const forwardedHost = request.headers.get("x-forwarded-host");
-  const forwardedProto = request.headers.get("x-forwarded-proto") ?? "https";
-
-  if (process.env.NODE_ENV === "development") {
-    return origin;
-  }
-
-  if (forwardedHost) {
-    return `${forwardedProto}://${forwardedHost}`;
-  }
-
-  return origin;
-}
 
 function redirectWithCookies(
   from: NextResponse,
@@ -36,22 +18,48 @@ function redirectWithCookies(
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const tokenHash = requestUrl.searchParams.get("token_hash");
   const intent = requestUrl.searchParams.get("intent");
   const redirect = requestUrl.searchParams.get("redirect");
-  const origin = resolveRedirectOrigin(request);
+  const origin = getAuthRedirectOrigin(request);
   const errorPath = authErrorRedirectPath(intent);
 
+  if (tokenHash) {
+    const confirm = new URL("/auth/confirm", origin);
+    requestUrl.searchParams.forEach((value, key) => {
+      confirm.searchParams.set(key, value);
+    });
+    return NextResponse.redirect(confirm);
+  }
+
   if (!code) {
-    const message = resolveCallbackErrorMessage(requestUrl.searchParams, {
-      intent,
-    });
-    console.error("auth callback missing code:", {
-      intent,
-      error: requestUrl.searchParams.get("error"),
-      error_description: requestUrl.searchParams.get("error_description"),
-    });
-    return NextResponse.redirect(
-      `${origin}${errorPath}?error=${encodeURIComponent(message)}`
+    // Implicit invite/recovery tokens live in the URL hash (server never sees them).
+    // A rewrite from this route handler 500s on Vercel; a 302 would drop the hash.
+    // Serve a tiny page that keeps search + hash and continues on /auth/hash.
+    return new NextResponse(
+      `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Continuing</title>
+    <script>
+      (function () {
+        var search = window.location.search || "";
+        var hash = window.location.hash || "";
+        window.location.replace("/auth/hash" + search + hash);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>`,
+      {
+        status: 200,
+        headers: {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "no-store",
+        },
+      }
     );
   }
 

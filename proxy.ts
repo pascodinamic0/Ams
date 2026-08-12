@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { getApexCanonicalRedirectUrl } from "@/lib/auth/app-url";
 import { getProxyAuthContext } from "@/lib/auth/proxy-context";
 import {
   schoolHasProductAccess,
@@ -8,6 +9,10 @@ import {
 } from "@/lib/auth/school-access";
 import { getPostAuthRedirect } from "@/lib/auth/post-auth-redirect";
 import { isProfileOnboardingExempt } from "@/lib/auth/profile-onboarding";
+import {
+  isPasswordSetupPath,
+  userMustSetPassword,
+} from "@/lib/auth/password-setup";
 import { isStructureSetupExempt } from "@/lib/auth/structure-setup";
 import { canAccessPath, getDashboardForRole } from "@/lib/auth/rbac";
 
@@ -20,6 +25,8 @@ const PUBLIC_ROUTES = [
   "/register/complete",
   "/register/success",
   "/auth/callback",
+  "/auth/confirm",
+  "/auth/hash",
   "/forgot-password",
   "/reset-password",
   "/schools",
@@ -71,6 +78,11 @@ function redirectWithCookies(
 }
 
 export async function proxy(request: NextRequest) {
+  const canonicalRedirect = getApexCanonicalRedirectUrl(request);
+  if (canonicalRedirect) {
+    return NextResponse.redirect(canonicalRedirect, 308);
+  }
+
   const { response: supabaseResponse, user } = await updateSession(request);
 
   const pathname = request.nextUrl.pathname;
@@ -107,6 +119,16 @@ export async function proxy(request: NextRequest) {
 
   const access = await getProxyAuthContext(request, user);
   const role = access?.role ?? null;
+
+  if (
+    (userMustSetPassword(user) || access?.passwordSetupRequired) &&
+    !isPasswordSetupPath(pathname)
+  ) {
+    if (serverAction) {
+      return supabaseResponse;
+    }
+    return redirectWithCookies(request, supabaseResponse, "/reset-password");
+  }
 
   if (!isProfileOnboardingExempt(pathname) && access?.needsOnboarding) {
     if (serverAction) {
