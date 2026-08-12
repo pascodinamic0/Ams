@@ -34,10 +34,33 @@ export async function GET(request: Request) {
 
   if (!code) {
     // Implicit invite/recovery tokens live in the URL hash (server never sees them).
-    // Rewrite so the browser keeps the hash instead of dropping it on a login redirect.
-    const hashUrl = new URL(request.url);
-    hashUrl.pathname = "/auth/hash";
-    return NextResponse.rewrite(hashUrl);
+    // A rewrite from this route handler 500s on Vercel; a 302 would drop the hash.
+    // Serve a tiny page that keeps search + hash and continues on /auth/hash.
+    return new NextResponse(
+      `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Continuing</title>
+    <script>
+      (function () {
+        var search = window.location.search || "";
+        var hash = window.location.hash || "";
+        window.location.replace("/auth/hash" + search + hash);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>`,
+      {
+        status: 200,
+        headers: {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "no-store",
+        },
+      }
+    );
   }
 
   const sessionResponse = NextResponse.redirect(`${origin}${errorPath}`);

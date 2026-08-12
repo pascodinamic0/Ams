@@ -46,13 +46,16 @@ export default function ResetPasswordPage() {
 
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await Promise.race([
+        supabase.auth.getUser(),
+        new Promise<{ data: { user: null } }>((resolve) =>
+          setTimeout(() => resolve({ data: { user: null } }), 8000)
+        ),
+      ]);
 
       if (cancelled) return;
       if (!user) {
         setSessionMissing(true);
-        setSessionReady(true);
-        return;
       }
       setSessionReady(true);
     }
