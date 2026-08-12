@@ -5,11 +5,11 @@
  *   RESEND_API_KEY
  *
  * Optional:
- *   RESEND_FROM — e.g. "ShuleOS <noreply@shuleos.app>"
+ *   RESEND_FROM - e.g. "ShuleOS <noreply@shuleos.app>"
  *                 Defaults to Resend's onboarding address (dev/testing only).
  *
  * Auth emails (invite, signup confirm, password reset) are still triggered by
- * Supabase Auth — point Supabase SMTP at Resend so those go through Resend too.
+ * Supabase Auth - point Supabase SMTP at Resend so those go through Resend too.
  */
 
 import { Resend } from "resend";
