@@ -56,6 +56,11 @@ BEGIN
       FROM public.classes cl
       JOIN public.branches b ON b.id = cl.branch_id
       WHERE cl.id = (payload->>'class_id')::uuid;
+    WHEN 'staff' THEN
+      SELECT COALESCE(st.school_id, b.school_id) INTO sid
+      FROM public.staff st
+      LEFT JOIN public.branches b ON b.id = st.branch_id
+      WHERE st.id = (payload->>'staff_id')::uuid;
     ELSE
       sid := (payload->>'school_id')::uuid;
   END CASE;
@@ -131,7 +136,13 @@ BEGIN
         WHERE col.table_schema = n.nspname
           AND col.table_name = c.relname
           AND col.column_name = 'class_id'
-      ) AS has_class
+      ) AS has_class,
+      EXISTS (
+        SELECT 1 FROM information_schema.columns col
+        WHERE col.table_schema = n.nspname
+          AND col.table_name = c.relname
+          AND col.column_name = 'staff_id'
+      ) AS has_staff
     FROM pg_class c
     JOIN pg_namespace n ON n.oid = c.relnamespace
     WHERE n.nspname = 'public'
@@ -145,6 +156,7 @@ BEGIN
       WHEN r.has_conversation THEN 'conversation'
       WHEN r.has_invoice THEN 'invoice'
       WHEN r.has_class THEN 'class'
+      WHEN r.has_staff THEN 'staff'
       ELSE NULL
     END;
 

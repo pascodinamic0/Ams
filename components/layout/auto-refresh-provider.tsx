@@ -78,13 +78,14 @@ export function AutoRefreshProvider() {
 
       const { data: profile } = await supabase
         .from("profiles")
-        .select("school_id")
+        .select("school_id, role")
         .eq("id", userId)
         .maybeSingle();
 
       if (cancelled) return;
 
       const schoolId = profile?.school_id as string | null | undefined;
+      const isSuperAdmin = profile?.role === "super_admin";
       const live = supabase.channel(`school-live:${userId}`);
 
       if (schoolId) {
@@ -95,6 +96,16 @@ export function AutoRefreshProvider() {
             schema: "public",
             table: "school_sync_ticks",
             filter: `school_id=eq.${schoolId}`,
+          },
+          refreshSoon
+        );
+      } else if (isSuperAdmin) {
+        live.on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "school_sync_ticks",
           },
           refreshSoon
         );
