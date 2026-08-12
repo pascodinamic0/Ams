@@ -67,15 +67,19 @@ export async function sendEmail(
   }
 
   try {
-    const { data, error } = await resend.emails.send({
-      from: defaultFrom(),
-      to: input.to,
-      subject: input.subject,
-      html: input.html,
-      text: input.text,
-      replyTo: input.replyTo,
-      idempotencyKey: input.idempotencyKey,
-    });
+    const { data, error } = await resend.emails.send(
+      {
+        from: defaultFrom(),
+        to: input.to,
+        subject: input.subject,
+        html: input.html,
+        text: input.text,
+        replyTo: input.replyTo,
+      },
+      input.idempotencyKey
+        ? { idempotencyKey: input.idempotencyKey }
+        : undefined
+    );
 
     if (error) {
       return { success: false, error: error.message };
