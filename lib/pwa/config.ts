@@ -1,4 +1,5 @@
 import { companyIdentity } from "@/lib/company/identity";
+import { pwaIconPath, pwaMaskableIconPath } from "@/lib/pwa/assets";
 import type { MetadataRoute } from "next";
 
 export const pwaThemeColor = companyIdentity.brand.primary;
@@ -20,12 +21,13 @@ export function buildPwaManifest(): MetadataRoute.Manifest {
     categories: ["education", "productivity", "business"],
     icons: [
       ...iconSizes.map((size) => ({
-        src: `/icons/icon-${size}x${size}.png`,
+        src: pwaIconPath(size),
         sizes: `${size}x${size}`,
-        type: "image/png",
+        type: "image/png" as const,
+        purpose: "any" as const,
       })),
       {
-        src: "/icons/maskable-icon-512x512.png",
+        src: pwaMaskableIconPath,
         sizes: "512x512",
         type: "image/png",
         purpose: "maskable",

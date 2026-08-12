@@ -75,8 +75,8 @@ export function PwaInstallShowcase({ className }: PwaInstallShowcaseProps) {
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
           <div className="absolute inset-x-0 bottom-0 flex items-center gap-3 px-4 pb-4 pt-14">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 bg-black/55 backdrop-blur-md">
-              <ShuleOsMark size={26} />
+            <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-2xl bg-white shadow-sm">
+              <ShuleOsMark size={40} />
             </div>
             <div className="min-w-0">
               <p className="font-display text-[15px] tracking-tight text-white">

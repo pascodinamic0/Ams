@@ -6,7 +6,7 @@
     "dev": "node scripts/ensure-dev.mjs",
     "dev:pwa": "node scripts/ensure-dev.mjs --webpack",
     "build": "next build --webpack",
-    "generate:pwa-icons": "node scripts/generate-pwa-icons.mjs",
+    "generate:pwa-icons": "node scripts/generate-pwa-icons.mjs && node scripts/verify-brand-assets.mjs",
     "generate:social-banners": "node scripts/generate-social-banners.mjs",
     "generate:marketing-posts": "node scripts/generate-marketing-posts.mjs",
     "start": "next start",

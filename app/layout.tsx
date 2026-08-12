@@ -8,6 +8,7 @@ import { PwaRoot } from "@/components/pwa/pwa-root";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { companyIdentity } from "@/lib/company/identity";
 import { pickClientMessages } from "@/lib/i18n/client-messages";
+import { pwaAppleTouchIconPath, pwaIconPath, withPwaAssetRevision } from "@/lib/pwa/assets";
 import { pwaThemeColor } from "@/lib/pwa/config";
 import "./globals.css";
 
@@ -56,11 +57,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "32x32" },
-      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-512x512.png", sizes: "512x512", type: "image/png" },
+      { url: withPwaAssetRevision("/favicon.ico"), sizes: "32x32" },
+      { url: pwaIconPath(192), sizes: "192x192", type: "image/png" },
+      { url: pwaIconPath(512), sizes: "512x512", type: "image/png" },
     ],
-    apple: [{ url: "/icons/icon-180x180.png", sizes: "180x180", type: "image/png" }],
+    apple: [{ url: pwaAppleTouchIconPath, sizes: "180x180", type: "image/png" }],
   },
 };
 

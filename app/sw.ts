@@ -3,6 +3,7 @@
 import { defaultCache } from "@serwist/next/worker";
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
 import { Serwist } from "serwist";
+import { pwaIconPath } from "@/lib/pwa/assets";
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -15,6 +16,7 @@ declare const self: ServiceWorkerGlobalScope;
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
   // Wait for user consent before activating a new version (see UpdatePrompt).
+  // New icon URLs (pwaAssetRevision) are fetched after SKIP_WAITING + reload.
   skipWaiting: false,
   clientsClaim: true,
   navigationPreload: true,
@@ -65,8 +67,8 @@ self.addEventListener("push", (event) => {
   const title = data.title || fallback.title!;
   const options = {
     body: data.body || fallback.body,
-    icon: "/icons/icon-192x192.png",
-    badge: "/icons/icon-96x96.png",
+    icon: pwaIconPath(192),
+    badge: pwaIconPath(96),
     tag: data.tag || "shuleos-notification",
     renotify: true,
     requireInteraction: Boolean(data.requireInteraction),
