@@ -6,8 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyableBadge } from "@/components/ui/copyable-badge";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { getStudentProfileBundle } from "@/lib/db/student-profile";
+import { getCurrentProfile } from "@/lib/auth/session";
+import { canDeleteStudents } from "@/lib/auth/rbac";
 import { formatPersonName } from "@/lib/utils";
-import { DeleteStudentButton } from "./delete-button";
+import { DeleteStudentButton } from "../delete-button";
 
 type GuardianLink = {
   can_pickup?: boolean | null;
@@ -60,6 +62,8 @@ export default async function StudentDetailPage({
   const t = await getTranslations("academic");
   const tc = await getTranslations("common");
   const { id } = await params;
+  const profile = await getCurrentProfile();
+  const canDelete = canDeleteStudents(profile?.role);
 
   const bundle = await getStudentProfileBundle(id);
   if (!bundle) notFound();
@@ -119,7 +123,7 @@ export default async function StudentDetailPage({
           <Link href={`/academic/students/${id}/report-card`}>
             <Button size="sm">{t("exportReportCard")}</Button>
           </Link>
-          <DeleteStudentButton id={id} />
+          {canDelete ? <DeleteStudentButton id={id} name={fullName} /> : null}
         </div>
       </div>
 

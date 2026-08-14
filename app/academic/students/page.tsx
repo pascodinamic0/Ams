@@ -4,11 +4,16 @@ import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { getStudents } from "@/lib/db";
+import { getCurrentProfile } from "@/lib/auth/session";
+import { canDeleteStudents } from "@/lib/auth/rbac";
 import { getTranslations } from "next-intl/server";
+import { DeleteStudentButton } from "./delete-button";
 
 export default async function StudentsPage() {
   const t = await getTranslations("academic");
   const tc = await getTranslations("common");
+  const profile = await getCurrentProfile();
+  const canDelete = canDeleteStudents(profile?.role);
   const students = await getStudents();
   const tableData = students.map((row) => ({
     ...row,
@@ -18,6 +23,9 @@ export default async function StudentsPage() {
         <span>{String(row.name)}</span>
       </Link>
     ),
+    actions: canDelete ? (
+      <DeleteStudentButton id={row.id} name={row.name} compact />
+    ) : null,
   }));
 
   return (
@@ -52,6 +60,9 @@ export default async function StudentsPage() {
             { id: "class_name", header: t("class"), accessorKey: "class_name" },
             { id: "guardian_name", header: t("guardian"), accessorKey: "guardian_name" },
             { id: "status", header: tc("status"), accessorKey: "status" },
+            ...(canDelete
+              ? [{ id: "actions", header: "", accessorKey: "actions" as const }]
+              : []),
           ]}
         />
       )}

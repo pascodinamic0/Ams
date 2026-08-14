@@ -48,7 +48,7 @@
   "gender": "Gender",
   "homeAddress": "Home address",
   "guardianFor": "Guardian for {name}",
-  "deleteStudentConfirm": "Delete this student?",
+  "deleteStudentConfirm": "Delete {name}? This cannot be undone.",
   "studentDeleted": "Student deleted",
   "branchRequired": "Branch required",
   "branchRequiredTimetable": "Assign a branch to your profile to manage class timetables.",

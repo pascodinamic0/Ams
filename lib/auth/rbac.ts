@@ -105,6 +105,12 @@ export const DISCIPLINE_ROLES: UserRole[] = [
   "supervisor",
 ];
 
+/** Permanently deleting a student record is academic-admin (or platform admin) only. */
+export function canDeleteStudents(role: string | null | undefined): boolean {
+  const normalized = normalizeRole(role);
+  return normalized === "academic_admin" || normalized === "super_admin";
+}
+
 /** School admin roles that appear on finance payroll for pay-amount setup. */
 export const PAYROLL_ADMIN_ROLES: UserRole[] = [
   "academic_admin",

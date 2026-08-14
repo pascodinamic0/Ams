@@ -130,6 +130,8 @@
   "onlyFinanceExpenses": "Only finance can manage expenses",
   "approvedExpensesCannotDelete": "Approved expenses cannot be deleted",
   "onlyAcademicAdminsApproveExpense": "Only academic admins can approve expense tasks",
+  "onlyAcademicAdminsDeleteStudents": "Only academic admins can delete students",
+  "studentNotFound": "Student not found",
   "taskNotLinkedExpense": "This task is not linked to an expense",
   "expenseAlreadyDecided": "This expense task was already decided",
   "linkedExpenseNotFound": "Linked expense not found",

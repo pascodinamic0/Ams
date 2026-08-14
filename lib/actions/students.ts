@@ -89,12 +89,32 @@ export async function deleteStudent(id: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return await actionError("notAuthenticated");
 
-  const { error } = await supabase.from("students").delete().eq("id", id);
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, school_id")
+    .eq("id", user.id)
+    .single();
+
+  if (
+    !profile ||
+    (profile.role !== "academic_admin" && profile.role !== "super_admin")
+  ) {
+    return await actionError("onlyAcademicAdminsDeleteStudents");
+  }
+
+  let query = supabase.from("students").delete().eq("id", id);
+  if (profile.role === "academic_admin") {
+    if (!profile.school_id) return await actionError("noSchoolLinkedShort");
+    query = query.eq("school_id", profile.school_id);
+  }
+
+  const { data, error } = await query.select("id").maybeSingle();
 
   if (error) {
     console.error("deleteStudent error:", error);
     return { error: error.message };
   }
+  if (!data) return await actionError("studentNotFound");
 
   revalidatePath("/academic");
   revalidatePath("/academic/students");

@@ -48,7 +48,7 @@
   "gender": "Genre",
   "homeAddress": "Adresse domicile",
   "guardianFor": "Tuteur de {name}",
-  "deleteStudentConfirm": "Supprimer cet élève ?",
+  "deleteStudentConfirm": "Supprimer {name} ? Cette action est irréversible.",
   "studentDeleted": "Élève supprimé",
   "branchRequired": "Campus requis",
   "branchRequiredTimetable": "Assignez un campus à votre profil pour gérer les emplois du temps.",

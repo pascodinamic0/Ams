@@ -130,6 +130,8 @@
   "onlyFinanceExpenses": "Seuls les responsables financiers peuvent gérer les dépenses",
   "approvedExpensesCannotDelete": "Les dépenses approuvées ne peuvent pas être supprimées",
   "onlyAcademicAdminsApproveExpense": "Seuls les administrateurs académiques peuvent approuver les tâches de dépense",
+  "onlyAcademicAdminsDeleteStudents": "Seuls les administrateurs académiques peuvent supprimer des élèves",
+  "studentNotFound": "Élève introuvable",
   "taskNotLinkedExpense": "Cette tâche n'est pas liée à une dépense",
   "expenseAlreadyDecided": "Cette tâche de dépense a déjà été tranchée",
   "linkedExpenseNotFound": "Dépense liée introuvable",
