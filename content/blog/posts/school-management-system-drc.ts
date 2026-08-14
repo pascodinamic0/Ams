@@ -26,7 +26,8 @@ export const schoolManagementSystemDrc: BlogPostContent = {
   metaDescription:
     "School management system DRC: Kinshasa private schools, Programme National, mobile money fees, French-first support, and offline attendance on ShuleOS.",
   coverImage: coverImage("school-management-system-drc"),
-  coverImageAlt: "Kinshasa private school courtyard with students in uniform and mobile phones.",
+  coverImageAlt:
+    "Students in uniform in a Kinshasa private-school courtyard at midday, a parent speaking with the director.",
   intro: [
     "Kinshasa is a private-school city: most primary schools live on parent fees, not ministry payroll. That changes what a school management system must do  collections matter as much as curriculum.",
     "Foreign school software translated into French still ignores CDF/USD habits, Programme National bulletins, WhatsApp-heavy parents, and classrooms where the signal drops.",

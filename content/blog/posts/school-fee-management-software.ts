@@ -25,7 +25,8 @@ export const schoolFeeManagementSoftware: BlogPostContent = {
   metaDescription:
     "School fee management software: invoices, CDF/USD, mobile money, WhatsApp reminders, and parent-visible balances for DRC and African private schools.",
   coverImage: coverImage("school-fee-management-software"),
-  coverImageAlt: "Bursar desk with fee ledger, mobile money phone, and digital invoice on screen.",
+  coverImageAlt:
+    "A bursar counting cash at a school cashier window while parents wait with notes and phones.",
   intro: [
     "Private schools run on fee collection. When the ledger is a notebook, a spreadsheet, and memory, the school finances its own leaks  disputed balances, late payments, and Sundays spent reconciling cash, mobile money, and USD.",
     "School fee management software is not a prettier invoice. It is one balance every role sees: bursar, director, parent  before the queue forms at the gate.",

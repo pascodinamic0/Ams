@@ -25,7 +25,8 @@ export const studentInformationSystem: BlogPostContent = {
   metaDescription:
     "Student information system (SIS) explained: enrollment, grades, SIS vs school management system, and what DRC schools should choose.",
   coverImage: coverImage("student-information-system"),
-  coverImageAlt: "Registrar viewing unified student records: guardians, classes, and grades.",
+  coverImageAlt:
+    "A registrar at an overflowing filing cabinet of student folders, photos clipped to manila files.",
   intro: [
     "A student information system (SIS) is software that stores enrollment, demographics, schedules, and academic history  the academic source of truth.",
     "Many vendors use SIS and school management system interchangeably. The difference shows up when the bursar's ledger, parent WhatsApp threads, and library cards still live outside the SIS.",

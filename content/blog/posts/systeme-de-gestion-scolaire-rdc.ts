@@ -26,7 +26,7 @@ export const systemeDeGestionScolaireRdc: BlogPostContent = {
     "Système de gestion scolaire RDC : écoles privées Kinshasa, mobile money, bulletins nationaux, support local ShuleOS depuis Batetela.",
   coverImage: coverImage("systeme-de-gestion-scolaire-rdc"),
   coverImageAlt:
-    "Cour d'école privée à Kinshasa avec élèves en uniforme et téléphones mobiles.",
+    "Sortie d'école à Kinshasa : portail, motos, parents avec téléphones et élèves en uniforme à l'heure dorée.",
   intro: [
     "En RDC  surtout à Kinshasa  les écoles privées vivent des frais des parents. Le système de gestion scolaire n'est pas un luxe administratif : c'est la caisse et le dossier pédagogique en même temps.",
     "Importer un logiciel étranger traduit en français ignore encore le Programme National, le mobile money, et les salles où le réseau tombe en plein appel.",

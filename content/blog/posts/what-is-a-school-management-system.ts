@@ -29,7 +29,7 @@ export const whatIsSchoolManagementSystem: BlogPostContent = {
     "What is a school management system? Modules, benefits, spreadsheet vs software, and how African and DRC schools should choose school management software.",
   coverImage: coverImage("what-is-a-school-management-system"),
   coverImageAlt:
-    "School director reviewing a unified dashboard with attendance, fees, and grades on one screen.",
+    "A Kinshasa school director at dusk, desk buried under registers, a spreadsheet, and a buzzing phone.",
   intro: [
     "A school management system (SMS) ? also called school management software or a school ERP ? is the operating system for everything your school runs: enrollments, classes, attendance, grades, fees, parent messages, and the public website.",
     "Most schools already have a system. It is registers in drawers, fee balances in spreadsheets, grades in chats, and parents queuing at the office. That patchwork has a price: lost fees, report-card chaos, and directors who only see problems at term end.",

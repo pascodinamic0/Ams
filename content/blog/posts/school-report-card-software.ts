@@ -25,7 +25,8 @@ export const schoolReportCardSoftware: BlogPostContent = {
   metaDescription:
     "School report card software for DRC schools: Programme National bulletins, gradebook integration, printable report cards, and no more report-card week chaos.",
   coverImage: coverImage("school-report-card-software"),
-  coverImageAlt: "Teacher generating Programme National report cards from a digital gradebook.",
+  coverImageAlt:
+    "A teacher working late under a desk lamp reconstructing stacks of paper report cards.",
   intro: [
     "Report-card week is not a printing problem. It is the bill for a term of grades that lived in registers, chats, and memory.",
     "School report card software should produce Programme National bulletins from the same gradebook teachers used all term  not a manual rebuild at night.",

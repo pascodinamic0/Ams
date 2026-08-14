@@ -25,7 +25,8 @@ export const schoolAttendanceSoftware: BlogPostContent = {
   metaDescription:
     "School attendance software for African schools: daily rolls, absence alerts, offline PWA sync, and dashboards directors trust mid-term.",
   coverImage: coverImage("school-attendance-software"),
-  coverImageAlt: "Teacher marking attendance on a smartphone in a classroom with weak connectivity.",
+  coverImageAlt:
+    "A teacher taking roll with a paper register and a phone that has no signal, students in uniform behind her.",
   intro: [
     "Attendance is the earliest signal in any school  and the first record to break. Teachers rewrite lists when paper tears; online apps freeze when the connection drops; directors only see gaps weeks later.",
     "School attendance software should make the roll call faster than paper and more reliable than a chat forward. In Kinshasa and across the DRC, that also means offline-first: the day counts even when Vodacom doesn't.",

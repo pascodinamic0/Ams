@@ -25,7 +25,8 @@ export const parentPortalForSchools: BlogPostContent = {
   metaDescription:
     "Parent portal for schools: balances, grades, attendance, timetable, and logged messaging vs WhatsApp-only communication for African schools.",
   coverImage: coverImage("parent-portal-for-schools"),
-  coverImageAlt: "Parent checking school fees and grades on a smartphone at home.",
+  coverImageAlt:
+    "A parent at home in the evening checking the school on her phone while her child does homework.",
   intro: [
     "Ask a Kinshasa parent how they talk to the school. The answer is a class WhatsApp group, a director's number, and a trip to the secretariat when the chat goes silent.",
     "That is communication  not a parent portal. A real parent portal for schools gives guardians the same facts the office has: balances, grades, absences, timetable, and messages  without a queue.",

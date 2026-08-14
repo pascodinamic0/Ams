@@ -26,7 +26,7 @@ export const logicielDeGestionScolaire: BlogPostContent = {
     "Logiciel de gestion scolaire : définition, modules, comparaison tableur vs logiciel, et critères pour les écoles africaines et congolaises.",
   coverImage: coverImage("logiciel-de-gestion-scolaire"),
   coverImageAlt:
-    "Directeur d'école consultant un tableau de bord unifié : frais, présences et notes.",
+    "File de parents au secrétariat d'une école : formulaires, classeurs, et un bureau qui fait office de centre d'appels.",
   intro: [
     "Un logiciel de gestion scolaire  ou système de gestion scolaire  est le système d'exploitation de votre établissement : inscriptions, classes, présences, notes, frais, messages aux parents et site public.",
     "La plupart des écoles ont déjà un « système » : registres, Excel, chats WhatsApp et files à la secretariat. Ce bricolage a un prix : frais perdus, bulletins reconstruits à la main, directeurs informés trop tard.",
