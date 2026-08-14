@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import type { SchoolRow } from "@/lib/db/schools";
 import { resolveSchoolWebsite } from "@/lib/schools/website-content";
 import type { WebsiteTemplateId } from "@/lib/schools/website-templates";
+import { SchoolSiteHeader } from "@/components/schools/school-site-header";
 
 type ChromeT = (key: string) => string;
 
@@ -12,65 +12,12 @@ type SchoolSiteLayoutProps = {
   isPreview?: boolean;
 };
 
-type ShellProps = SchoolSiteLayoutProps & { t: ChromeT };
-
-function SchoolBrandLink({
-  href,
-  school,
-  tagline,
-  nameClassName,
-}: {
-  href: string;
-  school: SchoolRow;
-  tagline?: string;
-  nameClassName: string;
-}) {
-  return (
-    <Link href={href} className="flex min-w-0 items-center gap-3 text-white">
-      {school.logo_url ? (
-        <span className="flex h-12 max-w-[7.5rem] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white px-1.5 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.28)] ring-1 ring-white/50 sm:h-14 sm:max-w-[9.5rem]">
-          <img
-            src={school.logo_url}
-            alt=""
-            className="h-full w-auto max-w-full object-contain"
-          />
-        </span>
-      ) : null}
-      <span className="min-w-0">
-        <span className={`block leading-tight drop-shadow ${nameClassName}`}>
-          {school.name}
-        </span>
-        {tagline ? (
-          <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/85">
-            {tagline}
-          </span>
-        ) : null}
-      </span>
-    </Link>
-  );
-}
-
-function NavLink({
-  href,
-  children,
-  className = "",
-  style,
-}: {
-  href: string;
-  children: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
-}) {
-  return (
-    <Link
-      href={href}
-      className={`text-sm transition-opacity hover:opacity-70 ${className}`}
-      style={style}
-    >
-      {children}
-    </Link>
-  );
-}
+type ShellProps = SchoolSiteLayoutProps & {
+  t: ChromeT;
+  menuLabel: string;
+  openMenuLabel: string;
+  closeMenuLabel: string;
+};
 
 function SocialLinks({
   social,
@@ -136,56 +83,48 @@ function SchoolFooter({
   );
 }
 
-function ModernShell({ school, children, isPreview, t }: ShellProps) {
+function ModernShell({
+  school,
+  children,
+  isPreview,
+  t,
+  menuLabel,
+  openMenuLabel,
+  closeMenuLabel,
+}: ShellProps) {
   const primary = school.theme_primary_color ?? "#0d9488";
   const site = resolveSchoolWebsite(school);
   const base = isPreview ? "#" : `/schools/${school.slug}`;
 
   return (
     <div className="min-h-screen bg-white text-stone-900">
-      <header className="absolute inset-x-0 top-0 z-30">
-        <div className="h-[3px]" style={{ backgroundColor: primary }} />
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <SchoolBrandLink
-            href={base}
-            school={school}
-            tagline={t("chrome.excellenceIntegrityCommunity")}
-            nameClassName="text-[15px] font-bold tracking-tight sm:text-lg"
-          />
-          <nav className="hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.14em] text-white sm:flex">
-            <NavLink href={`${base}#programs`} className="text-white">
-              {t("nav.programs")}
-            </NavLink>
-            <NavLink href={`${base}#about`} className="text-white">
-              {t("nav.about")}
-            </NavLink>
-            <NavLink
-              href={isPreview ? "#events" : `/schools/${school.slug}/events`}
-              className="text-white"
-            >
-              {t("nav.events")}
-            </NavLink>
-            <NavLink
-              href={isPreview ? "#" : `/schools/${school.slug}/visit`}
-              className="text-white"
-            >
-              {t("nav.bookVisit")}
-            </NavLink>
-            <NavLink href={`${base}#contact`} className="text-white">
-              {t("nav.contact")}
-            </NavLink>
-            <NavLink href="/login" className="text-white">
-              {t("nav.login")}
-            </NavLink>
-            <Link
-              href={isPreview ? "#" : `/schools/${school.slug}/enroll`}
-              className="border border-white px-4 py-2 text-white transition-colors hover:bg-white hover:text-stone-900"
-            >
-              {t("chrome.applyNow")}
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SchoolSiteHeader
+        schoolName={school.name}
+        logoUrl={school.logo_url}
+        homeHref={base}
+        tagline={t("chrome.excellenceIntegrityCommunity")}
+        accentColor={primary}
+        links={[
+          { href: `${base}#about`, label: t("nav.about") },
+          { href: `${base}#programs`, label: t("nav.programs") },
+          {
+            href: isPreview ? "#events" : `/schools/${school.slug}/events`,
+            label: t("nav.events"),
+          },
+          {
+            href: isPreview ? "#" : `/schools/${school.slug}/visit`,
+            label: t("nav.bookVisit"),
+          },
+          { href: `${base}#contact`, label: t("nav.contact") },
+        ]}
+        loginHref="/login"
+        loginLabel={t("nav.login")}
+        applyHref={isPreview ? "#" : `/schools/${school.slug}/enroll`}
+        applyLabel={t("chrome.applyNow")}
+        menuLabel={menuLabel}
+        openMenuLabel={openMenuLabel}
+        closeMenuLabel={closeMenuLabel}
+      />
       <main>{children}</main>
       <footer className="border-t border-stone-200 bg-stone-50">
         <div className="mx-auto max-w-6xl px-6 py-10">
@@ -196,7 +135,15 @@ function ModernShell({ school, children, isPreview, t }: ShellProps) {
   );
 }
 
-function ClassicShell({ school, children, isPreview, t }: ShellProps) {
+function ClassicShell({
+  school,
+  children,
+  isPreview,
+  t,
+  menuLabel,
+  openMenuLabel,
+  closeMenuLabel,
+}: ShellProps) {
   const primary = school.theme_primary_color ?? "#1a2b56";
   const accent = school.theme_secondary_color ?? "#c9a227";
   const site = resolveSchoolWebsite(school);
@@ -204,65 +151,31 @@ function ClassicShell({ school, children, isPreview, t }: ShellProps) {
 
   return (
     <div className="min-h-screen bg-white text-stone-900">
-      <div className="bg-stone-950 text-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-2 text-[11px] uppercase tracking-[0.16em] text-white/70">
-          <span>{t("chrome.publicSchoolSite")}</span>
-          <SocialLinks social={site.social} light className="gap-3" />
-        </div>
-      </div>
-      <div className="h-[3px]" style={{ backgroundColor: accent }} />
-      <div className="relative">
-        <header className="absolute inset-x-0 top-0 z-30">
-          <div className="mx-auto flex max-w-6xl items-start justify-between gap-6 px-6 py-5">
-            <SchoolBrandLink
-              href={base}
-              school={school}
-              tagline={t("chrome.excellenceIntegrityInclusivity")}
-              nameClassName="text-xl font-bold tracking-tight md:text-2xl"
-            />
-            <div className="hidden flex-col items-end gap-3 sm:flex">
-              <div className="flex items-center gap-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
-                <NavLink href={`${base}#about`} className="text-white">
-                  {t("nav.about")}
-                </NavLink>
-                <NavLink
-                  href={isPreview ? "#events" : `/schools/${school.slug}/events`}
-                  className="text-white"
-                >
-                  {t("chrome.calendar")}
-                </NavLink>
-                <NavLink
-                  href={isPreview ? "#" : `/schools/${school.slug}/visit`}
-                  className="text-white"
-                >
-                  {t("nav.bookVisit")}
-                </NavLink>
-                <NavLink href="/login" className="text-white">
-                  {t("nav.login")}
-                </NavLink>
-                <Link
-                  href={isPreview ? "#" : `/schools/${school.slug}/enroll`}
-                  className="border border-white px-4 py-2 text-white transition-colors hover:bg-white hover:text-stone-900"
-                >
-                  {t("chrome.applyNow")}
-                </Link>
-              </div>
-              <nav className="flex items-center gap-6 text-sm font-medium text-white">
-                <NavLink href={`${base}#programs`} className="text-white">
-                  {t("chrome.academics")}
-                </NavLink>
-                <NavLink href={`${base}#gallery`} className="text-white">
-                  {t("chrome.campusLife")}
-                </NavLink>
-                <NavLink href={`${base}#contact`} className="text-white">
-                  {t("chrome.community")}
-                </NavLink>
-              </nav>
-            </div>
-          </div>
-        </header>
-        <main>{children}</main>
-      </div>
+      <SchoolSiteHeader
+        schoolName={school.name}
+        logoUrl={school.logo_url}
+        homeHref={base}
+        tagline={t("chrome.excellenceIntegrityInclusivity")}
+        accentColor={accent}
+        links={[
+          { href: `${base}#about`, label: t("nav.about") },
+          { href: `${base}#programs`, label: t("chrome.academics") },
+          { href: `${base}#gallery`, label: t("chrome.campusLife") },
+          {
+            href: isPreview ? "#events" : `/schools/${school.slug}/events`,
+            label: t("chrome.calendar"),
+          },
+          { href: `${base}#contact`, label: t("chrome.community") },
+        ]}
+        loginHref="/login"
+        loginLabel={t("nav.login")}
+        applyHref={isPreview ? "#" : `/schools/${school.slug}/enroll`}
+        applyLabel={t("chrome.applyNow")}
+        menuLabel={menuLabel}
+        openMenuLabel={openMenuLabel}
+        closeMenuLabel={closeMenuLabel}
+      />
+      <main>{children}</main>
       <footer className="py-10 text-white" style={{ backgroundColor: primary }}>
         <div className="mx-auto max-w-6xl px-6">
           <div className="mb-6 h-[2px] w-16" style={{ backgroundColor: accent }} />
@@ -273,7 +186,15 @@ function ClassicShell({ school, children, isPreview, t }: ShellProps) {
   );
 }
 
-function MinimalShell({ school, children, isPreview, t }: ShellProps) {
+function MinimalShell({
+  school,
+  children,
+  isPreview,
+  t,
+  menuLabel,
+  openMenuLabel,
+  closeMenuLabel,
+}: ShellProps) {
   const primary = school.theme_primary_color ?? "#1a2b56";
   const accent = school.theme_secondary_color ?? "#c9a227";
   const site = resolveSchoolWebsite(school);
@@ -281,45 +202,29 @@ function MinimalShell({ school, children, isPreview, t }: ShellProps) {
 
   return (
     <div className="font-editorial min-h-screen bg-white text-stone-900">
-      <header className="absolute inset-x-0 top-0 z-30">
-        <div className="h-px" style={{ backgroundColor: accent }} />
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-6">
-          <SchoolBrandLink
-            href={base}
-            school={school}
-            nameClassName="text-base font-semibold tracking-tight"
-          />
-          <nav className="flex flex-wrap justify-end gap-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
-            <NavLink href={`${base}#programs`} className="text-white">
-              {t("nav.programs")}
-            </NavLink>
-            <NavLink href={`${base}#about`} className="text-white">
-              {t("nav.about")}
-            </NavLink>
-            <NavLink
-              href={isPreview ? "#events" : `/schools/${school.slug}/events`}
-              className="text-white"
-            >
-              {t("nav.events")}
-            </NavLink>
-            <NavLink
-              href={isPreview ? "#" : `/schools/${school.slug}/visit`}
-              className="text-white"
-            >
-              {t("nav.bookVisit")}
-            </NavLink>
-            <NavLink href={`${base}#contact`} className="text-white">
-              {t("nav.contact")}
-            </NavLink>
-            <Link
-              href={isPreview ? "#" : `/schools/${school.slug}/enroll`}
-              className="border border-white/80 px-3 py-1.5 text-white"
-            >
-              {t("chrome.apply")}
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SchoolSiteHeader
+        schoolName={school.name}
+        logoUrl={school.logo_url}
+        homeHref={base}
+        accentColor={accent}
+        contentWidthClass="max-w-3xl"
+        links={[
+          { href: `${base}#programs`, label: t("nav.programs") },
+          { href: `${base}#about`, label: t("nav.about") },
+          {
+            href: isPreview ? "#events" : `/schools/${school.slug}/events`,
+            label: t("nav.events"),
+          },
+          { href: `${base}#contact`, label: t("nav.contact") },
+        ]}
+        loginHref="/login"
+        loginLabel={t("nav.login")}
+        applyHref={isPreview ? "#" : `/schools/${school.slug}/enroll`}
+        applyLabel={t("chrome.apply")}
+        menuLabel={menuLabel}
+        openMenuLabel={openMenuLabel}
+        closeMenuLabel={closeMenuLabel}
+      />
       <main>{children}</main>
       <footer className="border-t border-stone-200 px-6 py-10">
         <div className="mx-auto max-w-3xl">
@@ -333,24 +238,31 @@ function MinimalShell({ school, children, isPreview, t }: ShellProps) {
 
 export async function SchoolSiteLayout({ school, children, isPreview }: SchoolSiteLayoutProps) {
   const t = await getTranslations("schools");
+  const tc = await getTranslations("common");
   const template = (school.website_template ?? "modern") as WebsiteTemplateId;
+  const chrome = {
+    t,
+    menuLabel: tc("menu"),
+    openMenuLabel: tc("openMenu"),
+    closeMenuLabel: tc("closeMenu"),
+  };
 
   switch (template) {
     case "classic":
       return (
-        <ClassicShell school={school} isPreview={isPreview} t={t}>
+        <ClassicShell school={school} isPreview={isPreview} {...chrome}>
           {children}
         </ClassicShell>
       );
     case "minimal":
       return (
-        <MinimalShell school={school} isPreview={isPreview} t={t}>
+        <MinimalShell school={school} isPreview={isPreview} {...chrome}>
           {children}
         </MinimalShell>
       );
     default:
       return (
-        <ModernShell school={school} isPreview={isPreview} t={t}>
+        <ModernShell school={school} isPreview={isPreview} {...chrome}>
           {children}
         </ModernShell>
       );
