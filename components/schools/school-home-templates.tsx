@@ -6,6 +6,12 @@ import { resolveSchoolWebsite } from "@/lib/schools/website-content";
 import { ProgramPhotoGrid } from "./program-photo-grid";
 import { PublicEventsSection } from "./public-events-section";
 
+type SchoolSiteTranslator = (key: string, values?: Record<string, string>) => string;
+
+function tWithSchoolName(t: SchoolSiteTranslator, key: string, schoolName: string) {
+  return t(key, { schoolName });
+}
+
 function AdmissionsCta({
   slug,
   label,
@@ -39,7 +45,7 @@ function ContactBlock({
   t,
 }: {
   school: SchoolRow;
-  t: (key: string) => string;
+  t: SchoolSiteTranslator;
 }) {
   return (
     <div className="space-y-3 text-sm">
@@ -125,7 +131,7 @@ function GallerySection({
   gallery: { url: string; caption?: string }[];
   primary?: string;
   variant?: "modern" | "classic" | "minimal";
-  t: (key: string) => string;
+  t: SchoolSiteTranslator;
 }) {
   if (gallery.length === 0) return null;
 
@@ -183,7 +189,7 @@ function ModernTemplate({
   school: SchoolRow;
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
-  t: (key: string) => string;
+  t: SchoolSiteTranslator;
 }) {
   const primary = school.theme_primary_color ?? "#0d9488";
   const secondary = school.theme_secondary_color ?? "#0f766e";
@@ -234,7 +240,7 @@ function ModernTemplate({
           {t("chrome.legacyJoinThisTerm")}
         </h2>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/90">
-            {site.about || t("chrome.aboutFallback", { schoolName: school.name })}
+            {site.about || tWithSchoolName(t, "chrome.aboutFallback", school.name)}
         </p>
         <a
           href="#about"
@@ -246,7 +252,7 @@ function ModernTemplate({
 
       <div className="mx-auto max-w-6xl space-y-20 px-6 py-16 md:py-20">
         <section id="programs" className="scroll-mt-24">
-          <h2 className="text-3xl font-bold tracking-tight">{t("chrome.discoverSchool", { schoolName: school.name })}</h2>
+          <h2 className="text-3xl font-bold tracking-tight">{tWithSchoolName(t, "chrome.discoverSchool", school.name)}</h2>
           <p className="mt-3 max-w-2xl text-stone-600">
             {t("chrome.programsFillByDivision")}
           </p>
@@ -323,7 +329,7 @@ function ClassicTemplate({
   school: SchoolRow;
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
-  t: (key: string) => string;
+  t: SchoolSiteTranslator;
 }) {
   const primary = school.theme_primary_color ?? "#1a2b56";
   const accent = school.theme_secondary_color ?? "#c9a227";
@@ -374,7 +380,7 @@ function ClassicTemplate({
           {t("chrome.trustedSchooling")}
         </h2>
         <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/90">
-            {site.about || t("chrome.classicAboutFallback", { schoolName: school.name })}
+            {site.about || tWithSchoolName(t, "chrome.classicAboutFallback", school.name)}
         </p>
         <AdmissionsCta
           slug={school.slug}
@@ -449,7 +455,7 @@ function MinimalTemplate({
   school: SchoolRow;
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
-  t: (key: string) => string;
+  t: SchoolSiteTranslator;
 }) {
   const primary = school.theme_primary_color ?? "#1a2b56";
   const accent = school.theme_secondary_color ?? "#c9a227";
@@ -489,7 +495,7 @@ function MinimalTemplate({
           {t("chrome.excellenceIntegrityInclusivity")}
         </p>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-white/90">
-          {site.about || t("chrome.seatsNotUnlimited", { schoolName: school.name })}
+          {site.about || tWithSchoolName(t, "chrome.seatsNotUnlimited", school.name)}
         </p>
       </section>
 
@@ -548,7 +554,7 @@ export async function SchoolHomeTemplate({
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
 }) {
-  const t = await getTranslations("schools");
+  const t = (await getTranslations("schools")) as SchoolSiteTranslator;
   const template = school.website_template ?? "modern";
 
   switch (template) {
