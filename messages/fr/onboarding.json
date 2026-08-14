@@ -62,8 +62,8 @@
   },
   "structure": {
     "badge": "Structure de l'école",
-    "title": "Créez vos classes avant qu'un tableau de bord vide vous coûte une semaine",
-    "subtitle": "Sans niveaux, {school} n'a nulle part où mettre présences, frais ou inscriptions. Deux minutes maintenant — les vrais élèves viennent après.",
+    "title": "Bienvenue à {school}",
+    "subtitle": "Choisissez le niveau de votre école et les classes que vous enseignez. Nous créerons ensuite les classes vides.",
     "stepProgress": "Étape {current} sur {total} : {title}",
     "skip": "Je configurerai cela moi-même",
     "skipSuccess": "Configuration de structure ignorée. Vous pouvez créer des classes à tout moment.",

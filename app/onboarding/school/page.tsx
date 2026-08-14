@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Building2,
@@ -44,11 +44,15 @@ const ambientByStep = [
   "bg-orange-500/10 left-[20%] bottom-[12%]",
 ];
 
-export default function SchoolStructureOnboardingPage() {
+function SchoolStructureOnboardingPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations("onboarding.structure");
   const tc = useTranslations("common");
   const reduceMotion = useReducedMotion();
+  const isDevPreview =
+    process.env.NODE_ENV === "development" &&
+    searchParams.get("preview") === "1";
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -62,6 +66,12 @@ export default function SchoolStructureOnboardingPage() {
 
   useEffect(() => {
     async function load() {
+      if (isDevPreview) {
+        setSchoolName("Groupe Scolaire L'Aricharde");
+        setLoading(false);
+        return;
+      }
+
       const supabase = createClient();
       const {
         data: { user },
@@ -129,7 +139,7 @@ export default function SchoolStructureOnboardingPage() {
     }
 
     void load();
-  }, [router]);
+  }, [router, isDevPreview]);
 
   const currentStep = STEPS[stepIndex];
   const isLastStep = stepIndex === STEPS.length - 1;
@@ -214,6 +224,11 @@ export default function SchoolStructureOnboardingPage() {
       return;
     }
 
+    if (isDevPreview) {
+      toast.success(t("createSuccess", { count: plannedCount }));
+      return;
+    }
+
     setSaving(true);
     try {
       const result = await createSchoolStructure({
@@ -239,6 +254,11 @@ export default function SchoolStructureOnboardingPage() {
   }
 
   async function handleSkip() {
+    if (isDevPreview) {
+      toast.success(t("skipSuccess"));
+      return;
+    }
+
     setSaving(true);
     try {
       const result = await skipSchoolStructureSetup();
@@ -325,10 +345,10 @@ export default function SchoolStructureOnboardingPage() {
             {t("badge")}
           </p>
           <h1 className="mt-2 font-display text-3xl tracking-tight text-white sm:text-4xl">
-            {t("title")}
+            {t("title", { school: schoolName })}
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-relaxed text-white/50">
-            {t("subtitle", { school: schoolName })}
+            {t("subtitle")}
           </p>
         </motion.div>
 
@@ -626,5 +646,24 @@ export default function SchoolStructureOnboardingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function SchoolStructureFallback() {
+  return (
+    <div className="space-y-5">
+      <div className="h-3 w-28 animate-pulse rounded-full bg-white/10" />
+      <div className="h-10 w-64 animate-pulse rounded-lg bg-white/10" />
+      <div className="h-4 w-full max-w-sm animate-pulse rounded bg-white/5" />
+      <div className="h-56 animate-pulse rounded-2xl border border-white/10 bg-white/[0.03]" />
+    </div>
+  );
+}
+
+export default function SchoolStructureOnboardingPageRoute() {
+  return (
+    <Suspense fallback={<SchoolStructureFallback />}>
+      <SchoolStructureOnboardingPage />
+    </Suspense>
   );
 }

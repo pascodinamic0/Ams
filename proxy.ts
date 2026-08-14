@@ -110,6 +110,14 @@ export async function proxy(request: NextRequest) {
     return supabaseResponse;
   }
 
+  const isDevOnboardingPreview =
+    process.env.NODE_ENV === "development" &&
+    request.nextUrl.searchParams.get("preview") === "1" &&
+    (pathname === "/onboarding" || pathname === "/onboarding/school");
+  if (isDevOnboardingPreview) {
+    return supabaseResponse;
+  }
+
   if (!user) {
     if (serverAction) {
       return supabaseResponse;
