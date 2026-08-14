@@ -81,7 +81,13 @@ export async function getClasses(
 
   const { data, error } = await query;
   if (error) {
-    console.error("getClasses error:", error);
+    console.error(
+      "getClasses error:",
+      error.message,
+      error.code,
+      error.details,
+      error.hint
+    );
     return [];
   }
 

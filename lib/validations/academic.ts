@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { optionalGenderSchema } from "./student";
 
 export const classSchema = z.object({
   name: z.string().min(1, "nameRequired"),
@@ -29,7 +30,7 @@ export const admissionPickupPersonSchema = z.object({
 const admissionBaseSchema = z.object({
   student_name: z.string().min(1, "studentNameRequired"),
   dob: z.string().optional(),
-  gender: z.string().optional(),
+  gender: optionalGenderSchema,
   class_applying: z.string().optional(),
   class_id: z.string().uuid().optional(),
   guardian_name: z.string().min(1, "guardianNameRequired"),

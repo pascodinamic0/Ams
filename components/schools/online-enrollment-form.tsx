@@ -237,7 +237,6 @@ export function OnlineEnrollmentForm({
                     { value: "", label: t("select") },
                     { value: "male", label: t("male") },
                     { value: "female", label: t("female") },
-                    { value: "other", label: t("other") },
                   ]}
                   value={form.gender}
                   onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}

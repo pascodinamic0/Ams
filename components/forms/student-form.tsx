@@ -518,7 +518,6 @@ function StudentFormFields({
               options={[
                 { value: "male", label: t("genderMale") },
                 { value: "female", label: t("genderFemale") },
-                { value: "other", label: t("genderOther") },
               ]}
               {...register("gender")}
             />

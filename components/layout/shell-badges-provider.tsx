@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { usePathname } from "next/navigation";
@@ -16,6 +17,38 @@ import { MESSAGING_STAFF_ROLES } from "@/lib/auth/rbac";
 import { LIVE_REFRESH_EVENT } from "@/lib/live-sync";
 
 const MESSAGING_ROLES = new Set([...MESSAGING_STAFF_ROLES, "parent"]);
+
+/** Refresh/HMR/offline abort in-flight Server Actions as a TypeError overlay. */
+function isIgnorableBadgeError(error: unknown): boolean {
+  if (!(error instanceof Error)) return true;
+  const message = error.message.toLowerCase();
+  return (
+    error.name === "AbortError" ||
+    error.name === "TypeError" ||
+    message.includes("failed to fetch") ||
+    message.includes("abort")
+  );
+}
+
+async function fetchBadgeCounts(role: string): Promise<{
+  notifications: number;
+  messages: number;
+} | null> {
+  try {
+    const [notifications, messages] = await Promise.all([
+      fetchUnreadNotificationCount(),
+      MESSAGING_ROLES.has(role)
+        ? fetchUnreadConversationCount()
+        : Promise.resolve(0),
+    ]);
+    return { notifications, messages };
+  } catch (error) {
+    if (!isIgnorableBadgeError(error)) {
+      console.error("Failed to refresh shell badges:", error);
+    }
+    return null;
+  }
+}
 
 type ShellBadgesContextValue = {
   unreadNotifications: number;
@@ -47,48 +80,45 @@ export function ShellBadgesProvider({
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
 
-  const load = useCallback(async () => {
-    const [notifications, messages] = await Promise.all([
-      fetchUnreadNotificationCount(),
-      MESSAGING_ROLES.has(role)
-        ? fetchUnreadConversationCount()
-        : Promise.resolve(0),
-    ]);
+  const inFlight = useRef(false);
 
-    setUnreadNotifications(notifications);
-    setUnreadMessages(messages);
-  }, [role]);
+  const applyCounts = useCallback(
+    async (active?: { current: boolean }) => {
+      if (inFlight.current) return;
+      inFlight.current = true;
+      try {
+        const counts = await fetchBadgeCounts(role);
+        if (!counts || active?.current === false) return;
+        setUnreadNotifications(counts.notifications);
+        setUnreadMessages(counts.messages);
+      } finally {
+        inFlight.current = false;
+      }
+    },
+    [role]
+  );
+
+  const load = useCallback(async () => {
+    await applyCounts();
+  }, [applyCounts]);
 
   useEffect(() => {
-    let active = true;
+    const active = { current: true };
 
-    async function run() {
-      const [notifications, messages] = await Promise.all([
-        fetchUnreadNotificationCount(),
-        MESSAGING_ROLES.has(role)
-          ? fetchUnreadConversationCount()
-          : Promise.resolve(0),
-      ]);
-
-      if (!active) return;
-      setUnreadNotifications(notifications);
-      setUnreadMessages(messages);
-    }
-
-    void run();
-    const interval = window.setInterval(() => void run(), 15_000);
+    void applyCounts(active);
+    const interval = window.setInterval(() => void applyCounts(active), 15_000);
 
     const onLiveRefresh = () => {
-      void run();
+      void applyCounts(active);
     };
     window.addEventListener(LIVE_REFRESH_EVENT, onLiveRefresh);
 
     return () => {
-      active = false;
+      active.current = false;
       window.clearInterval(interval);
       window.removeEventListener(LIVE_REFRESH_EVENT, onLiveRefresh);
     };
-  }, [role, pathname]);
+  }, [applyCounts, pathname]);
 
   const refresh = useCallback(() => {
     void load();

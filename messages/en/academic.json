@@ -334,7 +334,6 @@
   "selectOptional": "Select (optional)",
   "genderMale": "Male",
   "genderFemale": "Female",
-  "genderOther": "Other",
   "studentPhoto": "Student photo",
   "studentPhotoHint": "Optional. Upload a file or take a photo with the webcam.",
   "takePhoto": "Take photo",

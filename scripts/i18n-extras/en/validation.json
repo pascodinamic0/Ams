@@ -39,6 +39,7 @@
   "secondaryGuardianRequired": "Secondary guardian details are required",
   "invalidTime": "Invalid time",
   "invalidPhotoUrl": "Invalid photo URL",
+  "invalidGender": "Gender must be male or female",
   "bookRequired": "Book is required",
   "routeRequired": "Route is required",
   "vehicleRequired": "Vehicle is required",

@@ -186,10 +186,10 @@ export default async function StudentDetailPage({
               <span className="text-stone-500">{t("dob")}:</span>{" "}
               {student.date_of_birth ?? tc("emptyDash")}
             </p>
-            {student.gender ? (
+            {student.gender === "male" || student.gender === "female" ? (
               <p>
                 <span className="text-stone-500">{t("gender")}:</span>{" "}
-                {student.gender}
+                {student.gender === "male" ? t("genderMale") : t("genderFemale")}
               </p>
             ) : null}
             <p>

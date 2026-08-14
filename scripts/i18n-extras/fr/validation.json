@@ -39,6 +39,7 @@
   "secondaryGuardianRequired": "Les informations du tuteur secondaire sont requises",
   "invalidTime": "Heure invalide",
   "invalidPhotoUrl": "URL de photo invalide",
+  "invalidGender": "Le genre doit être masculin ou féminin",
   "bookRequired": "Le livre est requis",
   "routeRequired": "L'itinéraire est requis",
   "vehicleRequired": "Le véhicule est requis",

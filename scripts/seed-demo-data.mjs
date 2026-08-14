@@ -43,7 +43,7 @@ const EXAM_TERMS = ["Term 1", "Midterm Exam", "Term 2"];
 const REPORT_TERM = "Term 1";
 
 const DEMO_STUDENTS = [
-  { key: "demo", first: "Demo", last: "Student", dob: "2010-06-15", gender: "other", classKey: "9A", authEmail: "student@ams.demo", guardianEmail: "parent@ams.demo", guardianName: "Demo Parent", relation: "guardian" },
+  { key: "demo", first: "Demo", last: "Student", dob: "2010-06-15", gender: "male", classKey: "9A", authEmail: "student@ams.demo", guardianEmail: "parent@ams.demo", guardianName: "Demo Parent", relation: "guardian" },
   { key: "emma", first: "Emma", last: "Johnson", dob: "2010-03-12", gender: "female", classKey: "9A", guardianEmail: "parent@ams.demo", guardianName: "Demo Parent", relation: "mother" },
   { key: "liam", first: "Liam", last: "Chen", dob: "2010-08-22", gender: "male", classKey: "9A", guardianEmail: "liam.parent@ams.demo", guardianName: "Wei Chen", relation: "father" },
   { key: "sophia", first: "Sophia", last: "Williams", dob: "2010-11-05", gender: "female", classKey: "9A", guardianEmail: "sophia.parent@ams.demo", guardianName: "Maria Williams", relation: "mother" },
@@ -658,9 +658,9 @@ async function seedOperations(supabase, schoolId, branchId, studentIds, userIds)
 
 async function seedAdmissions(supabase, schoolId) {
   const applications = [
-    { student_name: "Olivia Parker", guardian_name: "David Parker", guardian_email: "olivia.apply@ams.demo", class_applying: "Grade 9", status: "pending" },
-    { student_name: "Marcus Lee", guardian_name: "Jennifer Lee", guardian_email: "marcus.apply@ams.demo", class_applying: "Grade 10", status: "pending" },
-    { student_name: "Zoe Adams", guardian_name: "Chris Adams", guardian_email: "zoe.apply@ams.demo", class_applying: "Grade 9", status: "approved" },
+    { student_name: "Olivia Parker", guardian_name: "David Parker", guardian_email: "olivia.apply@ams.demo", class_applying: "Grade 9", status: "pending", gender: "female" },
+    { student_name: "Marcus Lee", guardian_name: "Jennifer Lee", guardian_email: "marcus.apply@ams.demo", class_applying: "Grade 10", status: "pending", gender: "male" },
+    { student_name: "Zoe Adams", guardian_name: "Chris Adams", guardian_email: "zoe.apply@ams.demo", class_applying: "Grade 9", status: "approved", gender: "female" },
   ];
 
   for (const app of applications) {
@@ -672,7 +672,7 @@ async function seedAdmissions(supabase, schoolId) {
         guardian_name: app.guardian_name,
         class_applying: app.class_applying,
         dob: "2011-05-15",
-        gender: "other",
+        gender: app.gender,
         source: "online",
         status: app.status,
       }

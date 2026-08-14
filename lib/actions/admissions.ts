@@ -14,6 +14,7 @@ import { getTranslations } from "next-intl/server";
 import { createNotification } from "@/lib/services/notifications";
 import { sendAdmissionApprovedEmail } from "@/lib/services/email";
 import { splitPersonName } from "@/lib/utils";
+import { normalizeGender } from "@/lib/validations/student";
 import { createStudentWithGuardians } from "./student-onboarding";
 
 export async function createAdmission(
@@ -29,6 +30,7 @@ export async function createAdmission(
     .insert({
       school_id: schoolId,
       ...parsed.data,
+      gender: normalizeGender(parsed.data.gender),
       class_id: parsed.data.class_id ?? null,
       source: input.source ?? "manual",
       status: "pending",
@@ -190,7 +192,7 @@ export async function convertAdmissionToStudent(
     middle_name: studentName.middle_name,
     last_name: studentName.last_name,
     date_of_birth: app.dob ?? "2000-01-01",
-    gender: app.gender ?? undefined,
+    gender: normalizeGender(app.gender) ?? undefined,
     class_id: classId,
     status: "active",
     overrideCapacity: options?.overrideCapacity,

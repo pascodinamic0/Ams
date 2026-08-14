@@ -72,7 +72,6 @@ async function chartCopy() {
     const key = (raw ?? "").trim().toLowerCase();
     if (key === "male") return t("male");
     if (key === "female") return t("female");
-    if (key === "other") return t("other");
     return t("notSpecified");
   };
   return { t, dateLocale, genderLabel };

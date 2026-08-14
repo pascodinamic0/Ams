@@ -4,7 +4,7 @@ import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { studentSchema, type StudentFormData } from "@/lib/validations";
+import { normalizeGender, studentSchema, type StudentFormData } from "@/lib/validations";
 import {
   assertClassCapacity,
   notifyClassMainTeacher,
@@ -51,7 +51,7 @@ export async function createStudent(
       middle_name: parsed.data.middle_name?.trim() || null,
       last_name: parsed.data.last_name,
       date_of_birth: parsed.data.date_of_birth,
-      gender: parsed.data.gender || null,
+      gender: normalizeGender(parsed.data.gender),
       class_id: parsed.data.class_id,
       status: parsed.data.status,
       home_address: parsed.data.home_address || null,
@@ -127,6 +127,9 @@ export async function updateStudent(
     .from("students")
     .update({
       ...parsed.data,
+      ...(parsed.data.gender !== undefined
+        ? { gender: normalizeGender(parsed.data.gender) }
+        : {}),
       ...(parsed.data.middle_name !== undefined
         ? { middle_name: parsed.data.middle_name.trim() || null }
         : {}),

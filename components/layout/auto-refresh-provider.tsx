@@ -26,6 +26,8 @@ export function AutoRefreshProvider() {
   const debounceTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
+    let liveNotifyTimer: number | undefined;
+
     const refreshNow = () => {
       const now = Date.now();
       if (now - lastRefreshAt.current < MIN_REFRESH_GAP_MS) return;
@@ -34,7 +36,9 @@ export function AutoRefreshProvider() {
       }
       lastRefreshAt.current = now;
       router.refresh();
-      notifyLiveRefresh();
+      // Let the RSC refresh start first so it does not abort badge Server Actions.
+      if (liveNotifyTimer !== undefined) window.clearTimeout(liveNotifyTimer);
+      liveNotifyTimer = window.setTimeout(() => notifyLiveRefresh(), 400);
     };
 
     const refreshSoon = () => {
@@ -143,6 +147,9 @@ export function AutoRefreshProvider() {
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("focus", refreshNow);
       window.removeEventListener("online", refreshNow);
+      if (liveNotifyTimer !== undefined) {
+        window.clearTimeout(liveNotifyTimer);
+      }
       if (debounceTimer.current !== undefined) {
         window.clearTimeout(debounceTimer.current);
       }

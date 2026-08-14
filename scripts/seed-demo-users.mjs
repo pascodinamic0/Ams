@@ -117,7 +117,7 @@ async function linkStudentAndParent(supabase, { schoolId, branchId, studentUserI
     first_name: "Demo",
     last_name: "Student",
     date_of_birth: "2010-06-15",
-    gender: "other",
+    gender: "male",
     status: "active",
     auth_user_id: studentUserId,
   });

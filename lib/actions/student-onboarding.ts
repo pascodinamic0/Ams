@@ -12,6 +12,7 @@ import {
   type PickupPersonData,
   type StudentOnboardingData,
 } from "@/lib/validations/student-onboarding";
+import { normalizeGender } from "@/lib/validations/student";
 import { formatPersonName } from "@/lib/utils";
 import {
   assertClassCapacity,
@@ -104,7 +105,7 @@ export async function createStudentWithGuardians(
     const normalized = {
       ...input,
       existing_guardian_id: input.existing_guardian_id || undefined,
-      gender: input.gender || undefined,
+      gender: normalizeGender(input.gender) ?? undefined,
       pickup_persons: input.pickup_persons ?? [],
     };
 
@@ -146,7 +147,7 @@ export async function createStudentWithGuardians(
         middle_name: data.middle_name?.trim() || null,
         last_name: data.last_name,
         date_of_birth: data.date_of_birth,
-        gender: data.gender || null,
+        gender: normalizeGender(data.gender),
         class_id: data.class_id,
         status: data.status,
         home_address: data.home_address || null,
