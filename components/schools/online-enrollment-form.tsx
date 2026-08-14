@@ -12,6 +12,7 @@ import { CampusVisitSlotPicker } from "@/components/schools/campus-visit-slot-pi
 import { submitOnlineEnrollment } from "@/lib/actions/admissions";
 import type { PublicSchoolEvent } from "@/lib/db/public-events";
 import type { PublicClassListItem } from "@/lib/db/classes";
+import { normalizeGender, type Gender } from "@/lib/validations/student";
 import { formatClassOptionLabel, isClassFull, seatsRemaining } from "@/lib/utils/class-options";
 import { toast } from "@/lib/toast";
 
@@ -62,7 +63,7 @@ export function OnlineEnrollmentForm({
   const [form, setForm] = useState({
     student_name: "",
     dob: "",
-    gender: "",
+    gender: "" as "" | Gender,
     class_id: "",
     class_applying: "",
     guardian_name: "",
@@ -100,7 +101,7 @@ export function OnlineEnrollmentForm({
     const result = await submitOnlineEnrollment(schoolId, {
       ...form,
       class_id: form.class_id,
-      gender: form.gender || undefined,
+      gender: normalizeGender(form.gender) ?? undefined,
       notes: form.notes || undefined,
       relation: form.relation as "father" | "mother" | "guardian" | "other",
       pickup_persons: form.pickup_persons.filter(
@@ -239,7 +240,12 @@ export function OnlineEnrollmentForm({
                     { value: "female", label: t("female") },
                   ]}
                   value={form.gender}
-                  onChange={(e) => setForm((f) => ({ ...f, gender: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((f) => ({
+                      ...f,
+                      gender: normalizeGender(e.target.value) ?? "",
+                    }))
+                  }
                 />
               </div>
             </div>
