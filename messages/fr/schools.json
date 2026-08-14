@@ -121,7 +121,12 @@
     "useThisDesign": "Utilisez ce design avant qu'une autre école ne s'en empare",
     "dismissPreviewNotice": "Fermer l'aperçu",
     "possibilitiesAndPartnerships": "Possibilités et partenariats",
-    "seatsNotUnlimited": "{schoolName} garde l'apprentissage personnel — mais les places ne sont pas illimitées."
+    "seatsNotUnlimited": "{schoolName} garde l'apprentissage personnel — mais les places ne sont pas illimitées.",
+    "upcomingEvents": "Événements à venir",
+    "missOpenDay": "Manquer une journée portes ouvertes, c'est perdre le chemin le plus simple vers l'inscription.",
+    "viewAllEvents": "Voir tous les événements",
+    "claimASpot": "Réservez une place avant qu'elle ne parte",
+    "viewDetails": "Voir les détails"
   },
   "editor": {
     "publicUrlSlug": "Identifiant d'URL public",

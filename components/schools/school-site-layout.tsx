@@ -69,16 +69,18 @@ function SchoolFooter({
   light?: boolean;
 }) {
   return (
-    <div className={className}>
-      <p className={`text-sm ${light ? "text-white/70" : "text-stone-500"}`}>
-        &copy; {new Date().getFullYear()} {school.name}
-      </p>
-      {site.footerTagline && (
-        <p className={`mt-1 text-sm ${light ? "text-white/55" : "text-stone-400"}`}>
-          {site.footerTagline}
+    <div className={`flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between ${className}`}>
+      <div className="min-w-0">
+        <p className={`text-xs sm:text-sm ${light ? "text-white/70" : "text-stone-500"}`}>
+          &copy; {new Date().getFullYear()} {school.name}
         </p>
-      )}
-      <SocialLinks social={site.social} className="mt-3" light={light} />
+        {site.footerTagline ? (
+          <p className={`mt-0.5 text-xs ${light ? "text-white/55" : "text-stone-400"}`}>
+            {site.footerTagline}
+          </p>
+        ) : null}
+      </div>
+      <SocialLinks social={site.social} className="gap-3" light={light} />
     </div>
   );
 }
@@ -97,7 +99,7 @@ function ModernShell({
   const base = isPreview ? "#" : `/schools/${school.slug}`;
 
   return (
-    <div className="min-h-screen bg-white text-stone-900">
+    <div className="min-h-screen overflow-x-hidden bg-white text-stone-900">
       <SchoolSiteHeader
         schoolName={school.name}
         logoUrl={school.logo_url}
@@ -127,7 +129,7 @@ function ModernShell({
       />
       <main>{children}</main>
       <footer className="border-t border-stone-200 bg-stone-50">
-        <div className="mx-auto max-w-6xl px-6 py-10">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <SchoolFooter school={school} site={site} />
         </div>
       </footer>
@@ -150,7 +152,7 @@ function ClassicShell({
   const base = isPreview ? "#" : `/schools/${school.slug}`;
 
   return (
-    <div className="min-h-screen bg-white text-stone-900">
+    <div className="min-h-screen overflow-x-hidden bg-white text-stone-900">
       <SchoolSiteHeader
         schoolName={school.name}
         logoUrl={school.logo_url}
@@ -176,9 +178,8 @@ function ClassicShell({
         closeMenuLabel={closeMenuLabel}
       />
       <main>{children}</main>
-      <footer className="py-10 text-white" style={{ backgroundColor: primary }}>
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="mb-6 h-[2px] w-16" style={{ backgroundColor: accent }} />
+      <footer className="text-white" style={{ backgroundColor: primary }}>
+        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 sm:py-5 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <SchoolFooter school={school} site={site} light />
         </div>
       </footer>
@@ -195,13 +196,12 @@ function MinimalShell({
   openMenuLabel,
   closeMenuLabel,
 }: ShellProps) {
-  const primary = school.theme_primary_color ?? "#1a2b56";
   const accent = school.theme_secondary_color ?? "#c9a227";
   const site = resolveSchoolWebsite(school);
   const base = isPreview ? "#" : `/schools/${school.slug}`;
 
   return (
-    <div className="font-editorial min-h-screen bg-white text-stone-900">
+    <div className="font-editorial min-h-screen overflow-x-hidden bg-white text-stone-900">
       <SchoolSiteHeader
         schoolName={school.name}
         logoUrl={school.logo_url}
@@ -226,9 +226,8 @@ function MinimalShell({
         closeMenuLabel={closeMenuLabel}
       />
       <main>{children}</main>
-      <footer className="border-t border-stone-200 px-6 py-10">
-        <div className="mx-auto max-w-3xl">
-          <div className="mb-4 h-px w-12" style={{ backgroundColor: primary }} />
+      <footer className="border-t border-stone-200 px-4 sm:px-6">
+        <div className="mx-auto max-w-3xl py-4 sm:py-5 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <SchoolFooter school={school} site={site} />
         </div>
       </footer>

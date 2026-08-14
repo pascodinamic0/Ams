@@ -71,7 +71,7 @@ export function SchoolSiteHeader({
       <div className="border-b border-white/10 bg-black/45 pt-[env(safe-area-inset-top)] shadow-[0_8px_32px_rgba(0,0,0,0.18)] backdrop-blur-xl">
         <div
           className={cn(
-            "mx-auto grid min-h-16 grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-5 py-2.5 lg:min-h-[4.25rem] lg:grid-cols-[minmax(0,auto)_1fr_auto] lg:gap-8 lg:px-6",
+            "mx-auto grid min-h-14 grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 py-2 sm:min-h-16 sm:gap-4 sm:px-5 sm:py-2.5 lg:min-h-[4.25rem] lg:grid-cols-[minmax(0,auto)_1fr_auto] lg:gap-8 lg:px-6",
             contentWidthClass
           )}
         >

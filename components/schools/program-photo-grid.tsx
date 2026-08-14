@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type Program = {
   title: string;
@@ -15,6 +16,7 @@ export function ProgramPhotoGrid({
   programs: Program[];
   accent?: string;
 }) {
+  const t = useTranslations("common");
   const [active, setActive] = useState<string | null>(null);
 
   if (programs.length === 0) return null;
@@ -31,6 +33,9 @@ export function ProgramPhotoGrid({
             onMouseLeave={() => setActive(null)}
             onFocus={() => setActive(program.title)}
             onBlur={() => setActive(null)}
+            onClick={() =>
+              setActive((current) => (current === program.title ? null : program.title))
+            }
             tabIndex={0}
           >
             <img
@@ -45,9 +50,9 @@ export function ProgramPhotoGrid({
                 isActive ? "bg-black/65" : "bg-gradient-to-t from-black/70 via-black/20 to-transparent"
               }`}
             />
-            <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
+            <div className="absolute inset-0 flex flex-col justify-end p-4 text-white sm:p-5">
               <h3
-                className={`text-lg font-semibold tracking-wide transition-all duration-300 ${
+                className={`text-base font-semibold tracking-wide transition-all duration-300 sm:text-lg ${
                   isActive ? "-translate-y-2" : ""
                 }`}
               >
@@ -63,9 +68,9 @@ export function ProgramPhotoGrid({
                 </p>
                 <a
                   href="#contact"
-                  className="mt-4 inline-flex border border-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-white hover:text-stone-900"
+                  className="mt-3 inline-flex h-9 items-center rounded-full border border-white/80 px-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-white hover:text-stone-900"
                 >
-                  Learn more
+                  {t("learnMore")}
                 </a>
               </div>
             </div>

@@ -9,7 +9,7 @@ function formatEventDate(date: string, time: string | null) {
     year: "numeric",
   });
   if (!time) return formatted;
-  return `${formatted} at ${time.slice(0, 5)}`;
+  return `${formatted} · ${time.slice(0, 5)}`;
 }
 
 export function PublicEventsSection({
@@ -17,34 +17,36 @@ export function PublicEventsSection({
   slug,
   primary,
   variant = "modern",
+  t,
 }: {
   events: PublicSchoolEvent[];
   slug: string;
   primary: string;
   variant?: "modern" | "classic" | "minimal";
+  t: (key: string) => string;
 }) {
   const bookable = events.filter((e) => e.type === "event").slice(0, 3);
   if (bookable.length === 0) return null;
 
   return (
-    <section id="events" className="scroll-mt-24">
-      <div className="flex flex-wrap items-end justify-between gap-4">
+    <section id="events" className="scroll-mt-28">
+      <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2
             className={
               variant === "classic"
-                ? "font-serif text-3xl font-bold"
+                ? "font-serif text-2xl font-bold sm:text-3xl"
                 : variant === "minimal"
                   ? "font-editorial text-xs font-medium uppercase tracking-[0.2em] text-stone-500"
-                  : "text-3xl font-bold tracking-tight"
+                  : "text-2xl font-bold tracking-tight sm:text-3xl"
             }
             style={variant === "classic" ? { color: primary } : undefined}
           >
-            {variant === "minimal" ? "Events" : "Upcoming events"}
+            {variant === "minimal" ? t("nav.events") : t("chrome.upcomingEvents")}
           </h2>
           {variant !== "minimal" && (
-            <p className="mt-2 text-stone-600">
-              Miss an open day and you lose the easiest path to enrollment answers.
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-stone-600 sm:text-base">
+              {t("chrome.missOpenDay")}
             </p>
           )}
         </div>
@@ -53,14 +55,14 @@ export function PublicEventsSection({
           className="text-sm font-medium hover:underline"
           style={{ color: primary }}
         >
-          View all events
+          {t("chrome.viewAllEvents")}
         </Link>
       </div>
       <div
         className={
           variant === "minimal"
             ? "mt-8 space-y-8"
-            : "mt-8 grid gap-5 md:grid-cols-3"
+            : "mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3 md:gap-5"
         }
       >
         {bookable.map((event) => (
@@ -102,7 +104,7 @@ export function PublicEventsSection({
               className="mt-4 inline-block text-sm font-medium"
               style={{ color: primary }}
             >
-              {event.booking_enabled ? "Claim a spot before it fills" : "View details"}
+              {event.booking_enabled ? t("chrome.claimASpot") : t("chrome.viewDetails")}
             </Link>
           </article>
         ))}

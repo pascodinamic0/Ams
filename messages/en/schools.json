@@ -121,7 +121,12 @@
     "useThisDesign": "Use this design before another school claims the look",
     "dismissPreviewNotice": "Dismiss preview notice",
     "possibilitiesAndPartnerships": "Possibilities and partnerships",
-    "seatsNotUnlimited": "{schoolName} keeps learning personal — but seats are not unlimited."
+    "seatsNotUnlimited": "{schoolName} keeps learning personal — but seats are not unlimited.",
+    "upcomingEvents": "Upcoming events",
+    "missOpenDay": "Miss an open day and you lose the easiest path to enrollment answers.",
+    "viewAllEvents": "View all events",
+    "claimASpot": "Claim a spot before it fills",
+    "viewDetails": "View details"
   },
   "editor": {
     "publicUrlSlug": "Public URL slug",

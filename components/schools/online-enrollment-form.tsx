@@ -194,11 +194,11 @@ export function OnlineEnrollmentForm({
         </>
       )}
 
-      <div className={hideIntro ? "flex gap-2" : "mt-6 flex gap-2"}>
+      <div className={hideIntro ? "flex gap-1.5 sm:gap-2" : "mt-6 flex gap-1.5 sm:gap-2"}>
         {visibleSteps.map((key, i) => (
           <div
             key={key}
-            className={`flex-1 rounded-lg px-3 py-2 text-center text-xs font-medium ${
+            className={`flex-1 rounded-lg px-1.5 py-2 text-center text-[10px] font-medium leading-tight sm:px-3 sm:text-xs ${
               i <= step
                 ? "bg-primary-light text-teal-800 dark:bg-primary-light dark:text-teal-200"
                 : "bg-stone-100 text-stone-500 dark:bg-stone-900"
@@ -488,7 +488,7 @@ export function OnlineEnrollmentForm({
         )}
       </div>
 
-      <div className="mt-8 flex justify-between">
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-3">
         <Button
           type="button"
           variant="ghost"

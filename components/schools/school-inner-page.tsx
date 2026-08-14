@@ -27,10 +27,10 @@ export function SchoolInnerPage({
 
   const titleClass =
     template === "classic"
-      ? "font-serif text-3xl font-bold md:text-4xl"
+      ? "font-serif text-2xl font-bold sm:text-3xl md:text-4xl"
       : template === "minimal"
-        ? "font-editorial text-3xl font-semibold tracking-tight md:text-4xl"
-        : "text-3xl font-bold tracking-tight md:text-4xl";
+        ? "font-editorial text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl"
+        : "text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl";
 
   return (
     <div className="relative min-h-screen">
@@ -52,8 +52,8 @@ export function SchoolInnerPage({
         />
       )}
 
-      <section className="relative pt-28 pb-8 md:pt-32 md:pb-10">
-        <div className="mx-auto max-w-4xl px-6 text-white">
+      <section className="relative pt-24 pb-6 sm:pt-28 sm:pb-8 md:pt-32 md:pb-10">
+        <div className="mx-auto max-w-4xl px-4 text-white sm:px-6">
           <Link
             href={backHref}
             className="inline-flex items-center text-sm font-medium text-white/80 transition-colors hover:text-white"
@@ -62,15 +62,15 @@ export function SchoolInnerPage({
           </Link>
           <h1 className={`mt-4 ${titleClass}`}>{title}</h1>
           {description && (
-            <p className="mt-3 max-w-2xl text-base leading-relaxed text-white/90 md:text-lg">
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base md:text-lg">
               {description}
             </p>
           )}
         </div>
       </section>
 
-      <div className="relative mx-auto max-w-4xl px-6 pb-16">
-        <div className="rounded-2xl bg-white/92 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.28)] ring-1 ring-white/40 backdrop-blur-md md:p-8">
+      <div className="relative mx-auto max-w-4xl px-4 pb-12 sm:px-6 sm:pb-16">
+        <div className="rounded-2xl bg-white/92 p-4 shadow-[0_24px_60px_rgba(0,0,0,0.28)] ring-1 ring-white/40 backdrop-blur-md sm:p-6 md:p-8">
           {children}
         </div>
       </div>
