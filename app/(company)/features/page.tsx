@@ -151,6 +151,20 @@ export default function FeaturesPage() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
+          className="mt-12 text-center"
+        >
+          <Link
+            href="/school-management-system"
+            className="text-sm font-medium text-amber-500 transition-colors hover:text-amber-400"
+          >
+            {t("schoolManagementGuide")}
+          </Link>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
           className="mt-20 border border-mkt-ink/10 px-6 py-12 text-center sm:mt-24 sm:px-12 sm:py-16"
         >
           <h2 className="font-display text-2xl tracking-tight text-mkt-ink sm:text-4xl">

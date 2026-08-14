@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { type User } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import { supabaseFetch } from "@/lib/supabase/fetch";
 
 export async function updateSession(request: NextRequest): Promise<{
   response: NextResponse;
@@ -25,6 +26,7 @@ export async function updateSession(request: NextRequest): Promise<{
     supabaseUrl,
     supabaseKey,
     {
+      global: { fetch: supabaseFetch },
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -46,9 +48,12 @@ export async function updateSession(request: NextRequest): Promise<{
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  return { response: supabaseResponse, user };
+  try {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return { response: supabaseResponse, user };
+  } catch {
+    return { response: supabaseResponse, user: null };
+  }
 }

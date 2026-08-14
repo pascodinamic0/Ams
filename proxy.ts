@@ -33,6 +33,8 @@ const PUBLIC_ROUTES = [
   "/contact",
   "/docs",
   "/blog",
+  "/school-management-system",
+  "/logiciel-de-gestion-scolaire",
   "/privacy",
   "/terms",
   "/cookies",

@@ -1,44 +1,45 @@
-export const BLOG_POST_SLUGS = [
+import {
+  getStaticBlogPost,
+  getStaticBlogPostSlugs,
+  STATIC_BLOG_POSTS,
+} from "@/content/blog/index";
+import type {
+  BlogCategory,
+  BlogFact,
+  BlogLabeledItem,
+  BlogPost,
+  BlogPostMeta,
+  BlogSection,
+} from "@/lib/company/blog-types";
+
+export type {
+  BlogCategory,
+  BlogFact,
+  BlogFaqItem,
+  BlogLabeledItem,
+  BlogPost,
+  BlogPostMeta,
+  BlogSection,
+} from "@/lib/company/blog-types";
+
+export { BLOG_CATEGORY_LABELS } from "@/lib/company/blog-types";
+
+/** Legacy posts still loaded from next-intl (bilingual via cookie). */
+export const LEGACY_I18N_BLOG_SLUGS = [
   "why-every-kinshasa-school-should-run-on-shuleos",
   "every-way-shuleos-stops-the-leaks",
 ] as const;
 
-export type BlogPostSlug = (typeof BLOG_POST_SLUGS)[number];
+export type LegacyBlogPostSlug = (typeof LEGACY_I18N_BLOG_SLUGS)[number];
 
-export type BlogFact = {
-  value: string;
-  label: string;
-  source?: string;
-};
-
-export type BlogLabeledItem = {
-  title: string;
-  detail: string;
-};
-
-export type BlogSection = {
-  title: string;
-  body?: string[];
-  costLabel: string;
-  cost: string;
-  fixLabel: string;
-  fix: string;
-  whoLabel: string;
-  who: string;
-  image?: string;
-  imageAlt?: string;
-  imageCaption?: string;
-};
-
-/** Static cover art per post (under /public). */
-const BLOG_COVER_IMAGES: Record<BlogPostSlug, string> = {
+const LEGACY_COVER_IMAGES: Record<LegacyBlogPostSlug, string> = {
   "why-every-kinshasa-school-should-run-on-shuleos":
     "/images/blog/why-every-kinshasa-school-should-run-on-shuleos.jpg",
   "every-way-shuleos-stops-the-leaks":
     "/images/blog/every-way-shuleos-stops-the-leaks.jpg",
 };
 
-const BLOG_SECTION_IMAGES: Record<BlogPostSlug, (string | undefined)[]> = {
+const LEGACY_SECTION_IMAGES: Record<LegacyBlogPostSlug, (string | undefined)[]> = {
   "why-every-kinshasa-school-should-run-on-shuleos": [
     "/images/blog/kinshasa-private-school-city.jpg",
     "/images/blog/kinshasa-fee-collection.jpg",
@@ -52,49 +53,49 @@ const BLOG_SECTION_IMAGES: Record<BlogPostSlug, (string | undefined)[]> = {
   "every-way-shuleos-stops-the-leaks": [],
 };
 
-export type BlogPost = {
-  slug: BlogPostSlug;
-  title: string;
-  excerpt: string;
-  date: string;
-  readTime: string;
-  metaDescription: string;
-  coverImage: string;
-  coverImageAlt?: string;
-  intro: string[];
-  factsTitle?: string;
-  facts?: BlogFact[];
-  flowTitle?: string;
-  flowBeforeLabel?: string;
-  flowAfterLabel?: string;
-  flowBefore?: string[];
-  flowAfter?: string[];
-  termCostTitle?: string;
-  termCostIntro?: string;
-  termCostItems?: string[];
-  modulesTitle?: string;
-  modulesIntro?: string;
-  modules?: BlogLabeledItem[];
-  sections: BlogSection[];
-  midCtaTitle: string;
-  midCtaBody: string;
-  midCtaPrimary: string;
-  midCtaSecondary: string;
-  closing: string[];
-  sourcesLabel?: string;
-  sources?: string[];
-  ctaPrimary: string;
-  ctaSecondary: string;
-  ctaTertiary: string;
-  relatedLabel: string;
-  relatedFinance: string;
-  relatedAcademic: string;
-  relatedPortals: string;
+const LEGACY_META: Record<
+  LegacyBlogPostSlug,
+  Omit<
+    BlogPostMeta,
+    "title" | "excerpt" | "readTime" | "coverImageAlt"
+  >
+> = {
+  "why-every-kinshasa-school-should-run-on-shuleos": {
+    slug: "why-every-kinshasa-school-should-run-on-shuleos",
+    locale: "en",
+    category: "conversion",
+    focusKeyword: "school management system Kinshasa",
+    secondaryKeywords: ["ShuleOS", "DRC private schools", "school software Congo"],
+    relatedSlugs: [
+      "school-management-system-drc",
+      "every-way-shuleos-stops-the-leaks",
+      "systeme-de-gestion-scolaire-rdc",
+    ],
+    relatedModules: ["finance", "academic", "parent-student-portals"],
+    date: "2026-08-12",
+    coverImage: LEGACY_COVER_IMAGES["why-every-kinshasa-school-should-run-on-shuleos"],
+  },
+  "every-way-shuleos-stops-the-leaks": {
+    slug: "every-way-shuleos-stops-the-leaks",
+    locale: "en",
+    category: "conversion",
+    focusKeyword: "school management platform",
+    secondaryKeywords: ["fee leaks", "DRC schools", "school ERP"],
+    relatedSlugs: [
+      "what-is-a-school-management-system",
+      "why-every-kinshasa-school-should-run-on-shuleos",
+      "school-fee-management-software",
+    ],
+    relatedModules: ["finance", "academic", "parent-student-portals"],
+    date: "2026-08-05",
+    coverImage: LEGACY_COVER_IMAGES["every-way-shuleos-stops-the-leaks"],
+  },
 };
 
 type BlogTranslator = {
   (key: string): string;
   raw: (key: string) => unknown;
+  has: (key: string) => boolean;
 };
 
 type RawSection = {
@@ -110,12 +111,16 @@ type RawSection = {
   imageCaption?: unknown;
 };
 
-function isBlogPostSlug(slug: string): slug is BlogPostSlug {
-  return (BLOG_POST_SLUGS as readonly string[]).includes(slug);
+function isLegacyBlogPostSlug(slug: string): slug is LegacyBlogPostSlug {
+  return (LEGACY_I18N_BLOG_SLUGS as readonly string[]).includes(slug);
 }
 
 function asString(value: unknown): string | undefined {
   return typeof value === "string" && value.length > 0 ? value : undefined;
+}
+
+function rawIfPresent(t: BlogTranslator, key: string): unknown {
+  return t.has(key) ? t.raw(key) : undefined;
 }
 
 function asStringArray(value: unknown): string[] | undefined {
@@ -161,7 +166,7 @@ function asLabeledItems(value: unknown): BlogLabeledItem[] | undefined {
   return items.length > 0 ? items : undefined;
 }
 
-function parseSections(
+function parseLegacySections(
   value: unknown,
   images: (string | undefined)[]
 ): BlogSection[] | null {
@@ -171,26 +176,18 @@ function parseSections(
     if (!item || typeof item !== "object") return [];
     const section = item as RawSection;
     const title = asString(section.title);
-    const costLabel = asString(section.costLabel);
-    const cost = asString(section.cost);
-    const fixLabel = asString(section.fixLabel);
-    const fix = asString(section.fix);
-    const whoLabel = asString(section.whoLabel);
-    const who = asString(section.who);
-    if (!title || !costLabel || !cost || !fixLabel || !fix || !whoLabel || !who) {
-      return [];
-    }
+    if (!title) return [];
 
     return [
       {
         title,
         body: asStringArray(section.body),
-        costLabel,
-        cost,
-        fixLabel,
-        fix,
-        whoLabel,
-        who,
+        costLabel: asString(section.costLabel),
+        cost: asString(section.cost),
+        fixLabel: asString(section.fixLabel),
+        fix: asString(section.fix),
+        whoLabel: asString(section.whoLabel),
+        who: asString(section.who),
         image: images[index],
         imageAlt: asString(section.imageAlt),
         imageCaption: asString(section.imageCaption),
@@ -201,59 +198,49 @@ function parseSections(
   return sections.length > 0 ? sections : null;
 }
 
-export function getBlogPostSlugs(): BlogPostSlug[] {
-  return [...BLOG_POST_SLUGS];
-}
-
-export function getBlogPost(
-  slug: string,
-  t: BlogTranslator
-): BlogPost | null {
-  if (!isBlogPostSlug(slug)) return null;
-
+function getLegacyBlogPost(slug: LegacyBlogPostSlug, t: BlogTranslator): BlogPost | null {
   const base = `posts.${slug}`;
-  const intro = asStringArray(t.raw(`${base}.intro`));
-  const sections = parseSections(
-    t.raw(`${base}.sections`),
-    BLOG_SECTION_IMAGES[slug]
+  const intro = asStringArray(rawIfPresent(t, `${base}.intro`));
+  const sections = parseLegacySections(
+    rawIfPresent(t, `${base}.sections`),
+    LEGACY_SECTION_IMAGES[slug]
   );
-  const closing = asStringArray(t.raw(`${base}.closing`));
+  const closing = asStringArray(rawIfPresent(t, `${base}.closing`));
+  const meta = LEGACY_META[slug];
 
   if (!intro || !sections || !closing) {
     return null;
   }
 
   return {
-    slug,
+    ...meta,
     title: t(`${base}.title`),
     excerpt: t(`${base}.excerpt`),
-    date: t(`${base}.date`),
     readTime: t(`${base}.readTime`),
     metaDescription: t(`${base}.metaDescription`),
-    coverImage: BLOG_COVER_IMAGES[slug],
-    coverImageAlt: asString(t.raw(`${base}.coverImageAlt`)),
+    coverImageAlt: asString(rawIfPresent(t, `${base}.coverImageAlt`)),
     intro,
-    factsTitle: asString(t.raw(`${base}.factsTitle`)),
-    facts: asFacts(t.raw(`${base}.facts`)),
-    flowTitle: asString(t.raw(`${base}.flowTitle`)),
-    flowBeforeLabel: asString(t.raw(`${base}.flowBeforeLabel`)),
-    flowAfterLabel: asString(t.raw(`${base}.flowAfterLabel`)),
-    flowBefore: asStringArray(t.raw(`${base}.flowBefore`)),
-    flowAfter: asStringArray(t.raw(`${base}.flowAfter`)),
-    termCostTitle: asString(t.raw(`${base}.termCostTitle`)),
-    termCostIntro: asString(t.raw(`${base}.termCostIntro`)),
-    termCostItems: asStringArray(t.raw(`${base}.termCostItems`)),
-    modulesTitle: asString(t.raw(`${base}.modulesTitle`)),
-    modulesIntro: asString(t.raw(`${base}.modulesIntro`)),
-    modules: asLabeledItems(t.raw(`${base}.modules`)),
+    factsTitle: asString(rawIfPresent(t, `${base}.factsTitle`)),
+    facts: asFacts(rawIfPresent(t, `${base}.facts`)),
+    flowTitle: asString(rawIfPresent(t, `${base}.flowTitle`)),
+    flowBeforeLabel: asString(rawIfPresent(t, `${base}.flowBeforeLabel`)),
+    flowAfterLabel: asString(rawIfPresent(t, `${base}.flowAfterLabel`)),
+    flowBefore: asStringArray(rawIfPresent(t, `${base}.flowBefore`)),
+    flowAfter: asStringArray(rawIfPresent(t, `${base}.flowAfter`)),
+    termCostTitle: asString(rawIfPresent(t, `${base}.termCostTitle`)),
+    termCostIntro: asString(rawIfPresent(t, `${base}.termCostIntro`)),
+    termCostItems: asStringArray(rawIfPresent(t, `${base}.termCostItems`)),
+    modulesTitle: asString(rawIfPresent(t, `${base}.modulesTitle`)),
+    modulesIntro: asString(rawIfPresent(t, `${base}.modulesIntro`)),
+    modules: asLabeledItems(rawIfPresent(t, `${base}.modules`)),
     sections,
     midCtaTitle: t(`${base}.midCtaTitle`),
     midCtaBody: t(`${base}.midCtaBody`),
     midCtaPrimary: t(`${base}.midCtaPrimary`),
     midCtaSecondary: t(`${base}.midCtaSecondary`),
     closing,
-    sourcesLabel: asString(t.raw(`${base}.sourcesLabel`)),
-    sources: asStringArray(t.raw(`${base}.sources`)),
+    sourcesLabel: asString(rawIfPresent(t, `${base}.sourcesLabel`)),
+    sources: asStringArray(rawIfPresent(t, `${base}.sources`)),
     ctaPrimary: t(`${base}.ctaPrimary`),
     ctaSecondary: t(`${base}.ctaSecondary`),
     ctaTertiary: t(`${base}.ctaTertiary`),
@@ -264,10 +251,56 @@ export function getBlogPost(
   };
 }
 
-export function getBlogPosts(t: BlogTranslator): BlogPost[] {
-  return BLOG_POST_SLUGS.map((slug) => getBlogPost(slug, t)).filter(
-    (post): post is BlogPost => post !== null
+export function getAllBlogPostSlugs(): string[] {
+  return [...getStaticBlogPostSlugs(), ...LEGACY_I18N_BLOG_SLUGS];
+}
+
+export function getBlogPostSlugs(): string[] {
+  return getAllBlogPostSlugs();
+}
+
+export function getBlogPost(slug: string, t: BlogTranslator): BlogPost | null {
+  const staticPost = getStaticBlogPost(slug);
+  if (staticPost) {
+    return staticPost;
+  }
+
+  if (isLegacyBlogPostSlug(slug)) {
+    return getLegacyBlogPost(slug, t);
+  }
+
+  return null;
+}
+
+export function getBlogPosts(t: BlogTranslator, locale?: string): BlogPost[] {
+  const staticPosts = STATIC_BLOG_POSTS.filter(
+    (post) => !locale || post.locale === locale
   );
+
+  const legacyPosts = LEGACY_I18N_BLOG_SLUGS.map((slug) =>
+    getLegacyBlogPost(slug, t)
+  ).filter((post): post is BlogPost => post !== null);
+
+  return [...staticPosts, ...legacyPosts].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+}
+
+export function getBlogPostsBySlugs(
+  slugs: string[],
+  t: BlogTranslator
+): BlogPost[] {
+  return slugs
+    .map((slug) => getBlogPost(slug, t))
+    .filter((post): post is BlogPost => post !== null);
+}
+
+export function getBlogPostsByCategory(
+  category: BlogCategory,
+  t: BlogTranslator,
+  locale?: string
+): BlogPost[] {
+  return getBlogPosts(t, locale).filter((post) => post.category === category);
 }
 
 export function formatBlogDate(dateIso: string, locale: string): string {

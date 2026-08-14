@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
+import { supabaseFetch } from "@/lib/supabase/fetch";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -10,6 +11,7 @@ export async function createClient() {
     url,
     anonKey,
     {
+      global: { fetch: supabaseFetch },
       cookies: {
         getAll() {
           return cookieStore.getAll();
@@ -19,8 +21,8 @@ export async function createClient() {
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             );
-          } catch (error) {
-            console.error("Failed to set Supabase auth cookies:", error);
+          } catch {
+            // Called from a Server Component. Middleware persists the session.
           }
         },
       },

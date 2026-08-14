@@ -1,10 +1,16 @@
 {
   "index": {
     "eyebrow": "Blog",
-    "title": "What your school is already losing",
-    "subtitle": "Practical notes on fees, grades, parents, and the cost of another term on notebooks and WhatsApp.",
+    "title": "School management system guides",
+    "subtitle": "Practical guides on fees, attendance, parent portals, report cards, and the cost of another term on notebooks and WhatsApp — for DRC and African schools.",
+    "metaTitle": "School management system guides",
+    "metaDescription": "School management system guides: fees, attendance software, parent portals, Programme National report cards, and DRC school software from ShuleOS.",
     "readArticle": "Read article",
-    "backToBlog": "Back to blog"
+    "backToBlog": "Back to blog",
+    "allCategories": "All",
+    "noPostsInCategory": "No articles in this category yet.",
+    "moneyPageEn": "School management system",
+    "moneyPageFr": "Logiciel de gestion scolaire"
   },
   "posts": {
     "why-every-kinshasa-school-should-run-on-shuleos": {
@@ -172,7 +178,7 @@
           "costLabel": "What it costs",
           "cost": "Evenings gone. Printing week as an all-nighter. Errors that turn into meetings. Academic records nobody would sign if they had to defend them in October.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Classes and sections aligned to DRC grade levels. Daily attendance. Gradebooks and exams mapped to national curriculum strands. Report cards that come out of the same file the teacher already used all term.",
+          "fix": "Classes aligned to DRC grade levels. Daily attendance. Gradebooks and exams mapped to national curriculum strands. Report cards that come out of the same file the teacher already used all term.",
           "whoLabel": "Who breathes easier",
           "who": "Teachers who want evenings back; pedagogy leads who need the same bulletin logic across every class."
         },
@@ -273,6 +279,7 @@
       "date": "2026-08-05",
       "readTime": "10 min read",
       "metaDescription": "How ShuleOS plugs fee leaks, report-card chaos, parents missing balances, grades, and absences, and offline attendance gaps for DRC schools — in one platform.",
+      "coverImageAlt": "Handwritten ledgers leaking gold onto crumpled fee sheets, banknotes, and a phone — the leaks a school already pays for.",
       "intro": [
         "Your school already runs a system. It's notebooks, WhatsApp threads, spreadsheet balances, and an office queue that never shortens.",
         "That system has a price: fees that never land, parents who miss balances, grades, and absences until it's costly, teachers rewriting lists at night, and report-card week that shuts the office down. ShuleOS doesn't add another app on top of that chaos — it replaces the leaks with one operating system built for Congolese schools.",
@@ -318,9 +325,9 @@
         {
           "title": "Academics stop living in scattered files",
           "costLabel": "What it costs",
-          "cost": "Students, guardians, admissions, classes, sections, subjects, timetable, and curriculum each have their own notebook — and nobody has the full picture.",
+          "cost": "Students, guardians, admissions, classes, subjects, and timetable each have their own notebook — and nobody has the full picture.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "One academic core: enrollments, guardians, admissions queue, classes and sections, timetable, curriculum, team, and school settings — including a task board for unfinished work and a discipline desk for incidents that used to vanish in WhatsApp.",
+          "fix": "One academic core: enrollments, guardians, admissions queue, classes, timetable, team, and school settings — including a task board for unfinished work and a discipline desk for incidents that used to vanish in WhatsApp.",
           "whoLabel": "Who breathes easier",
           "who": "Registrars, pedagogy leads, and directors who need follow-ups that don't die in a chat."
         },

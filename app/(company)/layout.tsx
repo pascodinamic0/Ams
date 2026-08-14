@@ -31,6 +31,8 @@ export default async function CompanyLayout({
         support: tFooter("support"),
         features: t("features"),
         blog: tFooter("blog"),
+        schoolManagementSystem: tFooter("schoolManagementSystem"),
+        logicielGestionScolaire: tFooter("logicielGestionScolaire"),
         getAccess: t("getAccess"),
         login: t("login"),
         register: t("register"),

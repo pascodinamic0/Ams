@@ -1,14 +1,17 @@
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { companyIdentity } from "@/lib/company/identity";
+import { getModuleBlogLink } from "@/lib/company/module-blog-links";
 import type { PlatformModule } from "@/lib/company/modules";
 
 export async function ModuleDetailPage({ module }: { module: PlatformModule }) {
   const t = await getTranslations("modules");
   const tc = await getTranslations("common");
   const ta = await getTranslations("auth");
+  const locale = await getLocale();
   const Icon = module.icon;
+  const blogLink = getModuleBlogLink(module.slug, locale);
 
   return (
     <div className="min-h-screen bg-mkt-canvas pb-24 pt-32">
@@ -80,9 +83,27 @@ export async function ModuleDetailPage({ module }: { module: PlatformModule }) {
           </section>
         )}
 
+        {blogLink ? (
+          <section className="mt-12 border border-mkt-ink/10 p-6">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
+              {locale === "fr" ? "Guide associe" : "Related guide"}
+            </p>
+            <Link
+              href={blogLink.href}
+              className="mt-3 inline-flex text-sm font-medium text-mkt-ink/65 transition-colors hover:text-amber-500"
+            >
+              {blogLink.label}
+            </Link>
+          </section>
+        ) : null}
+
         <div className="mt-14 flex flex-col gap-4 border-t border-mkt-ink/10 pt-10 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-mkt-ink/45">
             {t("partOfPlatform", { productName: companyIdentity.productName })}{" "}
+            <Link href="/school-management-system" className="font-medium text-amber-500 hover:text-amber-400">
+              {locale === "fr" ? "Systeme de gestion scolaire" : "School management system"}
+            </Link>
+            {" · "}
             <Link href="/features" className="font-medium text-amber-500 hover:text-amber-400">
               {t("allFeatures")}
             </Link>

@@ -30,7 +30,15 @@ function SectionFigure({ section }: { section: BlogSection }) {
   );
 }
 
-export async function BlogArticlePage({ post }: { post: BlogPost }) {
+export async function BlogArticlePage({
+  post,
+  relatedPosts,
+  relatedModuleLinks,
+}: {
+  post: BlogPost;
+  relatedPosts: BlogPost[];
+  relatedModuleLinks: { href: string; label: string }[];
+}) {
   const t = await getTranslations("blog");
   const locale = await getLocale();
   const showFacts = Boolean(post.factsTitle && post.facts?.length);
@@ -40,10 +48,32 @@ export async function BlogArticlePage({ post }: { post: BlogPost }) {
   const showTermCost = Boolean(post.termCostTitle && post.termCostItems?.length);
   const showModules = Boolean(post.modulesTitle && post.modules?.length);
   const showSources = Boolean(post.sourcesLabel && post.sources?.length);
+  const showFaq = Boolean(post.faq?.length);
+  const showRelatedPosts = relatedPosts.length > 0;
+  const showConversionBlock = (section: BlogSection) =>
+    Boolean(section.costLabel && section.cost && section.fixLabel && section.fix);
 
   return (
     <article className="min-h-screen bg-mkt-canvas pb-24 pt-[calc(env(safe-area-inset-top)+7.5rem)] sm:pt-40 md:pt-44 lg:pt-48">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+        <nav aria-label="Breadcrumb" className="mb-4 text-[11px] font-semibold uppercase tracking-[0.14em] text-mkt-ink/40">
+          <ol className="flex flex-wrap items-center gap-2">
+            <li>
+              <Link href="/" className="transition-colors hover:text-mkt-ink">
+                Home
+              </Link>
+            </li>
+            <li aria-hidden>·</li>
+            <li>
+              <Link href="/blog" className="transition-colors hover:text-mkt-ink">
+                Blog
+              </Link>
+            </li>
+            <li aria-hidden>·</li>
+            <li className="line-clamp-1 text-mkt-ink/60">{post.title}</li>
+          </ol>
+        </nav>
+
         <Link
           href="/blog"
           className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-mkt-ink/50 transition-colors hover:text-mkt-ink"
@@ -211,32 +241,36 @@ export async function BlogArticlePage({ post }: { post: BlogPost }) {
                   </p>
                 ))}
 
-                <div className="space-y-5 border-l border-mkt-ink/10 pl-5 sm:pl-6">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
-                      {section.costLabel}
-                    </p>
-                    <p className="mt-2 text-base leading-relaxed text-mkt-ink/60">
-                      {section.cost}
-                    </p>
+                {showConversionBlock(section) ? (
+                  <div className="space-y-5 border-l border-mkt-ink/10 pl-5 sm:pl-6">
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
+                        {section.costLabel}
+                      </p>
+                      <p className="mt-2 text-base leading-relaxed text-mkt-ink/60">
+                        {section.cost}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
+                        {section.fixLabel}
+                      </p>
+                      <p className="mt-2 text-base leading-relaxed text-mkt-ink/60">
+                        {section.fix}
+                      </p>
+                    </div>
+                    {section.whoLabel && section.who ? (
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
+                          {section.whoLabel}
+                        </p>
+                        <p className="mt-2 text-base leading-relaxed text-mkt-ink/60">
+                          {section.who}
+                        </p>
+                      </div>
+                    ) : null}
                   </div>
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
-                      {section.fixLabel}
-                    </p>
-                    <p className="mt-2 text-base leading-relaxed text-mkt-ink/60">
-                      {section.fix}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
-                      {section.whoLabel}
-                    </p>
-                    <p className="mt-2 text-base leading-relaxed text-mkt-ink/60">
-                      {section.who}
-                    </p>
-                  </div>
-                </div>
+                ) : null}
               </section>
 
               {index + 1 === MID_CTA_AFTER_SECTION && (
@@ -328,6 +362,22 @@ export async function BlogArticlePage({ post }: { post: BlogPost }) {
           </Link>
         </div>
 
+        {showFaq ? (
+          <section className="mt-14 border-t border-mkt-ink/10 pt-10">
+            <h2 className="font-display text-2xl tracking-tight text-mkt-ink">FAQ</h2>
+            <dl className="mt-8 space-y-6">
+              {post.faq?.map((item) => (
+                <div key={item.question} className="border border-mkt-ink/10 p-5 sm:p-6">
+                  <dt className="font-display text-lg text-mkt-ink">{item.question}</dt>
+                  <dd className="mt-3 text-sm leading-relaxed text-mkt-ink/60 sm:text-base">
+                    {item.answer}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ) : null}
+
         {showSources ? (
           <section className="mt-14 border-t border-mkt-ink/10 pt-10">
             <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
@@ -349,6 +399,26 @@ export async function BlogArticlePage({ post }: { post: BlogPost }) {
           </section>
         ) : null}
 
+        {showRelatedPosts ? (
+          <nav aria-label="Related articles" className="mt-14 border-t border-mkt-ink/10 pt-10">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-amber-500">
+              Related articles
+            </p>
+            <ul className="mt-5 flex flex-col gap-3">
+              {relatedPosts.map((related) => (
+                <li key={related.slug}>
+                  <Link
+                    href={`/blog/${related.slug}`}
+                    className="text-sm font-medium text-mkt-ink/65 transition-colors hover:text-amber-500"
+                  >
+                    {related.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
+
         <nav
           aria-label={post.relatedLabel}
           className="mt-14 border-t border-mkt-ink/10 pt-10"
@@ -357,30 +427,44 @@ export async function BlogArticlePage({ post }: { post: BlogPost }) {
             {post.relatedLabel}
           </p>
           <ul className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-            <li>
-              <Link
-                href="/modules/finance"
-                className="inline-flex border border-mkt-ink/10 px-4 py-3 text-sm font-medium text-mkt-ink/65 transition-colors hover:border-mkt-ink/25 hover:text-mkt-ink"
-              >
-                {post.relatedFinance}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/modules/academic"
-                className="inline-flex border border-mkt-ink/10 px-4 py-3 text-sm font-medium text-mkt-ink/65 transition-colors hover:border-mkt-ink/25 hover:text-mkt-ink"
-              >
-                {post.relatedAcademic}
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/modules/parent-student-portals"
-                className="inline-flex border border-mkt-ink/10 px-4 py-3 text-sm font-medium text-mkt-ink/65 transition-colors hover:border-mkt-ink/25 hover:text-mkt-ink"
-              >
-                {post.relatedPortals}
-              </Link>
-            </li>
+            {relatedModuleLinks.map((link) => (
+              <li key={link.href}>
+                <Link
+                  href={link.href}
+                  className="inline-flex border border-mkt-ink/10 px-4 py-3 text-sm font-medium text-mkt-ink/65 transition-colors hover:border-mkt-ink/25 hover:text-mkt-ink"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+            {relatedModuleLinks.length === 0 ? (
+              <>
+                <li>
+                  <Link
+                    href="/modules/finance"
+                    className="inline-flex border border-mkt-ink/10 px-4 py-3 text-sm font-medium text-mkt-ink/65 transition-colors hover:border-mkt-ink/25 hover:text-mkt-ink"
+                  >
+                    {post.relatedFinance}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/modules/academic"
+                    className="inline-flex border border-mkt-ink/10 px-4 py-3 text-sm font-medium text-mkt-ink/65 transition-colors hover:border-mkt-ink/25 hover:text-mkt-ink"
+                  >
+                    {post.relatedAcademic}
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/modules/parent-student-portals"
+                    className="inline-flex border border-mkt-ink/10 px-4 py-3 text-sm font-medium text-mkt-ink/65 transition-colors hover:border-mkt-ink/25 hover:text-mkt-ink"
+                  >
+                    {post.relatedPortals}
+                  </Link>
+                </li>
+              </>
+            ) : null}
           </ul>
         </nav>
       </div>

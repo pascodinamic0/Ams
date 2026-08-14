@@ -7,6 +7,7 @@ import { AppToaster } from "@/components/ui/app-toaster";
 import { PwaRoot } from "@/components/pwa/pwa-root";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { companyIdentity } from "@/lib/company/identity";
+import { absoluteUrl } from "@/lib/company/site-url";
 import { pickClientMessages } from "@/lib/i18n/client-messages";
 import { pwaAppleTouchIconPath, pwaIconPath, withPwaAssetRevision } from "@/lib/pwa/assets";
 import { pwaThemeColor } from "@/lib/pwa/config";
@@ -42,8 +43,12 @@ const outfit = Outfit({
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("marketing");
   return {
+    metadataBase: new URL(absoluteUrl("/")),
     title: companyIdentity.productFullName,
     description: t("metaDescription"),
+    alternates: {
+      canonical: absoluteUrl("/"),
+    },
     applicationName: companyIdentity.productName,
     appleWebApp: {
       capable: true,

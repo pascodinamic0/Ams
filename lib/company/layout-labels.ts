@@ -18,6 +18,8 @@ export type CompanyFooterLabels = {
   support: string;
   features: string;
   blog: string;
+  schoolManagementSystem: string;
+  logicielGestionScolaire: string;
   getAccess: string;
   login: string;
   register: string;

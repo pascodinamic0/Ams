@@ -56,6 +56,8 @@ export function SiteFooter({
 
   const platformLinks = [
     { label: labels.features, href: "/features" },
+    { label: labels.schoolManagementSystem, href: "/school-management-system" },
+    { label: labels.logicielGestionScolaire, href: "/logiciel-de-gestion-scolaire" },
     { label: labels.blog, href: "/blog" },
     { label: labels.getAccess, href: "/get-access" },
     { label: labels.login, href: "/login" },

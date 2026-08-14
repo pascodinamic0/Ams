@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { type NextResponse } from "next/server";
 import { getSupabasePublicEnv } from "@/lib/supabase/env";
+import { supabaseFetch } from "@/lib/supabase/fetch";
 
 /** Supabase client for route handlers; persists auth cookies on the response. */
 export async function createRouteHandlerClient(response: NextResponse) {
@@ -9,6 +10,7 @@ export async function createRouteHandlerClient(response: NextResponse) {
   const { url, anonKey } = getSupabasePublicEnv();
 
   return createServerClient(url, anonKey, {
+    global: { fetch: supabaseFetch },
     cookies: {
       getAll() {
         return cookieStore.getAll();

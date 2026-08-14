@@ -1,10 +1,16 @@
 {
   "index": {
     "eyebrow": "Blog",
-    "title": "Ce que votre école perd déjà",
-    "subtitle": "Notes pratiques sur les frais, les notes, les parents, et le coût d'un trimestre de plus sur des cahiers et WhatsApp.",
+    "title": "Guides système de gestion scolaire",
+    "subtitle": "Guides pratiques sur les frais, les présences, les portails parents, les bulletins et le coût d'un trimestre de plus sur cahiers et WhatsApp — pour les écoles de la RDC et d'Afrique.",
+    "metaTitle": "Guides système de gestion scolaire",
+    "metaDescription": "Guides logiciel de gestion scolaire : frais, présences, portails parents, bulletins Programme National et ShuleOS pour la RDC.",
     "readArticle": "Lire l'article",
-    "backToBlog": "Retour au blog"
+    "backToBlog": "Retour au blog",
+    "allCategories": "Tout",
+    "noPostsInCategory": "Aucun article dans cette catégorie pour l'instant.",
+    "moneyPageEn": "School management system",
+    "moneyPageFr": "Logiciel de gestion scolaire"
   },
   "posts": {
     "why-every-kinshasa-school-should-run-on-shuleos": {
@@ -172,7 +178,7 @@
           "costLabel": "Ce que ça coûte",
           "cost": "Des soirées perdues. Une semaine d'impression en nuits blanches. Des erreurs qui deviennent des réunions. Des dossiers académiques que personne ne signerait s'il fallait les défendre en octobre.",
           "fixLabel": "Ce que ShuleOS corrige",
-          "fix": "Classes et sections alignées sur les niveaux DRC. Présences quotidiennes. Carnets de notes et examens mappés aux domaines du curriculum national. Des bulletins qui sortent du même fichier que l'enseignant a déjà utilisé tout le trimestre.",
+          "fix": "Classes alignées sur les niveaux DRC. Présences quotidiennes. Carnets de notes et examens mappés aux domaines du curriculum national. Des bulletins qui sortent du même fichier que l'enseignant a déjà utilisé tout le trimestre.",
           "whoLabel": "Qui respire mieux",
           "who": "Les enseignants qui veulent récupérer leurs soirées ; les coordinateurs pédagogiques qui ont besoin de la même logique de bulletin dans chaque classe."
         },
@@ -273,6 +279,7 @@
       "date": "2026-08-05",
       "readTime": "10 min de lecture",
       "metaDescription": "Comment ShuleOS bouche les fuites de frais, le chaos des bulletins, les retards d'information aux parents et les absences hors ligne pour les écoles de RDC — sur une seule plateforme.",
+      "coverImageAlt": "Des registres manuscrits qui fuient de l'or sur des feuilles de frais froissées, des billets et un téléphone — les fuites qu'une école paie déjà.",
       "intro": [
         "Votre école a déjà un système. Ce sont des cahiers, des fils WhatsApp, des soldes dans des tableurs, et une file à la direction qui ne raccourcit jamais.",
         "Ce système a un prix : des frais qui n'arrivent jamais, des parents qui ratent soldes, notes et absences jusqu'à ce que ça coûte cher, des enseignants qui recopient des listes le soir, et une semaine de bulletins qui ferme le bureau. ShuleOS n'ajoute pas une autre application sur ce chaos — il remplace les fuites par un système d'exploitation conçu pour les écoles congolaises.",
@@ -318,9 +325,9 @@
         {
           "title": "L'académique cesse de vivre dans des dossiers éparpillés",
           "costLabel": "Ce que ça coûte",
-          "cost": "Élèves, tuteurs, admissions, classes, sections, matières, emploi du temps et curriculum ont chacun leur cahier — et personne n'a la vue d'ensemble.",
+          "cost": "Élèves, tuteurs, admissions, classes, matières et emploi du temps ont chacun leur cahier — et personne n'a la vue d'ensemble.",
           "fixLabel": "Ce que ShuleOS corrige",
-          "fix": "Un noyau académique unique : inscriptions, tuteurs, file d'admissions, classes et sections, emploi du temps, curriculum, équipe et paramètres — avec un tableau de tâches pour le travail en retard et un bureau de discipline pour les incidents qui disparaissaient dans WhatsApp.",
+          "fix": "Un noyau académique unique : inscriptions, tuteurs, file d'admissions, classes, emploi du temps, équipe et paramètres — avec un tableau de tâches pour le travail en retard et un bureau de discipline pour les incidents qui disparaissaient dans WhatsApp.",
           "whoLabel": "Qui respire mieux",
           "who": "Les registraires, les coordinateurs pédagogiques et les directeurs qui ont besoin de suivis qui ne meurent pas dans un chat."
         },
