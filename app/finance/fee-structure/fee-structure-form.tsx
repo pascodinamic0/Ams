@@ -26,7 +26,7 @@ export function FeeStructureForm({ branchId, classes }: Props) {
 
   async function onSubmit(data: FeeStructureFormData) {
     const result = await createFeeStructure({ ...data, branch_id: branchId });
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(
         typeof result.error === "string"
           ? result.error

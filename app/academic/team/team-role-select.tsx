@@ -79,7 +79,7 @@ export function TeamRoleSelect({
 
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       setRole(previousRole);
       toast.error(result.error);
       return;

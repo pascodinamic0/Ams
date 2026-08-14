@@ -22,7 +22,7 @@ export function AssignmentForm({ classes }: Props) {
 
   async function onSubmit(data: AssignmentFormData) {
     const result = await createAssignment(data);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : t("createAssignmentFailed"));
       return;
     }

@@ -66,7 +66,7 @@ export async function importStudentsBatch(
     }
 
     result.created++;
-    if (studentResult.data?.id) {
+    if ("data" in studentResult && studentResult.data?.id) {
       result.studentIds.push(studentResult.data.id);
     }
   }

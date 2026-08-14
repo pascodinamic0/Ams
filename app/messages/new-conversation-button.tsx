@@ -113,15 +113,15 @@ export function NewConversationButton({
           initial_message: message.trim(),
         });
 
-        if (result.error) {
+        if ("error" in result && result.error) {
           toast.error(t("failedStartConversation"));
           return;
         }
 
         resetForm();
-        router.push(`/messages/${result.data!.id}`);
+        router.push(`/messages/${"data" in result ? result.data!.id : ""}`);
         toast.success(
-          result.data?.existing ? t("openingExistingConversation") : t("conversationStarted")
+          "data" in result && result.data?.existing ? t("openingExistingConversation") : t("conversationStarted")
         );
       } finally {
         setLoading(false);
@@ -148,15 +148,15 @@ export function NewConversationButton({
         initial_message: message.trim(),
       });
 
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(t("failedStartConversation"));
         return;
       }
 
       resetForm();
-      router.push(`/messages/${result.data!.id}`);
+      router.push(`/messages/${"data" in result ? result.data!.id : ""}`);
       toast.success(
-        result.data?.existing ? t("openingExistingConversation") : t("conversationStarted")
+        "data" in result && result.data?.existing ? t("openingExistingConversation") : t("conversationStarted")
       );
     } finally {
       setLoading(false);

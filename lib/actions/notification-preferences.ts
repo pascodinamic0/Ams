@@ -72,7 +72,7 @@ export async function updateNotificationPreferences(
   }
 
   revalidatePath("/settings");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function getPushSubscriptionCount(): Promise<number> {

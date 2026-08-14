@@ -55,7 +55,7 @@ export function EventForm({ branchId }: { branchId: string }) {
             : undefined,
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : te("failedCreateEvent"));
       return;
     }
@@ -232,7 +232,7 @@ export function DeleteEventButton({ id }: { id: string }) {
     setLoading(true);
     const result = await deleteEvent(id);
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : te("failedDeleteEvent"));
       return;
     }

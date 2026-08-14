@@ -77,7 +77,7 @@ export function GradebookGrid({
       }));
 
       const result = await upsertGrades({ grades });
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(typeof result.error === "string" ? result.error : t("saveGradesFailed"));
         return;
       }

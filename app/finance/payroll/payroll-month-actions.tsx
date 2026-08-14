@@ -29,7 +29,7 @@ export function PayrollMonthActions({
 
   async function handleDelete() {
     const result = await deletePayrollPeriod({ month, year, schoolId, branchId });
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : t("failedDeletePayroll"));
       return;
     }

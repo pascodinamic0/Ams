@@ -30,7 +30,7 @@ export function AddGuardianForm({ studentId, schoolId }: Props) {
     setLoading(true);
     try {
       const result = await addGuardianToStudent(studentId, schoolId, data);
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(result.error);
         return;
       }

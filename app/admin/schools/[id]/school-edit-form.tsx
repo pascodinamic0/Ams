@@ -53,7 +53,7 @@ export function SchoolEditForm({ school }: { school: SchoolRow }) {
       public_site_enabled: form.public_site_enabled,
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

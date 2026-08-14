@@ -107,7 +107,7 @@ export async function updateBudgetPlan(
   if (error) return { error: error.message };
 
   revalidateBudgetPaths(id);
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteBudgetPlan(id: string) {
@@ -123,7 +123,7 @@ export async function deleteBudgetPlan(id: string) {
   if (error) return { error: error.message };
 
   revalidateBudgetPaths();
-  return {};
+  return {} as { error?: string };
 }
 
 export async function createBudgetLineItem(
@@ -234,7 +234,7 @@ export async function updateBudgetLineItem(
   if (error) return { error: error.message };
 
   revalidateBudgetPaths(existing.plan_id as string);
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteBudgetLineItem(id: string) {
@@ -261,7 +261,7 @@ export async function deleteBudgetLineItem(id: string) {
   if (error) return { error: error.message };
 
   revalidateBudgetPaths(existing.plan_id as string);
-  return {};
+  return {} as { error?: string };
 }
 
 /** Create an academic-admin school_task from a budget line item. */

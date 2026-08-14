@@ -31,7 +31,7 @@ export function GuardianEditForm({ guardianId, studentId, defaultValues }: Props
     setLoading(true);
     try {
       const result = await updateGuardian(guardianId, data);
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(typeof result.error === "string" ? result.error : t("failedUpdateGuardian"));
         return;
       }

@@ -14,7 +14,7 @@ export function DeleteExpenseButton({ id }: { id: string }) {
   async function handleDelete() {
     if (!confirm(t("confirmDeleteExpense"))) return;
     const result = await deleteExpense(id);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : t("expenseDeleteFailed"));
       return;
     }

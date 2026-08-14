@@ -126,7 +126,7 @@ export async function updateInvoice(
   const { error } = await supabase.from("fee_invoices").update(payload).eq("id", id);
   if (error) return { error: error.message };
   revalidateInvoicePaths();
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteInvoice(id: string) {
@@ -134,7 +134,7 @@ export async function deleteInvoice(id: string) {
   const { error } = await supabase.from("fee_invoices").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidateInvoicePaths();
-  return {};
+  return {} as { error?: string };
 }
 
 /** Create invoices for all active students (optionally class-filtered via fee structure). */

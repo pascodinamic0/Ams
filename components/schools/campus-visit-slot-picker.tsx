@@ -74,7 +74,7 @@ export function CampusVisitSlotPicker({
     });
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       const message =
         typeof result.error === "string" ? result.error : t("couldNotBookSlot");
       toast.error(message);
@@ -82,9 +82,9 @@ export function CampusVisitSlotPicker({
     }
 
     setBooked({
-      eventTitle: result.data?.eventTitle ?? selected.title,
+      eventTitle: "data" in result ? result.data?.eventTitle ?? selected.title : selected.title,
       eventDate: selected.date,
-      registrationId: result.data?.id ?? "",
+      registrationId: "data" in result ? result.data?.id ?? "" : "",
     });
     toast.success(t("campusVisitBooked"));
   }

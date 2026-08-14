@@ -33,7 +33,7 @@ export function PaymentForm({ schoolId, openInvoices }: Props) {
 
   async function onSubmit(data: PaymentFormData) {
     const result = await recordPayment(data);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : t("paymentRecordFailed"));
       return;
     }

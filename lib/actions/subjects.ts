@@ -25,5 +25,5 @@ export async function deleteSubject(id: string) {
   const { error } = await supabase.from("subjects").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/academic/subjects");
-  return {};
+  return {} as { error?: string };
 }

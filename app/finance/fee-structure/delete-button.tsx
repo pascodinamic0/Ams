@@ -14,7 +14,7 @@ export function DeleteFeeStructureButton({ id }: { id: string }) {
   async function handleDelete() {
     if (!confirm(t("confirmDeleteFeeStructure"))) return;
     const result = await deleteFeeStructure(id);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : t("feeStructureDeleteFailed"));
       return;
     }

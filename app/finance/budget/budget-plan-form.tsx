@@ -32,14 +32,14 @@ export function BudgetPlanForm({ defaultYear, labels }: Props) {
 
   async function onSubmit(data: BudgetPlanFormData) {
     const result = await createBudgetPlan(data);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(
         typeof result.error === "string" ? result.error : labels.failed
       );
       return;
     }
     toast.success(labels.created);
-    if (result.data?.id) {
+    if ("data" in result && result.data?.id) {
       router.push(`/finance/budget/${result.data.id}`);
       return;
     }

@@ -24,7 +24,7 @@ export function GuardianForm({ schoolId }: { schoolId: string }) {
     setLoading(true);
     try {
       const result = await createGuardian({ ...data, school_id: schoolId });
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(typeof result.error === "string" ? result.error : t("failedCreateGuardian"));
         return;
       }

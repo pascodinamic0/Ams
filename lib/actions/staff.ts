@@ -60,7 +60,7 @@ export async function updateStaff(id: string, input: StaffFormData) {
   if (error) return { error: error.message };
   revalidatePath("/operations/staff");
   revalidatePath("/finance/payroll");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteStaff(id: string) {
@@ -68,5 +68,5 @@ export async function deleteStaff(id: string) {
   const { error } = await supabase.from("staff").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/operations/staff");
-  return {};
+  return {} as { error?: string };
 }

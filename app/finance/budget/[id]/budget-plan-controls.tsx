@@ -31,7 +31,7 @@ export function BudgetPlanStatusSelect({ planId, status, labels }: Props) {
         const next = e.target.value as BudgetPlanStatus;
         startTransition(async () => {
           const result = await updateBudgetPlan(planId, { status: next });
-          if (result.error) {
+          if ("error" in result && result.error) {
             toast.error(
               typeof result.error === "string" ? result.error : labels.failed
             );

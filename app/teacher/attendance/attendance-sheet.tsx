@@ -68,7 +68,7 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
 
     startTransition(async () => {
       const result = await saveAttendance(payload);
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(typeof result.error === "string" ? result.error : t("saveAttendanceFailed"));
         return;
       }
@@ -97,7 +97,7 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
 
     startTransition(async () => {
       const result = await markAllPresent(classId, dateStr);
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(typeof result.error === "string" ? result.error : t("markAllPresentFailed"));
         return;
       }

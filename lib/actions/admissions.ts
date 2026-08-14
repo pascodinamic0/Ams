@@ -126,7 +126,7 @@ export async function updateAdmissionStatus(
   if (error) return { error: error.message };
   revalidatePath("/academic/admissions");
   revalidatePath("/notifications");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function convertAdmissionToStudent(
@@ -197,13 +197,16 @@ export async function convertAdmissionToStudent(
     pickup_persons: pickupPersons,
   });
 
-  if (studentResult.error || !studentResult.data) {
+  if ("error" in studentResult && studentResult.error) {
     return {
       error:
         typeof studentResult.error === "string"
           ? studentResult.error
           : (await actionError("failedCreateStudent")).error,
     };
+  }
+  if (!("data" in studentResult) || !studentResult.data) {
+    return await actionError("failedCreateStudent");
   }
 
   const { error: statusError } = await updateAdmissionStatus(admissionId, "approved");

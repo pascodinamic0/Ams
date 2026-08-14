@@ -55,7 +55,7 @@ export async function saveTimetableCell(input: TimetableCellFormData) {
   revalidatePath("/academic/timetable");
   revalidatePath("/student/timetable");
   revalidatePath("/parent/timetable");
-  return {};
+  return {} as { error?: string };
 }
 
 /** @deprecated Use saveTimetableCell */
@@ -92,7 +92,7 @@ export async function upsertTimetableSlot(input: TimetableSlotFormData) {
   if ("error" in result) return { error: result.error };
 
   revalidatePath("/academic/timetable");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function clearTimetableSlot(classId: string, day: number, period: number) {
@@ -102,5 +102,5 @@ export async function clearTimetableSlot(classId: string, day: number, period: n
   revalidatePath("/academic/timetable");
   revalidatePath("/student/timetable");
   revalidatePath("/parent/timetable");
-  return {};
+  return {} as { error?: string };
 }

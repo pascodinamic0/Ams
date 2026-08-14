@@ -296,7 +296,7 @@ export async function setPendingPayrollAmount(payrollId: string, amount: number)
   }
 
   revalidatePayrollPaths();
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deletePayroll(id: string) {
@@ -307,7 +307,7 @@ export async function deletePayroll(id: string) {
   if (error) return { error: error.message };
 
   revalidatePayrollPaths();
-  return {};
+  return {} as { error?: string };
 }
 
 const monthInclusionSchema = z.object({
@@ -478,7 +478,7 @@ export async function generatePayroll(
   }
 
   const sync = await syncSchoolTeamPayees(schoolId, input.branchId ?? auth.profile.branch_id);
-  if (sync.error) return { error: sync.error };
+  if ("error" in sync && sync.error) return { error: sync.error };
 
   const staff = await getStaff({
     schoolId,
@@ -623,7 +623,7 @@ export async function markPayrollPaid(
 
   revalidatePayrollPaths();
   revalidatePath("/academic/tasks");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deletePayrollPeriod(input: {

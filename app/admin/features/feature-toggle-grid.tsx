@@ -53,7 +53,7 @@ export function FeatureToggleGrid({ schools, isSuperAdmin, defaultSchoolId }: Pr
 
   async function handleToggle(schoolId: string, featureKey: string, enabled: boolean) {
     const result = await toggleSchoolFeature(schoolId, featureKey, enabled);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

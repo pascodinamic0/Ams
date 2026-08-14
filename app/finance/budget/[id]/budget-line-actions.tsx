@@ -42,7 +42,7 @@ export function BudgetLineActions({ lineId, taskId, labels }: Props) {
           onClick={() => {
             startTransition(async () => {
               const result = await createTaskFromBudgetLine(lineId);
-              if (result.error) {
+              if ("error" in result && result.error) {
                 toast.error(
                   typeof result.error === "string" ? result.error : labels.failed
                 );
@@ -65,7 +65,7 @@ export function BudgetLineActions({ lineId, taskId, labels }: Props) {
           if (!window.confirm(labels.confirmDelete)) return;
           startTransition(async () => {
             const result = await deleteBudgetLineItem(lineId);
-            if (result.error) {
+            if ("error" in result && result.error) {
               toast.error(
                 typeof result.error === "string" ? result.error : labels.failed
               );

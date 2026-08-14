@@ -31,7 +31,7 @@ export function SchoolStatusActions({
     success: string
   ) {
     const result = await action();
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

@@ -41,7 +41,7 @@ export async function dismissSetupGuide() {
   if (error) return { error: error.message };
 
   revalidatePath("/academic", "layout");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function restoreSetupGuide() {
@@ -60,5 +60,5 @@ export async function restoreSetupGuide() {
   if (error) return { error: error.message };
 
   revalidatePath("/academic", "layout");
-  return {};
+  return {} as { error?: string };
 }

@@ -65,28 +65,29 @@ export function CampaignForm({ schoolId }: Props) {
         target,
       });
 
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(typeof result.error === "string" ? result.error : t("failedCreateCampaign"));
         return;
       }
 
-      const campaignId = result.data!.id;
+      const campaignId = "data" in result ? result.data!.id : "";
+      if (!campaignId) return;
 
       if (sendNow) {
         toast.loading(t("sendingMessages"), { id: "sending" });
         const sendResult = await sendCampaign(campaignId);
         toast.dismiss("sending");
 
-        if (sendResult.error) {
+        if ("error" in sendResult && sendResult.error) {
           toast.error(sendResult.error);
         } else {
           toast.success(
             sendResult.failed
               ? t("sentToRecipientsWithFailed", {
-                  sent: sendResult.sent,
-                  failed: sendResult.failed,
+                  sent: sendResult.sent ?? 0,
+                  failed: sendResult.failed ?? 0,
                 })
-              : t("sentToRecipients", { sent: sendResult.sent })
+              : t("sentToRecipients", { sent: sendResult.sent ?? 0 })
           );
         }
       } else {

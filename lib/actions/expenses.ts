@@ -105,7 +105,7 @@ export async function updateExpense(id: string, updates: Partial<ExpenseFormData
   if (error) return { error: error.message };
 
   revalidateExpensePaths();
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteExpense(id: string) {
@@ -131,7 +131,7 @@ export async function deleteExpense(id: string) {
   if (error) return { error: error.message };
 
   revalidateExpensePaths();
-  return {};
+  return {} as { error?: string };
 }
 
 /**

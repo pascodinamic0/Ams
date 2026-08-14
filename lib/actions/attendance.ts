@@ -37,7 +37,7 @@ export async function saveAttendance(input: {
   if (error) return { error: error.message };
 
   revalidatePath("/teacher/attendance");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function markAllPresent(classId: string, date: string, period = 0) {
@@ -68,5 +68,5 @@ export async function markAllPresent(classId: string, date: string, period = 0) 
   if (error) return { error: error.message };
 
   revalidatePath("/teacher/attendance");
-  return {};
+  return {} as { error?: string };
 }

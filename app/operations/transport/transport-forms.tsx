@@ -40,7 +40,7 @@ export function RouteForm({ branchId }: { branchId: string }) {
       branch_id: branchId,
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toastActionError(result.error, te("failedCreateRoute"));
       return;
     }
@@ -99,7 +99,7 @@ export function VehicleForm({
       capacity: capacity ? Number(capacity) : undefined,
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toastActionError(result.error, te("failedAddVehicle"));
       return;
     }
@@ -208,7 +208,7 @@ export function StudentMappingForm({
       student_ids: Array.from(selectedIds),
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toastActionError(result.error, te("failedAssignStudents"));
       return;
     }
@@ -341,7 +341,7 @@ export function DeleteRouteButton({ id }: { id: string }) {
     setLoading(true);
     const result = await deleteTransportRoute(id);
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toastActionError(result.error, te("failedDeleteRoute"));
       return;
     }
@@ -368,7 +368,7 @@ export function DeleteVehicleButton({ id }: { id: string }) {
     setLoading(true);
     const result = await deleteTransportVehicle(id);
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toastActionError(result.error, te("failedDeleteVehicle"));
       return;
     }
@@ -393,7 +393,7 @@ export function UnassignButton({ mappingId }: { mappingId: string }) {
     setLoading(true);
     const result = await unassignStudentFromVehicle(mappingId);
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toastActionError(result.error, te("failedUnassignStudent"));
       return;
     }

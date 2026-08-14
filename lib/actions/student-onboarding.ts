@@ -53,7 +53,7 @@ async function linkGuardian(
     can_pickup: canPickup,
   });
   if (error) return { error: error.message };
-  return {};
+  return {} as { error?: string };
 }
 
 async function insertPickupPersons(
@@ -62,7 +62,7 @@ async function insertPickupPersons(
   studentId: string,
   persons: PickupPersonData[]
 ) {
-  if (persons.length === 0) return {};
+  if (persons.length === 0) return {} as { error?: string };
 
   const { error } = await supabase.from("student_pickup_persons").insert(
     persons.map((person) => ({
@@ -76,7 +76,7 @@ async function insertPickupPersons(
   );
 
   if (error) return { error: error.message };
-  return {};
+  return {} as { error?: string };
 }
 
 const STUDENT_ONBOARDING_ROLES = new Set([
@@ -157,11 +157,11 @@ export async function createStudentWithGuardians(
       });
     } else if (data.primary_guardian) {
       const result = await insertGuardian(supabase, input.school_id, data.primary_guardian);
-      if (result.error) {
+      if ("error" in result && result.error) {
         await supabase.from("students").delete().eq("id", student.id);
         return { error: result.error };
       }
-      if (result.data) {
+      if ("data" in result && result.data) {
         guardianLinks.push({
           id: result.data.id,
           canPickup: Boolean(data.primary_guardian.can_pickup),
@@ -171,10 +171,10 @@ export async function createStudentWithGuardians(
 
     if (data.add_secondary_guardian && data.secondary_guardian) {
       const result = await insertGuardian(supabase, input.school_id, data.secondary_guardian);
-      if (result.error) {
+      if ("error" in result && result.error) {
         return { error: result.error };
       }
-      if (result.data) {
+      if ("data" in result && result.data) {
         guardianLinks.push({
           id: result.data.id,
           canPickup: Boolean(data.secondary_guardian.can_pickup),
@@ -222,7 +222,12 @@ export async function addGuardianToStudent(
   if (!user) return await actionError("notAuthenticated");
 
   const result = await insertGuardian(supabase, schoolId, guardian);
-  if (result.error || !result.data) return { error: result.error ?? (await actionError("failedCreateGuardian")).error };
+  if ("error" in result && result.error) {
+    return { error: result.error };
+  }
+  if (!("data" in result) || !result.data) {
+    return await actionError("failedCreateGuardian");
+  }
 
   const linkResult = await linkGuardian(
     supabase,

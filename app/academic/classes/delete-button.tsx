@@ -16,7 +16,7 @@ export function DeleteClassButton({ id, name }: { id: string; name: string }) {
     if (!confirm(t("deleteClassConfirm", { name }))) return;
 
     const result = await deleteClass(id);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : t("deleteFailed"));
       return;
     }

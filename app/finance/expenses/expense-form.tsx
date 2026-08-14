@@ -39,7 +39,7 @@ export function ExpenseForm({ branchId, categories, expense, currencySymbol = "$
       ? await updateExpense(expense!.id, payload)
       : await createExpense(payload);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : t("expenseSaveFailed"));
       return;
     }

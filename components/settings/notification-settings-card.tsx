@@ -93,7 +93,7 @@ export function NotificationSettingsCard({ showClassReminders = false }: Props) 
       setSubscribed(false);
       startTransition(async () => {
         const res = await updateNotificationPreferences({ push_enabled: false });
-        if (res.error) toast.error(res.error);
+        if ("error" in res && res.error) toast.error(res.error);
         else setPrefs((p) => ({ ...p, push_enabled: false }));
       });
       toast.success(t("pushDisabled"));
@@ -108,7 +108,7 @@ export function NotificationSettingsCard({ showClassReminders = false }: Props) 
     setPrefs(next);
     startTransition(async () => {
       const res = await updateNotificationPreferences(patch);
-      if (res.error) {
+      if ("error" in res && res.error) {
         toast.error(res.error);
         setPrefs(previous);
       } else {

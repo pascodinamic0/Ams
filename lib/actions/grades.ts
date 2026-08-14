@@ -45,7 +45,7 @@ export async function upsertGrade(input: GradeFormData) {
   revalidatePath("/teacher/gradebook");
   revalidatePath("/teacher/exams");
   revalidatePath("/teacher/report-cards");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function upsertGrades(input: { grades: GradeFormData[] }) {
@@ -57,7 +57,7 @@ export async function upsertGrades(input: { grades: GradeFormData[] }) {
     if (result.error) return result;
   }
 
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteGrade(id: string) {
@@ -70,5 +70,5 @@ export async function deleteGrade(id: string) {
 
   revalidatePath("/teacher/gradebook");
   revalidatePath("/teacher/exams");
-  return {};
+  return {} as { error?: string };
 }

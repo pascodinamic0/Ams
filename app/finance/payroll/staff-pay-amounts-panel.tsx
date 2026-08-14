@@ -66,12 +66,12 @@ export function StaffPayAmountsPanel({
     setSyncing(true);
     const result = await syncSchoolTeamPayees(schoolId, branchId);
     setSyncing(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
     toast.success(
-      result.data
+      "data" in result && result.data
         ? t("staffRosterSyncedAdded", { count: result.data.created })
         : t("staffRosterSynced")
     );
@@ -85,7 +85,7 @@ export function StaffPayAmountsPanel({
       Number(amounts[staffId] ?? 0)
     );
     setSavingId(null);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
@@ -111,7 +111,7 @@ export function StaffPayAmountsPanel({
     });
     setTogglingId(null);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       setExcluded((prev) => {
         const next = new Set(prev);
         if (included) next.add(staffId);

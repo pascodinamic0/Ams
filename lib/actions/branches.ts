@@ -55,5 +55,5 @@ export async function deleteBranch(id: string) {
   const { error } = await supabase.from("branches").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/admin/schools");
-  return {};
+  return {} as { error?: string };
 }

@@ -66,7 +66,7 @@ export function BudgetLineForm({ planId, planYear, labels }: Props) {
           ? "year"
           : data.period_key || defaultPeriodKey(data.period_type, planYear),
     });
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(
         typeof result.error === "string" ? result.error : labels.failed
       );

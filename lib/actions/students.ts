@@ -81,7 +81,7 @@ export async function updateStudent(
   revalidatePath("/academic");
   revalidatePath("/academic/students");
   revalidatePath(`/academic/students/${id}`);
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteStudent(id: string) {
@@ -98,5 +98,5 @@ export async function deleteStudent(id: string) {
 
   revalidatePath("/academic");
   revalidatePath("/academic/students");
-  return {};
+  return {} as { error?: string };
 }

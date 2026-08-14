@@ -201,5 +201,5 @@ export async function deleteCampaign(id: string): Promise<{ error?: string }> {
   if (error) return { error: error.message };
 
   revalidatePath("/outreach");
-  return {};
+  return {} as { error?: string };
 }

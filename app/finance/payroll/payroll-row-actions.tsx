@@ -75,7 +75,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
     });
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(
         typeof result.error === "string" ? result.error : t("payrollMarkPaidFailed")
       );
@@ -91,7 +91,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
     setLoading(true);
     const result = await setPendingPayrollAmount(row.id, Number(editAmount));
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
@@ -120,7 +120,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
     });
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

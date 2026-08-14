@@ -24,7 +24,7 @@ export function DeleteSchoolButton({
     if (!confirmed) return;
 
     const result = await deleteSchool(schoolId);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

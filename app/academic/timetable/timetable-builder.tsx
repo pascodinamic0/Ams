@@ -196,7 +196,7 @@ export function TimetableBuilder({
         period,
         entries: cellEntries.map(({ key: _key, ...entry }) => entry),
       });
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(result.error);
         return;
       }
@@ -219,7 +219,7 @@ export function TimetableBuilder({
         editing.day,
         editing.period
       );
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(result.error);
         return;
       }

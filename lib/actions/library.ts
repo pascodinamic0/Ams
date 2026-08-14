@@ -25,7 +25,7 @@ export async function deleteBook(id: string) {
   const { error } = await supabase.from("books").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/operations/library");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function issueBook(input: BookIssueFormData) {
@@ -58,5 +58,5 @@ export async function returnBook(issueId: string) {
 
   if (error) return { error: error.message };
   revalidatePath("/operations/library");
-  return {};
+  return {} as { error?: string };
 }

@@ -178,7 +178,7 @@ export async function updateSchool(
     revalidatePath(`/schools/${school.slug}`);
     revalidatePath(`/schools/${school.slug}/admissions`);
   }
-  return {};
+  return {} as { error?: string };
 }
 
 const CURRENCY_MANAGERS = new Set([
@@ -238,7 +238,7 @@ export async function updateSchoolCurrency(
   revalidatePath("/finance/reports");
   revalidatePath("/finance/settings");
   revalidatePath("/finance/fee-reminders");
-  return {};
+  return {} as { error?: string };
 }
 
 const LOCALE_MANAGERS = new Set([
@@ -294,7 +294,7 @@ export async function updateSchoolLocale(schoolId: string, locale: Locale) {
   revalidatePath("/admin/schools");
   revalidatePath(`/admin/schools/${schoolId}`);
   revalidatePath("/settings");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteSchool(id: string) {
@@ -339,5 +339,5 @@ export async function deleteSchool(id: string) {
   revalidatePath("/admin");
   revalidatePath("/admin/schools");
   revalidatePath("/schools");
-  return {};
+  return {} as { error?: string };
 }

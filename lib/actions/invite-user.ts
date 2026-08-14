@@ -111,7 +111,7 @@ async function applySchoolTeamMemberRoleUpdate(
     return { error: error.message };
   }
 
-  return {};
+  return {} as { error?: string };
 }
 
 export async function updateSchoolTeamMemberRole(input: {

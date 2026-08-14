@@ -66,7 +66,7 @@ export function PublicAdmissionForm({
 
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       const message =
         typeof result.error === "string"
           ? result.error
@@ -78,7 +78,7 @@ export function PublicAdmissionForm({
       return;
     }
 
-    setReferenceId(result.data?.id ?? null);
+    setReferenceId("data" in result ? result.data?.id ?? null : null);
     toast.success(t("applicationSubmittedToast"));
     e.currentTarget.reset();
     setGuardianCanPickup(false);

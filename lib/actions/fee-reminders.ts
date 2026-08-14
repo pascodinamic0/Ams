@@ -50,5 +50,5 @@ export async function saveReminderSettings(
   }
 
   revalidatePath("/finance/fee-reminders");
-  return {};
+  return {} as { error?: string };
 }

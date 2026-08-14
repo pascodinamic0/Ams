@@ -69,13 +69,13 @@ export function InvoiceForm({ students, feeStructures, invoice }: Props) {
         description: data.description,
       });
       setBulkLoading(false);
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(
           typeof result.error === "string" ? result.error : t("invoiceCreateFailed")
         );
         return;
       }
-      toast.success(t("billAllSuccess", { count: result.data?.created ?? 0 }));
+      toast.success(t("billAllSuccess", { count: "data" in result ? result.data?.created ?? 0 : 0 }));
       router.refresh();
       return;
     }
@@ -84,7 +84,7 @@ export function InvoiceForm({ students, feeStructures, invoice }: Props) {
       ? await updateInvoice(invoice!.id, data)
       : await createInvoice(data);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(
         typeof result.error === "string"
           ? result.error

@@ -91,7 +91,7 @@ export function OnlineEnrollmentForm({
     });
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       const message =
         typeof result.error === "string"
           ? result.error
@@ -103,7 +103,7 @@ export function OnlineEnrollmentForm({
       return;
     }
 
-    const id = result.data?.id ?? null;
+    const id = "data" in result ? result.data?.id ?? null : null;
     setReferenceId(id);
 
     if (hasVisitSlots && id) {

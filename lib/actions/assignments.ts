@@ -60,7 +60,7 @@ export async function updateAssignment(id: string, updates: Partial<AssignmentFo
   if (error) return { error: error.message };
 
   revalidatePath("/teacher/assignments");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteAssignment(id: string) {
@@ -77,7 +77,7 @@ export async function deleteAssignment(id: string) {
   if (error) return { error: error.message };
 
   revalidatePath("/teacher/assignments");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function gradeSubmission(input: { submissionId: string; grade: number }) {
@@ -149,5 +149,5 @@ export async function gradeSubmission(input: { submissionId: string; grade: numb
   revalidatePath("/student/assignments");
   revalidatePath("/parent/assignments");
   revalidatePath("/notifications");
-  return {};
+  return {} as { error?: string };
 }

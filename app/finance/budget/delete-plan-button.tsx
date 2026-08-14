@@ -34,7 +34,7 @@ export function DeleteBudgetPlanButton({
         if (!window.confirm(confirmLabel)) return;
         startTransition(async () => {
           const result = await deleteBudgetPlan(id);
-          if (result.error) {
+          if ("error" in result && result.error) {
             toast.error(
               typeof result.error === "string" ? result.error : failedLabel
             );

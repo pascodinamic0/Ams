@@ -64,7 +64,7 @@ export async function updateEvent(id: string, input: EventFormData) {
   if (existing?.branch_id) {
     await revalidateSchoolWebsiteByBranch(existing.branch_id);
   }
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteEvent(id: string) {
@@ -81,5 +81,5 @@ export async function deleteEvent(id: string) {
   if (existing?.branch_id) {
     await revalidateSchoolWebsiteByBranch(existing.branch_id);
   }
-  return {};
+  return {} as { error?: string };
 }

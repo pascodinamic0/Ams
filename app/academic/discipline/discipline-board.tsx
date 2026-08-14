@@ -60,7 +60,7 @@ export function DisciplineBoard({
       student_id: studentId || undefined,
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
@@ -73,7 +73,7 @@ export function DisciplineBoard({
 
   async function handleStatus(id: string, status: (typeof STATUSES)[number]) {
     const result = await updateDisciplineStatus(id, status);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

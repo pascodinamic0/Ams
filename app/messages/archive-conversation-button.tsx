@@ -25,7 +25,7 @@ export function ArchiveConversationButton({ conversationId, archived }: Props) {
       try {
         const nextArchived = !archived;
         const result = await setConversationArchived(conversationId, nextArchived);
-        if (result.error) {
+        if ("error" in result && result.error) {
           toast.error(t("archiveFailed"));
           return;
         }

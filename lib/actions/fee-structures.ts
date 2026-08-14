@@ -56,7 +56,7 @@ export async function updateFeeStructure(
 
   if (error) return { error: error.message };
   revalidatePath("/finance/fee-structure");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteFeeStructure(id: string) {
@@ -64,5 +64,5 @@ export async function deleteFeeStructure(id: string) {
   const { error } = await supabase.from("fee_structures").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/finance/fee-structure");
-  return {};
+  return {} as { error?: string };
 }

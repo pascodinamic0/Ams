@@ -30,7 +30,7 @@ async function syncPendingAttendance(t: (key: string, values?: Record<string, nu
       records: entry.records,
     });
 
-    if (result.error) continue;
+    if ("error" in result && result.error) continue;
     await removePendingAttendanceSave(entry.id);
     synced += 1;
   }

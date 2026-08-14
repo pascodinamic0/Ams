@@ -66,7 +66,7 @@ export function FeeReminderSettingsForm({
         enabled,
       });
 
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(result.error);
       } else {
         toast.success(t("reminderSettingsSaved"));

@@ -39,14 +39,14 @@ export function EventBookingForm({
 
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       const message =
         typeof result.error === "string" ? result.error : t("checkForm");
       toast.error(message);
       return;
     }
 
-    setReferenceId(result.data?.id ?? null);
+    setReferenceId("data" in result ? result.data?.id ?? null : null);
     toast.success(t("bookingSubmitted"));
     e.currentTarget.reset();
   }

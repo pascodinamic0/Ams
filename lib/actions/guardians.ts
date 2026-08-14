@@ -114,7 +114,7 @@ export async function updateGuardian(
 
   revalidatePath("/academic");
   revalidatePath("/academic/students");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteGuardian(id: string) {
@@ -131,5 +131,5 @@ export async function deleteGuardian(id: string) {
 
   revalidatePath("/academic");
   revalidatePath("/academic/guardians");
-  return {};
+  return {} as { error?: string };
 }

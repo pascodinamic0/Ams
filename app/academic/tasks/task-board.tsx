@@ -84,7 +84,7 @@ export function TaskBoard({
       due_date: dueDate || undefined,
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
@@ -97,7 +97,7 @@ export function TaskBoard({
 
   async function handleStatus(id: string, status: (typeof STATUSES)[number]) {
     const result = await updateSchoolTaskStatus(id, status);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
@@ -117,7 +117,7 @@ export function TaskBoard({
     setDeletingId(task.id);
     const result = await deleteSchoolTask(task.id);
     setDeletingId(null);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
@@ -132,11 +132,11 @@ export function TaskBoard({
     setDecidingId(taskId);
     const result = await decideExpenseTask(taskId, decision);
     setDecidingId(null);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
-    if (decision === "approved" && result.data?.receiptNumber) {
+    if ("data" in result && decision === "approved" && result.data?.receiptNumber) {
       toast.success(t("expenseApprovedReceipt", { number: result.data.receiptNumber }));
     } else if (decision === "approved") {
       toast.success(t("expenseApproved"));

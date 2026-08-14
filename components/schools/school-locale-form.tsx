@@ -45,7 +45,7 @@ export function SchoolLocaleForm({
     const result = await updateSchoolLocale(schoolId, value);
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

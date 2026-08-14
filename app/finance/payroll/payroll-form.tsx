@@ -32,12 +32,12 @@ export function PayrollGenerateForm({
 
   async function onSubmit(data: PayrollGenerateFormData) {
     const result = await generatePayroll({ ...data, schoolId, branchId });
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : t("generatePayrollFailed"));
       return;
     }
-    const created = result.data?.created ?? 0;
-    const skipped = result.data?.skipped ?? 0;
+    const created = "data" in result ? result.data?.created ?? 0 : 0;
+    const skipped = "data" in result ? result.data?.skipped ?? 0 : 0;
     toast.success(
       skipped > 0
         ? t("payrollGeneratedWithExcluded", { created, skipped })

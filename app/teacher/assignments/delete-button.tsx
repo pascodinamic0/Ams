@@ -17,7 +17,7 @@ export function DeleteAssignmentButton({ id }: { id: string }) {
     if (!confirm(t("deleteAssignmentConfirm"))) return;
     startTransition(async () => {
       const result = await deleteAssignment(id);
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(typeof result.error === "string" ? result.error : t("deleteFailed"));
         return;
       }

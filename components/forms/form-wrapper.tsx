@@ -48,6 +48,7 @@ export function FormWrapper<T extends FieldValues>({
   const t = useTranslations("common");
   const tv = useTranslations("validation");
   const resolver = useMemo(() => {
+    // @ts-expect-error - Zod 4 / RHF resolver type mismatch
     const base = zodResolver(schema);
     return async (values: T, context: unknown, options: unknown) => {
       // @ts-expect-error - Zod 4 / RHF resolver type mismatch

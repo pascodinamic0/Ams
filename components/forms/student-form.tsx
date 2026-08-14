@@ -94,12 +94,14 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
       }
 
       const result = await createStudentWithGuardians(payload);
-      if (result.error) {
+      if ("error" in result && result.error) {
         toast.error(formatActionError(result.error));
         return;
       }
-      toast.success(t("studentOnboarded", { studentId: result.data?.student_id ?? "" }));
-      router.push(`/academic/students/${result.data?.id}`);
+      toast.success(t("studentOnboarded", { studentId: "data" in result ? result.data?.student_id ?? "" : "" }));
+      if ("data" in result && result.data?.id) {
+        router.push(`/academic/students/${result.data.id}`);
+      }
       router.refresh();
     } catch (err) {
       toast.error(

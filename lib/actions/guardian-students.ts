@@ -18,5 +18,5 @@ export async function linkGuardianToStudent(
   if (error) return { error: error.message };
   revalidatePath("/academic/students");
   revalidatePath("/academic/guardians");
-  return {};
+  return {} as { error?: string };
 }

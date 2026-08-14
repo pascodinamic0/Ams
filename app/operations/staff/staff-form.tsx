@@ -37,7 +37,7 @@ export function StaffForm({ schoolId, campusId }: StaffFormProps) {
       branch_id: campusId ?? null,
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       const message =
         typeof result.error === "string"
           ? result.error
@@ -130,7 +130,7 @@ export function EditStaffButton({
       branch_id: campusId ?? null,
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(
         typeof result.error === "string" ? result.error : t("staffUpdateFailed")
       );
@@ -150,7 +150,7 @@ export function EditStaffButton({
     setLoading(true);
     const result = await deleteStaff(member.id);
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : te("failedDeleteStaff"));
       return;
     }

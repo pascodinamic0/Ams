@@ -24,7 +24,7 @@ export function AdmissionActions({
       return;
     }
     const result = await convertAdmissionToStudent(id, branchId);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
@@ -34,7 +34,7 @@ export function AdmissionActions({
 
   async function reject() {
     const result = await updateAdmissionStatus(id, "rejected");
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

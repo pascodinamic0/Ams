@@ -75,7 +75,7 @@ function NewSchoolForm() {
       themeSecondaryColor: colors.secondary,
       websiteTemplate: form.template,
     });
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

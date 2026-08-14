@@ -28,7 +28,7 @@ export function BillingExemptToggle({
     setPending(true);
     const result = await setSchoolBillingExempt(schoolId, nextExempt);
     setPending(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

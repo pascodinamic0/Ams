@@ -111,15 +111,16 @@ export function ChatPanel({
     textareaRef.current?.focus();
 
     const result = await sendMessage(conversationId, trimmed);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       setBody(trimmed);
-    } else if (result.data) {
+    } else if ("data" in result && result.data) {
+      const message = result.data;
       setMessages((prev) => {
-        if (prev.some((m) => m.id === result.data!.id)) return prev;
-        return [...prev, result.data!];
+        if (prev.some((m) => m.id === message.id)) return prev;
+        return [...prev, message];
       });
-      senderNamesRef.current[result.data.sender_id] = result.data.sender_name;
+      senderNamesRef.current[message.sender_id] = message.sender_name;
     }
     setSending(false);
   }, [body, conversationId, sending]);

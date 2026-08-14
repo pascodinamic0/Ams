@@ -55,12 +55,12 @@ export function TeamInviteForm({ canManage = true }: TeamInviteFormProps) {
 
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }
 
-    if (result.data?.roleUpdated) {
+    if ("data" in result && result.data?.roleUpdated) {
       toast.success(t("roleUpdatedViaInvite"));
     } else {
       toast.success(t("invitationSent"));

@@ -34,7 +34,7 @@ export async function deleteTransportRoute(id: string) {
   const { error } = await supabase.from("transport_routes").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/operations/transport");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function createTransportVehicle(input: TransportVehicleFormData) {
@@ -58,7 +58,7 @@ export async function deleteTransportVehicle(id: string) {
   const { error } = await supabase.from("transport_vehicles").delete().eq("id", id);
   if (error) return { error: error.message };
   revalidatePath("/operations/transport");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function assignStudentToVehicle(input: TransportMappingFormData) {
@@ -111,5 +111,5 @@ export async function unassignStudentFromVehicle(mappingId: string) {
 
   if (error) return { error: error.message };
   revalidatePath("/operations/transport");
-  return {};
+  return {} as { error?: string };
 }

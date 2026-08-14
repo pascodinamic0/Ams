@@ -206,5 +206,5 @@ export async function updateEventRegistrationStatus(
   if (error) return { error: error.message };
   revalidatePath("/operations/events");
   revalidatePath("/academic/admissions");
-  return {};
+  return {} as { error?: string };
 }

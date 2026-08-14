@@ -13,7 +13,7 @@ export function DeleteInvoiceButton({ id }: { id: string }) {
   async function handleDelete() {
     if (!confirm(t("deleteInvoiceConfirm"))) return;
     const result = await deleteInvoice(id);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(
         typeof result.error === "string" ? result.error : t("invoiceDeleteFailed")
       );

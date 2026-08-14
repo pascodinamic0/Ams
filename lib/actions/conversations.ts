@@ -242,5 +242,5 @@ export async function setConversationArchived(
 
   revalidatePath("/messages");
   revalidatePath(`/messages/${conversationId}`);
-  return {};
+  return {} as { error?: string };
 }

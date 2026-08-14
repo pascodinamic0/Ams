@@ -138,7 +138,7 @@ function RegisterForm() {
         locale: data.locale,
       });
 
-      if (org.error) {
+      if ("error" in org) {
         throw new Error(org.error);
       }
 

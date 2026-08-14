@@ -21,7 +21,7 @@ export function SubjectForm({ branchId }: { branchId: string }) {
     setLoading(true);
     const result = await createSubject({ name, branch_id: branchId });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(t("subjectCreateFailed"));
       return;
     }

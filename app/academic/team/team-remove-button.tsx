@@ -50,7 +50,7 @@ export function TeamRemoveButton({
         }
         startTransition(async () => {
           const result = await removeSchoolTeamMember({ userId });
-          if (result.error) {
+          if ("error" in result && result.error) {
             toast.error(result.error);
             return;
           }

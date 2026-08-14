@@ -37,7 +37,7 @@ export function BranchForm({ schools }: Props) {
       address: address || undefined,
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : t("failedCreateBranch"));
       return;
     }

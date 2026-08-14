@@ -104,7 +104,7 @@ export async function createSchoolTask(input: z.infer<typeof taskSchema>) {
 
   revalidatePath("/academic");
   revalidatePath("/academic/tasks");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function updateSchoolTaskStatus(
@@ -124,7 +124,7 @@ export async function updateSchoolTaskStatus(
 
   revalidatePath("/academic");
   revalidatePath("/academic/tasks");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function deleteSchoolTask(id: string) {
@@ -158,7 +158,7 @@ export async function deleteSchoolTask(id: string) {
 
   revalidatePath("/academic");
   revalidatePath("/academic/tasks");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function createDisciplineIncident(
@@ -187,7 +187,7 @@ export async function createDisciplineIncident(
   revalidatePath("/academic");
   revalidatePath("/academic/discipline");
   revalidatePath("/teacher/discipline");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function updateDisciplineStatus(
@@ -208,5 +208,5 @@ export async function updateDisciplineStatus(
   revalidatePath("/academic");
   revalidatePath("/academic/discipline");
   revalidatePath("/teacher/discipline");
-  return {};
+  return {} as { error?: string };
 }

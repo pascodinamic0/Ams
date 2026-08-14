@@ -14,7 +14,7 @@ export function DeleteStudentButton({ id }: { id: string }) {
   async function handleDelete() {
     if (!confirm(t("deleteStudentConfirm"))) return;
     const result = await deleteStudent(id);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

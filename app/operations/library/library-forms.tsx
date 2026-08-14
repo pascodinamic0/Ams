@@ -34,7 +34,7 @@ export function BookForm({ branchId }: BookFormProps) {
       branch_id: branchId,
     });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : te("failedAddBook"));
       return;
     }
@@ -96,7 +96,7 @@ export function IssueBookForm({ books, students }: IssueFormProps) {
     setLoading(true);
     const result = await issueBook({ book_id: bookId, student_id: studentId, due_at: dueAt });
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : te("failedIssueBook"));
       return;
     }
@@ -164,7 +164,7 @@ export function ReturnBookButton({ issueId }: { issueId: string }) {
     setLoading(true);
     const result = await returnBook(issueId);
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : te("failedReturnBook"));
       return;
     }

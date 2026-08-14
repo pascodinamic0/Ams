@@ -53,7 +53,7 @@ export function SchoolCurrencyForm({
     const result = await updateSchoolCurrency(schoolId, code);
     setLoading(false);
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(result.error);
       return;
     }

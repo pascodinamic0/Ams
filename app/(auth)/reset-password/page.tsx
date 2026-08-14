@@ -84,10 +84,10 @@ export default function ResetPasswordPage() {
     setLoading(true);
     try {
       const result = await completePasswordSetup(data.password);
-      if (result.error) throw new Error(result.error);
+      if ("error" in result) throw new Error(result.error);
 
       toast.success(t("passwordUpdated"));
-      window.location.assign(result.data?.destination ?? "/onboarding");
+      window.location.assign(result.data.destination ?? "/onboarding");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("passwordUpdateFailed"));
     } finally {

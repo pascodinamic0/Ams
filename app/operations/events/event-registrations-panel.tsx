@@ -25,7 +25,7 @@ function RegistrationActions({
     setLoading(true);
     const result = await updateEventRegistrationStatus(id, next);
     setLoading(false);
-    if (result.error) {
+    if ("error" in result && result.error) {
       toast.error(typeof result.error === "string" ? result.error : te("failedUpdateRegistration"));
       return;
     }

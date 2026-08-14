@@ -31,7 +31,7 @@ export async function toggleFeature(key: string, enabled: boolean) {
   }
 
   revalidatePath("/admin/features");
-  return {};
+  return {} as { error?: string };
 }
 
 export async function toggleSchoolFeature(
