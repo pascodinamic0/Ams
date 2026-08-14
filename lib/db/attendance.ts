@@ -5,7 +5,6 @@ export type TeacherClassItem = {
   id: string;
   name: string;
   grade: string | null;
-  section_name: string | null;
   student_count: number;
 };
 
@@ -43,7 +42,7 @@ export async function getTeacherClasses(teacherId: string): Promise<TeacherClass
 
   const { data: classes, error: classesError } = await supabase
     .from("classes")
-    .select("id, name, grade, sections(name)")
+    .select("id, name, grade")
     .in("id", classIds)
     .order("name");
 
@@ -71,7 +70,6 @@ export async function getTeacherClasses(teacherId: string): Promise<TeacherClass
     id: c.id,
     name: c.name,
     grade: c.grade,
-    section_name: (c.sections as { name?: string } | null)?.name ?? null,
     student_count: countByClass[c.id] ?? 0,
   }));
 }

@@ -15,37 +15,6 @@ export type GradePreset = {
   grade: string;
 };
 
-export const SECTION_LETTERS = [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-  "O",
-  "P",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "V",
-  "W",
-  "X",
-  "Y",
-  "Z",
-] as const;
-
-export type SectionLetter = (typeof SECTION_LETTERS)[number];
-
 const NURSERY_GRADES: GradePreset[] = [
   { id: "nursery-1", label: "Nursery 1", grade: "Nursery 1" },
   { id: "nursery-2", label: "Nursery 2", grade: "Nursery 2" },
@@ -90,15 +59,4 @@ export const GRADE_PRESETS_BY_LEVEL: Record<SchoolLevel, GradePreset[]> = {
 /** Default selected grade ids when a level is first chosen. */
 export function defaultGradeIdsForLevel(level: SchoolLevel): string[] {
   return GRADE_PRESETS_BY_LEVEL[level].map((g) => g.id);
-}
-
-export function buildClassName(grade: string, section: string): string {
-  return `${grade} - ${section}`;
-}
-
-export function countPlannedClasses(
-  grades: string[],
-  sections: string[]
-): number {
-  return grades.length * sections.length;
 }

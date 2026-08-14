@@ -16,7 +16,7 @@
     "desc": "Students, classes, timetable, attendance, grades, report cards",
     "highlights": {
       "0": "Student profiles with guardians, medical notes, and enrollment history",
-      "1": "Classes, sections, and streams aligned to DRC grade levels",
+      "1": "Classes aligned to DRC grade levels",
       "2": "Timetable builder with teacher and room assignments",
       "3": "Daily attendance with bulk marking and absence alerts",
       "4": "Gradebooks, exams, and report cards mapped to national curriculum strands",

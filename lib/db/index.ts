@@ -50,7 +50,6 @@ export {
   type BranchListItem,
 } from "./branches";
 export { getClasses, type ClassListItem } from "./classes";
-export { getSections, type SectionListItem } from "./sections";
 export { getSubjects, type SubjectListItem } from "./subjects";
 export { getAdmissions, type AdmissionListItem } from "./admissions";
 export {
@@ -127,15 +126,6 @@ export {
   type TimetableSlotWrite,
   type TeacherOption,
 } from "./timetable";
-export {
-  getCurriculum,
-  getCurriculumById,
-  insertCurriculum,
-  updateCurriculum,
-  deleteCurriculum,
-  type CurriculumListItem,
-  type CurriculumWrite,
-} from "./curriculum";
 export {
   getUsers,
   type UserListItem,

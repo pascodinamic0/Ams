@@ -64,11 +64,11 @@
     },
     "pedagogy_coordinator": {
       "title": "Planification académique",
-      "subtitle": "Organisez les classes, matières, emploi du temps et qualité du programme.",
+      "subtitle": "Organisez les classes, matières et emploi du temps.",
       "focusQuestion": "La structure d'enseignement est-elle prête pour cette semaine ?",
       "buildTimetable": "Construire l'emploi du temps",
       "manageClasses": "Gérer les classes",
-      "curriculum": "Programme",
+      "manageSubjects": "Gérer les matières",
       "academicReports": "Rapports académiques"
     },
     "discipline_officer": {
@@ -91,7 +91,6 @@
       "title": "Revue pédagogique",
       "subtitle": "Examinez la structure académique et recommandez des améliorations sans modifications quotidiennes.",
       "focusQuestion": "Qu'est-ce qui nécessite l'attention du conseil ?",
-      "reviewCurriculum": "Revoir le programme",
       "reviewTimetable": "Revoir l'emploi du temps",
       "academicAnalytics": "Analytique académique"
     },

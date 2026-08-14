@@ -84,7 +84,7 @@ const SPECS: Record<string, WorkspaceSpec> = {
     actions: [
       { href: "/academic/timetable", key: "buildTimetable" },
       { href: "/academic/classes", key: "manageClasses", variant: "ghost" },
-      { href: "/academic/curriculum", key: "curriculum", variant: "ghost" },
+      { href: "/academic/subjects", key: "manageSubjects", variant: "ghost" },
       { href: "/analytics", key: "academicReports", variant: "outline" },
     ],
   },
@@ -110,8 +110,7 @@ const SPECS: Record<string, WorkspaceSpec> = {
     role: "pedagogical_council_member",
     metricHints: ["classes", "students", "admissions"],
     actions: [
-      { href: "/academic/curriculum", key: "reviewCurriculum" },
-      { href: "/academic/timetable", key: "reviewTimetable", variant: "ghost" },
+      { href: "/academic/timetable", key: "reviewTimetable" },
       { href: "/analytics", key: "academicAnalytics", variant: "outline" },
     ],
   },

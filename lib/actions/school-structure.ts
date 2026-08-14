@@ -4,7 +4,6 @@ import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { buildClassName } from "@/lib/schools/structure-presets";
 import {
   schoolStructureSchema,
   type SchoolStructureInput,
@@ -67,35 +66,11 @@ export async function createSchoolStructure(input: SchoolStructureInput) {
   const auth = await requireStructureAdmin();
   if ("error" in auth) return auth;
 
-  const { grades, sections, school_level } = parsed.data;
+  const { grades, school_level } = parsed.data;
   const uniqueGrades = [...new Set(grades.map((g) => g.trim()).filter(Boolean))];
-  const uniqueSections = [...new Set(sections)];
 
   if (uniqueGrades.length === 0) {
     return await zodIssueError("selectAtLeastOneGrade");
-  }
-
-  const { data: existingSections } = await auth.supabase
-    .from("sections")
-    .select("id, name")
-    .eq("branch_id", auth.branchId)
-    .in("name", uniqueSections);
-
-  const sectionIdByName = new Map(
-    (existingSections ?? []).map((s) => [s.name, s.id] as const)
-  );
-
-  for (const letter of uniqueSections) {
-    if (sectionIdByName.has(letter)) continue;
-
-    const { data: created, error } = await auth.supabase
-      .from("sections")
-      .insert({ name: letter, branch_id: auth.branchId })
-      .select("id, name")
-      .single();
-
-    if (error) return { error: error.message };
-    sectionIdByName.set(created.name, created.id);
   }
 
   const { data: existingClasses } = await auth.supabase
@@ -105,29 +80,13 @@ export async function createSchoolStructure(input: SchoolStructureInput) {
 
   const existingNames = new Set((existingClasses ?? []).map((c) => c.name));
 
-  const classRows: {
-    name: string;
-    branch_id: string;
-    grade: string;
-    section_id: string;
-  }[] = [];
-
-  for (const grade of uniqueGrades) {
-    for (const letter of uniqueSections) {
-      const sectionId = sectionIdByName.get(letter);
-      if (!sectionId) continue;
-
-      const name = buildClassName(grade, letter);
-      if (existingNames.has(name)) continue;
-
-      classRows.push({
-        name,
-        branch_id: auth.branchId,
-        grade,
-        section_id: sectionId,
-      });
-    }
-  }
+  const classRows = uniqueGrades
+    .filter((grade) => !existingNames.has(grade))
+    .map((grade) => ({
+      name: grade,
+      branch_id: auth.branchId,
+      grade,
+    }));
 
   if (classRows.length > 0) {
     const { error: classError } = await auth.supabase
@@ -151,7 +110,6 @@ export async function createSchoolStructure(input: SchoolStructureInput) {
   revalidatePath("/onboarding/school");
   revalidatePath("/academic");
   revalidatePath("/academic/classes");
-  revalidatePath("/academic/sections");
   revalidatePath("/", "layout");
 
   return {

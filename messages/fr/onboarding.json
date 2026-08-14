@@ -63,21 +63,19 @@
   "structure": {
     "badge": "Structure de l'école",
     "title": "Créez vos classes avant qu'un tableau de bord vide vous coûte une semaine",
-    "subtitle": "Sans niveaux ni sections, {school} n'a nulle part où mettre présences, frais ou inscriptions. Deux minutes maintenant — les vrais élèves viennent après.",
+    "subtitle": "Sans niveaux, {school} n'a nulle part où mettre présences, frais ou inscriptions. Deux minutes maintenant — les vrais élèves viennent après.",
     "stepProgress": "Étape {current} sur {total} : {title}",
     "skip": "Je configurerai cela moi-même",
     "skipSuccess": "Configuration de structure ignorée. Vous pouvez créer des classes à tout moment.",
     "skipFailed": "Impossible d'ignorer la configuration. Réessayez.",
     "levelRequired": "Sélectionnez le niveau de votre école pour continuer.",
     "gradesRequired": "Sélectionnez au moins un niveau/classe.",
-    "sectionsRequired": "Sélectionnez au moins une section.",
     "duplicateGrade": "Ce niveau est déjà sélectionné.",
     "customGradesOnly": "Ajoutez les noms de niveaux que votre école utilise vraiment.",
     "customGradeLabel": "Ajouter un niveau personnalisé",
     "customGradePlaceholder": "ex. Grade 8, Terminale",
     "addGrade": "Ajouter un niveau",
-    "sectionsHint": "Avec vos choix actuels, nous créerons {count} classes.",
-    "confirmSummary": "{level} · {grades} niveaux · sections {sections} · {classes} classes",
+    "confirmSummary": "{level} · {grades} niveaux · {classes} classes",
     "noStudentsNote": "Classes uniquement — aucun élève démo ne sera créé.",
     "previewLabel": "Aperçu des classes",
     "previewMore": "+{count} de plus",
@@ -92,10 +90,6 @@
       "grades": {
         "title": "Niveaux",
         "description": "Sélectionnez chaque niveau que vous enseignez. Décochez ce dont vous n'avez pas besoin — ajoutez des noms personnalisés si la liste est incomplète."
-      },
-      "sections": {
-        "title": "Sections A–Z",
-        "description": "Choisissez les streams ou divisions de chaque niveau. La plupart des écoles commencent par A."
       },
       "confirm": {
         "title": "Confirmer",
@@ -144,7 +138,7 @@
     },
     "classes": {
       "title": "Créer les classes",
-      "description": "Choisissez le niveau de votre école et les sections pour que les classes existent avant que les inscriptions s'éparpillent."
+      "description": "Choisissez le niveau de votre école et les classes pour qu'elles existent avant que les inscriptions s'éparpillent."
     },
     "students": {
       "title": "Inscrire votre premier élève",

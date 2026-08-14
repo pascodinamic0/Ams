@@ -21,7 +21,6 @@ import {
   GraduationCap,
   Home,
   Landmark,
-  Layers,
   Library,
   Megaphone,
   MessageSquare,
@@ -64,10 +63,8 @@ type NavLabels = {
   students: string;
   admissions: string;
   classes: string;
-  sections: string;
   subjects: string;
   timetable: string;
-  curriculum: string;
   myClasses: string;
   attendance: string;
   gradebook: string;
@@ -111,7 +108,6 @@ const icon = {
   guardians: <Users className={iconClass} />,
   admissions: <UserPlus className={iconClass} />,
   classes: <BookOpen className={iconClass} />,
-  sections: <Layers className={iconClass} />,
   subjects: <BookMarked className={iconClass} />,
   timetable: <Calendar className={iconClass} />,
   finance: <Landmark className={iconClass} />,
@@ -131,7 +127,6 @@ const icon = {
   expenses: <Wallet className={iconClass} />,
   budget: <PieChart className={iconClass} />,
   payroll: <Users className={iconClass} />,
-  curriculum: <BookOpen className={iconClass} />,
   attendance: <CheckCircle className={iconClass} />,
   performance: <TrendingUp className={iconClass} />,
   outreach: <Megaphone className={iconClass} />,
@@ -163,10 +158,8 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
-    { href: "/academic/sections", labelKey: "sections", icon: icon.sections },
     { href: "/academic/subjects", labelKey: "subjects", icon: icon.subjects },
     { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
-    { href: "/academic/curriculum", labelKey: "curriculum", icon: icon.curriculum },
     { href: "/outreach", labelKey: "outreach", icon: icon.outreach },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
@@ -196,10 +189,8 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
-    { href: "/academic/sections", labelKey: "sections", icon: icon.sections },
     { href: "/academic/subjects", labelKey: "subjects", icon: icon.subjects },
     { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
-    { href: "/academic/curriculum", labelKey: "curriculum", icon: icon.curriculum },
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
     { href: "/analytics", labelKey: "reports", icon: icon.reports },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
@@ -213,7 +204,6 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
     { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
-    { href: "/academic/curriculum", labelKey: "curriculum", icon: icon.curriculum },
     { href: "/analytics", labelKey: "reports", icon: icon.reports },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
@@ -298,7 +288,6 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   ],
   pedagogical_council_member: [
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/academic/curriculum", labelKey: "curriculum", icon: icon.curriculum },
     { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
     { href: "/analytics", labelKey: "reports", icon: icon.reports },
     { href: "/messages", labelKey: "messages", icon: icon.chat },

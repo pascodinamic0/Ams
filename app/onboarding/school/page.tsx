@@ -7,7 +7,6 @@ import {
   Building2,
   Check,
   GraduationCap,
-  Layers3,
   ListChecks,
   Plus,
 } from "lucide-react";
@@ -23,24 +22,19 @@ import {
 import {
   GRADE_PRESETS_BY_LEVEL,
   SCHOOL_LEVELS,
-  SECTION_LETTERS,
-  buildClassName,
-  countPlannedClasses,
   defaultGradeIdsForLevel,
   type SchoolLevel,
-  type SectionLetter,
 } from "@/lib/schools/structure-presets";
 import { toast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
-type StepId = "level" | "grades" | "sections" | "confirm";
+type StepId = "level" | "grades" | "confirm";
 
-const STEPS: StepId[] = ["level", "grades", "sections", "confirm"];
+const STEPS: StepId[] = ["level", "grades", "confirm"];
 
 const STEP_ICONS = {
   level: Building2,
   grades: GraduationCap,
-  sections: Layers3,
   confirm: ListChecks,
 } as const;
 
@@ -48,7 +42,6 @@ const ambientByStep = [
   "bg-amber-500/15 left-[8%] top-[18%]",
   "bg-amber-400/12 right-[6%] top-[28%]",
   "bg-orange-500/10 left-[20%] bottom-[12%]",
-  "bg-amber-500/12 right-[12%] bottom-[18%]",
 ];
 
 export default function SchoolStructureOnboardingPage() {
@@ -66,7 +59,6 @@ export default function SchoolStructureOnboardingPage() {
   const [selectedGradeIds, setSelectedGradeIds] = useState<string[]>([]);
   const [customGrades, setCustomGrades] = useState<string[]>([]);
   const [customDraft, setCustomDraft] = useState("");
-  const [sections, setSections] = useState<SectionLetter[]>(["A"]);
 
   useEffect(() => {
     async function load() {
@@ -153,17 +145,11 @@ export default function SchoolStructureOnboardingPage() {
     return [...fromPresets, ...customGrades];
   }, [presetGrades, selectedGradeIds, customGrades]);
 
-  const plannedCount = countPlannedClasses(selectedGrades, sections);
-  const previewNames = useMemo(() => {
-    const names: string[] = [];
-    for (const grade of selectedGrades) {
-      for (const section of sections) {
-        names.push(buildClassName(grade, section));
-        if (names.length >= 8) return names;
-      }
-    }
-    return names;
-  }, [selectedGrades, sections]);
+  const plannedCount = selectedGrades.length;
+  const previewNames = useMemo(
+    () => selectedGrades.slice(0, 8),
+    [selectedGrades]
+  );
 
   function goToStep(nextIndex: number) {
     if (nextIndex === stepIndex) return;
@@ -186,16 +172,6 @@ export default function SchoolStructureOnboardingPage() {
         ? current.filter((item) => item !== id)
         : [...current, id]
     );
-  }
-
-  function toggleSection(letter: SectionLetter) {
-    setSections((current) => {
-      if (current.includes(letter)) {
-        if (current.length === 1) return current;
-        return current.filter((item) => item !== letter);
-      }
-      return [...current, letter].sort();
-    });
   }
 
   function addCustomGrade() {
@@ -225,10 +201,6 @@ export default function SchoolStructureOnboardingPage() {
       toast.error(t("gradesRequired"));
       return;
     }
-    if (currentStep === "sections" && sections.length === 0) {
-      toast.error(t("sectionsRequired"));
-      return;
-    }
     goToStep(Math.min(stepIndex + 1, STEPS.length - 1));
   }
 
@@ -247,7 +219,6 @@ export default function SchoolStructureOnboardingPage() {
       const result = await createSchoolStructure({
         school_level: level,
         grades: selectedGrades,
-        sections,
       });
       if ("error" in result && result.error) throw new Error(result.error);
       toast.success(
@@ -573,34 +544,6 @@ export default function SchoolStructureOnboardingPage() {
                 </div>
               )}
 
-              {currentStep === "sections" && (
-                <div className="space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    {SECTION_LETTERS.map((letter) => {
-                      const active = sections.includes(letter);
-                      return (
-                        <button
-                          key={letter}
-                          type="button"
-                          onClick={() => toggleSection(letter)}
-                          className={cn(
-                            "flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-semibold transition",
-                            active
-                              ? "border-amber-500 bg-amber-500 text-black"
-                              : "border-white/15 bg-black/30 text-white/70 hover:border-white/30"
-                          )}
-                        >
-                          {letter}
-                        </button>
-                      );
-                    })}
-                  </div>
-                  <p className="text-sm text-white/50">
-                    {t("sectionsHint", { count: plannedCount })}
-                  </p>
-                </div>
-              )}
-
               {currentStep === "confirm" && (
                 <div className="space-y-4">
                   <div className="rounded-xl border border-white/10 bg-black/40 p-4">
@@ -608,7 +551,6 @@ export default function SchoolStructureOnboardingPage() {
                       {t("confirmSummary", {
                         level: level ? t(`levels.${level}.label`) : "",
                         grades: selectedGrades.length,
-                        sections: sections.join(", "),
                         classes: plannedCount,
                       })}
                     </p>

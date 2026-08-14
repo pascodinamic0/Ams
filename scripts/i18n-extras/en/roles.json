@@ -45,11 +45,11 @@
     },
     "pedagogy_coordinator": {
       "title": "Academic planning",
-      "subtitle": "Organize classes, subjects, timetable, and curriculum quality.",
+      "subtitle": "Organize classes, subjects, and timetable quality.",
       "focusQuestion": "Is teaching structure ready for this week?",
       "buildTimetable": "Build timetable",
       "manageClasses": "Manage classes",
-      "curriculum": "Curriculum",
+      "manageSubjects": "Manage subjects",
       "academicReports": "Academic reports"
     },
     "discipline_officer": {
@@ -72,7 +72,6 @@
       "title": "Pedagogical review",
       "subtitle": "Review academic structure and recommend improvements without day-to-day edits.",
       "focusQuestion": "What needs council attention?",
-      "reviewCurriculum": "Review curriculum",
       "reviewTimetable": "Review timetable",
       "academicAnalytics": "Academic analytics"
     },

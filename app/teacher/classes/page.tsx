@@ -47,7 +47,6 @@ export default async function TeacherClassesPage() {
                   <CardTitle>{cls.name}</CardTitle>
                   <p className="text-sm font-normal text-stone-500">
                     {cls.grade ? t("gradeLevel", { grade: cls.grade }) : ""}
-                    {cls.section_name ? ` · ${cls.section_name}` : ""}
                     {" · "}
                     {t("studentCount", { count: students.length })}
                   </p>

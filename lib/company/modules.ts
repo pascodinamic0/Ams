@@ -37,7 +37,7 @@ export const platformModules: PlatformModule[] = [
     iconClassName: "text-blue-500",
     highlights: [
       "Student profiles with guardians, medical notes, and enrollment history",
-      "Classes, sections, and streams aligned to DRC grade levels",
+      "Classes aligned to DRC grade levels",
       "Timetable builder with teacher and room assignments",
       "Daily attendance with bulk marking and absence alerts",
       "Gradebooks, exams, and report cards mapped to national curriculum strands",

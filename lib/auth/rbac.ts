@@ -150,10 +150,8 @@ export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
     exact("/academic"),
     tree("/academic/students"),
     tree("/academic/classes"),
-    tree("/academic/sections"),
     tree("/academic/subjects"),
     tree("/academic/timetable"),
-    tree("/academic/curriculum"),
     tree("/academic/tasks"),
     tree("/analytics"),
   ],
@@ -184,7 +182,6 @@ export const ROLE_ROUTE_SCOPES: Record<UserRole, RouteScope[]> = {
   ],
   pedagogical_council_member: [
     exact("/academic"),
-    tree("/academic/curriculum"),
     tree("/academic/timetable"),
     tree("/analytics"),
   ],

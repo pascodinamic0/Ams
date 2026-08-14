@@ -18,6 +18,8 @@
     "cookiePolicy": "Cookie Policy",
     "documentation": "Documentation",
     "blog": "Blog",
+    "schoolManagementSystem": "School management system",
+    "logicielGestionScolaire": "Logiciel de gestion scolaire",
     "contact": "Contact",
     "forgotPassword": "Forgot Password",
     "taglineSuffix": "one central system for growing schools—fees, grades, communication, and every role in one place.",
@@ -118,12 +120,13 @@
     "ctaSubtitle": "Register your school and walk through every module live—before another term of rebuilding the same information.",
     "ctaPrimary": "Register your school",
     "ctaSecondary": "Log in",
+    "schoolManagementGuide": "Read our school management system guide →",
     "academicModule": "Academic",
     "academicItems": [
       "Students & guardians",
       "Admissions",
-      "Classes, sections & subjects",
-      "Timetable & curriculum",
+      "Classes & subjects",
+      "Timetable",
       "Team & task board",
       "Discipline",
       "Monthly activity reports"
@@ -324,5 +327,5 @@
     "createMySchoolAccount": "Create My School Account",
     "joinRevolution": "Register before next term"
   },
-  "metaDescription": "School management platform built for DRC schools. Academics, fees, mobile money payments, and parent communication in one place."
+  "metaDescription": "School management system for DRC schools. Academics, fees, mobile money, parent portals, Programme National report cards, and offline attendance in one platform."
 }

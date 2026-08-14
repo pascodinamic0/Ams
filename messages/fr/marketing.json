@@ -18,6 +18,8 @@
     "cookiePolicy": "Politique de cookies",
     "documentation": "Documentation",
     "blog": "Blog",
+    "schoolManagementSystem": "School management system",
+    "logicielGestionScolaire": "Logiciel de gestion scolaire",
     "contact": "Contact",
     "forgotPassword": "Mot de passe oublié",
     "taglineSuffix": "un système central pour les écoles qui grandissent—frais, notes, communication et chaque rôle au même endroit.",
@@ -118,12 +120,13 @@
     "ctaSubtitle": "Inscrivez votre école et parcourez chaque module en direct—avant un autre trimestre à reconstruire les mêmes infos.",
     "ctaPrimary": "Inscrire votre école",
     "ctaSecondary": "Se connecter",
+    "schoolManagementGuide": "Lire notre guide logiciel de gestion scolaire →",
     "academicModule": "Académique",
     "academicItems": [
       "Élèves et tuteurs",
       "Candidatures",
-      "Classes, sections et matières",
-      "Emploi du temps et programme",
+      "Classes et matières",
+      "Emploi du temps",
       "Équipe et tableau de tâches",
       "Discipline",
       "Rapports d'activité mensuels"
@@ -324,5 +327,5 @@
     "createMySchoolAccount": "Créer mon compte école",
     "joinRevolution": "Inscrivez-vous avant le prochain trimestre"
   },
-  "metaDescription": "Plateforme de gestion scolaire conçue pour les écoles de RDC. Scolarité, frais, paiements mobile money et communication parents, au même endroit."
+  "metaDescription": "Logiciel de gestion scolaire et système de gestion scolaire pour la RDC. Scolarité, frais, mobile money, portails parents, bulletins Programme National et présences hors ligne."
 }

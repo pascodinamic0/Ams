@@ -1,16 +1,10 @@
 import { z } from "zod";
 
-export const sectionSchema = z.object({
-  name: z.string().min(1, "nameRequired"),
-  branch_id: z.string().uuid("branchRequired"),
-});
-
 export const classSchema = z.object({
   name: z.string().min(1, "nameRequired"),
   branch_id: z.string().uuid("branchRequired"),
   grade: z.string().optional(),
-  section_id: z.string().optional(),
-  capacity: z.coerce.number().int().positive().optional(),
+  capacity: z.number().int().positive().nullable().optional(),
 });
 
 export const subjectSchema = z.object({
@@ -99,13 +93,6 @@ export const timetableSlotSchema = z.object({
   teacher_id: z.string().uuid().nullable(),
 });
 
-export const curriculumSchema = z.object({
-  branch_id: z.string().uuid("branchRequired"),
-  grade: z.string().min(1, "gradeRequired"),
-  subject_id: z.string().uuid("subjectRequired"),
-  syllabus: z.string().optional(),
-});
-
 export const studentImportRowSchema = z.object({
   first_name: z.string().min(1, "firstNameRequired"),
   middle_name: z.string().optional(),
@@ -115,7 +102,6 @@ export const studentImportRowSchema = z.object({
   status: z.enum(["active", "graduated", "inactive"]).default("active"),
 });
 
-export type SectionFormData = z.infer<typeof sectionSchema>;
 export type ClassFormData = z.infer<typeof classSchema>;
 export type SubjectFormData = z.infer<typeof subjectSchema>;
 export type BranchFormData = z.infer<typeof branchSchema>;
@@ -124,5 +110,4 @@ export type OnlineEnrollmentFormData = z.infer<typeof onlineEnrollmentSchema>;
 export type TimetableSlotFormData = z.infer<typeof timetableSlotSchema>;
 export type TimetableCellFormData = z.infer<typeof timetableCellSchema>;
 export type TimetableSlotEntryFormData = z.infer<typeof timetableSlotEntrySchema>;
-export type CurriculumFormData = z.infer<typeof curriculumSchema>;
 export type StudentImportRow = z.infer<typeof studentImportRowSchema>;

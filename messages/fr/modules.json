@@ -16,7 +16,7 @@
     "desc": "Élèves, classes, emploi du temps, présences, notes, bulletins",
     "highlights": {
       "0": "Profils élèves avec tuteurs, notes médicales et historique d'inscription",
-      "1": "Classes, sections et filières alignées sur les niveaux scolaires congolais",
+      "1": "Classes alignées sur les niveaux scolaires congolais",
       "2": "Constructeur d'emploi du temps avec affectation enseignants et salles",
       "3": "Présences quotidiennes avec marquage groupé et alertes d'absence",
       "4": "Carnets de notes, examens et bulletins mappés au Programme National",

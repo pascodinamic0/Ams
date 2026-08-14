@@ -1,8 +1,9 @@
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getClasses, getSections } from "@/lib/db";
+import { getClasses } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
+import { ClassCapacityEditor } from "./class-capacity-editor";
 import { ClassForm } from "./class-form";
 import { DeleteClassButton } from "./delete-button";
 
@@ -11,24 +12,25 @@ export default async function ClassesPage() {
   const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   const branchId = profile?.branch_id ?? "";
-  const [classes, sections] = await Promise.all([
-    branchId ? getClasses(branchId) : getClasses(),
-    branchId ? getSections(branchId) : getSections(),
-  ]);
+  const classes = branchId ? await getClasses(branchId) : await getClasses();
   const tableData = classes.map((row) => ({
     ...row,
-    enrollment:
-      row.capacity != null
-        ? `${row.student_count} / ${row.capacity}`
-        : String(row.student_count),
-    actions: <DeleteClassButton id={row.id as string} name={String(row.name)} />,
+    enrollment: (
+      <ClassCapacityEditor
+        key={`${row.id}-${row.capacity ?? "none"}`}
+        id={row.id}
+        studentCount={row.student_count}
+        capacity={row.capacity}
+      />
+    ),
+    actions: <DeleteClassButton id={row.id} name={row.name} />,
   }));
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">{t("classesTitle")}</h1>
       {branchId ? (
-        <ClassForm branchId={branchId} sections={sections.map((s) => ({ id: s.id, name: s.name }))} />
+        <ClassForm branchId={branchId} />
       ) : (
         <p className="text-sm text-stone-500">{t("linkSchoolForClasses")}</p>
       )}
@@ -40,7 +42,6 @@ export default async function ClassesPage() {
           columns={[
             { id: "name", header: tc("name"), accessorKey: "name", sortable: true },
             { id: "grade", header: t("grade"), accessorKey: "grade" },
-            { id: "section", header: t("sectionsTitle"), accessorKey: "section_name" },
             { id: "enrollment", header: t("capacity"), accessorKey: "enrollment" },
             { id: "actions", header: "", accessorKey: "actions" },
           ]}

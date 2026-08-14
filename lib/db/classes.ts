@@ -6,7 +6,6 @@ export type ClassListItem = {
   grade: string | null;
   capacity: number | null;
   student_count: number;
-  section_name: string | null;
   branch_id: string;
 };
 
@@ -25,7 +24,7 @@ export async function getClasses(
   const supabase = await createClient();
   let query = supabase
     .from("classes")
-    .select("id, name, grade, capacity, branch_id, sections(name)")
+    .select("id, name, grade, capacity, branch_id")
     .order("name");
 
   if (branchId) {
@@ -73,6 +72,5 @@ export async function getClasses(
     capacity: c.capacity,
     student_count: countByClass[c.id] ?? 0,
     branch_id: c.branch_id,
-    section_name: (c.sections as { name?: string } | null)?.name ?? null,
   }));
 }

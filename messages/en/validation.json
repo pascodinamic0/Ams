@@ -29,7 +29,6 @@
   "dueDateRequired": "Due date is required",
   "dateRequired": "Date is required",
   "selectAtLeastOneGrade": "Select at least one grade",
-  "selectAtLeastOneSection": "Select at least one section",
   "tooManyGrades": "Too many grades",
   "categoryRequired": "Category is required",
   "amountZeroOrPositive": "Amount must be zero or positive",
