@@ -14,6 +14,42 @@ type SchoolSiteLayoutProps = {
 
 type ShellProps = SchoolSiteLayoutProps & { t: ChromeT };
 
+function SchoolBrandLink({
+  href,
+  school,
+  tagline,
+  nameClassName,
+}: {
+  href: string;
+  school: SchoolRow;
+  tagline?: string;
+  nameClassName: string;
+}) {
+  return (
+    <Link href={href} className="flex min-w-0 items-center gap-3 text-white">
+      {school.logo_url ? (
+        <span className="flex h-12 max-w-[7.5rem] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white px-1.5 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.28)] ring-1 ring-white/50 sm:h-14 sm:max-w-[9.5rem]">
+          <img
+            src={school.logo_url}
+            alt=""
+            className="h-full w-auto max-w-full object-contain"
+          />
+        </span>
+      ) : null}
+      <span className="min-w-0">
+        <span className={`block leading-tight drop-shadow ${nameClassName}`}>
+          {school.name}
+        </span>
+        {tagline ? (
+          <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/85">
+            {tagline}
+          </span>
+        ) : null}
+      </span>
+    </Link>
+  );
+}
+
 function NavLink({
   href,
   children,
@@ -110,14 +146,12 @@ function ModernShell({ school, children, isPreview, t }: ShellProps) {
       <header className="absolute inset-x-0 top-0 z-30">
         <div className="h-[3px]" style={{ backgroundColor: primary }} />
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-          <Link href={base} className="text-white">
-            <span className="block text-lg font-bold tracking-tight drop-shadow">
-              {school.name}
-            </span>
-            <span className="mt-0.5 block text-[10px] font-semibold uppercase tracking-[0.18em] text-white/80">
-              {t("chrome.excellenceIntegrityCommunity")}
-            </span>
-          </Link>
+          <SchoolBrandLink
+            href={base}
+            school={school}
+            tagline={t("chrome.excellenceIntegrityCommunity")}
+            nameClassName="text-[15px] font-bold tracking-tight sm:text-lg"
+          />
           <nav className="hidden items-center gap-6 text-xs font-semibold uppercase tracking-[0.14em] text-white sm:flex">
             <NavLink href={`${base}#programs`} className="text-white">
               {t("nav.programs")}
@@ -180,14 +214,12 @@ function ClassicShell({ school, children, isPreview, t }: ShellProps) {
       <div className="relative">
         <header className="absolute inset-x-0 top-0 z-30">
           <div className="mx-auto flex max-w-6xl items-start justify-between gap-6 px-6 py-5">
-            <Link href={base} className="text-white">
-              <span className="block text-xl font-bold tracking-tight drop-shadow md:text-2xl">
-                {school.name}
-              </span>
-              <span className="mt-1 block text-[10px] font-semibold uppercase tracking-[0.2em] text-white/85">
-                {t("chrome.excellenceIntegrityInclusivity")}
-              </span>
-            </Link>
+            <SchoolBrandLink
+              href={base}
+              school={school}
+              tagline={t("chrome.excellenceIntegrityInclusivity")}
+              nameClassName="text-xl font-bold tracking-tight md:text-2xl"
+            />
             <div className="hidden flex-col items-end gap-3 sm:flex">
               <div className="flex items-center gap-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
                 <NavLink href={`${base}#about`} className="text-white">
@@ -252,11 +284,11 @@ function MinimalShell({ school, children, isPreview, t }: ShellProps) {
       <header className="absolute inset-x-0 top-0 z-30">
         <div className="h-px" style={{ backgroundColor: accent }} />
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-6">
-          <Link href={base} className="text-white">
-            <span className="block text-base font-semibold tracking-tight drop-shadow">
-              {school.name}
-            </span>
-          </Link>
+          <SchoolBrandLink
+            href={base}
+            school={school}
+            nameClassName="text-base font-semibold tracking-tight"
+          />
           <nav className="flex flex-wrap justify-end gap-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/90">
             <NavLink href={`${base}#programs`} className="text-white">
               {t("nav.programs")}

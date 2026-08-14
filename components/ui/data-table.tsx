@@ -11,6 +11,8 @@ export interface ColumnDef<T> {
   accessorKey: keyof T & string;
   sortable?: boolean;
   className?: string;
+  /** Rendered in the table body. Prefer this over putting React nodes in `data`. */
+  cell?: (row: T) => ReactNode;
 }
 
 interface DataTableProps<T extends Record<string, unknown>> {
@@ -21,10 +23,12 @@ interface DataTableProps<T extends Record<string, unknown>> {
   keyField?: keyof T & string;
   onRowClick?: (row: T) => void;
   emptyMessage?: string;
+  pageSize?: number;
 }
 
-function getCellValue<T>(row: T, accessor: keyof T): ReactNode {
-  const value = row[accessor];
+function getCellValue<T>(row: T, col: ColumnDef<T>): ReactNode {
+  if (col.cell) return col.cell(row);
+  const value = row[col.accessorKey];
   if (value === null || value === undefined) return "—";
   if (isValidElement(value)) return value;
   // Avoid "[object Object]" when a non-element object slips through (e.g. RSC
@@ -55,14 +59,15 @@ export function DataTable<T extends Record<string, unknown>>({
   keyField = "id" as keyof T & string,
   onRowClick,
   emptyMessage,
+  pageSize = 10,
 }: DataTableProps<T>) {
   const t = useTranslations("common");
   const resolvedEmptyMessage = emptyMessage ?? t("noData");
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(0);
-  const pageSize = 10;
-  const totalPages = Math.ceil(data.length / pageSize);
+  const totalPages = Math.max(1, Math.ceil(data.length / pageSize));
+  const currentPage = Math.min(page, totalPages - 1);
 
   const sortedData = [...data].sort((a, b) => {
     if (!sortKey) return 0;
@@ -74,7 +79,10 @@ export function DataTable<T extends Record<string, unknown>>({
     return sortDir === "asc" ? cmp : -cmp;
   });
 
-  const paginatedData = sortedData.slice(page * pageSize, page * pageSize + pageSize);
+  const paginatedData = sortedData.slice(
+    currentPage * pageSize,
+    currentPage * pageSize + pageSize
+  );
 
   const handleSort = (id: string) => {
     const col = columns.find((c) => c.id === id);
@@ -127,11 +135,11 @@ export function DataTable<T extends Record<string, unknown>>({
               const rowKey =
                 rawKey != null && rawKey !== ""
                   ? String(rawKey)
-                  : `row-${page * pageSize + index}`;
+                  : `row-${currentPage * pageSize + index}`;
 
               return (
               <tr
-                key={rowKey}
+                key={`${rowKey}-${currentPage * pageSize + index}`}
                 className={`border-b border-border last:border-0 ${
                   onRowClick
                     ? "cursor-pointer hover:bg-surface-raised"
@@ -144,7 +152,7 @@ export function DataTable<T extends Record<string, unknown>>({
                     key={col.id}
                     className={`px-6 py-4 text-foreground ${col.className ?? ""}`}
                   >
-                    {getCellValue(row, col.accessorKey)}
+                    {getCellValue(row, col)}
                   </td>
                 ))}
               </tr>
@@ -156,21 +164,21 @@ export function DataTable<T extends Record<string, unknown>>({
       {totalPages > 1 && (
         <div className="mt-4 flex items-center justify-between border-t border-border px-4 py-2">
           <span className="text-sm text-muted">
-            {t("pageOf", { current: page + 1, total: totalPages })}
+            {t("pageOf", { current: currentPage + 1, total: totalPages })}
           </span>
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => setPage((p) => Math.max(0, p - 1))}
-              disabled={page === 0}
+              onClick={() => setPage(Math.max(0, currentPage - 1))}
+              disabled={currentPage === 0}
               className="rounded border border-border px-3 py-1 text-sm disabled:opacity-50"
             >
               {t("previous")}
             </button>
             <button
               type="button"
-              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-              disabled={page >= totalPages - 1}
+              onClick={() => setPage(Math.min(totalPages - 1, currentPage + 1))}
+              disabled={currentPage >= totalPages - 1}
               className="rounded border border-border px-3 py-1 text-sm disabled:opacity-50"
             >
               {t("next")}

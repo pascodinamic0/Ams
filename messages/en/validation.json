@@ -53,6 +53,7 @@
   "studentNameRequired": "Student name is required",
   "guardianNameRequired": "Guardian name is required",
   "gradeOrClassRequired": "Grade or class is required",
+  "classRequired": "Class is required",
   "addressRequired": "Address is required",
   "pickupAuthorizationRequired": "Specify who may pick up this child from school — authorize the guardian and/or add another person",
   "pickupAuthorizationOnboarding": "Specify who may pick up this child from school — authorize a guardian and/or add another person",

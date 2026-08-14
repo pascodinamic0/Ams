@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { OnlineEnrollmentForm } from "@/components/schools/online-enrollment-form";
 import { SchoolInnerPage } from "@/components/schools/school-inner-page";
-import { getSchoolBySlug } from "@/lib/db";
+import { getSchoolBySlug, getPublicClassesForSchool } from "@/lib/db";
 import { getCampusVisitSlots } from "@/lib/db/public-events";
 
 export default async function SchoolEnrollPage({
@@ -17,6 +17,7 @@ export default async function SchoolEnrollPage({
   const t = await getTranslations("schools.enrollment");
   const tChrome = await getTranslations("schools.chrome");
   const campusVisitSlots = await getCampusVisitSlots(school.id);
+  const publicClasses = await getPublicClassesForSchool(school.id);
   const hasVisitSlots = campusVisitSlots.length > 0;
 
   return (
@@ -38,6 +39,7 @@ export default async function SchoolEnrollPage({
         schoolAddress={school.address}
         primary={school.theme_primary_color ?? "#0d9488"}
         campusVisitSlots={campusVisitSlots}
+        classes={publicClasses}
         hideIntro
       />
     </SchoolInnerPage>

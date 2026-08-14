@@ -7,6 +7,7 @@ export {
 export {
   createStudent,
   updateStudent,
+  assignStudentClass,
   deleteStudent,
 } from "./students";
 export {

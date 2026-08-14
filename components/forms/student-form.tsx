@@ -20,11 +20,15 @@ import { toast } from "@/lib/toast";
 
 const STUDENT_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 
+import { formatClassOptionLabel, isClassFull } from "@/lib/utils/class-options";
+import type { ClassListItem } from "@/lib/db/classes";
+
 interface Props {
   schoolId: string;
   branchId: string;
-  classes: { id: string; name: string }[];
+  classes: ClassListItem[];
   existingGuardians: { id: string; name: string }[];
+  canOverrideCapacity?: boolean;
 }
 
 const defaultPrimaryGuardian = {
@@ -68,11 +72,18 @@ function firstErrorMessage(error: unknown): string | undefined {
   return undefined;
 }
 
-export function StudentForm({ schoolId, branchId, classes, existingGuardians }: Props) {
+export function StudentForm({
+  schoolId,
+  branchId,
+  classes,
+  existingGuardians,
+  canOverrideCapacity = false,
+}: Props) {
   const t = useTranslations("academic");
   const tc = useTranslations("common");
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [overrideCapacity, setOverrideCapacity] = useState(false);
 
   function formatActionError(error: unknown): string {
     return firstErrorMessage(error) ?? t("failedToOnboard");
@@ -85,7 +96,27 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
   async function onSubmit(data: StudentOnboardingData) {
     setLoading(true);
     try {
-      const payload = { ...data, school_id: schoolId, branch_id: branchId };
+      const selectedClass = classes.find((c) => c.id === data.class_id);
+      if (selectedClass && isClassFull(selectedClass) && !canOverrideCapacity) {
+        toast.error(t("classFullNoOverride"));
+        return;
+      }
+      if (
+        selectedClass &&
+        isClassFull(selectedClass) &&
+        canOverrideCapacity &&
+        !overrideCapacity
+      ) {
+        toast.error(t("enrollAnywayFullClassHint"));
+        return;
+      }
+
+      const payload = {
+        ...data,
+        school_id: schoolId,
+        branch_id: branchId,
+        overrideCapacity: overrideCapacity && canOverrideCapacity,
+      };
       if (data.existing_guardian_id) {
         payload.primary_guardian = undefined;
       }
@@ -138,6 +169,9 @@ export function StudentForm({ schoolId, branchId, classes, existingGuardians }: 
             schoolId={schoolId}
             classes={classes}
             existingGuardians={existingGuardians}
+            canOverrideCapacity={canOverrideCapacity}
+            overrideCapacity={overrideCapacity}
+            onOverrideCapacityChange={setOverrideCapacity}
           />
         </CardContent>
         <CardFooter className="justify-end gap-3">
@@ -406,10 +440,16 @@ function StudentFormFields({
   schoolId,
   classes,
   existingGuardians,
+  canOverrideCapacity,
+  overrideCapacity,
+  onOverrideCapacityChange,
 }: {
   schoolId: string;
-  classes: { id: string; name: string }[];
+  classes: ClassListItem[];
   existingGuardians: { id: string; name: string }[];
+  canOverrideCapacity: boolean;
+  overrideCapacity: boolean;
+  onOverrideCapacityChange: (value: boolean) => void;
 }) {
   const t = useTranslations("academic");
   const tc = useTranslations("common");
@@ -419,6 +459,9 @@ function StudentFormFields({
   const sameAddress = useWatch({ name: "same_address_as_guardian" });
   const primaryAddress = useWatch({ name: "primary_guardian.address" });
   const photoUrl = useWatch({ name: "photo_url" }) ?? "";
+  const selectedClassId = useWatch({ name: "class_id" });
+  const selectedClass = classes.find((c) => c.id === selectedClassId);
+  const classIsFull = selectedClass ? isClassFull(selectedClass) : false;
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraUploading, setCameraUploading] = useState(false);
 
@@ -526,11 +569,14 @@ function StudentFormFields({
 
       <FormSection title={t("enrollment")} description={t("enrollmentDesc")}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={t("class")} htmlFor="class_id">
+          <Field label={t("class")} htmlFor="class_id" required error={errors.class_id?.message}>
             <Select
               id="class_id"
-              placeholder={t("selectClassOptional")}
-              options={classes.map((c) => ({ value: c.id, label: c.name }))}
+              placeholder={t("selectClassRequired")}
+              options={classes.map((c) => ({
+                value: c.id,
+                label: formatClassOptionLabel(c),
+              }))}
               {...register("class_id")}
             />
           </Field>
@@ -546,6 +592,23 @@ function StudentFormFields({
             />
           </Field>
         </div>
+        {classIsFull && !canOverrideCapacity ? (
+          <p className="text-sm text-amber-700 dark:text-amber-300">{t("classFullNoOverride")}</p>
+        ) : null}
+        {classIsFull && canOverrideCapacity ? (
+          <label className="flex items-start gap-2 text-sm text-stone-700 dark:text-stone-300">
+            <input
+              type="checkbox"
+              className="mt-0.5 rounded border-stone-300"
+              checked={overrideCapacity}
+              onChange={(e) => onOverrideCapacityChange(e.target.checked)}
+            />
+            <span>
+              <span className="font-medium">{t("enrollAnywayFullClass")}</span>
+              <span className="mt-0.5 block text-xs text-stone-500">{t("enrollAnywayFullClassHint")}</span>
+            </span>
+          </label>
+        ) : null}
       </FormSection>
 
       <div className="border-t border-stone-200 dark:border-stone-800" />

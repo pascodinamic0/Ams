@@ -6,6 +6,7 @@ export type AdmissionListItem = {
   guardian_name: string;
   guardian_email: string;
   class_applying: string | null;
+  class_id: string | null;
   source: string;
   status: string;
   requires_campus_visit: boolean;
@@ -21,7 +22,7 @@ export async function getAdmissions(schoolId?: string): Promise<AdmissionListIte
   let query = supabase
     .from("admission_applications")
     .select(
-      `id, student_name, guardian_name, guardian_email, class_applying, source, status, requires_campus_visit, created_at,
+      `id, student_name, guardian_name, guardian_email, class_applying, class_id, source, status, requires_campus_visit, created_at,
       campus_visit:event_registrations (
         status,
         events (title, date, start_time)
@@ -55,6 +56,7 @@ export async function getAdmissions(schoolId?: string): Promise<AdmissionListIte
       guardian_name: row.guardian_name,
       guardian_email: row.guardian_email,
       class_applying: row.class_applying,
+      class_id: row.class_id ?? null,
       source: row.source,
       status: row.status,
       requires_campus_visit: row.requires_campus_visit,

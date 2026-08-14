@@ -3,6 +3,7 @@ import { StudentForm } from "@/components/forms/student-form";
 import { Button } from "@/components/ui/button";
 import { getSchoolCampusId, getClasses, getGuardians } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { canOverrideClassCapacity } from "@/lib/auth/rbac";
 import { getTranslations } from "next-intl/server";
 
 export default async function NewStudentPage() {
@@ -47,8 +48,9 @@ export default async function NewStudentPage() {
       <StudentForm
         schoolId={schoolId}
         branchId={branchId}
-        classes={classes.map((c) => ({ id: c.id, name: c.name }))}
+        classes={classes}
         existingGuardians={guardians.map((g) => ({ id: g.id, name: g.name }))}
+        canOverrideCapacity={canOverrideClassCapacity(profile?.role)}
       />
     </div>
   );

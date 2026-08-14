@@ -13,6 +13,8 @@
   "paymentReceivedBody": "A payment of {amount} was recorded. Invoice status: {status}.",
   "admissionApproved": "Admission approved",
   "admissionApprovedBody": "{studentName}'s admission application has been approved.",
+  "studentAddedToClass": "New student in your class",
+  "studentAddedToClassBody": "{studentName} was enrolled in {className}.",
   "assignmentGraded": "Assignment graded",
   "assignmentGradedBody": "Your submission for \"{title}\" was graded: {grade}.",
   "assignmentGradedGuardianBody": "An assignment submission was graded: {grade} for \"{title}\".",

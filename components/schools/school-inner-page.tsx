@@ -33,26 +33,27 @@ export function SchoolInnerPage({
         : "text-3xl font-bold tracking-tight md:text-4xl";
 
   return (
-    <div>
-      <section className="relative overflow-hidden pt-28 pb-12 md:pt-32 md:pb-16">
-        {heroImage ? (
-          <>
-            <img
-              src={heroImage}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/55 to-black/35" />
-          </>
-        ) : (
-          <div
-            className="absolute inset-0"
-            style={{
-              background: `linear-gradient(135deg, ${primary} 0%, ${primary}dd 100%)`,
-            }}
+    <div className="relative min-h-screen">
+      {heroImage ? (
+        <>
+          <img
+            src={heroImage}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
           />
-        )}
-        <div className="relative mx-auto max-w-4xl px-6 text-white">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/35 to-black/50" />
+        </>
+      ) : (
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(135deg, ${primary} 0%, ${primary}cc 55%, ${primary}99 100%)`,
+          }}
+        />
+      )}
+
+      <section className="relative pt-28 pb-8 md:pt-32 md:pb-10">
+        <div className="mx-auto max-w-4xl px-6 text-white">
           <Link
             href={backHref}
             className="inline-flex items-center text-sm font-medium text-white/80 transition-colors hover:text-white"
@@ -68,7 +69,11 @@ export function SchoolInnerPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-4xl px-6 py-12">{children}</div>
+      <div className="relative mx-auto max-w-4xl px-6 pb-16">
+        <div className="rounded-2xl bg-white/92 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.28)] ring-1 ring-white/40 backdrop-blur-md md:p-8">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }

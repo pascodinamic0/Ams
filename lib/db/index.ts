@@ -49,7 +49,12 @@ export {
   getSchoolCampusId,
   type BranchListItem,
 } from "./branches";
-export { getClasses, type ClassListItem } from "./classes";
+export {
+  getClasses,
+  getPublicClassesForSchool,
+  type ClassListItem,
+  type PublicClassListItem,
+} from "./classes";
 export { getSubjects, type SubjectListItem } from "./subjects";
 export { getAdmissions, type AdmissionListItem } from "./admissions";
 export {

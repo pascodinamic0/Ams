@@ -29,6 +29,7 @@ export async function createAdmission(
     .insert({
       school_id: schoolId,
       ...parsed.data,
+      class_id: parsed.data.class_id ?? null,
       source: input.source ?? "manual",
       status: "pending",
       requires_campus_visit: input.source === "online",
@@ -97,7 +98,8 @@ async function notifyAdmissionApproved(
 
 export async function updateAdmissionStatus(
   id: string,
-  status: "pending" | "approved" | "rejected"
+  status: "pending" | "approved" | "rejected",
+  options?: { studentId?: string }
 ) {
   const supabase = await createClient();
 
@@ -120,7 +122,11 @@ export async function updateAdmissionStatus(
 
   const { error } = await supabase
     .from("admission_applications")
-    .update({ status, updated_at: new Date().toISOString() })
+    .update({
+      status,
+      updated_at: new Date().toISOString(),
+      ...(options?.studentId ? { student_id: options.studentId } : {}),
+    })
     .eq("id", id);
 
   if (error) return { error: error.message };
@@ -131,8 +137,12 @@ export async function updateAdmissionStatus(
 
 export async function convertAdmissionToStudent(
   admissionId: string,
-  branchId: string
+  branchId: string,
+  classId: string,
+  options?: { overrideCapacity?: boolean }
 ) {
+  if (!classId) return await actionError("classRequired");
+
   const supabase = await createClient();
   const { data: app, error } = await supabase
     .from("admission_applications")
@@ -181,8 +191,9 @@ export async function convertAdmissionToStudent(
     last_name: studentName.last_name,
     date_of_birth: app.dob ?? "2000-01-01",
     gender: app.gender ?? undefined,
-    class_id: undefined,
+    class_id: classId,
     status: "active",
+    overrideCapacity: options?.overrideCapacity,
     existing_guardian_can_pickup: false,
     add_secondary_guardian: false,
     primary_guardian: {
@@ -209,7 +220,9 @@ export async function convertAdmissionToStudent(
     return await actionError("failedCreateStudent");
   }
 
-  const { error: statusError } = await updateAdmissionStatus(admissionId, "approved");
+  const { error: statusError } = await updateAdmissionStatus(admissionId, "approved", {
+    studentId: studentResult.data.id,
+  });
   if (statusError) return { error: statusError };
 
   return { data: { studentId: studentResult.data.id } };

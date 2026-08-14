@@ -13,6 +13,10 @@ import {
   type StudentOnboardingData,
 } from "@/lib/validations/student-onboarding";
 import { formatPersonName } from "@/lib/utils";
+import {
+  assertClassCapacity,
+  notifyClassMainTeacher,
+} from "@/lib/services/class-enrollment";
 
 async function insertGuardian(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -90,13 +94,16 @@ const STUDENT_ONBOARDING_ROLES = new Set([
 ].filter((role) => ACADEMIC_PORTAL_ROLES.includes(role as typeof ACADEMIC_PORTAL_ROLES[number])));
 
 export async function createStudentWithGuardians(
-  input: StudentOnboardingData & { school_id: string; branch_id: string }
+  input: StudentOnboardingData & {
+    school_id: string;
+    branch_id: string;
+    overrideCapacity?: boolean;
+  }
 ) {
   try {
     const normalized = {
       ...input,
       existing_guardian_id: input.existing_guardian_id || undefined,
-      class_id: input.class_id || undefined,
       gender: input.gender || undefined,
       pickup_persons: input.pickup_persons ?? [],
     };
@@ -123,6 +130,13 @@ export async function createStudentWithGuardians(
 
     const data = parsed.data;
 
+    const capacityCheck = await assertClassCapacity({
+      classId: data.class_id,
+      override: input.overrideCapacity,
+      callerRole: role,
+    });
+    if ("error" in capacityCheck) return capacityCheck;
+
     const { data: student, error: studentError } = await supabase
       .from("students")
       .insert({
@@ -133,13 +147,13 @@ export async function createStudentWithGuardians(
         last_name: data.last_name,
         date_of_birth: data.date_of_birth,
         gender: data.gender || null,
-        class_id: data.class_id || null,
+        class_id: data.class_id,
         status: data.status,
         home_address: data.home_address || null,
         notes: data.notes || null,
         photo_url: data.photo_url?.trim() || null,
       })
-      .select("id, student_id")
+      .select("id, student_id, first_name, middle_name, last_name")
       .single();
 
     if (studentError) {
@@ -199,9 +213,17 @@ export async function createStudentWithGuardians(
       return { error: pickupResult.error };
     }
 
+    await notifyClassMainTeacher({
+      classId: data.class_id,
+      studentId: student.id,
+      studentName: formatPersonName(student),
+    });
+
     revalidatePath("/academic");
     revalidatePath("/academic/students");
     revalidatePath(`/academic/students/${student.id}`);
+    revalidatePath("/academic/classes");
+    revalidatePath("/teacher/classes");
 
     return { data: { id: student.id, student_id: student.student_id } };
   } catch (err) {

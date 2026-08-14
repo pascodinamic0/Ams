@@ -190,5 +190,8 @@
   "failedCreateStudent": "Failed to create student",
   "invalidSettings": "Invalid settings",
   "payrollAlreadyGenerated": "Payroll for {period} has already been generated.",
-  "enrollmentApplicationNote": "Enrollment application for {studentName} (ref {ref})"
+  "enrollmentApplicationNote": "Enrollment application for {studentName} (ref {ref})",
+  "classNotFound": "Class not found",
+  "classAtCapacity": "{className} is at capacity. Raise the limit or choose another class.",
+  "classRequired": "Class is required"
 }

@@ -5,40 +5,36 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
-import { convertAdmissionToStudent, updateAdmissionStatus } from "@/lib/actions/admissions";
+import { assignStudentClass } from "@/lib/actions/students";
 import { formatClassOptionLabel, isClassFull } from "@/lib/utils/class-options";
 import type { ClassListItem } from "@/lib/db/classes";
 import { toast } from "@/lib/toast";
 
-export function AdmissionActions({
-  id,
-  status,
-  branchId,
-  defaultClassId,
+export function StudentClassAssign({
+  studentId,
+  currentClassId,
+  currentClassName,
   classes,
   canOverrideCapacity = false,
 }: {
-  id: string;
-  status: string;
-  branchId: string;
-  defaultClassId?: string | null;
+  studentId: string;
+  currentClassId: string | null;
+  currentClassName: string | null;
   classes: ClassListItem[];
   canOverrideCapacity?: boolean;
 }) {
   const t = useTranslations("academic");
+  const tc = useTranslations("common");
   const router = useRouter();
-  const [classId, setClassId] = useState(defaultClassId ?? "");
+  const [classId, setClassId] = useState(currentClassId ?? "");
   const [overrideCapacity, setOverrideCapacity] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const selectedClass = classes.find((c) => c.id === classId);
   const classIsFull = selectedClass ? isClassFull(selectedClass) : false;
+  const dirty = classId !== (currentClassId ?? "");
 
-  async function approve() {
-    if (!branchId) {
-      toast.error(t("branchRequiredApprove"));
-      return;
-    }
+  async function save() {
     if (!classId) {
       toast.error(t("selectClassRequired"));
       return;
@@ -53,39 +49,40 @@ export function AdmissionActions({
     }
 
     setLoading(true);
-    const result = await convertAdmissionToStudent(id, branchId, classId, {
+    const result = await assignStudentClass(studentId, classId, {
       overrideCapacity: overrideCapacity && canOverrideCapacity,
     });
     setLoading(false);
 
     if ("error" in result && result.error) {
-      toast.error(result.error);
+      const message =
+        typeof result.error === "string"
+          ? result.error
+          : Object.values(result.error as Record<string, string[]>)
+              .flat()
+              .filter(Boolean)[0] ?? t("classUpdateFailed");
+      toast.error(message);
       return;
     }
-    toast.success(t("applicationApproved"));
-    router.refresh();
-  }
 
-  async function reject() {
-    setLoading(true);
-    const result = await updateAdmissionStatus(id, "rejected");
-    setLoading(false);
-    if ("error" in result && result.error) {
-      toast.error(result.error);
-      return;
-    }
-    toast.success(t("applicationRejected"));
+    toast.success(t("classAssigned"));
     router.refresh();
-  }
-
-  if (status !== "pending") {
-    return <span className="text-sm capitalize text-stone-500">{status}</span>;
   }
 
   return (
-    <div className="flex min-w-[220px] flex-col gap-2">
+    <div className="space-y-3 rounded-lg border border-stone-200 p-4 dark:border-stone-800">
+      <div>
+        <p className="text-sm font-medium text-stone-900 dark:text-white">
+          {currentClassId ? t("changeClass") : t("assignClass")}
+        </p>
+        {currentClassName ? (
+          <p className="mt-0.5 text-xs text-stone-500">
+            {t("currentClass")}: {currentClassName}
+          </p>
+        ) : null}
+      </div>
       <Select
-        aria-label={t("approveSelectClass")}
+        aria-label={t("selectClass")}
         placeholder={t("selectClassRequired")}
         value={classId}
         onChange={(e) => setClassId(e.target.value)}
@@ -108,14 +105,9 @@ export function AdmissionActions({
           {t("enrollAnywayFullClass")}
         </label>
       ) : null}
-      <div className="flex gap-2">
-        <Button size="sm" onClick={approve} disabled={loading || !classId}>
-          {t("approve")}
-        </Button>
-        <Button size="sm" variant="ghost" onClick={reject} disabled={loading}>
-          {t("reject")}
-        </Button>
-      </div>
+      <Button type="button" size="sm" disabled={loading || !dirty || !classId} onClick={save}>
+        {loading ? tc("saving") : tc("save")}
+      </Button>
     </div>
   );
 }

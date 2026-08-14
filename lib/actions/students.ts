@@ -5,9 +5,20 @@ import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { studentSchema, type StudentFormData } from "@/lib/validations";
+import {
+  assertClassCapacity,
+  notifyClassMainTeacher,
+} from "@/lib/services/class-enrollment";
+import { formatPersonName } from "@/lib/utils";
+
+type StudentActionContext = {
+  school_id: string;
+  branch_id: string;
+  overrideCapacity?: boolean;
+};
 
 export async function createStudent(
-  input: StudentFormData & { school_id: string; branch_id: string }
+  input: StudentFormData & StudentActionContext
 ) {
   const parsed = studentSchema.safeParse(input);
   if (!parsed.success) {
@@ -17,6 +28,19 @@ export async function createStudent(
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return await actionError("notAuthenticated");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  const capacityCheck = await assertClassCapacity({
+    classId: parsed.data.class_id,
+    override: input.overrideCapacity,
+    callerRole: profile?.role,
+  });
+  if ("error" in capacityCheck) return capacityCheck;
 
   const { data, error } = await supabase
     .from("students")
@@ -28,13 +52,13 @@ export async function createStudent(
       last_name: parsed.data.last_name,
       date_of_birth: parsed.data.date_of_birth,
       gender: parsed.data.gender || null,
-      class_id: parsed.data.class_id || null,
+      class_id: parsed.data.class_id,
       status: parsed.data.status,
       home_address: parsed.data.home_address || null,
       notes: parsed.data.notes || null,
       photo_url: parsed.data.photo_url?.trim() || null,
     })
-    .select("id, student_id")
+    .select("id, student_id, first_name, middle_name, last_name")
     .single();
 
   if (error) {
@@ -42,16 +66,25 @@ export async function createStudent(
     return { error: error.message };
   }
 
+  await notifyClassMainTeacher({
+    classId: parsed.data.class_id,
+    studentId: data.id,
+    studentName: formatPersonName(data),
+  });
+
   revalidatePath("/academic");
   revalidatePath("/academic/students");
+  revalidatePath("/academic/classes");
+  revalidatePath("/teacher/classes");
   return { data: { id: data.id, student_id: data.student_id } };
 }
 
 export async function updateStudent(
   id: string,
-  updates: Partial<StudentFormData>
+  updates: Partial<StudentFormData> & { overrideCapacity?: boolean }
 ) {
-  const parsed = studentSchema.partial().safeParse(updates);
+  const { overrideCapacity, ...studentUpdates } = updates;
+  const parsed = studentSchema.partial().safeParse(studentUpdates);
   if (!parsed.success) {
     return { error: parsed.error.flatten().fieldErrors };
   }
@@ -60,7 +93,37 @@ export async function updateStudent(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return await actionError("notAuthenticated");
 
-  const { error } = await supabase
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+  const { data: existing } = await supabase
+    .from("students")
+    .select("id, class_id, first_name, middle_name, last_name")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!existing) return await actionError("studentNotFound");
+
+  const nextClassId =
+    parsed.data.class_id !== undefined ? parsed.data.class_id : existing.class_id;
+
+  if (
+    parsed.data.class_id !== undefined &&
+    parsed.data.class_id !== existing.class_id
+  ) {
+    const capacityCheck = await assertClassCapacity({
+      classId: parsed.data.class_id,
+      excludeStudentId: id,
+      override: overrideCapacity,
+      callerRole: profile?.role,
+    });
+    if ("error" in capacityCheck) return capacityCheck;
+  }
+
+  const { data: updated, error } = await supabase
     .from("students")
     .update({
       ...parsed.data,
@@ -71,17 +134,44 @@ export async function updateStudent(
         ? { photo_url: parsed.data.photo_url.trim() || null }
         : {}),
     })
-    .eq("id", id);
+    .eq("id", id)
+    .select("id, class_id, first_name, middle_name, last_name")
+    .single();
 
   if (error) {
     console.error("updateStudent error:", error);
     return { error: error.message };
   }
 
+  if (
+    parsed.data.class_id !== undefined &&
+    parsed.data.class_id !== existing.class_id &&
+    updated?.class_id
+  ) {
+    await notifyClassMainTeacher({
+      classId: updated.class_id,
+      studentId: updated.id,
+      studentName: formatPersonName(updated),
+    });
+  }
+
   revalidatePath("/academic");
   revalidatePath("/academic/students");
   revalidatePath(`/academic/students/${id}`);
+  revalidatePath("/academic/classes");
+  revalidatePath("/teacher/classes");
   return {} as { error?: string };
+}
+
+export async function assignStudentClass(
+  studentId: string,
+  classId: string,
+  options?: { overrideCapacity?: boolean }
+) {
+  return updateStudent(studentId, {
+    class_id: classId,
+    overrideCapacity: options?.overrideCapacity,
+  });
 }
 
 export async function deleteStudent(id: string) {
@@ -102,9 +192,42 @@ export async function deleteStudent(id: string) {
     return await actionError("onlyAcademicAdminsDeleteStudents");
   }
 
-  let query = supabase.from("students").delete().eq("id", id);
+  let studentQuery = supabase
+    .from("students")
+    .select("id, school_id, first_name, middle_name, last_name")
+    .eq("id", id);
   if (profile.role === "academic_admin") {
     if (!profile.school_id) return await actionError("noSchoolLinkedShort");
+    studentQuery = studentQuery.eq("school_id", profile.school_id);
+  }
+
+  const { data: student } = await studentQuery.maybeSingle();
+  if (!student) return await actionError("studentNotFound");
+
+  const studentName = formatPersonName(student);
+  const { error: linkedAdmissionError } = await supabase
+    .from("admission_applications")
+    .delete()
+    .eq("student_id", student.id);
+  if (linkedAdmissionError) {
+    console.error("deleteStudent linked admission error:", linkedAdmissionError);
+  }
+
+  if (studentName) {
+    const { error: namedAdmissionError } = await supabase
+      .from("admission_applications")
+      .delete()
+      .eq("school_id", student.school_id)
+      .eq("status", "approved")
+      .eq("student_name", studentName)
+      .is("student_id", null);
+    if (namedAdmissionError) {
+      console.error("deleteStudent named admission error:", namedAdmissionError);
+    }
+  }
+
+  let query = supabase.from("students").delete().eq("id", id);
+  if (profile.role === "academic_admin") {
     query = query.eq("school_id", profile.school_id);
   }
 
@@ -118,5 +241,6 @@ export async function deleteStudent(id: string) {
 
   revalidatePath("/academic");
   revalidatePath("/academic/students");
+  revalidatePath("/academic/admissions");
   return {} as { error?: string };
 }

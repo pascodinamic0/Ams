@@ -6,10 +6,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyableBadge } from "@/components/ui/copyable-badge";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { getStudentProfileBundle } from "@/lib/db/student-profile";
+import { getClasses } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { canDeleteStudents } from "@/lib/auth/rbac";
+import { canDeleteStudents, canOverrideClassCapacity } from "@/lib/auth/rbac";
 import { formatPersonName } from "@/lib/utils";
 import { DeleteStudentButton } from "../delete-button";
+import { StudentClassAssign } from "@/components/students/student-class-assign";
 
 type GuardianLink = {
   can_pickup?: boolean | null;
@@ -64,9 +66,17 @@ export default async function StudentDetailPage({
   const { id } = await params;
   const profile = await getCurrentProfile();
   const canDelete = canDeleteStudents(profile?.role);
+  const canOverride = canOverrideClassCapacity(profile?.role);
 
   const bundle = await getStudentProfileBundle(id);
   if (!bundle) notFound();
+
+  const branchId = profile?.branch_id ?? bundle.student.branch_id;
+  const classes = branchId
+    ? await getClasses(branchId)
+    : profile?.school_id
+      ? await getClasses({ schoolId: profile.school_id })
+      : [];
 
   const {
     student,
@@ -159,7 +169,15 @@ export default async function StudentDetailPage({
           <CardHeader>
             <CardTitle>{t("details")}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 text-sm">
+          <CardContent className="space-y-4 text-sm">
+            <StudentClassAssign
+              studentId={student.id}
+              currentClassId={student.class_id}
+              currentClassName={className === tc("emptyDash") ? null : className}
+              classes={classes}
+              canOverrideCapacity={canOverride}
+            />
+            <div className="space-y-2 border-t border-stone-200 pt-4 dark:border-stone-800">
             <p>
               <span className="text-stone-500">{tc("status")}:</span>{" "}
               {student.status}
@@ -189,6 +207,7 @@ export default async function StudentDetailPage({
                 <p className="mt-1 whitespace-pre-wrap">{student.notes}</p>
               </div>
             ) : null}
+            </div>
           </CardContent>
         </Card>
 

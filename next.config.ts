@@ -34,7 +34,10 @@ function withOptionalSerwist(config: NextConfig): NextConfig {
     swDest: "public/sw.js",
     // Prefer network for navigations so PWA users see fresh server data.
     cacheOnNavigation: false,
-    reloadOnOnline: true,
+    // Register once from SerwistProvider so update prompts are not double-fired.
+    register: false,
+    // Soft refresh already happens in AutoRefreshProvider; a full reload retriggers the update loop.
+    reloadOnOnline: false,
     disable: false,
   });
 

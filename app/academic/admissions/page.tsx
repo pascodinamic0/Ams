@@ -1,7 +1,8 @@
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getAdmissions } from "@/lib/db";
+import { getAdmissions, getClasses } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { canOverrideClassCapacity } from "@/lib/auth/rbac";
 import { getTranslations } from "next-intl/server";
 import { AdmissionActions } from "./admission-actions";
 
@@ -11,6 +12,12 @@ export default async function AdmissionsPage() {
   const profile = await getCurrentProfile();
   const admissions = await getAdmissions(profile?.school_id ?? undefined);
   const branchId = profile?.branch_id ?? "";
+  const classes = branchId
+    ? await getClasses(branchId)
+    : profile?.school_id
+      ? await getClasses({ schoolId: profile.school_id })
+      : [];
+  const canOverride = canOverrideClassCapacity(profile?.role);
   function formatVisitDate(date: string, time: string | null) {
     const formatted = new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
       month: "short",
@@ -37,7 +44,14 @@ export default async function AdmissionsPage() {
       "—"
     ),
     actions: (
-      <AdmissionActions id={row.id as string} status={row.status as string} branchId={branchId} />
+      <AdmissionActions
+        id={row.id as string}
+        status={row.status as string}
+        branchId={branchId}
+        defaultClassId={row.class_id as string | null}
+        classes={classes}
+        canOverrideCapacity={canOverride}
+      />
     ),
   }));
 

@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { canOverrideClassCapacity } from "@/lib/auth/rbac";
 import { getClasses } from "@/lib/db";
 import { StudentImportForm } from "./student-import-form";
 
@@ -42,6 +43,7 @@ export default async function StudentImportPage() {
         schoolId={schoolId}
         branchId={branchId}
         classes={classes.map((c) => ({ id: c.id, name: c.name }))}
+        canOverrideCapacity={canOverrideClassCapacity(profile?.role)}
       />
     </div>
   );

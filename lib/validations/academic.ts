@@ -5,6 +5,7 @@ export const classSchema = z.object({
   branch_id: z.string().uuid("branchRequired"),
   grade: z.string().optional(),
   capacity: z.number().int().positive().nullable().optional(),
+  main_teacher_id: z.string().uuid().nullable().optional(),
 });
 
 export const subjectSchema = z.object({
@@ -30,6 +31,7 @@ const admissionBaseSchema = z.object({
   dob: z.string().optional(),
   gender: z.string().optional(),
   class_applying: z.string().optional(),
+  class_id: z.string().uuid().optional(),
   guardian_name: z.string().min(1, "guardianNameRequired"),
   guardian_email: z.string().email("invalidEmail"),
   guardian_phone: z.string().optional(),
@@ -59,6 +61,7 @@ export const admissionSchema = admissionBaseSchema.superRefine(refinePickupAutho
 export const onlineEnrollmentSchema = admissionBaseSchema
   .extend({
     dob: z.string().min(1, "dobRequired"),
+    class_id: z.string().uuid("classRequired"),
     class_applying: z.string().min(1, "gradeOrClassRequired"),
     guardian_phone: z.string().min(1, "phoneRequired"),
     address: z.string().min(1, "addressRequired"),
@@ -98,7 +101,7 @@ export const studentImportRowSchema = z.object({
   middle_name: z.string().optional(),
   last_name: z.string().min(1, "lastNameRequired"),
   date_of_birth: z.string().min(1, "dobRequired"),
-  class_id: z.string().uuid().optional(),
+  class_id: z.string().uuid("classRequired"),
   status: z.enum(["active", "graduated", "inactive"]).default("active"),
 });
 

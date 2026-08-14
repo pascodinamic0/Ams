@@ -53,6 +53,7 @@
   "studentNameRequired": "Le nom de l'élève est requis",
   "guardianNameRequired": "Le nom du tuteur est requis",
   "gradeOrClassRequired": "Le niveau ou la classe est requis",
+  "classRequired": "La classe est requise",
   "addressRequired": "L'adresse est requise",
   "pickupAuthorizationRequired": "Indiquez qui peut récupérer cet enfant à l'école — autorisez le tuteur et/ou ajoutez une autre personne",
   "pickupAuthorizationOnboarding": "Indiquez qui peut récupérer cet enfant à l'école — autorisez un tuteur et/ou ajoutez une autre personne",

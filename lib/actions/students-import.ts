@@ -17,7 +17,7 @@ export type StudentImportResult = {
 
 export async function importStudentsBatch(
   rows: StudentImportRow[],
-  context: { school_id: string; branch_id: string }
+  context: { school_id: string; branch_id: string; overrideCapacity?: boolean }
 ): Promise<StudentImportResult | { error: string }> {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -53,6 +53,7 @@ export async function importStudentsBatch(
       ...parsed.data,
       school_id: context.school_id,
       branch_id: context.branch_id,
+      overrideCapacity: context.overrideCapacity,
     });
 
     if (studentResult.error) {

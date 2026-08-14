@@ -16,6 +16,7 @@ interface Props {
   schoolId: string;
   branchId: string;
   classes: ClassOption[];
+  canOverrideCapacity?: boolean;
 }
 
 const EXPECTED_HEADERS = ["first_name", "middle_name", "last_name", "date_of_birth", "class", "status"] as const;
@@ -95,7 +96,12 @@ function resolveClassId(
   return byName?.id;
 }
 
-export function StudentImportForm({ schoolId, branchId, classes }: Props) {
+export function StudentImportForm({
+  schoolId,
+  branchId,
+  classes,
+  canOverrideCapacity = false,
+}: Props) {
   const t = useTranslations("academic");
   const tc = useTranslations("common");
   const router = useRouter();
@@ -103,6 +109,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
   const [preview, setPreview] = useState<StudentImportRow[]>([]);
   const [parseErrors, setParseErrors] = useState<string[]>([]);
   const [importing, setImporting] = useState(false);
+  const [overrideCapacity, setOverrideCapacity] = useState(false);
   const [importResult, setImportResult] = useState<{
     created: number;
     failed: number;
@@ -169,8 +176,13 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
           continue;
         }
 
+        if (!classValue.trim()) {
+          errors.push(t("csvClassRequired", { row: rowNumber }));
+          continue;
+        }
+
         const classId = resolveClassId(classValue, classes);
-        if (classValue && !classId) {
+        if (!classId) {
           errors.push(t("csvUnknownClass", { row: rowNumber, className: classValue }));
           continue;
         }
@@ -206,6 +218,7 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
     const result = await importStudentsBatch(preview, {
       school_id: schoolId,
       branch_id: branchId,
+      overrideCapacity: overrideCapacity && canOverrideCapacity,
     });
     setImporting(false);
 
@@ -343,6 +356,18 @@ export function StudentImportForm({ schoolId, branchId, classes }: Props) {
           )}
         </div>
       )}
+
+      {canOverrideCapacity ? (
+        <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
+          <input
+            type="checkbox"
+            className="rounded border-stone-300"
+            checked={overrideCapacity}
+            onChange={(e) => setOverrideCapacity(e.target.checked)}
+          />
+          {t("enrollAnywayFullClass")}
+        </label>
+      ) : null}
 
       <div className="flex flex-wrap gap-3">
         <Button

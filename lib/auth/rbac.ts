@@ -111,6 +111,11 @@ export function canDeleteStudents(role: string | null | undefined): boolean {
   return normalized === "academic_admin" || normalized === "super_admin";
 }
 
+/** Enrolling into a full class requires academic-admin (or platform admin) override. */
+export function canOverrideClassCapacity(role: string | null | undefined): boolean {
+  return canDeleteStudents(role);
+}
+
 /** School admin roles that appear on finance payroll for pay-amount setup. */
 export const PAYROLL_ADMIN_ROLES: UserRole[] = [
   "academic_admin",

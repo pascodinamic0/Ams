@@ -21,6 +21,7 @@ export async function createClass(input: ClassFormData) {
       branch_id: parsed.data.branch_id,
       grade: parsed.data.grade || null,
       capacity: parsed.data.capacity ?? null,
+      main_teacher_id: parsed.data.main_teacher_id ?? null,
     })
     .select("id")
     .single();

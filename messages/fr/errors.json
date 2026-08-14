@@ -190,5 +190,8 @@
   "failedCreateStudent": "Échec de la création de l'élève",
   "invalidSettings": "Paramètres invalides",
   "payrollAlreadyGenerated": "La paie pour {period} a déjà été générée.",
-  "enrollmentApplicationNote": "Candidature d'inscription pour {studentName} (réf. {ref})"
+  "enrollmentApplicationNote": "Candidature d'inscription pour {studentName} (réf. {ref})",
+  "classNotFound": "Classe introuvable",
+  "classAtCapacity": "{className} est pleine. Augmentez la capacité ou choisissez une autre classe.",
+  "classRequired": "La classe est requise"
 }

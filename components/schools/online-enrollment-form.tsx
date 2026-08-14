@@ -11,6 +11,8 @@ import { Select } from "@/components/ui/select";
 import { CampusVisitSlotPicker } from "@/components/schools/campus-visit-slot-picker";
 import { submitOnlineEnrollment } from "@/lib/actions/admissions";
 import type { PublicSchoolEvent } from "@/lib/db/public-events";
+import type { PublicClassListItem } from "@/lib/db/classes";
+import { formatClassOptionLabel, isClassFull, seatsRemaining } from "@/lib/utils/class-options";
 import { toast } from "@/lib/toast";
 
 const STEP_KEYS = ["stepStudent", "stepFamily", "stepReview", "stepCampusVisit"] as const;
@@ -39,6 +41,7 @@ export function OnlineEnrollmentForm({
   schoolAddress,
   primary,
   campusVisitSlots = [],
+  classes = [],
   hideIntro = false,
 }: {
   schoolId: string;
@@ -47,6 +50,7 @@ export function OnlineEnrollmentForm({
   schoolAddress: string | null;
   primary: string;
   campusVisitSlots?: PublicSchoolEvent[];
+  classes?: PublicClassListItem[];
   hideIntro?: boolean;
 }) {
   const t = useTranslations("schools.enrollment");
@@ -59,6 +63,7 @@ export function OnlineEnrollmentForm({
     student_name: "",
     dob: "",
     gender: "",
+    class_id: "",
     class_applying: "",
     guardian_name: "",
     guardian_email: "",
@@ -72,6 +77,18 @@ export function OnlineEnrollmentForm({
 
   const hasVisitSlots = campusVisitSlots.length > 0;
   const visibleSteps = hasVisitSlots ? STEP_KEYS : STEP_KEYS.slice(0, 3);
+  const selectedClass = classes.find((c) => c.id === form.class_id);
+  const selectedClassFull = selectedClass ? isClassFull(selectedClass) : false;
+  const selectedSeatsRemaining = selectedClass ? seatsRemaining(selectedClass) : null;
+
+  function handleClassChange(classId: string) {
+    const cls = classes.find((c) => c.id === classId);
+    setForm((f) => ({
+      ...f,
+      class_id: classId,
+      class_applying: cls?.name ?? "",
+    }));
+  }
 
   function pickupLabel(value: string) {
     const found = pickupRelationshipKeys.find((opt) => opt.value === value);
@@ -82,6 +99,7 @@ export function OnlineEnrollmentForm({
     setLoading(true);
     const result = await submitOnlineEnrollment(schoolId, {
       ...form,
+      class_id: form.class_id,
       gender: form.gender || undefined,
       notes: form.notes || undefined,
       relation: form.relation as "father" | "mother" | "guardian" | "other",
@@ -227,13 +245,35 @@ export function OnlineEnrollmentForm({
               </div>
             </div>
             <div>
-              <Label>{t("gradeOrClass")}</Label>
-              <Input
-                value={form.class_applying}
-                onChange={(e) => setForm((f) => ({ ...f, class_applying: e.target.value }))}
-                placeholder={t("gradePlaceholder")}
-                required
-              />
+              <Label>{t("selectClassApplying")}</Label>
+              {classes.length > 0 ? (
+                <>
+                  <Select
+                    options={[
+                      { value: "", label: t("selectClassPlaceholder") },
+                      ...classes.map((c) => ({
+                        value: c.id,
+                        label: formatClassOptionLabel(c),
+                      })),
+                    ]}
+                    value={form.class_id}
+                    onChange={(e) => handleClassChange(e.target.value)}
+                    required
+                  />
+                  {selectedClass && selectedSeatsRemaining != null && !selectedClassFull ? (
+                    <p className="mt-1 text-xs text-stone-500">
+                      {t("classSeatsRemaining", { count: selectedSeatsRemaining })}
+                    </p>
+                  ) : null}
+                  {selectedClassFull ? (
+                    <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
+                      {t("classFullWarning")}
+                    </p>
+                  ) : null}
+                </>
+              ) : (
+                <p className="text-sm text-stone-500">{t("noClassesAvailableOnline")}</p>
+              )}
             </div>
           </>
         )}
@@ -462,7 +502,12 @@ export function OnlineEnrollmentForm({
             {tc("next")}
           </Button>
         ) : (
-          <Button type="button" onClick={handleSubmit} disabled={loading} style={{ backgroundColor: primary }}>
+          <Button
+            type="button"
+            onClick={handleSubmit}
+            disabled={loading || (classes.length > 0 && !form.class_id)}
+            style={{ backgroundColor: primary }}
+          >
             {loading ? tf("submitting") : hasVisitSlots ? t("submitAndBookVisit") : tf("submitApplication")}
           </Button>
         )}

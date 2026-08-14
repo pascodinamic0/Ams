@@ -13,6 +13,8 @@
   "paymentReceivedBody": "Un paiement de {amount} a été enregistré. Statut de la facture : {status}.",
   "admissionApproved": "Admission approuvée",
   "admissionApprovedBody": "La candidature d'admission de {studentName} a été approuvée.",
+  "studentAddedToClass": "Nouvel élève dans votre classe",
+  "studentAddedToClassBody": "{studentName} a été inscrit(e) en {className}.",
   "assignmentGraded": "Devoir noté",
   "assignmentGradedBody": "Votre remise pour « {title} » a été notée : {grade}.",
   "assignmentGradedGuardianBody": "Une remise de devoir a été notée : {grade} pour « {title} ».",

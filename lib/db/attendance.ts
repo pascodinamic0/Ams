@@ -27,17 +27,29 @@ export type AttendanceRecordItem = {
 export async function getTeacherClasses(teacherId: string): Promise<TeacherClassItem[]> {
   const supabase = await createClient();
 
-  const { data: slots, error: slotsError } = await supabase
-    .from("timetable_slots")
-    .select("class_id")
-    .eq("teacher_id", teacherId);
+  const [{ data: slots, error: slotsError }, { data: homeroomClasses, error: homeroomError }] =
+    await Promise.all([
+      supabase.from("timetable_slots").select("class_id").eq("teacher_id", teacherId),
+      supabase
+        .from("classes")
+        .select("id, name, grade")
+        .eq("main_teacher_id", teacherId)
+        .order("name"),
+    ]);
 
   if (slotsError) {
     console.error("getTeacherClasses slots error:", slotsError);
-    return [];
+  }
+  if (homeroomError) {
+    console.error("getTeacherClasses homeroom error:", homeroomError);
   }
 
-  const classIds = [...new Set((slots ?? []).map((s) => s.class_id))];
+  const classIds = [
+    ...new Set([
+      ...(slots ?? []).map((s) => s.class_id),
+      ...(homeroomClasses ?? []).map((c) => c.id),
+    ]),
+  ];
   if (classIds.length === 0) return [];
 
   const { data: classes, error: classesError } = await supabase
