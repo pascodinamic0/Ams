@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import type { SchoolRow } from "@/lib/db/schools";
 import type { PublicSchoolEvent } from "@/lib/db/public-events";
 import { resolveSchoolWebsite } from "@/lib/schools/website-content";
@@ -14,10 +14,10 @@ function tWithSchoolName(t: SchoolSiteTranslator, key: string, schoolName: strin
 }
 
 const heroCtaSolid =
-  "inline-flex h-11 w-full shrink-0 items-center justify-center rounded-full bg-white px-5 text-center text-[10px] font-semibold uppercase tracking-[0.08em] whitespace-nowrap transition-colors hover:bg-white/90 sm:h-12 sm:w-auto sm:px-7 sm:text-xs sm:tracking-[0.12em]";
+  "inline-flex min-h-11 w-full shrink-0 items-center justify-center rounded-full bg-white px-5 py-2.5 text-center text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] transition-colors hover:bg-white/90 sm:h-12 sm:w-auto sm:px-7 sm:text-xs sm:tracking-[0.12em]";
 
 const heroCtaOutline =
-  "inline-flex h-11 w-full shrink-0 items-center justify-center rounded-full border border-white/85 px-5 text-center text-[10px] font-semibold uppercase tracking-[0.08em] whitespace-nowrap text-white transition-colors hover:bg-white hover:text-stone-900 sm:h-12 sm:w-auto sm:px-7 sm:text-xs sm:tracking-[0.12em]";
+  "inline-flex min-h-11 w-full shrink-0 items-center justify-center rounded-full border border-white/85 px-5 py-2.5 text-center text-[10px] font-semibold uppercase leading-tight tracking-[0.08em] text-white transition-colors hover:bg-white hover:text-stone-900 sm:h-12 sm:w-auto sm:px-7 sm:text-xs sm:tracking-[0.12em]";
 
 function AdmissionsCta({
   slug,
@@ -44,36 +44,6 @@ function AdmissionsCta({
     <Link href={`/schools/${slug}/enroll`} className={className} style={style}>
       {label}
     </Link>
-  );
-}
-
-function ContactBlock({
-  school,
-  t,
-}: {
-  school: SchoolRow;
-  t: SchoolSiteTranslator;
-}) {
-  return (
-    <div className="space-y-2 text-sm leading-relaxed">
-      {school.contact_email && (
-        <p>
-          <span className="font-medium">{t("chrome.email")}:</span>{" "}
-          <a href={`mailto:${school.contact_email}`} className="hover:underline">
-            {school.contact_email}
-          </a>
-        </p>
-      )}
-      {school.contact_phone && (
-        <p>
-          <span className="font-medium">{t("chrome.phone")}:</span> {school.contact_phone}
-        </p>
-      )}
-      {school.address && <p>{school.address}</p>}
-      {!school.contact_email && !school.contact_phone && !school.address && (
-        <p className="text-stone-500">{t("chrome.contactComingSoon")}</p>
-      )}
-    </div>
   );
 }
 
@@ -185,7 +155,7 @@ function GallerySection({
           <figure key={`${item.url}-${i}`} className="group overflow-hidden">
             <img
               src={item.url}
-              alt={item.caption ?? "Campus"}
+              alt={item.caption ?? t("chrome.campusPhoto")}
               className="aspect-square w-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           </figure>
@@ -200,11 +170,13 @@ function ModernTemplate({
   events = [],
   isPreview = false,
   t,
+  locale,
 }: {
   school: SchoolRow;
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
   t: SchoolSiteTranslator;
+  locale: string;
 }) {
   const primary = school.theme_primary_color ?? "#0d9488";
   const secondary = school.theme_secondary_color ?? "#0f766e";
@@ -247,18 +219,31 @@ function ModernTemplate({
         </div>
       </section>
 
-      <section className="px-4 py-12 text-center text-white sm:px-6 sm:py-16" style={{ backgroundColor: primary }}>
-        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/75 sm:text-xs sm:tracking-[0.22em]">
-          {t("chrome.rootedInCommunity")}
-        </p>
-        <h2 className="mx-auto mt-3 max-w-3xl text-xl font-bold tracking-tight sm:mt-4 sm:text-2xl md:text-4xl">
-          {t("chrome.legacyJoinThisTerm")}
-        </h2>
-        {site.about ? (
-          <a href="#about" className={`${heroCtaOutline} mt-7 sm:mt-8`}>
-            {t("chrome.aboutTheSchool")}
-          </a>
-        ) : null}
+      <section
+        id="about"
+        className="scroll-mt-28 px-4 py-10 text-white sm:px-6 sm:py-12"
+        style={{ backgroundColor: primary }}
+      >
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-2 lg:items-center">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/70 sm:text-xs">
+              {t("chrome.aboutUs")}
+            </p>
+            <h2 className="mt-3 text-xl font-bold tracking-tight sm:text-2xl md:text-4xl">
+              {school.name}
+            </h2>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base">
+              {site.about || tWithSchoolName(t, "chrome.aboutFallback", school.name)}
+            </p>
+          </div>
+          {site.gallery[0] ? (
+            <img
+              src={site.gallery[0].url}
+              alt={t("chrome.aboutUs")}
+              className="aspect-[4/3] w-full object-cover"
+            />
+          ) : null}
+        </div>
       </section>
 
       {site.programs.length > 0 ? (
@@ -280,26 +265,6 @@ function ModernTemplate({
       <StatsStrip stats={site.stats} primary={primary} variant="modern" />
 
       <div className="mx-auto max-w-6xl space-y-14 px-4 py-12 sm:space-y-16 sm:px-6 sm:py-16">
-        {site.about ? (
-          <section id="about" className="scroll-mt-28">
-            <div className="grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-10">
-              <div>
-                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("chrome.aboutUs")}</h2>
-                <p className="mt-4 leading-relaxed text-stone-600">{site.about}</p>
-              </div>
-              {site.gallery[0] ? (
-                <img
-                  src={site.gallery[0].url}
-                  alt={t("chrome.aboutUs")}
-                  className="aspect-[4/3] w-full object-cover"
-                />
-              ) : null}
-            </div>
-          </section>
-        ) : (
-          <div id="about" className="scroll-mt-28" />
-        )}
-
         <GallerySection gallery={site.gallery} variant="modern" t={t} />
 
         {!isPreview && events.length > 0 && (
@@ -309,35 +274,10 @@ function ModernTemplate({
             primary={primary}
             variant="modern"
             t={t}
+            locale={locale}
           />
         )}
       </div>
-
-      <section id="contact" className="scroll-mt-28 bg-stone-950 px-4 py-10 text-white sm:px-6 sm:py-12">
-        <div className="mx-auto grid max-w-6xl gap-8 md:grid-cols-2 md:items-center">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">{t("chrome.getInTouch")}</h2>
-            <p className="mt-2 text-sm text-white/75 sm:text-base">
-              {t("chrome.waitingForVisit")}
-            </p>
-            <div className="mt-5 text-white/90">
-              <ContactBlock school={school} t={t} />
-            </div>
-          </div>
-          <div className="flex flex-col justify-center border border-white/15 p-6 sm:p-8">
-            <h3 className="text-lg font-semibold sm:text-xl">{t("chrome.stopLosingOpenSeats")}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-white/80 sm:text-base">
-              {t("chrome.startApplicationOnline")}
-            </p>
-            <AdmissionsCta
-              slug={school.slug}
-              isPreview={isPreview}
-              label={t("chrome.applyBeforeSeatsFill")}
-              className={`${heroCtaOutline} mt-6`}
-            />
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
@@ -347,11 +287,13 @@ function ClassicTemplate({
   events = [],
   isPreview = false,
   t,
+  locale,
 }: {
   school: SchoolRow;
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
   t: SchoolSiteTranslator;
+  locale: string;
 }) {
   const primary = school.theme_primary_color ?? "#1a2b56";
   const accent = school.theme_secondary_color ?? "#c9a227";
@@ -369,7 +311,7 @@ function ClassicTemplate({
         <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col justify-end px-4 pb-10 pt-24 sm:px-6 sm:pb-14 sm:pt-40">
           <div className="school-animate-fade-up max-w-2xl text-white">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/85 sm:text-xs sm:tracking-[0.22em]">
-              {t("chrome.possibilitiesAndPartnerships")}
+              {t("chrome.aboutUs")}
             </p>
             <h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
               {site.heroTitle}
@@ -394,7 +336,7 @@ function ClassicTemplate({
       >
         <div className="mx-auto mb-5 h-[2px] w-16" style={{ backgroundColor: accent }} />
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/70 sm:text-xs sm:tracking-[0.24em]">
-          {t("chrome.legacyLeadership")}
+          {t("chrome.aboutUs")}
         </p>
         <h2 className="mx-auto mt-3 max-w-3xl text-xl font-bold tracking-tight sm:mt-4 sm:text-2xl md:text-4xl">
           {t("chrome.trustedSchooling")}
@@ -440,35 +382,10 @@ function ClassicTemplate({
             primary={primary}
             variant="classic"
             t={t}
+            locale={locale}
           />
         )}
       </div>
-
-      <section
-        id="contact"
-        className="scroll-mt-28 grid md:grid-cols-2"
-        style={{ backgroundColor: primary }}
-      >
-        <div className="border-b border-white/15 px-5 py-10 text-white sm:px-8 sm:py-12 md:border-b-0 md:border-r">
-          <div className="mb-4 h-[2px] w-12" style={{ backgroundColor: accent }} />
-          <h2 className="text-xl font-bold sm:text-2xl">{t("nav.contact")}</h2>
-          <div className="mt-4 text-white/85">
-            <ContactBlock school={school} t={t} />
-          </div>
-        </div>
-        <div className="flex flex-col items-center justify-center px-5 py-10 text-center text-white sm:px-8 sm:py-12">
-          <h2 className="text-xl font-bold sm:text-2xl">{t("nav.admissions")}</h2>
-          <p className="mt-3 max-w-sm text-sm text-white/85 sm:text-base">
-            {t("chrome.delayTheApplication")}
-          </p>
-          <AdmissionsCta
-            slug={school.slug}
-            isPreview={isPreview}
-            label={t("chrome.applyBeforeSeatsFill")}
-            className={`${heroCtaOutline} mt-6 max-w-sm`}
-          />
-        </div>
-      </section>
     </div>
   );
 }
@@ -478,11 +395,13 @@ function MinimalTemplate({
   events = [],
   isPreview = false,
   t,
+  locale,
 }: {
   school: SchoolRow;
   events?: PublicSchoolEvent[];
   isPreview?: boolean;
   t: SchoolSiteTranslator;
+  locale: string;
 }) {
   const primary = school.theme_primary_color ?? "#1a2b56";
   const accent = school.theme_secondary_color ?? "#c9a227";
@@ -520,9 +439,9 @@ function MinimalTemplate({
         </div>
       </section>
 
-      <section className="px-4 py-12 text-center sm:px-6 sm:py-16" style={{ backgroundColor: primary }}>
+      <section id="about" className="scroll-mt-28 px-4 py-10 text-center sm:px-6 sm:py-12" style={{ backgroundColor: primary }}>
         <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70 sm:text-xs sm:tracking-[0.2em]">
-          {t("chrome.excellenceIntegrityInclusivity")}
+          {t("chrome.aboutUs")}
         </p>
         <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-white/90 sm:text-base">
           {site.about || tWithSchoolName(t, "chrome.seatsNotUnlimited", school.name)}
@@ -547,15 +466,6 @@ function MinimalTemplate({
       <StatsStrip stats={site.stats} primary={primary} variant="minimal" />
 
       <div className="mx-auto max-w-3xl space-y-12 px-4 py-12 sm:space-y-16 sm:px-6 sm:py-16">
-        {site.about ? (
-          <section id="about" className="scroll-mt-28 border-t border-stone-200 pt-10 sm:pt-12">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">{t("chrome.about")}</h2>
-            <p className="mt-6 leading-relaxed text-stone-600">{site.about}</p>
-          </section>
-        ) : (
-          <div id="about" className="scroll-mt-28" />
-        )}
-
         <GallerySection gallery={site.gallery} variant="minimal" t={t} />
 
         {!isPreview && events.length > 0 && (
@@ -565,22 +475,9 @@ function MinimalTemplate({
             primary={primary}
             variant="minimal"
             t={t}
+            locale={locale}
           />
         )}
-
-        <section id="contact" className="scroll-mt-28 border-t border-stone-200 pt-10 sm:pt-12">
-          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-stone-500">{t("nav.contact")}</h2>
-          <div className="mt-6 text-stone-600">
-            <ContactBlock school={school} t={t} />
-          </div>
-          <AdmissionsCta
-            slug={school.slug}
-            isPreview={isPreview}
-            label={t("chrome.applyBeforeSeatsFill")}
-            className="mt-8 inline-flex h-11 w-full max-w-sm items-center justify-center rounded-full border px-5 text-center text-[10px] font-semibold uppercase tracking-[0.08em] whitespace-nowrap sm:h-12 sm:w-auto sm:px-8 sm:text-xs sm:tracking-[0.12em]"
-            style={{ borderColor: primary, color: primary }}
-          />
-        </section>
       </div>
     </div>
   );
@@ -596,14 +493,15 @@ export async function SchoolHomeTemplate({
   isPreview?: boolean;
 }) {
   const t = (await getTranslations("schools")) as SchoolSiteTranslator;
+  const locale = await getLocale();
   const template = school.website_template ?? "modern";
 
   switch (template) {
     case "classic":
-      return <ClassicTemplate school={school} events={events} isPreview={isPreview} t={t} />;
+      return <ClassicTemplate school={school} events={events} isPreview={isPreview} t={t} locale={locale} />;
     case "minimal":
-      return <MinimalTemplate school={school} events={events} isPreview={isPreview} t={t} />;
+      return <MinimalTemplate school={school} events={events} isPreview={isPreview} t={t} locale={locale} />;
     default:
-      return <ModernTemplate school={school} events={events} isPreview={isPreview} t={t} />;
+      return <ModernTemplate school={school} events={events} isPreview={isPreview} t={t} locale={locale} />;
   }
 }

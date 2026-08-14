@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import type { SchoolRow } from "@/lib/db/schools";
 import { resolveSchoolWebsite } from "@/lib/schools/website-content";
@@ -57,31 +58,63 @@ function SocialLinks({
   );
 }
 
-function SchoolFooter({
+function CompactSiteFooter({
   school,
   site,
-  className = "",
+  t,
+  applyHref,
+  applyLabel,
   light = false,
+  maxWidthClass = "max-w-6xl",
 }: {
   school: SchoolRow;
   site: ReturnType<typeof resolveSchoolWebsite>;
-  className?: string;
+  t: ChromeT;
+  applyHref: string;
+  applyLabel: string;
   light?: boolean;
+  maxWidthClass?: string;
 }) {
+  const details = [school.contact_email, school.contact_phone, school.address].filter(Boolean);
+
   return (
-    <div className={`flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between ${className}`}>
-      <div className="min-w-0">
-        <p className={`text-xs sm:text-sm ${light ? "text-white/70" : "text-stone-500"}`}>
-          &copy; {new Date().getFullYear()} {school.name}
-        </p>
-        {site.footerTagline ? (
-          <p className={`mt-0.5 text-xs ${light ? "text-white/55" : "text-stone-400"}`}>
-            {site.footerTagline}
-          </p>
-        ) : null}
+    <footer
+      id="contact"
+      className={light ? "text-white" : "border-t border-stone-200 bg-stone-50 text-stone-700"}
+    >
+      <div className={`mx-auto ${maxWidthClass} px-4 py-4 sm:px-6 sm:py-5 pb-[max(1rem,env(safe-area-inset-bottom))]`}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            {details.length > 0 ? (
+              <p className={`text-xs leading-relaxed sm:text-sm ${light ? "text-white/80" : "text-stone-600"}`}>
+                {details.join(" · ")}
+              </p>
+            ) : (
+              <p className={`text-xs sm:text-sm ${light ? "text-white/60" : "text-stone-500"}`}>
+                {t("chrome.contactComingSoon")}
+              </p>
+            )}
+            <p className={`mt-1 text-xs ${light ? "text-white/55" : "text-stone-400"}`}>
+              &copy; {new Date().getFullYear()} {school.name}
+              {site.footerTagline ? ` · ${site.footerTagline}` : ""}
+            </p>
+          </div>
+          <div className="flex shrink-0 items-center gap-3">
+            <SocialLinks social={site.social} light={light} className="gap-3" />
+            <Link
+              href={applyHref}
+              className={
+                light
+                  ? "inline-flex h-9 items-center rounded-full bg-white px-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-900"
+                  : "inline-flex h-9 items-center rounded-full bg-stone-900 px-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-white"
+              }
+            >
+              {applyLabel}
+            </Link>
+          </div>
+        </div>
       </div>
-      <SocialLinks social={site.social} className="gap-3" light={light} />
-    </div>
+    </footer>
   );
 }
 
@@ -128,11 +161,13 @@ function ModernShell({
         closeMenuLabel={closeMenuLabel}
       />
       <main>{children}</main>
-      <footer className="border-t border-stone-200 bg-stone-50">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <SchoolFooter school={school} site={site} />
-        </div>
-      </footer>
+      <CompactSiteFooter
+        school={school}
+        site={site}
+        t={t}
+        applyHref={isPreview ? "#" : `/schools/${school.slug}/enroll`}
+        applyLabel={t("chrome.applyNow")}
+      />
     </div>
   );
 }
@@ -178,11 +213,16 @@ function ClassicShell({
         closeMenuLabel={closeMenuLabel}
       />
       <main>{children}</main>
-      <footer className="text-white" style={{ backgroundColor: primary }}>
-        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 sm:py-5 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <SchoolFooter school={school} site={site} light />
-        </div>
-      </footer>
+      <div style={{ backgroundColor: primary }}>
+        <CompactSiteFooter
+          school={school}
+          site={site}
+          t={t}
+          applyHref={isPreview ? "#" : `/schools/${school.slug}/enroll`}
+          applyLabel={t("chrome.applyNow")}
+          light
+        />
+      </div>
     </div>
   );
 }
@@ -226,11 +266,14 @@ function MinimalShell({
         closeMenuLabel={closeMenuLabel}
       />
       <main>{children}</main>
-      <footer className="border-t border-stone-200 px-4 sm:px-6">
-        <div className="mx-auto max-w-3xl py-4 sm:py-5 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <SchoolFooter school={school} site={site} />
-        </div>
-      </footer>
+      <CompactSiteFooter
+        school={school}
+        site={site}
+        t={t}
+        applyHref={isPreview ? "#" : `/schools/${school.slug}/enroll`}
+        applyLabel={t("chrome.apply")}
+        maxWidthClass="max-w-3xl"
+      />
     </div>
   );
 }

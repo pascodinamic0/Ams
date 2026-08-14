@@ -126,7 +126,8 @@
     "missOpenDay": "Miss an open day and you lose the easiest path to enrollment answers.",
     "viewAllEvents": "View all events",
     "claimASpot": "Claim a spot before it fills",
-    "viewDetails": "View details"
+    "viewDetails": "View details",
+    "campusPhoto": "Campus"
   },
   "editor": {
     "publicUrlSlug": "Public URL slug",

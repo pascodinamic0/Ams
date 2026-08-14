@@ -1,19 +1,24 @@
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { EventBookingForm } from "@/components/schools/event-booking-form";
 import { SchoolInnerPage } from "@/components/schools/school-inner-page";
 import { getSchoolBySlug } from "@/lib/db";
 import { getCampusVisitSlots } from "@/lib/db/public-events";
 
-function formatEventDate(date: string, time: string | null) {
-  const formatted = new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
+function formatEventDate(
+  date: string,
+  time: string | null,
+  locale: string,
+  atTime: (values: { date: string; time: string }) => string
+) {
+  const formatted = new Date(`${date}T00:00:00`).toLocaleDateString(locale, {
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
   });
   if (!time) return formatted;
-  return `${formatted} at ${time.slice(0, 5)}`;
+  return atTime({ date: formatted, time: time.slice(0, 5) });
 }
 
 export default async function SchoolVisitPage({
@@ -26,6 +31,7 @@ export default async function SchoolVisitPage({
   if (!school) notFound();
 
   const t = await getTranslations("schools.visit");
+  const locale = await getLocale();
   const slots = await getCampusVisitSlots(school.id);
   const primary = school.theme_primary_color ?? "#0d9488";
 
@@ -63,7 +69,7 @@ export default async function SchoolVisitPage({
                 </p>
                 <h2 className="mt-1 text-2xl font-semibold">{slot.title}</h2>
                 <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-                  {formatEventDate(slot.date, slot.start_time)}
+                  {formatEventDate(slot.date, slot.start_time, locale, (v) => t("atTime", v))}
                 </p>
                 {slot.location && (
                   <p className="mt-1 text-sm text-stone-500">{slot.location}</p>

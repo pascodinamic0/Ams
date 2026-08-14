@@ -1,8 +1,8 @@
 import Link from "next/link";
 import type { PublicSchoolEvent } from "@/lib/db/public-events";
 
-function formatEventDate(date: string, time: string | null) {
-  const formatted = new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
+function formatEventDate(date: string, time: string | null, locale: string) {
+  const formatted = new Date(`${date}T00:00:00`).toLocaleDateString(locale, {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -18,12 +18,14 @@ export function PublicEventsSection({
   primary,
   variant = "modern",
   t,
+  locale,
 }: {
   events: PublicSchoolEvent[];
   slug: string;
   primary: string;
   variant?: "modern" | "classic" | "minimal";
   t: (key: string) => string;
+  locale: string;
 }) {
   const bookable = events.filter((e) => e.type === "event").slice(0, 3);
   if (bookable.length === 0) return null;
@@ -78,7 +80,7 @@ export function PublicEventsSection({
             style={variant === "classic" ? { borderColor: `${primary}30` } : undefined}
           >
             <p className="text-xs font-medium uppercase tracking-widest text-stone-400">
-              {formatEventDate(event.date, event.start_time)}
+              {formatEventDate(event.date, event.start_time, locale)}
             </p>
             <h3
               className={

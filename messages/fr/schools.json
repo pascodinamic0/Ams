@@ -57,9 +57,9 @@
     "email": "E-mail",
     "phone": "Téléphone",
     "contactComingSoon": "Coordonnées bientôt disponibles.",
-    "applyBeforeSeatsFill": "Postulez avant que les places ne soient prises",
+    "applyBeforeSeatsFill": "Postulez avant la rentrée",
     "viewCampusStories": "Voir les histoires du campus",
-    "explorePrograms": "Découvrir les programmes",
+    "explorePrograms": "Voir les programmes",
     "excellenceIntegrityCommunity": "Excellence · Intégrité · Communauté",
     "excellenceIntegrityInclusivity": "Excellence · Intégrité · Inclusion",
     "programs": "Programmes",
@@ -101,7 +101,7 @@
     "aboutTheSchool": "À propos de l'école",
     "discoverSchool": "Découvrir {schoolName}",
     "programsFillByDivision": "Les programmes se remplissent par division. Voyez ce qui est ouvert avant qu'une autre famille ne prenne la place.",
-    "aboutUs": "À propos de nous",
+    "aboutUs": "À propos",
     "getInTouch": "Nous contacter",
     "waitingForVisit": "Attendre une visite du campus peut retarder l'inscription. Contactez le secrétariat aujourd'hui.",
     "stopLosingOpenSeats": "Arrêtez de perdre des places",
@@ -125,8 +125,9 @@
     "upcomingEvents": "Événements à venir",
     "missOpenDay": "Manquer une journée portes ouvertes, c'est perdre le chemin le plus simple vers l'inscription.",
     "viewAllEvents": "Voir tous les événements",
-    "claimASpot": "Réservez une place avant qu'elle ne parte",
-    "viewDetails": "Voir les détails"
+    "claimASpot": "Réserver une place",
+    "viewDetails": "Voir les détails",
+    "campusPhoto": "Campus"
   },
   "editor": {
     "publicUrlSlug": "Identifiant d'URL public",

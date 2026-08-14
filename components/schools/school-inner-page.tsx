@@ -33,7 +33,7 @@ export function SchoolInnerPage({
         : "text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl";
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative">
       {heroImage ? (
         <>
           <img

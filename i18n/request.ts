@@ -94,6 +94,28 @@ async function loadMessages(locale: string) {
   };
 }
 
+async function resolvePublicSchoolSiteLocale(): Promise<Locale | null> {
+  try {
+    const pathname = (await headers()).get("x-pathname");
+    if (!pathname) return null;
+    const match = pathname.match(/^\/schools\/([^/?#]+)/);
+    const slug = match?.[1];
+    if (!slug || slug === "templates") return null;
+
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("schools")
+      .select("locale")
+      .eq("slug", slug)
+      .eq("public_site_enabled", true)
+      .maybeSingle();
+
+    return isValidLocale(data?.locale) ? data.locale : null;
+  } catch {
+    return null;
+  }
+}
+
 async function resolveSchoolLocale(): Promise<Locale | null> {
   try {
     const supabase = await createClient();
@@ -133,6 +155,16 @@ function resolveVisitorLocale(cookieLocale: string | undefined, acceptLanguage: 
 }
 
 export default getRequestConfig(async () => {
+  // Public school sites follow that school's language, not the visitor's browser.
+  const publicSiteLocale = await resolvePublicSchoolSiteLocale();
+  if (publicSiteLocale) {
+    return {
+      locale: publicSiteLocale,
+      timeZone: defaultTimeZone,
+      messages: await loadMessages(publicSiteLocale),
+    };
+  }
+
   const schoolLocale = await resolveSchoolLocale();
   if (schoolLocale) {
     return {
