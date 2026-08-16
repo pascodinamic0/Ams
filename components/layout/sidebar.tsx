@@ -69,6 +69,7 @@ type NavLabels = {
   attendance: string;
   gradebook: string;
   assignments: string;
+  missedLessons: string;
   exams: string;
   reportCards: string;
   feeStructure: string;
@@ -297,6 +298,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/parent/fees", labelKey: "fees", icon: icon.fees },
     { href: "/parent/timetable", labelKey: "timetable", icon: icon.timetable },
     { href: "/parent/assignments", labelKey: "assignments", icon: icon.assignments },
+    { href: "/parent/lessons", labelKey: "missedLessons", icon: icon.timetable },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
     { href: "/parent/events", labelKey: "events", icon: icon.events },
     { href: "/parent/transport", labelKey: "transport", icon: icon.transport },
@@ -306,6 +308,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/student", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/student/timetable", labelKey: "timetable", icon: icon.timetable },
     { href: "/student/assignments", labelKey: "assignments", icon: icon.assignments },
+    { href: "/student/lessons", labelKey: "missedLessons", icon: icon.timetable },
     { href: "/student/grades", labelKey: "grades", icon: icon.grades },
     { href: "/student/report-card", labelKey: "reportCards", icon: icon.reports },
     { href: "/student/library", labelKey: "library", icon: icon.library },

@@ -3,7 +3,14 @@ import { format } from "date-fns";
 import { getTranslations } from "next-intl/server";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { getTeacherClasses, getAttendanceForClass } from "@/lib/db";
+import {
+  getTeacherClasses,
+  getAttendanceForClass,
+} from "@/lib/db";
+import {
+  getTeacherSubjectsForClass,
+  getLessonMaterialsSentForClassDate,
+} from "@/lib/db/lesson-materials";
 import { AttendanceSheet } from "./attendance-sheet";
 
 export default async function AttendancePage({
@@ -37,7 +44,12 @@ export default async function AttendancePage({
     ? params.class
     : classes[0].id;
   const date = params.date ?? format(new Date(), "yyyy-MM-dd");
-  const records = await getAttendanceForClass(classId, date);
+
+  const [records, subjects, sentMaterials] = await Promise.all([
+    getAttendanceForClass(classId, date),
+    getTeacherSubjectsForClass(profile.id, classId),
+    getLessonMaterialsSentForClassDate(profile.id, classId, date),
+  ]);
 
   return (
     <div className="space-y-6">
@@ -48,6 +60,10 @@ export default async function AttendancePage({
           initialClassId={classId}
           initialDate={date}
           records={records}
+          subjects={subjects}
+          sentMaterials={sentMaterials}
+          schoolId={profile.school_id}
+          teacherId={profile.id}
         />
       </Suspense>
     </div>

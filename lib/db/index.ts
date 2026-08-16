@@ -213,6 +213,19 @@ export {
   type StudentAttendanceRecord,
 } from "./attendance";
 export {
+  getTeacherSubjectsForClass,
+  getLessonMaterialsSentForClassDate,
+  getLessonMaterialsForStudent,
+  getRecentLessonMaterialsForStudent,
+  getLessonMaterialsForGuardianStudents,
+  LESSON_MATERIALS_BUCKET,
+  type TeacherSubjectOption,
+  type LessonMaterialAttachmentItem,
+  type TeacherLessonMaterialSummary,
+  type StudentLessonMaterialItem,
+  type GuardianLessonMaterialItem,
+} from "./lesson-materials";
+export {
   getGradesForClass,
   getGradesForReportCard,
   getGradesForStudent,

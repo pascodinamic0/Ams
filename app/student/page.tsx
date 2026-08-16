@@ -6,6 +6,7 @@ import {
   getTodaysTimetableForClass,
   getUpcomingAssignmentsForStudent,
   getEvents,
+  getRecentLessonMaterialsForStudent,
 } from "@/lib/db";
 import { CopyableBadge } from "@/components/ui/copyable-badge";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -36,7 +37,7 @@ export default async function StudentDashboard() {
     );
   }
 
-  const [todaySlots, upcoming, events] = await Promise.all([
+  const [todaySlots, upcoming, events, recentLessons] = await Promise.all([
     student.class_id ? getTodaysTimetableForClass(student.class_id) : Promise.resolve([]),
     getUpcomingAssignmentsForStudent(student.id, 5),
     getEvents({
@@ -44,6 +45,7 @@ export default async function StudentDashboard() {
       fromDate: format(new Date(), "yyyy-MM-dd"),
       limit: 3,
     }),
+    getRecentLessonMaterialsForStudent(student.id, 3),
   ]);
 
   const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
@@ -70,6 +72,7 @@ export default async function StudentDashboard() {
       <div className="flex flex-wrap gap-2">
         <Link href="/student/timetable"><Button size="sm" variant="outline">{t("timetable")}</Button></Link>
         <Link href="/student/assignments"><Button size="sm" variant="outline">{t("assignments")}</Button></Link>
+        <Link href="/student/lessons"><Button size="sm" variant="outline">{t("lessonsTitle")}</Button></Link>
         <Link href="/student/grades"><Button size="sm" variant="outline">{t("grades")}</Button></Link>
         <Link href="/student/library"><Button size="sm" variant="outline">{t("library")}</Button></Link>
       </div>
@@ -130,6 +133,31 @@ export default async function StudentDashboard() {
           </Link>
         </div>
       </div>
+
+      {recentLessons.length > 0 && (
+        <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="font-semibold text-stone-900 dark:text-white">{t("recentMissedLessons")}</h2>
+            <Link href="/student/lessons" className="text-sm text-primary hover:underline">
+              {t("viewAll")}
+            </Link>
+          </div>
+          <ul className="space-y-2">
+            {recentLessons.map((lesson) => (
+              <li
+                key={lesson.id}
+                className="rounded-lg border border-stone-100 bg-stone-50 px-3 py-2 dark:border-stone-700 dark:bg-stone-800/50"
+              >
+                <p className="text-sm font-medium text-stone-900 dark:text-white">{lesson.title}</p>
+                <p className="text-xs text-stone-500">
+                  {format(new Date(lesson.lesson_date), "MMM d, yyyy")}
+                  {lesson.subject_name ? ` · ${lesson.subject_name}` : ""}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {events.length > 0 && (
         <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-stone-900">

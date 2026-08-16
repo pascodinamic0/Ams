@@ -142,5 +142,17 @@
   "removeImage": "Retirer l'image",
   "schoolAdmin": "Admin école",
   "closeModal": "Fermer la fenêtre",
-  "breadcrumb": "Fil d'Ariane"
+  "breadcrumb": "Fil d'Ariane",
+  "richTextBold": "Gras",
+  "richTextItalic": "Italique",
+  "richTextUnderline": "Souligné",
+  "richTextHeading2": "Titre",
+  "richTextHeading3": "Sous-titre",
+  "richTextBulletList": "Liste à puces",
+  "richTextNumberedList": "Liste numérotée",
+  "richTextQuote": "Citation",
+  "richTextLink": "Insérer un lien",
+  "richTextDivider": "Séparateur",
+  "richTextClearFormatting": "Effacer la mise en forme",
+  "richTextLinkPrompt": "Collez l'URL (YouTube, Drive, site web…)"
 }

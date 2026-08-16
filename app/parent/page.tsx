@@ -7,6 +7,7 @@ import {
   getInvoicesForGuardian,
   getUpcomingAssignmentsForStudent,
   getTodaysTimetableForClass,
+  getLessonMaterialsForGuardianStudents,
 } from "@/lib/db";
 import { CopyableBadge } from "@/components/ui/copyable-badge";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -40,6 +41,11 @@ export default async function ParentDashboard() {
   const children = await getLinkedStudentsForGuardian(guardian.id);
   const invoices = await getInvoicesForGuardian(guardian.id);
   const outstanding = invoices.filter((i) => Number(i.balance) > 0).length;
+  const recentLessons = (
+    await getLessonMaterialsForGuardianStudents(
+      children.map((c) => ({ id: c.id, name: c.name }))
+    )
+  ).slice(0, 3);
 
   const childPreviews = await Promise.all(
     children.slice(0, 3).map(async (child) => {
@@ -89,6 +95,9 @@ export default async function ParentDashboard() {
                 </Link>
                 <Link href="/parent/timetable">
                   <Button size="sm" variant="outline">{t("timetable")}</Button>
+                </Link>
+                <Link href="/parent/lessons">
+                  <Button size="sm" variant="outline">{t("lessonsTitle")}</Button>
                 </Link>
               </div>
             </div>
@@ -186,6 +195,33 @@ export default async function ParentDashboard() {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {recentLessons.length > 0 && (
+            <div className="rounded-xl border border-stone-200 bg-white p-5 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="font-semibold text-stone-900 dark:text-white">{t("recentMissedLessons")}</h2>
+                <Link href="/parent/lessons" className="text-sm text-primary hover:underline">
+                  {t("viewAll")}
+                </Link>
+              </div>
+              <ul className="space-y-2">
+                {recentLessons.map((lesson) => (
+                  <li
+                    key={`${lesson.student_id}:${lesson.id}`}
+                    className="rounded-lg border border-stone-100 bg-stone-50 px-3 py-2 dark:border-stone-700 dark:bg-stone-800/50"
+                  >
+                    <p className="text-sm font-medium text-stone-900 dark:text-white">{lesson.title}</p>
+                    <p className="text-xs text-stone-500">
+                      {lesson.student_name}
+                      {" · "}
+                      {format(new Date(lesson.lesson_date), "MMM d, yyyy")}
+                      {lesson.subject_name ? ` · ${lesson.subject_name}` : ""}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </>

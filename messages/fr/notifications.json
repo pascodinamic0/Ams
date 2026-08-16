@@ -4,7 +4,7 @@
   "markRead": "Marquer comme lu",
   "noNotifications": "Aucune notification",
   "noNotificationsYet": "Aucune notification pour l'instant",
-  "noNotificationsDesc": "Les alertes concernant les frais, messages et mises à jour de l'école apparaîtront ici.",
+  "noNotificationsDesc": "Les alertes de frais, messages et école arrivent ici—pour que vous ne l'appreniez pas au portail.",
   "unread": "Non lu",
   "unreadCount": "{count, plural, one {# notification non lue} other {# notifications non lues}}",
   "allCaughtUp": "Vous êtes à jour",
@@ -18,6 +18,13 @@
   "assignmentGraded": "Devoir noté",
   "assignmentGradedBody": "Votre remise pour « {title} » a été notée : {grade}.",
   "assignmentGradedGuardianBody": "Une remise de devoir a été notée : {grade} pour « {title} ».",
+  "lessonMaterialSent": "Leçon manquée — supports",
+  "lessonMaterialSentBody": "Votre enseignant a partagé ce que vous avez manqué : « {title} ». Révisez avant le prochain cours.",
+  "lessonMaterialSentGuardianBody": "Des supports de rattrapage ont été envoyés pour « {title} » — ouvrez le portail pour que votre enfant révise avant le prochain cours.",
   "newMessageFrom": "Nouveau message de {name}",
-  "someone": "Quelqu'un"
+  "someone": "Quelqu'un",
+  "unidentifiedDisciplineIncident": "Incident de discipline sans nom",
+  "unidentifiedDisciplineIncidentBody": "{title}. {photo} Ouvrez le tableau des tâches pour identifier l'élève avant que le suivi ne prenne du retard.",
+  "unidentifiedDisciplinePhotoAttached": "Une photo est jointe.",
+  "unidentifiedDisciplineNoPhoto": "Aucune photo n'a été jointe."
 }

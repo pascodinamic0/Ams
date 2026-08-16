@@ -142,5 +142,17 @@
   "removeImage": "Remove image",
   "schoolAdmin": "School Admin",
   "closeModal": "Close modal",
-  "breadcrumb": "Breadcrumb"
+  "breadcrumb": "Breadcrumb",
+  "richTextBold": "Bold",
+  "richTextItalic": "Italic",
+  "richTextUnderline": "Underline",
+  "richTextHeading2": "Heading",
+  "richTextHeading3": "Subheading",
+  "richTextBulletList": "Bullet list",
+  "richTextNumberedList": "Numbered list",
+  "richTextQuote": "Quote",
+  "richTextLink": "Insert link",
+  "richTextDivider": "Divider",
+  "richTextClearFormatting": "Clear formatting",
+  "richTextLinkPrompt": "Paste link URL (YouTube, Drive, website…)"
 }

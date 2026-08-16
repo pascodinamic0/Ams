@@ -4,7 +4,7 @@
   "markRead": "Mark read",
   "noNotifications": "No notifications",
   "noNotificationsYet": "No notifications yet",
-  "noNotificationsDesc": "Alerts about fees, messages, and school updates will appear here.",
+  "noNotificationsDesc": "Fee, message, and school alerts land here—so you don't find out at the gate.",
   "unread": "Unread",
   "unreadCount": "{count, plural, one {# unread notification} other {# unread notifications}}",
   "allCaughtUp": "You're all caught up",
@@ -18,6 +18,13 @@
   "assignmentGraded": "Assignment graded",
   "assignmentGradedBody": "Your submission for \"{title}\" was graded: {grade}.",
   "assignmentGradedGuardianBody": "An assignment submission was graded: {grade} for \"{title}\".",
+  "lessonMaterialSent": "Missed lesson materials",
+  "lessonMaterialSentBody": "Your teacher shared what you missed: \"{title}\". Review it before the next class.",
+  "lessonMaterialSentGuardianBody": "Catch-up materials were sent for \"{title}\" — open the portal so your child can review before the next class.",
   "newMessageFrom": "New message from {name}",
-  "someone": "Someone"
+  "someone": "Someone",
+  "unidentifiedDisciplineIncident": "Unnamed discipline incident",
+  "unidentifiedDisciplineIncidentBody": "{title}. {photo} Open the task board to identify the student before follow-up is delayed.",
+  "unidentifiedDisciplinePhotoAttached": "A photo is attached.",
+  "unidentifiedDisciplineNoPhoto": "No photo was attached."
 }

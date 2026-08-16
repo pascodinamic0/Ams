@@ -1,32 +1,47 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useMemo, useState, useTransition } from "react";
 import { format } from "date-fns";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { DatePicker } from "@/components/ui/date-picker";
 import { saveAttendance, markAllPresent } from "@/lib/actions/attendance";
-import {
-  queueAttendanceSave,
-} from "@/lib/pwa/attendance-offline";
+import { queueAttendanceSave } from "@/lib/pwa/attendance-offline";
 import { toast } from "@/lib/toast";
-import type { AttendanceRecordItem } from "@/lib/db";
+import { LessonMaterialModal } from "./lesson-material-modal";
+import type { AttendanceRecordItem, TeacherLessonMaterialSummary } from "@/lib/db";
+import type { TeacherSubjectOption } from "@/lib/db/lesson-materials";
 
 interface Props {
   classes: { id: string; name: string }[];
   initialClassId: string;
   initialDate: string;
   records: AttendanceRecordItem[];
+  subjects: TeacherSubjectOption[];
+  sentMaterials: TeacherLessonMaterialSummary[];
+  schoolId: string | null;
+  teacherId: string;
 }
 
-export function AttendanceSheet({ classes, initialClassId, initialDate, records }: Props) {
+export function AttendanceSheet({
+  classes,
+  initialClassId,
+  initialDate,
+  records,
+  subjects,
+  sentMaterials,
+  schoolId,
+  teacherId,
+}: Props) {
   const t = useTranslations("teacher");
   const tc = useTranslations("common");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
+  const [lessonModalOpen, setLessonModalOpen] = useState(false);
+  const [attendanceSaved, setAttendanceSaved] = useState(true);
   const [selectedDate, setSelectedDate] = useState(() => new Date(initialDate + "T12:00:00"));
   const [statuses, setStatuses] = useState<Record<string, "present" | "absent">>(() =>
     Object.fromEntries(records.map((r) => [r.student_id, r.status]))
@@ -34,6 +49,14 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
 
   const classId = searchParams.get("class") ?? initialClassId;
   const dateStr = format(selectedDate, "yyyy-MM-dd");
+
+  const absentStudentIds = useMemo(
+    () =>
+      records
+        .filter((r) => (statuses[r.student_id] ?? r.status) === "absent")
+        .map((r) => r.student_id),
+    [records, statuses]
+  );
 
   function updateParams(key: string, value: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -43,6 +66,7 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
   }
 
   function toggleStatus(studentId: string) {
+    setAttendanceSaved(false);
     setStatuses((prev) => ({
       ...prev,
       [studentId]: prev[studentId] === "present" ? "absent" : "present",
@@ -72,6 +96,7 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
         toast.error(typeof result.error === "string" ? result.error : t("saveAttendanceFailed"));
         return;
       }
+      setAttendanceSaved(true);
       toast.success(t("attendanceSaved"));
       router.refresh();
     });
@@ -102,6 +127,7 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
         return;
       }
       setStatuses(Object.fromEntries(records.map((r) => [r.student_id, "present" as const])));
+      setAttendanceSaved(true);
       toast.success(t("allStudentsMarkedPresent"));
       router.refresh();
     });
@@ -148,7 +174,23 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
         <Button size="sm" variant="outline" onClick={handleMarkAllPresent} disabled={pending || !classId}>
           {t("markAllPresent")}
         </Button>
+        {absentStudentIds.length > 0 && (
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => setLessonModalOpen(true)}
+            disabled={pending}
+          >
+            {t("sendTodaysLesson")}
+          </Button>
+        )}
       </div>
+
+      {absentStudentIds.length > 0 && (
+        <p className="text-sm text-stone-600 dark:text-stone-400">
+          {t("sendTodaysLessonDesc", { count: absentStudentIds.length })}
+        </p>
+      )}
 
       {records.length === 0 ? (
         <p className="text-sm text-stone-500">{t("noStudentsInClass")}</p>
@@ -189,6 +231,40 @@ export function AttendanceSheet({ classes, initialClassId, initialDate, records 
           </table>
         </div>
       )}
+
+      {sentMaterials.length > 0 && (
+        <div className="rounded-lg border p-4 dark:border-stone-700">
+          <h2 className="text-sm font-semibold">{t("sentTodayTitle")}</h2>
+          <ul className="mt-2 space-y-2">
+            {sentMaterials.map((item) => (
+              <li key={item.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
+                <div>
+                  <span className="font-medium">{item.title}</span>
+                  {item.subject_name && (
+                    <span className="ml-2 text-stone-500">· {item.subject_name}</span>
+                  )}
+                </div>
+                <span className="text-stone-500">
+                  {t("sentTodayRecipients", { count: item.recipient_count })}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <LessonMaterialModal
+        isOpen={lessonModalOpen}
+        onClose={() => setLessonModalOpen(false)}
+        classId={classId}
+        lessonDate={dateStr}
+        schoolId={schoolId}
+        teacherId={teacherId}
+        subjects={subjects}
+        records={records}
+        absentStudentIds={absentStudentIds}
+        attendanceSaved={attendanceSaved}
+      />
     </div>
   );
 }

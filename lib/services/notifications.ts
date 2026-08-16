@@ -110,7 +110,7 @@ export async function createNotifications(
 /** Notify all guardians with portal accounts linked to a student. */
 export async function notifyStudentGuardians(
   studentId: string,
-  notification: { title: string; body?: string }
+  notification: { title: string; body?: string; url?: string }
 ): Promise<void> {
   const admin = createAdminClient();
   if (!admin) return;
@@ -133,6 +133,7 @@ export async function notifyStudentGuardians(
       userId,
       title: notification.title,
       body: notification.body,
+      url: notification.url,
     }))
   );
 }

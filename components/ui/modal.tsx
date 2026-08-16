@@ -3,15 +3,17 @@
 import * as React from "react";
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
+  size?: "default" | "lg";
   children: React.ReactNode;
 }
 
-export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+export function Modal({ isOpen, onClose, title, size = "default", children }: ModalProps) {
   const t = useTranslations("common");
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -42,7 +44,10 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         aria-hidden="true"
       />
       <div
-        className="relative z-10 mx-4 max-h-[90vh] w-full max-w-lg overflow-auto rounded-xl bg-surface shadow-xl"
+        className={cn(
+          "relative z-10 mx-4 max-h-[90vh] w-full overflow-auto rounded-xl bg-surface shadow-xl",
+          size === "lg" ? "max-w-3xl" : "max-w-lg"
+        )}
         onClick={(e) => e.stopPropagation()}
       >
         {title && (
