@@ -1,9 +1,15 @@
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 import { EventBookingForm } from "@/components/schools/event-booking-form";
+import { SchoolCampusMap } from "@/components/schools/school-campus-map";
 import { SchoolInnerPage } from "@/components/schools/school-inner-page";
 import { getSchoolBySlug } from "@/lib/db";
 import { getCampusVisitSlots } from "@/lib/db/public-events";
+import {
+  googleMapsOpenUrl,
+  resolveGoogleMapsEmbedSrc,
+} from "@/lib/schools/google-maps";
+import { resolveSchoolWebsite } from "@/lib/schools/website-content";
 
 function formatEventDate(
   date: string,
@@ -31,9 +37,13 @@ export default async function SchoolVisitPage({
   if (!school) notFound();
 
   const t = await getTranslations("schools.visit");
+  const chrome = await getTranslations("schools.chrome");
   const locale = await getLocale();
   const slots = await getCampusVisitSlots(school.id);
   const primary = school.theme_primary_color ?? "#0d9488";
+  const site = resolveSchoolWebsite(school);
+  const mapEmbedSrc = await resolveGoogleMapsEmbedSrc(site.mapUrl, school.address);
+  const mapOpenUrl = googleMapsOpenUrl(site.mapUrl, school.address);
 
   return (
     <SchoolInnerPage
@@ -53,6 +63,16 @@ export default async function SchoolVisitPage({
             <p className="mt-5 text-sm text-stone-600 dark:text-stone-400">
               {t("contactHint")}: {school.address}
             </p>
+          )}
+          {mapEmbedSrc && (
+            <div className="mx-auto mt-6 max-w-xl overflow-hidden rounded-xl">
+              <SchoolCampusMap
+                embedSrc={mapEmbedSrc}
+                openUrl={mapOpenUrl}
+                title={chrome("campusMap")}
+                openLabel={chrome("openInGoogleMaps")}
+              />
+            </div>
           )}
         </div>
       ) : (

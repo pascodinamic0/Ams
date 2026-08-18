@@ -30,6 +30,7 @@ type EditorState = {
   contact_email: string;
   contact_phone: string;
   address: string;
+  map_url: string;
   custom_domain: string;
   theme_primary_color: string;
   theme_secondary_color: string;
@@ -57,6 +58,7 @@ function schoolToEditorState(school: SchoolRow): EditorState {
     contact_email: school.contact_email ?? "",
     contact_phone: school.contact_phone ?? "",
     address: school.address ?? "",
+    map_url: content.map_url ?? "",
     custom_domain: school.custom_domain ?? "",
     theme_primary_color: school.theme_primary_color ?? "#0d9488",
     theme_secondary_color: school.theme_secondary_color ?? "#7c3aed",
@@ -134,6 +136,7 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
       social_facebook: form.social_facebook || undefined,
       social_instagram: form.social_instagram || undefined,
       social_twitter: form.social_twitter || undefined,
+      map_url: form.map_url.trim() || undefined,
       programs: form.programs.filter((p) => p.title.trim()),
       stats: form.stats.filter((s) => s.label.trim()),
       gallery: form.gallery.filter((g) => g.url.trim()),
@@ -459,6 +462,17 @@ export function WebsiteEditorForm({ school }: { school: SchoolRow }) {
             onChange={(e) => setForm((f) => ({ ...f, address: e.target.value }))}
             rows={2}
           />
+        </div>
+        <div>
+          <Label>{te("googleMapUrl")}</Label>
+          <Input
+            type="text"
+            inputMode="url"
+            value={form.map_url}
+            onChange={(e) => setForm((f) => ({ ...f, map_url: e.target.value }))}
+            placeholder={te("googleMapUrlPlaceholder")}
+          />
+          <p className="mt-1 text-xs text-stone-500">{te("googleMapUrlHint")}</p>
         </div>
       </Section>
 

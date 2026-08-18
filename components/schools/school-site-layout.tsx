@@ -4,6 +4,11 @@ import type { SchoolRow } from "@/lib/db/schools";
 import { resolveSchoolWebsite } from "@/lib/schools/website-content";
 import type { WebsiteTemplateId } from "@/lib/schools/website-templates";
 import { SchoolSiteHeader } from "@/components/schools/school-site-header";
+import { SchoolCampusMap } from "@/components/schools/school-campus-map";
+import {
+  googleMapsOpenUrl,
+  resolveGoogleMapsEmbedSrc,
+} from "@/lib/schools/google-maps";
 
 type ChromeT = (key: string) => string;
 
@@ -18,6 +23,8 @@ type ShellProps = SchoolSiteLayoutProps & {
   menuLabel: string;
   openMenuLabel: string;
   closeMenuLabel: string;
+  mapEmbedSrc: string | null;
+  mapOpenUrl: string | null;
 };
 
 function SocialLinks({
@@ -66,6 +73,8 @@ function CompactSiteFooter({
   applyLabel,
   light = false,
   maxWidthClass = "max-w-6xl",
+  mapEmbedSrc,
+  mapOpenUrl,
 }: {
   school: SchoolRow;
   site: ReturnType<typeof resolveSchoolWebsite>;
@@ -74,6 +83,8 @@ function CompactSiteFooter({
   applyLabel: string;
   light?: boolean;
   maxWidthClass?: string;
+  mapEmbedSrc: string | null;
+  mapOpenUrl: string | null;
 }) {
   const details = [school.contact_email, school.contact_phone, school.address].filter(Boolean);
 
@@ -83,7 +94,7 @@ function CompactSiteFooter({
       className={light ? "text-white" : "border-t border-stone-200 bg-stone-50 text-stone-700"}
     >
       <div className={`mx-auto ${maxWidthClass} px-4 py-4 sm:px-6 sm:py-5 pb-[max(1rem,env(safe-area-inset-bottom))]`}>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
             {details.length > 0 ? (
               <p className={`text-xs leading-relaxed sm:text-sm ${light ? "text-white/80" : "text-stone-600"}`}>
@@ -113,6 +124,17 @@ function CompactSiteFooter({
             </Link>
           </div>
         </div>
+        {mapEmbedSrc && (
+          <div className="mt-4 overflow-hidden rounded-xl">
+            <SchoolCampusMap
+              embedSrc={mapEmbedSrc}
+              openUrl={mapOpenUrl}
+              title={t("chrome.campusMap")}
+              openLabel={t("chrome.openInGoogleMaps")}
+              light={light}
+            />
+          </div>
+        )}
       </div>
     </footer>
   );
@@ -126,6 +148,8 @@ function ModernShell({
   menuLabel,
   openMenuLabel,
   closeMenuLabel,
+  mapEmbedSrc,
+  mapOpenUrl,
 }: ShellProps) {
   const primary = school.theme_primary_color ?? "#0d9488";
   const site = resolveSchoolWebsite(school);
@@ -167,6 +191,8 @@ function ModernShell({
         t={t}
         applyHref={isPreview ? "#" : `/schools/${school.slug}/enroll`}
         applyLabel={t("chrome.applyNow")}
+        mapEmbedSrc={mapEmbedSrc}
+        mapOpenUrl={mapOpenUrl}
       />
     </div>
   );
@@ -180,6 +206,8 @@ function ClassicShell({
   menuLabel,
   openMenuLabel,
   closeMenuLabel,
+  mapEmbedSrc,
+  mapOpenUrl,
 }: ShellProps) {
   const primary = school.theme_primary_color ?? "#1a2b56";
   const accent = school.theme_secondary_color ?? "#c9a227";
@@ -221,6 +249,8 @@ function ClassicShell({
           applyHref={isPreview ? "#" : `/schools/${school.slug}/enroll`}
           applyLabel={t("chrome.applyNow")}
           light
+          mapEmbedSrc={mapEmbedSrc}
+          mapOpenUrl={mapOpenUrl}
         />
       </div>
     </div>
@@ -235,6 +265,8 @@ function MinimalShell({
   menuLabel,
   openMenuLabel,
   closeMenuLabel,
+  mapEmbedSrc,
+  mapOpenUrl,
 }: ShellProps) {
   const accent = school.theme_secondary_color ?? "#c9a227";
   const site = resolveSchoolWebsite(school);
@@ -273,6 +305,8 @@ function MinimalShell({
         applyHref={isPreview ? "#" : `/schools/${school.slug}/enroll`}
         applyLabel={t("chrome.apply")}
         maxWidthClass="max-w-3xl"
+        mapEmbedSrc={mapEmbedSrc}
+        mapOpenUrl={mapOpenUrl}
       />
     </div>
   );
@@ -282,11 +316,16 @@ export async function SchoolSiteLayout({ school, children, isPreview }: SchoolSi
   const t = await getTranslations("schools");
   const tc = await getTranslations("common");
   const template = (school.website_template ?? "modern") as WebsiteTemplateId;
+  const site = resolveSchoolWebsite(school);
+  const mapEmbedSrc = await resolveGoogleMapsEmbedSrc(site.mapUrl, school.address);
+  const mapOpenUrl = googleMapsOpenUrl(site.mapUrl, school.address);
   const chrome = {
     t,
     menuLabel: tc("menu"),
     openMenuLabel: tc("openMenu"),
     closeMenuLabel: tc("closeMenu"),
+    mapEmbedSrc,
+    mapOpenUrl,
   };
 
   switch (template) {

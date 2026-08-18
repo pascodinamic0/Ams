@@ -42,6 +42,8 @@ export type SchoolWebsiteContent = {
   social_facebook?: string;
   social_instagram?: string;
   social_twitter?: string;
+  /** Google Maps share, place, or embed URL shown on the public site. */
+  map_url?: string;
 };
 
 export type ResolvedSchoolWebsite = {
@@ -58,6 +60,7 @@ export type ResolvedSchoolWebsite = {
     instagram?: string;
     twitter?: string;
   };
+  mapUrl: string;
 };
 
 export function parseWebsiteContent(raw: unknown): SchoolWebsiteContent {
@@ -134,6 +137,7 @@ export function getPreviewWebsiteContent(schoolName: string): SchoolWebsiteConte
       caption: ["Campus", "Classroom", "Library", "Sports"][i],
     })),
     footer_tagline: "Excellence · Integrity · Inclusivity",
+    map_url: "https://www.google.com/maps?q=42+Learning+Lane,+Greenfield",
   };
 }
 
@@ -159,5 +163,6 @@ export function resolveSchoolWebsite(school: SchoolRow): ResolvedSchoolWebsite {
       instagram: content.social_instagram,
       twitter: content.social_twitter,
     },
+    mapUrl: content.map_url?.trim() || "",
   };
 }
