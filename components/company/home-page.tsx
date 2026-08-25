@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -10,8 +11,12 @@ import {
   Clock,
   Smartphone,
   Linkedin,
+  Users,
+  GraduationCap,
+  CheckCircle2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 import { companyIdentity } from "@/lib/company/identity";
 import { HeroVideoBackground } from "@/components/company/hero-video-background";
 import { HeroMobileSubtitle } from "@/components/company/hero-mobile-subtitle";
@@ -40,6 +45,42 @@ export function HomePage() {
     { icon: FileSpreadsheet, title: t("trustSimple"), desc: t("trustSimpleDesc") },
     { icon: Clock, title: t("trustSupport"), desc: t("trustSupportDesc") },
     { icon: Smartphone, title: t("trustAffordable"), desc: t("trustAffordableDesc") },
+  ];
+
+  const roles = [
+    {
+      badge: t("adminBadge"),
+      floatingBadge: t("adminActiveUserPresence"),
+      title: t("adminTitle"),
+      description: t("adminDescription"),
+      features: [t("adminFeature1"), t("adminFeature2"), t("adminFeature3")],
+      cta: t("adminCta"),
+      href: "/features#academic",
+      image: "/images/role_admin.jpg",
+      icon: <Users className="h-6 w-6" />,
+    },
+    {
+      badge: t("teacherBadge"),
+      floatingBadge: t("teacherActiveUserPresence"),
+      title: t("teacherTitle"),
+      description: t("teacherDescription"),
+      features: [t("teacherFeature1"), t("teacherFeature2"), t("teacherFeature3")],
+      cta: t("teacherCta"),
+      href: "/features#teacher",
+      image: "/images/role_teacher.jpg",
+      icon: <GraduationCap className="h-6 w-6" />,
+    },
+    {
+      badge: t("parentBadge"),
+      floatingBadge: t("parentActiveUserPresence"),
+      title: t("parentTitle"),
+      description: t("parentDescription"),
+      features: [t("parentFeature1"), t("parentFeature2"), t("parentFeature3")],
+      cta: t("parentCta"),
+      href: "/features#parent-portal",
+      image: "/images/role_parent.jpg",
+      icon: <Users className="h-6 w-6" />,
+    },
   ];
 
   return (
@@ -166,6 +207,142 @@ export function HomePage() {
                 </motion.div>
               );
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Compact role cards */}
+      <section className="bg-mkt-canvas py-16 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p className="mx-auto max-w-2xl text-center text-sm uppercase tracking-[0.16em] text-mkt-ink/50 sm:text-base">
+            {t("audienceIntro")}
+          </p>
+          <div className="mt-10 grid gap-3 sm:mt-12 md:grid-cols-3">
+            {roles.map((role, i) => (
+              <motion.div
+                key={role.badge}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+              >
+                <Link
+                  href={role.href}
+                  className="group flex h-full flex-col overflow-hidden border border-mkt-ink/10 transition-colors hover:border-mkt-ink/30"
+                >
+                  <div className="relative aspect-[16/10] overflow-hidden">
+                    <Image
+                      src={role.image}
+                      alt={role.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover brightness-75 contrast-110 transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                    <div className="absolute bottom-4 left-4 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-white">
+                      {role.icon}
+                      {role.badge}
+                    </div>
+                  </div>
+                  <div className="flex flex-1 flex-col p-5 sm:p-6">
+                    <h3 className="text-lg font-semibold text-mkt-ink sm:text-xl">{role.title}</h3>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-mkt-ink/50">
+                      {role.description}
+                    </p>
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500 transition-all group-hover:gap-2.5">
+                      {role.cta}
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Detailed role rows */}
+      <section className="relative overflow-hidden border-t border-mkt-ink/10 bg-mkt-canvas py-16 sm:py-28">
+        <div className="pointer-events-none absolute left-1/2 top-0 -z-10 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-amber-500/5 blur-[120px]" />
+
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-12 text-center sm:mb-20">
+            <h2 className="font-display text-2xl tracking-tight text-mkt-ink sm:text-4xl md:text-5xl">
+              {t("rolesSectionTitle")}
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm uppercase tracking-[0.14em] text-mkt-ink/50 sm:mt-6 sm:text-base">
+              {t("rolesSectionSubtitle")}
+            </p>
+          </div>
+
+          <div className="space-y-16 sm:space-y-28">
+            {roles.map((role, i) => (
+              <motion.div
+                key={role.badge}
+                initial={{ opacity: 0, y: 32 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.7 }}
+                className={cn(
+                  "flex flex-col items-center gap-8 sm:gap-12 lg:gap-16",
+                  i % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"
+                )}
+              >
+                <div className="relative flex-1 group">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden border border-mkt-ink/10">
+                    <Image
+                      src={role.image}
+                      alt={role.title}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover brightness-75 contrast-110 transition-transform duration-700 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                  </div>
+                  <div
+                    className={cn(
+                      "absolute -bottom-4 hidden items-center gap-3 border border-mkt-ink/15 bg-mkt-canvas/90 px-4 py-3 backdrop-blur-sm sm:flex",
+                      i % 2 === 0 ? "-right-4" : "-left-4"
+                    )}
+                  >
+                    <CheckCircle2 className="h-5 w-5 text-amber-500" />
+                    <p className="text-xs font-semibold uppercase tracking-[0.12em] text-mkt-ink">
+                      {role.floatingBadge}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex-1 space-y-5 sm:space-y-6">
+                  <div className="inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-500">
+                    {role.icon}
+                    {role.badge}
+                  </div>
+                  <h3 className="font-display text-2xl leading-tight tracking-tight text-mkt-ink sm:text-3xl md:text-4xl">
+                    {role.title}
+                  </h3>
+                  <p className="text-base leading-relaxed text-mkt-ink/55 sm:text-lg">
+                    {role.description}
+                  </p>
+                  <ul className="space-y-3">
+                    {role.features.map((feature) => (
+                      <li key={feature} className="flex items-center gap-3 text-mkt-ink/65">
+                        <CheckCircle2 className="h-4 w-4 shrink-0 text-amber-500" />
+                        <span className="text-sm font-medium sm:text-base">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="pt-2">
+                    <Link
+                      href={role.href}
+                      className="group inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500 hover:text-amber-400"
+                    >
+                      {role.cta}
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

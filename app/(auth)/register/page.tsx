@@ -39,7 +39,7 @@ export default function RegisterPage() {
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row">
-      <div className="relative hidden flex-col justify-center overflow-hidden border-r border-white/10 bg-black p-12 lg:flex lg:w-[45%]">
+      <div className="relative hidden flex-col justify-center overflow-hidden border-r-2 border-white/50 bg-black p-12 lg:flex lg:w-[45%]">
         <div className="pointer-events-none absolute -left-20 top-1/3 h-72 w-72 rounded-full bg-amber-500/10 blur-[120px]" />
         <div className="relative">
           <h2 className="font-display text-3xl leading-tight tracking-tight text-white">

@@ -34,7 +34,7 @@ Default visual system for **marketing, company pages, auth funnel, and pending s
 ## Anti-patterns
 
 - Long uppercase essay subtitles on heroes
-- Duplicate role sections on homepage
+- A third role treatment on the homepage (compact cards + detailed rows are the intended pair)
 - Invented headcount stats (e.g. "56,200 students")
 - MONAKO-black as default marketing canvas (black OK only on photo overlays)
 - Heavy shadow card grids
