@@ -17,6 +17,10 @@ export type SchoolTask = {
   related_id: string | null;
   related_expense_status: "pending" | "approved" | "rejected" | null;
   related_receipt_number: string | null;
+  related_evidence_url: string | null;
+  related_student_id: string | null;
+  related_student_name: string | null;
+  related_incident_notes: string | null;
 };
 
 export type DisciplineIncident = {
@@ -28,6 +32,7 @@ export type DisciplineIncident = {
   incident_date: string;
   student_id: string | null;
   student_name: string | null;
+  evidence_url: string | null;
   reported_by: string | null;
   assigned_to: string | null;
   created_at: string;
@@ -93,6 +98,10 @@ export async function getSchoolTasks(schoolId: string): Promise<SchoolTask[]> {
     .filter((row) => row.related_type === "expense" && row.related_id)
     .map((row) => row.related_id as string);
 
+  const incidentIds = (data ?? [])
+    .filter((row) => row.related_type === "discipline_incident" && row.related_id)
+    .map((row) => row.related_id as string);
+
   const expenseMeta = new Map<
     string,
     { status: "pending" | "approved" | "rejected"; receipt_number: string | null }
@@ -111,9 +120,38 @@ export async function getSchoolTasks(schoolId: string): Promise<SchoolTask[]> {
     }
   }
 
+  const incidentMeta = new Map<
+    string,
+    {
+      evidence_url: string | null;
+      student_id: string | null;
+      student_name: string | null;
+      description: string | null;
+    }
+  >();
+
+  if (incidentIds.length > 0) {
+    const { data: incidents } = await supabase
+      .from("discipline_incidents")
+      .select("id, evidence_url, description, student_id, students(first_name, middle_name, last_name)")
+      .in("id", incidentIds);
+    for (const incident of incidents ?? []) {
+      const student = incident.students as
+        | { first_name?: string; middle_name?: string | null; last_name?: string }
+        | null;
+      incidentMeta.set(incident.id, {
+        evidence_url: incident.evidence_url ?? null,
+        student_id: incident.student_id ?? null,
+        student_name: student ? formatPersonName(student) : null,
+        description: incident.description ?? null,
+      });
+    }
+  }
+
   return (data ?? []).map((row) => {
     const profile = row.profiles as { name?: string } | null;
     const related = row.related_id ? expenseMeta.get(row.related_id) : undefined;
+    const incident = row.related_id ? incidentMeta.get(row.related_id) : undefined;
     return {
       id: row.id,
       title: row.title,
@@ -130,6 +168,10 @@ export async function getSchoolTasks(schoolId: string): Promise<SchoolTask[]> {
       related_id: row.related_id ?? null,
       related_expense_status: related?.status ?? null,
       related_receipt_number: related?.receipt_number ?? null,
+      related_evidence_url: incident?.evidence_url ?? null,
+      related_student_id: incident?.student_id ?? null,
+      related_student_name: incident?.student_name ?? null,
+      related_incident_notes: incident?.description ?? null,
     };
   });
 }
@@ -142,7 +184,7 @@ export async function getDisciplineIncidents(
     .from("discipline_incidents")
     .select(`
       id, title, description, severity, status, incident_date,
-      student_id, reported_by, assigned_to, created_at,
+      student_id, evidence_url, reported_by, assigned_to, created_at,
       students(first_name, middle_name, last_name)
     `)
     .eq("school_id", schoolId)
@@ -166,6 +208,7 @@ export async function getDisciplineIncidents(
       student_name: student
         ? formatPersonName(student)
         : null,
+      evidence_url: row.evidence_url ?? null,
       reported_by: row.reported_by,
       assigned_to: row.assigned_to,
       created_at: row.created_at,

@@ -1,10 +1,19 @@
 "use server";
 
-import { actionError, zodIssueError } from "@/lib/i18n/action-error";
+import { actionError } from "@/lib/i18n/action-error";
 
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { normalizeGender, studentSchema, type StudentFormData } from "@/lib/validations";
+import { canManageStudentEnrollment } from "@/lib/auth/rbac";
+import { normalizeStudentTags } from "@/lib/students/tags";
+import {
+  normalizeGender,
+  studentSchema,
+  STUDENT_STATUSES,
+  type StudentFormData,
+  type StudentStatus,
+} from "@/lib/validations";
 import {
   assertClassCapacity,
   notifyClassMainTeacher,
@@ -54,6 +63,7 @@ export async function createStudent(
       gender: normalizeGender(parsed.data.gender),
       class_id: parsed.data.class_id,
       status: parsed.data.status,
+      tags: normalizeStudentTags(parsed.data.tags),
       home_address: parsed.data.home_address || null,
       notes: parsed.data.notes || null,
       photo_url: parsed.data.photo_url?.trim() || null,
@@ -99,6 +109,12 @@ export async function updateStudent(
     .eq("id", user.id)
     .single();
 
+  const touchesEnrollmentMeta =
+    parsed.data.status !== undefined || parsed.data.tags !== undefined;
+  if (touchesEnrollmentMeta && !canManageStudentEnrollment(profile?.role)) {
+    return await actionError("noPermissionUpdateEnrollment");
+  }
+
   const { data: existing } = await supabase
     .from("students")
     .select("id, class_id, first_name, middle_name, last_name")
@@ -106,9 +122,6 @@ export async function updateStudent(
     .maybeSingle();
 
   if (!existing) return await actionError("studentNotFound");
-
-  const nextClassId =
-    parsed.data.class_id !== undefined ? parsed.data.class_id : existing.class_id;
 
   if (
     parsed.data.class_id !== undefined &&
@@ -135,6 +148,9 @@ export async function updateStudent(
         : {}),
       ...(parsed.data.photo_url !== undefined
         ? { photo_url: parsed.data.photo_url.trim() || null }
+        : {}),
+      ...(parsed.data.tags !== undefined
+        ? { tags: normalizeStudentTags(parsed.data.tags) }
         : {}),
     })
     .eq("id", id)
@@ -164,6 +180,27 @@ export async function updateStudent(
   revalidatePath("/academic/classes");
   revalidatePath("/teacher/classes");
   return {} as { error?: string };
+}
+
+const enrollmentMetaSchema = z.object({
+  status: z.enum(STUDENT_STATUSES),
+  tags: z.array(z.string()).default([]),
+});
+
+/** Update enrollment status + follow-up tags (academic/super admin). */
+export async function updateStudentEnrollmentMeta(
+  id: string,
+  input: { status: StudentStatus; tags: string[] }
+) {
+  const parsed = enrollmentMetaSchema.safeParse(input);
+  if (!parsed.success) {
+    return { error: parsed.error.flatten().fieldErrors };
+  }
+
+  return updateStudent(id, {
+    status: parsed.data.status,
+    tags: normalizeStudentTags(parsed.data.tags),
+  });
 }
 
 export async function assignStudentClass(

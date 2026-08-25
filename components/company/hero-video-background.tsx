@@ -22,7 +22,6 @@ export function HeroVideoBackground() {
   useEffect(() => {
     if (reduceMotion) return;
 
-    // Defer video download until after first paint / idle so HTML + poster win.
     const start = () => setShouldLoadVideo(true);
     const win = window as Window & {
       requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
@@ -56,7 +55,7 @@ export function HeroVideoBackground() {
           fill
           priority
           sizes="100vw"
-          className="scale-105 object-cover object-center brightness-[0.7] contrast-125 saturate-[0.85]"
+          className="scale-105 object-cover object-center brightness-95 contrast-105 saturate-[0.95]"
         />
       ) : null}
 
@@ -70,22 +69,19 @@ export function HeroVideoBackground() {
           preload="metadata"
           poster={POSTER_SRC}
           aria-hidden
-          className="absolute inset-0 h-full w-full scale-105 object-cover object-center brightness-[0.7] contrast-125 saturate-[0.85]"
+          className="absolute inset-0 h-full w-full scale-105 object-cover object-center brightness-95 contrast-105 saturate-[0.95]"
         >
           <source src={VIDEO_SRC} type="video/mp4" />
         </video>
       ) : null}
 
-      {/* Low-key cinematic grade — black, not teal */}
-      <div className="absolute inset-0 bg-black/35" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-black/15 to-black/85" />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-transparent to-black/40" />
+      {/* Light navy tint — keep video visible, vignette for text contrast */}
+      <div className="absolute inset-0 bg-mkt-navy/30" />
+      <div className="absolute inset-0 bg-gradient-to-b from-mkt-navy/55 via-transparent to-mkt-navy/70" />
+      <div className="absolute inset-0 bg-gradient-to-r from-mkt-navy/45 via-transparent to-mkt-navy/30" />
 
-      {/* Soft edge light — amber accent, sparse */}
-      <div className="absolute top-1/3 -left-24 h-72 w-72 rounded-full bg-amber-500/15 blur-[120px] sm:h-96 sm:w-96" />
-      <div className="absolute bottom-1/4 -right-20 h-64 w-64 rounded-full bg-white/8 blur-[100px] sm:h-80 sm:w-80" />
-
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-black sm:h-40" />
+      <div className="absolute top-1/4 -left-24 h-72 w-72 rounded-full bg-amber-500/10 blur-[120px] sm:h-96 sm:w-96" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-b from-transparent to-mkt-navy/80 sm:h-40" />
     </div>
   );
 }

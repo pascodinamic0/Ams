@@ -9,6 +9,17 @@ export const SCHOOL_LEVELS = [
 
 export type SchoolLevel = (typeof SCHOOL_LEVELS)[number];
 
+/** Levels shown in the structure wizard. Combined is expanded to primary + secondary. */
+export const SELECTABLE_SCHOOL_LEVELS = [
+  "nursery",
+  "primary",
+  "secondary",
+  "university",
+  "other",
+] as const;
+
+export type SelectableSchoolLevel = (typeof SELECTABLE_SCHOOL_LEVELS)[number];
+
 export type GradePreset = {
   id: string;
   label: string;
@@ -56,7 +67,61 @@ export const GRADE_PRESETS_BY_LEVEL: Record<SchoolLevel, GradePreset[]> = {
   other: [],
 };
 
+const LEVEL_ORDER: SchoolLevel[] = [
+  "nursery",
+  "primary",
+  "secondary",
+  "university",
+  "other",
+];
+
+function isSchoolLevel(value: unknown): value is SchoolLevel {
+  return (
+    typeof value === "string" &&
+    (SCHOOL_LEVELS as readonly string[]).includes(value)
+  );
+}
+
+/** Combined is stored historically; treat it as primary + secondary. */
+export function expandSchoolLevels(levels: SchoolLevel[]): SelectableSchoolLevel[] {
+  const expanded = levels.flatMap((level) =>
+    level === "combined"
+      ? (["primary", "secondary"] as SelectableSchoolLevel[])
+      : [level as SelectableSchoolLevel]
+  );
+  return LEVEL_ORDER.filter((level): level is SelectableSchoolLevel =>
+    expanded.includes(level as SelectableSchoolLevel)
+  );
+}
+
+export function gradesForLevels(levels: SchoolLevel[]): GradePreset[] {
+  const byId = new Map<string, GradePreset>();
+  for (const level of expandSchoolLevels(levels)) {
+    for (const grade of GRADE_PRESETS_BY_LEVEL[level]) {
+      byId.set(grade.id, grade);
+    }
+  }
+  return [...byId.values()];
+}
+
+export function defaultGradeIdsForLevels(levels: SchoolLevel[]): string[] {
+  return gradesForLevels(levels).map((g) => g.id);
+}
+
 /** Default selected grade ids when a level is first chosen. */
 export function defaultGradeIdsForLevel(level: SchoolLevel): string[] {
-  return GRADE_PRESETS_BY_LEVEL[level].map((g) => g.id);
+  return defaultGradeIdsForLevels([level]);
+}
+
+export function parseStoredSchoolLevels(
+  schoolLevels: unknown,
+  schoolLevel: unknown
+): SelectableSchoolLevel[] {
+  if (Array.isArray(schoolLevels) && schoolLevels.length > 0) {
+    return expandSchoolLevels(schoolLevels.filter(isSchoolLevel));
+  }
+  if (isSchoolLevel(schoolLevel)) {
+    return expandSchoolLevels([schoolLevel]);
+  }
+  return [];
 }

@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import {
   createSchoolTask,
   deleteSchoolTask,
+  identifyDisciplineStudent,
   updateSchoolTaskStatus,
 } from "@/lib/actions/workspaces";
 import { decideExpenseTask } from "@/lib/actions/expenses";
@@ -32,12 +33,19 @@ type StaffOption = {
   role: string;
 };
 
+type StudentOption = {
+  id: string;
+  name: string;
+};
+
 export function TaskBoard({
   tasks = [],
   staff = [],
+  students = [],
 }: {
   tasks?: SchoolTask[];
   staff?: StaffOption[];
+  students?: StudentOption[];
 }) {
   const t = useTranslations("academic");
   const tc = useTranslations("common");
@@ -51,6 +59,7 @@ export function TaskBoard({
   const [loading, setLoading] = useState(false);
   const [decidingId, setDecidingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [identifyingId, setIdentifyingId] = useState<string | null>(null);
 
   function statusLabel(status: (typeof STATUSES)[number]) {
     return t(STATUS_KEYS[status]);
@@ -111,6 +120,12 @@ export function TaskBoard({
       toast.error(te("rejectOrApproveExpense"));
       return;
     }
+    const isPendingIdentify =
+      task.related_type === "discipline_incident" && task.status !== "done";
+    if (isPendingIdentify) {
+      toast.error(te("identifyStudentInsteadOfDelete"));
+      return;
+    }
 
     if (!confirm(t("deleteTaskConfirm", { title: task.title }))) return;
 
@@ -143,6 +158,19 @@ export function TaskBoard({
     } else {
       toast.success(t("expenseRejected"));
     }
+    router.refresh();
+  }
+
+  async function handleIdentifyStudent(incidentId: string, studentId: string) {
+    if (!incidentId || !studentId) return;
+    setIdentifyingId(incidentId);
+    const result = await identifyDisciplineStudent(incidentId, studentId);
+    setIdentifyingId(null);
+    if ("error" in result && result.error) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success(t("studentIdentified"));
     router.refresh();
   }
 
@@ -218,9 +246,14 @@ export function TaskBoard({
                 ) : (
                   column.map((task) => {
                     const isExpense = task.related_type === "expense";
+                    const isDiscipline = task.related_type === "discipline_incident";
                     const pendingExpense =
                       isExpense && task.status !== "done";
-                    const canDelete = !pendingExpense;
+                    const pendingIdentify =
+                      isDiscipline &&
+                      task.status !== "done" &&
+                      !task.related_student_id;
+                    const canDelete = !pendingExpense && !pendingIdentify;
                     return (
                       <div
                         key={task.id}
@@ -247,14 +280,43 @@ export function TaskBoard({
                             {t("financeExpenseApproval")}
                           </p>
                         ) : null}
+                        {isDiscipline ? (
+                          <p className="mt-1 text-[11px] font-medium uppercase tracking-wide text-rose-700 dark:text-rose-400">
+                            {t("disciplineIdentifyTask")}
+                          </p>
+                        ) : null}
                         <p className="mt-1 text-xs text-stone-500">
                           {assigneeLabel(task)} · {priorityLabel(task.priority)}
                           {task.due_date ? ` · ${t("dueOn", { date: task.due_date })}` : ""}
                         </p>
-                        {task.description ? (
+                        {task.related_student_name ? (
+                          <p className="mt-2 text-xs font-medium text-stone-700 dark:text-stone-200">
+                            {t("identifiedAs", { name: task.related_student_name })}
+                          </p>
+                        ) : null}
+                        {isDiscipline && task.related_incident_notes ? (
+                          <p className="mt-2 whitespace-pre-wrap text-xs text-stone-600 dark:text-stone-400">
+                            {task.related_incident_notes}
+                          </p>
+                        ) : null}
+                        {!isDiscipline && task.description ? (
                           <p className="mt-2 whitespace-pre-wrap text-xs text-stone-600 dark:text-stone-400">
                             {task.description}
                           </p>
+                        ) : null}
+                        {task.related_evidence_url ? (
+                          <a
+                            href={task.related_evidence_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="mt-2 block w-fit"
+                          >
+                            <img
+                              src={task.related_evidence_url}
+                              alt={t("incidentPhotoAlt")}
+                              className="max-h-36 rounded-md border border-stone-200 object-contain dark:border-stone-700"
+                            />
+                          </a>
                         ) : null}
                         {pendingExpense ? (
                           <div className="mt-3 flex flex-wrap gap-2">
@@ -275,6 +337,28 @@ export function TaskBoard({
                             >
                               {t("reject")}
                             </Button>
+                          </div>
+                        ) : pendingIdentify && task.related_id ? (
+                          <div className="mt-3">
+                            <Label htmlFor={`identify-task-${task.id}`}>
+                              {t("identifyStudent")}
+                            </Label>
+                            <select
+                              id={`identify-task-${task.id}`}
+                              className="mt-1 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
+                              defaultValue=""
+                              disabled={identifyingId === task.related_id}
+                              onChange={(e) =>
+                                handleIdentifyStudent(task.related_id as string, e.target.value)
+                              }
+                            >
+                              <option value="">{t("identifyStudentPlaceholder")}</option>
+                              {students.map((student) => (
+                                <option key={student.id} value={student.id}>
+                                  {student.name}
+                                </option>
+                              ))}
+                            </select>
                           </div>
                         ) : (
                           <div className="mt-3 flex flex-wrap gap-1">

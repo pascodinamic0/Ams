@@ -51,5 +51,10 @@
   "classReminderMinutes": "Remind me before class",
   "minutesBefore": "{count} minutes before",
   "classRemindersHint": "Fires like an alarm before each of your timetable periods.",
-  "prefsSaved": "Notification preferences saved"
+  "prefsSaved": "Notification preferences saved",
+  "phoneLinkTitle": "Phone for WhatsApp sign-in",
+  "phoneLinkDescription": "Link the number you use on WhatsApp so you can sign in without a password.",
+  "phoneLinkAction": "Send verification code",
+  "phoneLinked": "Phone verified for WhatsApp sign-in",
+  "phoneLinkedValue": "Linked: {phone}"
 }

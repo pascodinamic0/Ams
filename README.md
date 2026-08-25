@@ -66,6 +66,20 @@ Transactional product emails (admission approved, fee reminders) use the Resend 
    - Easiest: [Resend → Integrations → Connect to Supabase](https://resend.com/docs/knowledge-base/getting-started-with-resend-and-supabase)
    - Or manually: Supabase → **Authentication → Email → SMTP Settings** with host `smtp.resend.com`, port `465`, user `resend`, password = your Resend API key ([SMTP guide](https://resend.com/docs/send-with-supabase-smtp))
 
+### Phone / WhatsApp sign-in (Twilio Verify)
+
+Parents and staff can sign in with a WhatsApp OTP on `/login` (alongside email and Google). Fee reminders still use the separate Messaging API in `lib/services/whatsapp.ts`.
+
+1. Complete Twilio Verify + Meta WhatsApp setup — see **[docs/PHONE_WHATSAPP_AUTH.md](docs/PHONE_WHATSAPP_AUTH.md)**.
+2. Supabase Dashboard → **Authentication → Providers → Phone** → Enable, provider **Twilio Verify**.
+3. Add to `.env.local` (and Vercel where needed):
+   - `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`
+   - `TWILIO_VERIFY_MESSAGE_SERVICE_SID` (Messaging Service linked to your WhatsApp Sender)
+   - `SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN` (local Supabase Auth only; same value as auth token)
+4. Link phones before login works: **Settings → Phone for WhatsApp sign-in**, or guardian phone sync when a parent portal account exists.
+
+Local dev: `supabase/config.toml` includes `[auth.sms.twilio_verify]` and optional `[auth.sms.test_otp]` mappings.
+
 ### 3. Run database migrations
 
 Apply SQL migrations from `supabase/migrations/` to your remote database:
@@ -101,6 +115,14 @@ bun run seed:demo-users
 ```
 
 All `@ams.demo` accounts use password `AMSdemo2026!`. Demo rows are safe to delete manually later.
+
+Full new school sub-account with every role (Horizon Academy, `@shuleos.demo`):
+
+```bash
+bun run seed:horizon-demo
+```
+
+All `@shuleos.demo` accounts use password `ShuleOS2026!`. Payment is turned off on that school.
 
 ### 5. Start the dev server
 
@@ -141,6 +163,7 @@ AMS uses Supabase project **AMC** (`ooheotsnplfrpgblrnot`).
 | `bun run seed:super-admin` | Create super-admin account |
 | `bun run seed:demo-data` | Full demo dataset (users, students, grades, finance, …) |
 | `bun run seed:demo-users` | Seed demo role accounts only |
+| `bun run seed:horizon-demo` | New Horizon Academy sub-account with every role |
 | `bun run reset:super-admin` | Reset super-admin password |
 
 ## Deployment (Vercel)

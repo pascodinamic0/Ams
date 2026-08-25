@@ -111,7 +111,7 @@ export default function FeaturesPage() {
             {t("heroTitleLine1")}{" "}
             <span className="text-mkt-ink/70">{t("heroTitleLine2")}</span>
           </h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-mkt-ink/55 sm:mt-8 sm:text-lg">
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-mkt-ink/60 sm:mt-8 sm:text-lg">
             {t("heroSubtitle", { productName: companyIdentity.productName })}
           </p>
         </motion.div>
@@ -127,14 +127,12 @@ export default function FeaturesPage() {
               transition={{ delay: idx * 0.04 }}
               className="group scroll-mt-32 border border-mkt-ink/10 bg-transparent p-6 transition-colors hover:border-mkt-ink/25 sm:p-8"
             >
-              <div className="mb-5 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-mkt-ink/15 text-mkt-ink/70 transition-colors group-hover:border-amber-500/50 group-hover:text-amber-500">
+              <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-lg bg-mkt-navy text-white">
                   {f.icon}
                 </div>
-                <h2 className="text-lg font-semibold text-mkt-ink sm:text-xl">
+                <h2 className="mb-4 text-lg font-semibold text-mkt-ink sm:text-xl">
                   {f.title}
                 </h2>
-              </div>
               <ul className="space-y-3">
                 {f.items.map((item) => (
                   <li key={item} className="flex items-start gap-3 text-sm text-mkt-ink/55">
@@ -170,7 +168,7 @@ export default function FeaturesPage() {
           <h2 className="font-display text-2xl tracking-tight text-mkt-ink sm:text-4xl">
             {t("ctaTitle")}
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-sm uppercase tracking-[0.16em] text-mkt-ink/50 sm:mt-6 sm:text-base">
+          <p className="mx-auto mt-4 max-w-2xl text-base text-mkt-ink/55 sm:mt-6">
             {t("ctaSubtitle")}
           </p>
           <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:items-center sm:gap-4">

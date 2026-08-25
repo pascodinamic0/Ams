@@ -2,15 +2,14 @@
 
 import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 
-import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdminClient } from "@/lib/supabase/admin";
 import { getDashboardForRole } from "@/lib/auth/rbac";
-
-const passwordSchema = z.string().min(8, "passwordMinLength");
+import { expandStaffPin } from "@/lib/auth/staff-pin";
+import { staffPinSchema } from "@/lib/validations/auth";
 
 export async function completePasswordSetup(password: string) {
-  const parsed = passwordSchema.safeParse(password);
+  const parsed = staffPinSchema.safeParse(password);
   if (!parsed.success) {
     return await zodIssueError(parsed.error.issues[0]?.message);
   }
@@ -24,7 +23,9 @@ export async function completePasswordSetup(password: string) {
     return await actionError("inviteExpired");
   }
 
-  const { error } = await supabase.auth.updateUser({ password: parsed.data });
+  const { error } = await supabase.auth.updateUser({
+    password: expandStaffPin(parsed.data),
+  });
   if (error) {
     return { error: error.message };
   }

@@ -1,0 +1,604 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import {
+  Camera,
+  Check,
+  ImagePlus,
+  Smartphone,
+  Sparkles,
+  UserRound,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { UserAvatar } from "@/components/layout/user-avatar";
+import { CameraCaptureModal } from "@/components/profile/camera-capture-modal";
+import { IosAddToHomeScreenGuide } from "@/components/pwa/ios-add-to-home-screen-guide";
+import { createClient } from "@/lib/supabase/client";
+import { uploadUserAvatar } from "@/lib/profile/avatar";
+import {
+  completeProfileOnboarding,
+  updateProfileName,
+} from "@/lib/actions/profile-onboarding";
+import { markPwaInstallDismissed } from "@/lib/pwa/install-storage";
+import { usePwaInstall } from "@/lib/pwa/use-pwa-install";
+import { toast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
+
+type StepId = "welcome" | "profile" | "photo" | "homescreen";
+
+const BASE_STEPS: StepId[] = ["welcome", "profile", "photo"];
+
+const STEP_ICONS = {
+  welcome: Sparkles,
+  profile: UserRound,
+  photo: Camera,
+  homescreen: Smartphone,
+} as const;
+
+const ambientByStep = [
+  "bg-amber-500/20 left-[8%] top-[18%]",
+  "bg-amber-400/15 right-[6%] top-[28%]",
+  "bg-orange-500/15 left-[20%] bottom-[12%]",
+  "bg-sky-500/15 right-[10%] bottom-[18%]",
+];
+
+export function OnboardingPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const t = useTranslations("onboarding");
+  const tRoles = useTranslations("roles");
+  const tc = useTranslations("common");
+  const reduceMotion = useReducedMotion();
+  const { ios, installed, ready: pwaReady } = usePwaInstall();
+  const isDevPreview =
+    process.env.NODE_ENV === "development" &&
+    searchParams.get("preview") === "1";
+  const previewIosGuide = isDevPreview && searchParams.get("ios") !== "0";
+
+  const [loading, setLoading] = useState(true);
+  const [stepIndex, setStepIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [role, setRole] = useState("student");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    async function loadProfile() {
+      if (isDevPreview) {
+        setUserId("preview-user");
+        setEmail("preview@example.com");
+        setRole("teacher");
+        setName("Alex Morgan");
+        setAvatarUrl(null);
+        setLoading(false);
+        return;
+      }
+
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.replace("/login?redirect=/onboarding");
+        return;
+      }
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("name, role, avatar_url, onboarding_completed_at")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.onboarding_completed_at) {
+        router.replace("/");
+        return;
+      }
+
+      setUserId(user.id);
+      setEmail(user.email ?? "");
+      setRole(profile?.role ?? "student");
+      setName(
+        profile?.name?.trim() ||
+          user.email?.split("@")[0] ||
+          "User"
+      );
+      setAvatarUrl(profile?.avatar_url ?? null);
+      setLoading(false);
+    }
+
+    void loadProfile();
+  }, [router, isDevPreview]);
+
+  const includeHomescreen = previewIosGuide || (pwaReady && ios && !installed);
+  const STEPS = useMemo<StepId[]>(
+    () => (includeHomescreen ? [...BASE_STEPS, "homescreen"] : BASE_STEPS),
+    [includeHomescreen]
+  );
+
+  const currentStep = STEPS[stepIndex] ?? BASE_STEPS[0];
+  const isLastStep = stepIndex === STEPS.length - 1;
+  const isHomescreenStep = currentStep === "homescreen";
+  const roleLabel = tRoles(role as "student");
+  const StepIcon = STEP_ICONS[currentStep];
+  const progress = ((stepIndex + 1) / STEPS.length) * 100;
+
+  function goToStep(nextIndex: number) {
+    if (nextIndex === stepIndex) return;
+    setDirection(nextIndex > stepIndex ? 1 : -1);
+    setStepIndex(nextIndex);
+  }
+
+  async function handleNext() {
+    if (currentStep === "profile") {
+      const trimmed = name.trim();
+      if (!trimmed) {
+        toast.error(t("account.nameRequired"));
+        return;
+      }
+
+      if (isDevPreview) {
+        setName(trimmed);
+        goToStep(stepIndex + 1);
+        return;
+      }
+
+      setSaving(true);
+      try {
+        const result = await updateProfileName(trimmed);
+        if ("error" in result && result.error) throw new Error(result.error);
+        setName(trimmed);
+        goToStep(stepIndex + 1);
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : t("account.saveFailed")
+        );
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
+
+    goToStep(Math.min(stepIndex + 1, STEPS.length - 1));
+  }
+
+  function rememberHomescreenGuide() {
+    if (includeHomescreen) {
+      markPwaInstallDismissed();
+    }
+  }
+
+  async function handleComplete() {
+    rememberHomescreenGuide();
+
+    if (isDevPreview) {
+      toast.success(t("account.completeSuccess"));
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const result = await completeProfileOnboarding();
+      if ("error" in result && result.error) throw new Error(result.error);
+      toast.success(t("account.completeSuccess"));
+      window.location.assign(
+        ("data" in result && result.data?.destination) || "/"
+      );
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t("account.completeFailed")
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function uploadPhoto(file: File) {
+    if (!userId) {
+      throw new Error(t("account.photoUploadFailed"));
+    }
+
+    if (isDevPreview) {
+      setAvatarUrl(URL.createObjectURL(file));
+      toast.success(t("account.photoUploaded"));
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const url = await uploadUserAvatar(file, userId);
+      setAvatarUrl(url);
+      toast.success(t("account.photoUploaded"));
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t("account.photoUploadFailed")
+      );
+      throw error;
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      await uploadPhoto(file);
+    } catch {
+      // Toast already shown in uploadPhoto
+    } finally {
+      event.target.value = "";
+    }
+  }
+
+  async function handleCameraCapture(file: File) {
+    await uploadPhoto(file);
+  }
+
+  const slideVariants = {
+    enter: (dir: number) =>
+      reduceMotion
+        ? { opacity: 0 }
+        : {
+            opacity: 0,
+            x: dir > 0 ? 56 : -56,
+            y: 12,
+            scale: 0.96,
+            filter: "blur(6px)",
+          },
+    center: {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      scale: 1,
+      filter: "blur(0px)",
+    },
+    exit: (dir: number) =>
+      reduceMotion
+        ? { opacity: 0 }
+        : {
+            opacity: 0,
+            x: dir > 0 ? -40 : 40,
+            y: -8,
+            scale: 0.98,
+            filter: "blur(4px)",
+          },
+  };
+
+  if (loading || !pwaReady) {
+    return (
+      <div className="space-y-5">
+        <div className="h-3 w-28 animate-pulse rounded-full bg-mkt-ink/10" />
+        <div className="h-10 w-64 animate-pulse rounded-lg bg-mkt-ink/10" />
+        <div className="h-4 w-full max-w-sm animate-pulse rounded bg-mkt-ink/5" />
+        <div className="h-56 animate-pulse rounded-2xl border border-mkt-ink/10 bg-mkt-ink/[0.03]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      {/* Ambient glow that drifts with each step */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-visible">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`glow-${stepIndex}`}
+            className={cn(
+              "absolute h-64 w-64 rounded-full blur-[100px]",
+              ambientByStep[stepIndex]
+            )}
+            initial={reduceMotion ? { opacity: 0.35 } : { opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 0.9, scale: 1 }}
+            exit={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 1.15 }}
+            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+          />
+        </AnimatePresence>
+      </div>
+
+      <div className="space-y-7">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        >
+          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-600 dark:text-amber-500">
+            {isHomescreenStep ? t("account.steps.homescreen.title") : t("account.badge")}
+          </p>
+          <h1 className="mt-2 font-display text-3xl tracking-tight text-mkt-ink sm:text-4xl">
+            {isHomescreenStep ? t("account.homescreenHeadline") : t("account.title")}
+          </h1>
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-mkt-ink/55">
+            {isHomescreenStep
+              ? t("account.steps.homescreen.description")
+              : t("account.subtitle")}
+          </p>
+        </motion.div>
+
+        {/* Progress rail */}
+        <div className="space-y-3">
+          <div className="relative h-px bg-mkt-ink/10">
+            <motion.div
+              className="absolute inset-y-0 left-0 origin-left bg-amber-500"
+              initial={false}
+              animate={{ width: `${progress}%` }}
+              transition={{ type: "spring", stiffness: 140, damping: 22 }}
+            />
+          </div>
+
+          <div className="flex items-center justify-between gap-2">
+            {STEPS.map((step, index) => {
+              const active = index === stepIndex;
+              const complete = index < stepIndex;
+              const Icon = STEP_ICONS[step];
+
+              return (
+                <button
+                  key={step}
+                  type="button"
+                  onClick={() => {
+                    if (index < stepIndex && !saving && !uploading) {
+                      goToStep(index);
+                    }
+                  }}
+                  disabled={index > stepIndex || saving || uploading}
+                  className={cn(
+                    "group flex flex-1 flex-col items-center gap-2 disabled:cursor-default",
+                    index < stepIndex && "cursor-pointer"
+                  )}
+                  aria-current={active ? "step" : undefined}
+                >
+                  <motion.span
+                    animate={{ scale: active ? 1.08 : 1 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-full border transition-colors",
+                      complete &&
+                        "border-amber-500 bg-amber-500 text-black",
+                      active &&
+                        !complete &&
+                        "border-amber-500 bg-amber-500/10 text-amber-600 dark:text-amber-500",
+                      !active &&
+                        !complete &&
+                        "border-mkt-ink/20 text-mkt-ink/40"
+                    )}
+                  >
+                    {complete ? (
+                      <Check className="h-4 w-4" strokeWidth={2.5} />
+                    ) : (
+                      <Icon className="h-4 w-4" />
+                    )}
+                  </motion.span>
+                  <span
+                    className={cn(
+                      "hidden text-[10px] font-semibold uppercase tracking-[0.16em] sm:block",
+                      active || complete ? "text-mkt-ink/70" : "text-mkt-ink/35"
+                    )}
+                  >
+                    {t(`account.steps.${step}.title`)}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="text-center text-xs text-mkt-ink/45 sm:text-left">
+            {t("account.stepProgress", {
+              current: stepIndex + 1,
+              total: STEPS.length,
+              title: t(`account.steps.${currentStep}.title`),
+            })}
+          </p>
+        </div>
+
+        {/* Step stage */}
+        <div className="relative min-h-[240px] overflow-hidden rounded-2xl border border-mkt-ink/10 bg-mkt-ink/[0.03]">
+          <AnimatePresence mode="wait" custom={direction} initial={false}>
+            <motion.div
+              key={currentStep}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                duration: reduceMotion ? 0.15 : 0.42,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+              className="p-6 sm:p-7"
+            >
+              {!isHomescreenStep ? (
+                <div className="mb-5 flex items-start gap-3">
+                  <motion.div
+                    initial={reduceMotion ? false : { rotate: -8, scale: 0.9 }}
+                    animate={{ rotate: 0, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 220, damping: 16 }}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-amber-500/50 text-amber-600 dark:text-amber-500"
+                  >
+                    <StepIcon className="h-5 w-5" />
+                  </motion.div>
+                  <div>
+                    <h2 className="text-lg font-semibold text-mkt-ink">
+                      {t(`account.steps.${currentStep}.title`)}
+                    </h2>
+                    <p className="mt-1 text-sm leading-relaxed text-mkt-ink/55">
+                      {t(`account.steps.${currentStep}.description`)}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
+              {currentStep === "welcome" && (
+                <div className="space-y-3 border border-mkt-ink/10 bg-mkt-canvas/80 p-4">
+                  <p className="text-sm leading-relaxed text-mkt-ink/75">
+                    {t("account.welcomeBody", { role: roleLabel })}
+                  </p>
+                  {email ? (
+                    <p className="text-xs uppercase tracking-[0.14em] text-mkt-ink/45">
+                      {t("account.signedInAs", { email })}
+                    </p>
+                  ) : null}
+                </div>
+              )}
+
+              {currentStep === "profile" && (
+                <div>
+                  <Label htmlFor="display_name" required className="text-mkt-ink">
+                    {t("account.displayName")}
+                  </Label>
+                  <Input
+                    id="display_name"
+                    value={name}
+                    onChange={(event) => setName(event.target.value)}
+                    placeholder={t("account.displayNamePlaceholder")}
+                    className="mt-1.5 border-mkt-ink/20 bg-mkt-canvas text-mkt-ink placeholder:text-mkt-ink/35 focus:ring-amber-500"
+                    autoFocus
+                  />
+                  <p className="mt-2 text-xs text-mkt-ink/45">
+                    {t("account.displayNameHint")}
+                  </p>
+                </div>
+              )}
+
+              {currentStep === "photo" && (
+                <div className="flex flex-col items-center gap-4 text-center">
+                  <motion.div
+                    initial={reduceMotion ? false : { scale: 0.85, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 16 }}
+                    className="relative"
+                  >
+                    <div className="absolute -inset-3 rounded-full bg-amber-500/15 blur-xl" />
+                    <UserAvatar
+                      name={name}
+                      avatarUrl={avatarUrl}
+                      size="lg"
+                      className="relative h-20 w-20 text-2xl ring-2 ring-amber-500/35"
+                    />
+                  </motion.div>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    disabled={uploading}
+                  />
+                  <div>
+                    <p className="font-medium text-mkt-ink">{name}</p>
+                    <p className="mt-1 text-sm text-mkt-ink/50">
+                      {uploading
+                        ? t("account.photoUploading")
+                        : avatarUrl
+                          ? t("account.photoReady")
+                          : t("account.photoPrompt")}
+                    </p>
+                  </div>
+                  <div className="flex w-full max-w-sm flex-col gap-2 sm:flex-row sm:justify-center">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileRef.current?.click()}
+                      disabled={uploading}
+                      className="w-full rounded-full border-mkt-ink/30 bg-transparent text-mkt-ink hover:bg-mkt-ink/5 sm:w-auto"
+                    >
+                      <ImagePlus className="mr-1.5 h-4 w-4" />
+                      {t("account.uploadPhoto")}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setCameraOpen(true)}
+                      disabled={uploading}
+                      className="w-full rounded-full border-mkt-ink/30 bg-transparent text-mkt-ink hover:bg-mkt-ink/5 sm:w-auto"
+                    >
+                      <Camera className="mr-1.5 h-4 w-4" />
+                      {t("account.takePhoto")}
+                    </Button>
+                  </div>
+                  <CameraCaptureModal
+                    isOpen={cameraOpen}
+                    onClose={() => setCameraOpen(false)}
+                    onCapture={handleCameraCapture}
+                    disabled={uploading}
+                  />
+                </div>
+              )}
+
+              {currentStep === "homescreen" && (
+                <IosAddToHomeScreenGuide variant="embedded" />
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <Button
+            variant="ghost"
+            onClick={() => goToStep(Math.max(stepIndex - 1, 0))}
+            disabled={stepIndex === 0 || saving || uploading}
+            className="rounded-full text-mkt-ink/60 hover:bg-mkt-ink/5 hover:text-mkt-ink"
+          >
+            {tc("back")}
+          </Button>
+          {isLastStep ? (
+            <div className="flex flex-col items-end gap-2">
+              <Button
+                onClick={handleComplete}
+                disabled={saving || uploading}
+                className="rounded-full bg-mkt-inverse px-6 text-mkt-inverse-ink hover:opacity-90 focus:ring-amber-500"
+              >
+                {saving
+                  ? tc("saving")
+                  : isHomescreenStep
+                    ? t("account.homescreenAdded")
+                    : t("account.finish")}
+              </Button>
+              {isHomescreenStep ? (
+                <button
+                  type="button"
+                  onClick={handleComplete}
+                  disabled={saving || uploading}
+                  className="text-xs font-medium text-mkt-ink/45 underline-offset-2 hover:text-mkt-ink/70 hover:underline"
+                >
+                  {t("account.homescreenSkip")}
+                </button>
+              ) : null}
+            </div>
+          ) : (
+            <Button
+              onClick={handleNext}
+              disabled={saving || uploading}
+              className="rounded-full bg-mkt-inverse px-6 text-mkt-inverse-ink hover:opacity-90 focus:ring-amber-500"
+            >
+              {saving ? tc("saving") : tc("next")}
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function OnboardingFallback() {
+  return (
+    <div className="space-y-5">
+      <div className="h-3 w-28 animate-pulse rounded-full bg-mkt-ink/10" />
+      <div className="h-10 w-64 animate-pulse rounded-lg bg-mkt-ink/10" />
+      <div className="h-4 w-full max-w-sm animate-pulse rounded bg-mkt-ink/5" />
+      <div className="h-56 animate-pulse rounded-2xl border border-mkt-ink/10 bg-mkt-ink/[0.03]" />
+    </div>
+  );
+}
+

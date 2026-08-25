@@ -148,6 +148,7 @@ export function StudentForm({
       schema={studentOnboardingSchema}
       defaultValues={{
         status: "active",
+        tags: [],
         add_secondary_guardian: false,
         existing_guardian_can_pickup: false,
         photo_url: "",
@@ -460,6 +461,7 @@ function StudentFormFields({
   const primaryAddress = useWatch({ name: "primary_guardian.address" });
   const photoUrl = useWatch({ name: "photo_url" }) ?? "";
   const selectedClassId = useWatch({ name: "class_id" });
+  const tags = useWatch({ name: "tags" }) ?? [];
   const selectedClass = classes.find((c) => c.id === selectedClassId);
   const classIsFull = selectedClass ? isClassFull(selectedClass) : false;
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -584,12 +586,52 @@ function StudentFormFields({
               id="status"
               options={[
                 { value: "active", label: tc("active") },
+                { value: "pending", label: tc("pending") },
                 { value: "inactive", label: tc("inactive") },
                 { value: "graduated", label: t("statusGraduated") },
               ]}
               {...register("status")}
             />
           </Field>
+        </div>
+        <div>
+          <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
+            {t("enrollmentTags")}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {(
+              [
+                ["follow_up", t("tagFollowUp")],
+                ["incomplete_docs", t("tagIncompleteDocs")],
+                ["fee_hold", t("tagFeeHold")],
+              ] as const
+            ).map(([tag, label]) => {
+              const selected = (tags ?? []).includes(tag);
+              return (
+                <label
+                  key={tag}
+                  className={`inline-flex cursor-pointer items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs transition-colors ${
+                    selected
+                      ? "border-primary/40 bg-primary/10 text-primary"
+                      : "border-stone-200 text-stone-600 dark:border-stone-700 dark:text-stone-300"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    className="rounded border-stone-300"
+                    checked={selected}
+                    onChange={() => {
+                      const next = selected
+                        ? (tags ?? []).filter((value: string) => value !== tag)
+                        : [...(tags ?? []), tag];
+                      setValue("tags", next, { shouldDirty: true });
+                    }}
+                  />
+                  {label}
+                </label>
+              );
+            })}
+          </div>
         </div>
         {classIsFull && !canOverrideCapacity ? (
           <p className="text-sm text-amber-700 dark:text-amber-300">{t("classFullNoOverride")}</p>

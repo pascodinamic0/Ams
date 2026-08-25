@@ -2,7 +2,6 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { SchoolYearSelect } from "@/components/academic/school-year-select";
@@ -10,16 +9,20 @@ import { getCurrentSchoolYearStart } from "@/lib/academic/school-year";
 
 interface Props {
   classes: { id: string; name: string }[];
+  students: { id: string; name: string }[];
   initialClassId: string;
   initialTerm: string;
   initialSchoolYear: number;
+  initialStudentId?: string;
 }
 
 export function ReportCardFilters({
   classes,
+  students,
   initialClassId,
   initialTerm,
   initialSchoolYear,
+  initialStudentId = "",
 }: Props) {
   const t = useTranslations("teacher");
   const tc = useTranslations("common");
@@ -27,6 +30,7 @@ export function ReportCardFilters({
   const searchParams = useSearchParams();
   const classId = searchParams.get("class") ?? initialClassId;
   const term = searchParams.get("term") ?? initialTerm;
+  const studentId = searchParams.get("student") ?? initialStudentId;
   const parsedYear = Number(searchParams.get("year"));
   const schoolYear = Number.isFinite(parsedYear)
     ? parsedYear
@@ -48,12 +52,28 @@ export function ReportCardFilters({
         <select
           id="rc-class"
           value={classId}
-          onChange={(e) => updateParams({ class: e.target.value })}
+          onChange={(e) => updateParams({ class: e.target.value, student: "" })}
           className="mt-1 w-full min-w-[160px] rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
           {classes.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <Label htmlFor="rc-student">{t("studentNameLabel")}</Label>
+        <select
+          id="rc-student"
+          value={studentId}
+          onChange={(e) => updateParams({ student: e.target.value })}
+          className="mt-1 w-full min-w-[200px] rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
+        >
+          <option value="">{t("allStudentsInClass")}</option>
+          {students.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
             </option>
           ))}
         </select>
@@ -77,9 +97,6 @@ export function ReportCardFilters({
           }}
         />
       </div>
-      <Button type="button" size="sm" onClick={() => window.print()}>
-        {t("printReportCards")}
-      </Button>
     </div>
   );
 }

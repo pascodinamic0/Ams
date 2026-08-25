@@ -15,6 +15,7 @@ const MODULE_SLUGS = [
 const STATIC_PATHS = [
   "/",
   "/features",
+  "/offre",
   "/blog",
   "/get-access",
   "/contact",

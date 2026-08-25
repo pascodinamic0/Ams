@@ -19,6 +19,7 @@ import { canAccessPath, getDashboardForRole } from "@/lib/auth/rbac";
 const PUBLIC_ROUTES = [
   "/",
   "/features",
+  "/offre",
   "/get-access",
   "/login",
   "/register",

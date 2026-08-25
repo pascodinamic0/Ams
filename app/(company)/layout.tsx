@@ -17,11 +17,14 @@ export default async function CompanyLayout({
         openMenu: tCommon("openMenu"),
         closeMenu: tCommon("closeMenu"),
         home: t("home"),
+        about: t("about"),
+        offer: t("offer"),
         features: t("features"),
         blog: t("blog"),
         getAccess: t("getAccess"),
         contact: t("contact"),
         login: t("login"),
+        workspace: t("workspace"),
         getStarted: t("getStarted"),
       }}
       footerLabels={{

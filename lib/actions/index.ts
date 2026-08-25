@@ -7,6 +7,7 @@ export {
 export {
   createStudent,
   updateStudent,
+  updateStudentEnrollmentMeta,
   assignStudentClass,
   deleteStudent,
 } from "./students";
@@ -28,3 +29,4 @@ export {
   type NewConversationInput,
 } from "./conversations";
 export { saveReminderSettings, type ReminderSettingsInput } from "./fee-reminders";
+export { syncGuardianAuthPhone } from "./phone-linking";

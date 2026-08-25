@@ -5,15 +5,15 @@
   "partOfPlatform": "Fait partie de la plateforme {productName}. Voir tout dans",
   "allFeatures": "toutes les fonctionnalités",
   "homepageCta": {
-    "academic": "Notes et bulletins",
-    "finance": "Frais et paiements",
-    "portals": "Portail parent"
+    "academic": "Scolarité tenue",
+    "finance": "Finances blindées",
+    "portals": "Familles en confiance"
   },
   "academic": {
-    "title": "Académique",
+    "title": "Scolarité",
     "tagline": "La saison des bulletins ne devrait pas paralyser le bureau",
     "summary": "Quand inscriptions, présences et notes sont éparpillées, les bulletins prennent des jours et les erreurs se multiplient. Un cycle académique complet—de l'admission aux bulletins du Programme National—sans la panique de fin de trimestre.",
-    "desc": "Élèves, classes, emploi du temps, présences, notes, bulletins",
+    "desc": "Chaque élève suivi. Présences, notes et bulletins — sans que vous ayez à tout porter.",
     "highlights": {
       "0": "Profils élèves avec tuteurs, notes médicales et historique d'inscription",
       "1": "Classes alignées sur les niveaux scolaires congolais",
@@ -33,7 +33,7 @@
     "title": "Finance",
     "tagline": "Arrêtez de relancer les mêmes soldes chaque mois",
     "summary": "Les soldes impayés se cachent dans des carnets jusqu'à ce que les parents contestent à la porte. Ce n'est pas un problème de recouvrement—c'est un problème de visibilité. Factures, mobile money et rappels WhatsApp liés à chaque compte élève.",
-    "desc": "Frais, factures, paiements, paie, suivi",
+    "desc": "Chaque franc rattrapé. Fini les fuites, fini les devinettes.",
     "highlights": {
       "0": "Structures de frais flexibles par classe, trimestre ou statut d'internat",
       "1": "Factures automatisées avec soldes et historique de paiement par élève",
@@ -50,10 +50,10 @@
     "localContext": "Les parents attendent le mobile money et des relevés clairs. Chaque franc non comptabilisé en CDF ou USD est une dispute qui attend à la porte. ShuleOS rend les soldes visibles avant le jour de collecte."
   },
   "operations": {
-    "title": "Opérations",
+    "title": "Organisation",
     "tagline": "Arrêtez de perdre le fil hors de la salle de classe",
     "summary": "Listes de transport sur papier, livres qui ne reviennent pas, inscriptions d'événements dans WhatsApp—ces petites fuites s'accumulent chaque semaine. Bibliothèque, transport, événements et personnel en un seul endroit.",
-    "desc": "Bibliothèque, transport, événements, personnel",
+    "desc": "Transport, livres, événements, personnel — tenus, sans que vous couriez derrière.",
     "highlights": {
       "0": "Catalogue bibliothèque avec prêts, retours et suivi des retards",
       "1": "Routes de transport, affectations de bus et listes de ramassage",
@@ -70,10 +70,10 @@
     "localContext": "Des listes de transport aux inscriptions pour la remise des prix, les écoles congolaises perdent des heures chaque semaine sur de la logistique qui devrait prendre des minutes."
   },
   "analytics": {
-    "title": "Analytique",
+    "title": "Pilotage",
     "tagline": "Arrêtez de décider à l'aveugle en fin de trimestre",
     "summary": "Quand présences, frais et performance sont dans des carnets séparés, les directeurs passent des jours sur des rapports lisibles en minutes. Tableaux de bord pour tendances, taux de collecte et comparaisons entre campus.",
-    "desc": "Tableaux de bord, comparaison de campus, rapports présences et finances",
+    "desc": "Les résultats, pas les détails. Vous voyez si l'école grandit — sans tout compiler.",
     "highlights": {
       "0": "Tableaux de bord exécutifs pour directeurs et propriétaires d'écoles",
       "1": "Cartes thermiques de présence et alertes d'absentéisme chronique",
@@ -90,10 +90,10 @@
     "localContext": "Rapports trimestriels et objectifs de collecte ne devraient pas prendre une semaine à compiler. Les tableaux de bord ShuleOS montrent ce qu'il faut en minutes—pas en jours d'agrégation manuelle."
   },
   "schoolWebsites": {
-    "title": "Site web scolaire gratuit",
+    "title": "Votre visibilité",
     "tagline": "Arrêtez de perdre des familles qui ne vous trouvent pas en ligne",
     "summary": "Les parents cherchent sur WhatsApp et Google avant de venir. Sans site, ils s'inscrivent ailleurs. Obtenez un site scolaire gratuit avec ShuleOS — page d'accueil, admissions, événements, recrutement et réservation de visite dans votre file admin.",
-    "desc": "Votre école en ligne avec admissions, événements, recrutement et visites — inclus gratuitement",
+    "desc": "Les familles vous trouvent. Les inscriptions arrivent. Votre héritage se voit.",
     "highlights": {
       "0": "Page d'accueil gratuite avec logo, couleurs et image de couverture",
       "1": "Sections À propos, programmes, galerie et contact",
@@ -112,10 +112,10 @@
     "localContext": "Chaque saison d'inscription sans site web, les familles choisissent l'école qu'elles ont trouvée en premier. Lancez le vôtre gratuitement — et capturez les demandes avant qu'elles n'aillent ailleurs."
   },
   "messaging": {
-    "title": "Messagerie",
+    "title": "Lien avec les familles",
     "tagline": "Arrêtez « passez au bureau » comme réponse par défaut",
     "summary": "Les parents ne font pas confiance à « on vous rappellera ». Les fils WhatsApp non journalisés créent des disputes sans trace. Messagerie structurée entre enseignants, parents et admins—avec historique lié à chaque élève.",
-    "desc": "Communication en temps réel pour tous",
+    "desc": "Moins de files au bureau. Plus de confiance. Vous n'êtes plus le standardiste de l'école.",
     "highlights": {
       "0": "Conversations directes entre enseignants et tuteurs",
       "1": "Diffusions d'annonces par classe ou pour toute l'école",

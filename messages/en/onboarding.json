@@ -1,6 +1,6 @@
 {
   "gettingStarted": "Getting started",
-  "guideDescription": "Optional walkthrough - follow these steps to set up your school from scratch.",
+  "guideDescription": "Optional walkthrough — each skipped step is another week of double entry. Set the school up once.",
   "resumeGuide": "Resume guide",
   "expandGuide": "Expand guide",
   "collapseGuide": "Collapse guide",
@@ -43,6 +43,9 @@
     "photoUploadFailed": "Could not upload your photo. Try again.",
     "photoRequired": "Add a profile photo to finish setup.",
     "finish": "Enter ShuleOS",
+    "homescreenAdded": "I've added it",
+    "homescreenSkip": "Keep using the browser",
+    "homescreenHeadline": "Add ShuleOS to your home screen",
     "completeSuccess": "Your profile is ready.",
     "completeFailed": "Could not finish setup. Try again.",
     "steps": {
@@ -57,25 +60,30 @@
       "photo": {
         "title": "Profile photo",
         "description": "Add a photo so staff and families recognize you at a glance. Upload a file or take one with your camera — or skip and add it later in Settings."
+      },
+      "homescreen": {
+        "title": "Home screen",
+        "description": "If ShuleOS stays a Safari tab, the next closed tab takes the school with it. Pin it once — about ten seconds."
       }
     }
   },
   "structure": {
     "badge": "School structure",
     "title": "Welcome to {school}",
-    "subtitle": "Choose your school level and the grades you run. We'll create the empty classes from there.",
+    "subtitle": "Pick every level you run. Leave one out and those classes get invented later — never quite matching the rest.",
     "stepProgress": "Step {current} of {total}: {title}",
     "skip": "I'll set this up myself",
     "skipSuccess": "Structure setup skipped. You can create classes anytime.",
     "skipFailed": "Could not skip setup. Try again.",
-    "levelRequired": "Select your school level to continue.",
+    "levelRequired": "Select at least one school level to continue.",
     "gradesRequired": "Select at least one grade.",
     "duplicateGrade": "That grade is already selected.",
     "customGradesOnly": "Add the grade names your school actually uses.",
     "customGradeLabel": "Add a custom grade",
     "customGradePlaceholder": "e.g. Grade 8, Terminale",
     "addGrade": "Add grade",
-    "confirmSummary": "{level} · {grades} grades · {classes} classes",
+    "confirmSummary": "{levels} · {grades} grades · {classes} classes",
+    "selectAllThatApply": "Select all that apply",
     "noStudentsNote": "Classes only — no demo students will be created.",
     "previewLabel": "Classes preview",
     "previewMore": "+{count} more",
@@ -84,8 +92,8 @@
     "createFailed": "Could not create classes. Try again.",
     "steps": {
       "level": {
-        "title": "School level",
-        "description": "Pick the level that matches your school so we can suggest the right grades."
+        "title": "School levels",
+        "description": "Tick every level on this campus so the grade list isn't rebuilt mid-term."
       },
       "grades": {
         "title": "Grades",
@@ -126,31 +134,31 @@
   "steps": {
     "website": {
       "title": "Set up your public website",
-      "description": "Add your story, contact details, and branding so families can learn about your school."
+      "description": "Families search before they visit. Without a site, they enroll elsewhere — add your story, contact details, and branding."
     },
     "team": {
       "title": "Invite your team",
-      "description": "Add teachers, finance staff, and other roles so everyone has the right dashboard access."
+      "description": "Teachers keep doing double entry until they're in — add teachers, bursars, and admins with role-specific dashboards."
     },
     "subjects": {
       "title": "Create subjects",
-      "description": "Define the courses your school offers before building classes."
+      "description": "Without subjects, gradebooks and report cards have nothing to attach to — define the courses before classes pile up."
     },
     "classes": {
       "title": "Create classes",
-      "description": "Pick your school level and grades so classes exist before enrollments pile up elsewhere."
+      "description": "Leave classes unset and enrollments get invented later, never quite matching — pick every level and grade you run."
     },
     "students": {
       "title": "Enroll your first student",
-      "description": "Add a student record to start tracking attendance, grades, and fees."
+      "description": "Until the first student is on the roll, attendance, grades, and fees have nowhere to land."
     },
     "timetable": {
       "title": "Build your timetable",
-      "description": "Assign subjects and teachers to class time slots."
+      "description": "Without a timetable, teachers guess rooms and parents can't see the day — assign subjects and teachers to periods."
     },
     "publish": {
       "title": "Publish your website",
-      "description": "When you are ready, enable your public site so families can find and apply."
+      "description": "An unpublished site still loses families who never find you — enable it when the page is ready so they can apply."
     }
   }
 }

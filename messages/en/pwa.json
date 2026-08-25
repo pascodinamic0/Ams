@@ -34,5 +34,18 @@
   "iosInstallHint": "Add to your home screen for quick access. Tap Share, then Add to Home Screen.",
   "androidInstallHint": "Install the app on this device for faster access, full-screen mode, and offline support.",
   "shareThenAddToHomeScreen": "Share, then Add to Home Screen",
-  "dismissInstallPrompt": "Dismiss install prompt"
+  "dismissInstallPrompt": "Dismiss install prompt",
+  "iosGuide": {
+    "title": "Add {productName} to your home screen",
+    "subtitle": "Buried in Safari, the next absence alert is a tab you already closed. Pin it once — about ten seconds — before the next roll call.",
+    "step1TitleBottom": "Tap the share icon",
+    "step1TitleTop": "Tap the share icon in the toolbar",
+    "step2Title": "Tap “Add to Home Screen” in the pop-up",
+    "step3Hint": "Then tap Add — {productName} lands next to your other apps.",
+    "inAppTitle": "Open this page in Safari first",
+    "inAppBody": "In-app browsers can’t pin {productName} to your home screen. Tap the menu, choose Open in Safari, then follow these steps — or the icon never lands.",
+    "addToHomeScreen": "Add to Home Screen",
+    "showHow": "Show me how",
+    "gotIt": "Got it"
+  }
 }

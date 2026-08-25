@@ -51,5 +51,10 @@
   "classReminderMinutes": "Me rappeler avant le cours",
   "minutesBefore": "{count} minutes avant",
   "classRemindersHint": "Se déclenche comme une alarme avant chacune de vos périodes d'emploi du temps.",
-  "prefsSaved": "Préférences de notification enregistrées"
+  "prefsSaved": "Préférences de notification enregistrées",
+  "phoneLinkTitle": "Téléphone pour connexion WhatsApp",
+  "phoneLinkDescription": "Liez le numéro que vous utilisez sur WhatsApp pour vous connecter sans mot de passe.",
+  "phoneLinkAction": "Envoyer le code de vérification",
+  "phoneLinked": "Téléphone vérifié pour la connexion WhatsApp",
+  "phoneLinkedValue": "Lié : {phone}"
 }

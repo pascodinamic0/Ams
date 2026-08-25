@@ -1,3 +1,4 @@
+import { logQueryError } from "@/lib/supabase/log-query-error";
 import { createClient } from "@/lib/supabase/server";
 
 export type BudgetPlanStatus = "draft" | "active" | "archived";
@@ -91,7 +92,7 @@ export async function getBudgetPlans(schoolId: string): Promise<BudgetPlanListIt
     .order("title", { ascending: true });
 
   if (error) {
-    console.error("getBudgetPlans error:", error);
+    logQueryError("getBudgetPlans error:", error);
     return [];
   }
 
@@ -131,7 +132,7 @@ export async function getBudgetPlanById(
 
   const { data: plan, error } = await query.single();
   if (error || !plan) {
-    if (error) console.error("getBudgetPlanById error:", error);
+    if (error) logQueryError("getBudgetPlanById error:", error);
     return null;
   }
 
@@ -146,7 +147,7 @@ export async function getBudgetPlanById(
     .order("name", { ascending: true });
 
   if (linesError) {
-    console.error("getBudgetPlanById lines error:", linesError);
+    logQueryError("getBudgetPlanById lines error:", linesError);
   }
 
   const lines = (linesData ?? []).map((row) =>
@@ -209,7 +210,7 @@ export async function getBudgetLineById(id: string): Promise<BudgetLineItem | nu
     .single();
 
   if (error || !data) {
-    if (error) console.error("getBudgetLineById error:", error);
+    if (error) logQueryError("getBudgetLineById error:", error);
     return null;
   }
 

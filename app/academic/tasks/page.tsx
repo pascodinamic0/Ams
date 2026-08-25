@@ -4,6 +4,7 @@ import { getCurrentProfile } from "@/lib/auth/session";
 import { canAccessPath } from "@/lib/auth/rbac";
 import { getSchoolTasks } from "@/lib/db/workspaces";
 import { getSchoolTeamMembers } from "@/lib/db/users";
+import { getStudents } from "@/lib/db";
 import { TaskBoard } from "./task-board";
 
 export default async function AcademicTasksPage() {
@@ -12,9 +13,10 @@ export default async function AcademicTasksPage() {
   if (!profile?.school_id) redirect("/academic");
   if (!canAccessPath(profile.role, "/academic/tasks")) redirect("/academic");
 
-  const [tasks, staff] = await Promise.all([
+  const [tasks, staff, students] = await Promise.all([
     getSchoolTasks(profile.school_id),
     getSchoolTeamMembers(profile.school_id),
+    getStudents({ schoolId: profile.school_id }),
   ]);
 
   return (
@@ -31,6 +33,12 @@ export default async function AcademicTasksPage() {
           id: member.id,
           name: member.name?.trim() || member.email || t("staffMemberFallback"),
           role: member.role,
+        }))}
+        students={(students ?? []).map((student) => ({
+          id: student.id,
+          name: student.class_name
+            ? `${student.name} · ${student.class_name}`
+            : student.name,
         }))}
       />
     </div>

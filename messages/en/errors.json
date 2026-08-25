@@ -162,6 +162,7 @@
   "onlyPlatformAdminsDeleteSchools": "Only platform administrators can delete schools",
   "invalidFormData": "Invalid form data",
   "noPermissionOnboardStudents": "You do not have permission to onboard students",
+  "noPermissionUpdateEnrollment": "Only academic admins can update enrollment status and tags",
   "failedOnboardStudent": "Failed to onboard student",
   "failedCreateGuardian": "Failed to create guardian",
   "noPermissionSchoolApprovals": "You do not have permission to manage school approvals",

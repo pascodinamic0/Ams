@@ -3,8 +3,8 @@
     "subject": "Définissez votre mot de passe ShuleOS avant de perdre l'invitation",
     "greeting": "Bonjour {name},",
     "greetingFallback": "bonjour",
-    "body": "Votre école vous a déjà ajouté à ShuleOS. Tant que vous n'avez pas défini de mot de passe, vous ne pouvez pas vous connecter — et votre rôle reste bloqué hors des frais, des classes et des messages.",
-    "cta": "Définir mon mot de passe maintenant",
+    "body": "Votre école vous a déjà ajouté à ShuleOS. Tant que vous n'avez pas défini un mot de passe court (4 chiffres ou 4 lettres), vous ne pouvez pas vous connecter — et votre rôle reste bloqué hors des frais, des classes et des messages.",
+    "cta": "Définir mon mot de passe (4 caractères)",
     "expiry": "Ce lien expire. S'il est expiré, demandez à votre admin d'envoyer une nouvelle invitation et utilisez le dernier e-mail.",
     "text": "Bonjour {name},\n\nVotre école vous a déjà ajouté à ShuleOS. Tant que vous n'avez pas défini de mot de passe, vous ne pouvez pas vous connecter.\n\nDéfinir votre mot de passe : {url}\n\nCe lien expire. S'il est expiré, demandez à votre admin d'envoyer une nouvelle invitation."
   },

@@ -26,22 +26,20 @@ export function CompanyLayoutShell({
   const { resolvedTheme } = useTheme();
   const isSchoolSite =
     pathname === "/schools" || pathname.startsWith("/schools/");
-  const isHome = pathname === "/";
+  const isHeroPage = pathname === "/" || pathname === "/contact";
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const navLinks = [
     { label: labels.home, href: "/" },
+    { label: labels.about, href: "/#about" },
+    { label: labels.offer, href: "/offre" },
     { label: labels.features, href: "/features" },
-    { label: labels.blog, href: "/blog" },
-    { label: labels.getAccess, href: "/get-access" },
-    { label: labels.contact, href: "/contact" },
   ];
 
-  const solidHeader = scrolled || !isHome;
-  // Hero video stays dark — keep light chrome until the solid header kicks in
-  const overHero = isHome && !scrolled;
+  const solidHeader = scrolled || !isHeroPage;
+  const overHero = isHeroPage && !scrolled;
   const isDark = !mounted || resolvedTheme !== "light";
   const useLightChrome = overHero || isDark;
   const logoVariant = useLightChrome ? "light" : "default";
@@ -68,9 +66,15 @@ export function CompanyLayoutShell({
     return <>{children}</>;
   }
 
+  const isNavActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    if (href === "/#about") return pathname === "/";
+    if (href.startsWith("/#")) return false;
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
   const navLinkClass = (href: string) => {
-    const active =
-      pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+    const active = isNavActive(href);
 
     return cn(
       "whitespace-nowrap px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] transition-colors lg:px-4",
@@ -101,7 +105,7 @@ export function CompanyLayoutShell({
           className={cn(
             "mx-auto grid w-full max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 md:min-h-16 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-6 lg:min-h-[4.25rem] lg:gap-10",
             overHero
-              ? "max-md:min-h-14 max-md:rounded-2xl max-md:border max-md:border-white/10 max-md:bg-black/85 max-md:px-4 max-md:shadow-lg max-md:shadow-black/30 max-md:backdrop-blur-xl"
+              ? "max-md:min-h-14 max-md:rounded-2xl max-md:border max-md:border-white/10 max-md:bg-mkt-navy/90 max-md:px-4 max-md:shadow-lg max-md:shadow-black/30 max-md:backdrop-blur-xl"
               : "max-md:min-h-14 max-md:rounded-2xl max-md:border max-md:border-mkt-ink/10 max-md:bg-mkt-header max-md:px-4 max-md:shadow-lg max-md:shadow-black/10 max-md:backdrop-blur-xl"
           )}
         >
@@ -131,6 +135,11 @@ export function CompanyLayoutShell({
           </nav>
 
           <div className="flex shrink-0 items-center justify-end gap-1.5 justify-self-end md:gap-2 lg:gap-3">
+            <LanguageSwitcher
+              variant="buttons"
+              tone="marketing"
+              className="hidden sm:flex"
+            />
             <ThemeToggle
               variant="icon"
               tone="marketing"
@@ -143,24 +152,13 @@ export function CompanyLayoutShell({
             <Link
               href="/login"
               className={cn(
-                "hidden whitespace-nowrap rounded-full border px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] transition-all xl:inline-flex",
-                useLightChrome
-                  ? "border-white/30 text-white hover:border-white hover:bg-white/5"
-                  : "border-mkt-ink/30 text-mkt-ink hover:border-mkt-ink hover:bg-mkt-ink/5"
-              )}
-            >
-              {labels.login}
-            </Link>
-            <Link
-              href="/get-access"
-              className={cn(
                 "hidden whitespace-nowrap rounded-full border px-5 py-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] transition-all duration-300 active:scale-95 md:inline-flex lg:px-6",
                 useLightChrome
-                  ? "border-white/40 text-white hover:border-white hover:bg-white hover:text-black"
+                  ? "border-white/40 text-white hover:border-white hover:bg-white hover:text-mkt-navy"
                   : "border-mkt-ink/40 text-mkt-ink hover:border-mkt-ink hover:bg-mkt-inverse hover:text-mkt-inverse-ink"
               )}
             >
-              {labels.getStarted}
+              {labels.workspace}
             </Link>
             <button
               type="button"
@@ -220,7 +218,7 @@ export function CompanyLayoutShell({
                     onClick={() => setMobileMenuOpen(false)}
                     className={cn(
                       "rounded-full px-4 py-3.5 text-[12px] font-semibold uppercase tracking-[0.16em] transition-colors",
-                      pathname === link.href
+                      isNavActive(link.href)
                         ? "bg-mkt-inverse text-mkt-inverse-ink"
                         : "text-mkt-ink/70 hover:bg-mkt-ink/5 hover:text-mkt-ink"
                     )}
@@ -233,7 +231,7 @@ export function CompanyLayoutShell({
                   onClick={() => setMobileMenuOpen(false)}
                   className="mt-2 rounded-full border border-mkt-ink/20 px-4 py-3.5 text-[12px] font-semibold uppercase tracking-[0.16em] text-mkt-ink/80 hover:border-mkt-ink hover:text-mkt-ink"
                 >
-                  {labels.login}
+                  {labels.workspace}
                 </Link>
                 <div className="mt-4 flex items-center gap-3 px-2">
                   <LanguageSwitcher variant="buttons" tone="marketing" />

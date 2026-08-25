@@ -1,7 +1,16 @@
 import { z } from "zod";
+import { STUDENT_TAGS } from "@/lib/students/tags";
 
 export const GENDERS = ["male", "female"] as const;
 export type Gender = (typeof GENDERS)[number];
+
+export const STUDENT_STATUSES = [
+  "active",
+  "pending",
+  "inactive",
+  "graduated",
+] as const;
+export type StudentStatus = (typeof STUDENT_STATUSES)[number];
 
 /** Empty select placeholder is stored as null. */
 export const optionalGenderSchema = z.preprocess(
@@ -16,6 +25,8 @@ export function normalizeGender(
   return key === "male" || key === "female" ? key : null;
 }
 
+export const studentTagSchema = z.enum(STUDENT_TAGS);
+
 export const studentSchema = z.object({
   first_name: z.string().min(1, "firstNameRequired"),
   middle_name: z.string().optional(),
@@ -23,7 +34,8 @@ export const studentSchema = z.object({
   date_of_birth: z.string().min(1, "dobRequired"),
   gender: optionalGenderSchema,
   class_id: z.string().uuid("classRequired"),
-  status: z.enum(["active", "graduated", "inactive"]).default("active"),
+  status: z.enum(STUDENT_STATUSES).default("active"),
+  tags: z.array(studentTagSchema).default([]),
   home_address: z.string().optional(),
   notes: z.string().optional(),
   photo_url: z.string().url("invalidPhotoUrl").optional().or(z.literal("")),

@@ -34,5 +34,18 @@
   "iosInstallHint": "Ajoutez-le à votre écran d'accueil pour un accès rapide. Appuyez sur Partager, puis Ajouter à l'écran d'accueil.",
   "androidInstallHint": "Installez l'application sur cet appareil pour un accès plus rapide, le plein écran et le hors ligne.",
   "shareThenAddToHomeScreen": "Partager, puis Ajouter à l'écran d'accueil",
-  "dismissInstallPrompt": "Fermer l'invite d'installation"
+  "dismissInstallPrompt": "Fermer l'invite d'installation",
+  "iosGuide": {
+    "title": "Ajoutez {productName} à l'écran d'accueil",
+    "subtitle": "Perdu dans Safari, la prochaine alerte d'absence est un onglet déjà fermé. Épinglez-le une fois — une dizaine de secondes — avant le prochain appel.",
+    "step1TitleBottom": "Appuyez sur l'icône de partage",
+    "step1TitleTop": "Appuyez sur l'icône de partage dans la barre d'outils",
+    "step2Title": "Appuyez sur « Ajouter à l'écran d'accueil » dans le menu",
+    "step3Hint": "Puis appuyez sur Ajouter — {productName} apparaît à côté de vos autres apps.",
+    "inAppTitle": "Ouvrez d'abord cette page dans Safari",
+    "inAppBody": "Les navigateurs intégrés ne peuvent pas épingler {productName} à l'écran d'accueil. Ouvrez le menu, choisissez Ouvrir dans Safari, puis suivez ces étapes — sinon l'icône n'apparaît jamais.",
+    "addToHomeScreen": "Ajouter à l'écran d'accueil",
+    "showHow": "Montrez-moi comment",
+    "gotIt": "C'est noté"
+  }
 }

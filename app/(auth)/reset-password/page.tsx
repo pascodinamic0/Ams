@@ -9,8 +9,8 @@ import { FormWrapper } from "@/components/forms/form-wrapper";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { PasswordStrength } from "@/components/ui/password-strength";
 import { completePasswordSetup } from "@/lib/actions/password-setup";
+import { STAFF_PIN_LENGTH, STAFF_PIN_PATTERN, normalizeStaffPin } from "@/lib/auth/staff-pin";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "@/lib/toast";
 
@@ -70,13 +70,20 @@ export default function ResetPasswordPage() {
     () =>
       z
         .object({
-          password: z.string().min(8, tv("passwordMinLength")),
+          password: z
+            .string()
+            .regex(STAFF_PIN_PATTERN, tv("passwordStaffPin")),
           confirmPassword: z.string(),
         })
-        .refine((data) => data.password === data.confirmPassword, {
-          message: tv("passwordsDoNotMatch"),
-          path: ["confirmPassword"],
-        }),
+        .refine(
+          (data) =>
+            normalizeStaffPin(data.password) ===
+            normalizeStaffPin(data.confirmPassword),
+          {
+            message: tv("passwordsDoNotMatch"),
+            path: ["confirmPassword"],
+          }
+        ),
     [tv]
   );
 
@@ -148,10 +155,8 @@ function ResetPasswordFormFields({ loading }: { loading: boolean }) {
   const t = useTranslations("auth");
   const {
     register,
-    watch,
     formState: { errors },
   } = useFormContext<ResetPasswordFormData>();
-  const password = watch("password");
 
   return (
     <>
@@ -162,10 +167,16 @@ function ResetPasswordFormFields({ loading }: { loading: boolean }) {
         <Input
           id="password"
           type="password"
+          inputMode="text"
+          autoComplete="new-password"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
+          maxLength={STAFF_PIN_LENGTH}
           error={!!errors.password}
           {...register("password")}
         />
-        <PasswordStrength password={password ?? ""} />
+        <p className="mt-1.5 text-xs text-muted">{t("resetPasswordHint")}</p>
         {errors.password && (
           <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
         )}
@@ -177,6 +188,12 @@ function ResetPasswordFormFields({ loading }: { loading: boolean }) {
         <Input
           id="confirmPassword"
           type="password"
+          inputMode="text"
+          autoComplete="new-password"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
+          maxLength={STAFF_PIN_LENGTH}
           error={!!errors.confirmPassword}
           {...register("confirmPassword")}
         />

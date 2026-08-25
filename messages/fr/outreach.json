@@ -1,6 +1,6 @@
 {
   "title": "Communication de masse",
-  "subtitle": "Envoyez des messages WhatsApp à tous les parents ou à des classes spécifiques en une fois.",
+  "subtitle": "Les WhatsApp non journalisés font disparaître rappels de frais et mises à jour. Diffusez à tous les parents ou à une classe—avec une trace de livraison.",
   "newCampaign": "Nouvelle campagne",
   "campaignsTitle": "Campagnes",
   "sendCampaign": "Envoyer la campagne",
@@ -9,7 +9,7 @@
   "statTotalDelivered": "Total livrés",
   "statTotalFailed": "Total échoués",
   "noCampaignsYet": "Aucune campagne pour l'instant",
-  "noCampaignsDesc": "Envoyez votre première diffusion WhatsApp aux parents",
+  "noCampaignsDesc": "Tant que la première diffusion n'est pas partie, les parents apprennent la nouvelle en dernier—ou jamais. Envoyez-en une maintenant.",
   "columnCampaign": "Campagne",
   "columnChannel": "Canal",
   "columnTarget": "Cible",

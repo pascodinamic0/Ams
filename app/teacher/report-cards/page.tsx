@@ -13,11 +13,17 @@ import {
   getCurrentSchoolYearStart,
 } from "@/lib/academic/school-year";
 import { ReportCardFilters } from "./report-card-filters";
+import { PrintStudentReportCardButton } from "./print-student-report-card-button";
 
 export default async function ReportCardsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ class?: string; term?: string; year?: string }>;
+  searchParams: Promise<{
+    class?: string;
+    term?: string;
+    year?: string;
+    student?: string;
+  }>;
 }) {
   const t = await getTranslations("teacher");
   const tc = await getTranslations("common");
@@ -48,9 +54,16 @@ export default async function ReportCardsPage({
     : getCurrentSchoolYearStart();
 
   const students = await getStudents({ classId, status: "active" });
+  const selectedStudentId =
+    params.student && students.some((s) => s.id === params.student)
+      ? params.student
+      : "";
+  const studentsToPrint = selectedStudentId
+    ? students.filter((s) => s.id === selectedStudentId)
+    : students;
 
   const reportData = await Promise.all(
-    students.map(async (student) => {
+    studentsToPrint.map(async (student) => {
       const [grades, attendance] = await Promise.all([
         getGradesForReportCard(student.id, term, schoolYear),
         getStudentAttendanceStats(student.id),
@@ -71,9 +84,11 @@ export default async function ReportCardsPage({
       <Suspense fallback={null}>
         <ReportCardFilters
           classes={classes.map((c) => ({ id: c.id, name: c.name }))}
+          students={students.map((s) => ({ id: s.id, name: s.name }))}
           initialClassId={classId}
           initialTerm={term}
           initialSchoolYear={schoolYear}
+          initialStudentId={selectedStudentId}
         />
       </Suspense>
 
@@ -84,8 +99,16 @@ export default async function ReportCardsPage({
           {reportData.map(({ student, grades, attendance }) => (
             <article
               key={student.id}
+              id={`report-card-${student.id}`}
               className="report-card break-after-page rounded-lg border bg-white p-8 text-stone-900 shadow-sm print:break-after-page print:rounded-none print:border-0 print:shadow-none"
             >
+              <div className="mb-4 flex justify-end print:hidden">
+                <PrintStudentReportCardButton
+                  targetId={`report-card-${student.id}`}
+                  label={t("downloadThisReportCard")}
+                  documentTitle={`${t("studentReportCard")} — ${student.name}`}
+                />
+              </div>
               <header className="border-b pb-4 text-center">
                 <h2 className="text-xl font-bold">{t("studentReportCard")}</h2>
                 <p className="text-sm text-stone-600">
@@ -176,6 +199,20 @@ export default async function ReportCardsPage({
           body * { visibility: hidden; }
           .report-card, .report-card * { visibility: visible; }
           .report-card { position: relative; page-break-after: always; }
+          body.printing-one-report-card .report-card:not(.print-target) {
+            display: none;
+          }
+          body.printing-one-report-card .report-card.print-target,
+          body.printing-one-report-card .report-card.print-target * {
+            visibility: visible;
+          }
+          body.printing-one-report-card .report-card.print-target {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            page-break-after: auto;
+          }
         }
       `}</style>
     </div>

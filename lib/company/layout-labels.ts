@@ -3,11 +3,14 @@ export type CompanyNavLabels = {
   openMenu: string;
   closeMenu: string;
   home: string;
+  about: string;
+  offer: string;
   features: string;
   blog: string;
   getAccess: string;
   contact: string;
   login: string;
+  workspace: string;
   getStarted: string;
 };
 

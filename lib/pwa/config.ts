@@ -11,7 +11,7 @@ export function buildPwaManifest(): MetadataRoute.Manifest {
   return {
     name: companyIdentity.productFullName,
     short_name: companyIdentity.productName,
-    description: `${companyIdentity.tagline}. Academics, fees, and parent communication in one place.`,
+    description: `${companyIdentity.tagline} Stop losing attendance, fees, and messages to notebooks and WhatsApp.`,
     start_url: "/login",
     scope: "/",
     display: "standalone",

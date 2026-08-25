@@ -28,6 +28,9 @@ jwt_expiry = 3600
 enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10
 enable_signup = true
+# GoTrue floors this at 6. Staff invite PINs are 4 chars in the UI and padded
+# in app code (see lib/auth/staff-pin.ts) before Auth stores them.
+minimum_password_length = 6
 
 [auth.email]
 enable_signup = true
@@ -39,6 +42,26 @@ enabled = true
 client_id = "env(GOOGLE_CLIENT_ID)"
 secret = "env(GOOGLE_CLIENT_SECRET)"
 skip_nonce_check = false
+
+# Phone OTP (WhatsApp via Twilio Verify). See docs/PHONE_WHATSAPP_AUTH.md
+[auth.sms]
+enable_signup = false
+enable_confirmations = false
+max_frequency = "60s"
+otp_length = 6
+otp_exp = 300
+
+# Free local demo: mapped numbers skip Twilio and accept this OTP (no + prefix).
+# Login with +243822000001, enter 123456. Run: bun run seed:phone-auth-test
+[auth.sms.test_otp]
+243822000001 = "123456"
+
+# Enable after Twilio Pay-as-you-go is funded (see docs/PHONE_WHATSAPP_AUTH.md).
+[auth.sms.twilio_verify]
+enabled = false
+account_sid = "env(TWILIO_ACCOUNT_SID)"
+message_service_sid = "env(TWILIO_VERIFY_MESSAGE_SERVICE_SID)"
+auth_token = "env(SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN)"
 
 [storage]
 enabled = true

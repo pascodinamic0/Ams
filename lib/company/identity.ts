@@ -1,9 +1,9 @@
 /** Public company identity - sourced from digni-digital-llc.com (Kinshasa office). */
 export const companyIdentity = {
   productName: "ShuleOS",
-  productFullName: "ShuleOS - School Management Platform",
+  productFullName: "ShuleOS — Your school's trusted digital director",
   legalName: "Digni Digital LLC",
-  tagline: "One system for growing schools—that never forgets",
+  tagline: "Protect your legacy. Secure your finances.",
   origin: "Serving schools across the DRC",
   website: "https://www.digni-digital-llc.com",
 
@@ -46,5 +46,8 @@ export const companyIdentity = {
     foreground: "#1c1917",
     darkBackground: "#0c1222",
     darkPrimary: "#14b8a6",
+    /** Marketing hero overlay — Shule System–inspired navy */
+    marketingNavy: "#1a365d",
+    marketingNavyLight: "#2c5282",
   },
 } as const;

@@ -12,6 +12,7 @@ export default async function GetAccessPage() {
       productName: companyIdentity.productName,
     }),
     heroSubtitle: t("heroSubtitle", { productName: companyIdentity.productName }),
+    seeOffer: t("seeOffer"),
     createSchoolAccount: t("createSchoolAccount"),
     alreadyHaveAccount: t("alreadyHaveAccount"),
     journeyTitle: t("journeyTitle"),

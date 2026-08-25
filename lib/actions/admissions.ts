@@ -195,6 +195,7 @@ export async function convertAdmissionToStudent(
     gender: normalizeGender(app.gender) ?? undefined,
     class_id: classId,
     status: "active",
+    tags: [],
     overrideCapacity: options?.overrideCapacity,
     existing_guardian_can_pickup: false,
     add_secondary_guardian: false,

@@ -23,10 +23,8 @@ export function BrandLogo({
 
   return (
     <span
-      className={cn(
-        "group/logo inline-flex items-center gap-3",
-        className
-      )}
+      className={cn("group/logo inline-flex items-center gap-3", className)}
+      aria-label={companyIdentity.productName}
     >
       <span
         className={cn(
@@ -41,6 +39,7 @@ export function BrandLogo({
 
       {showWordmark && (
         <span
+          aria-hidden="true"
           className={cn(
             "flex items-baseline gap-0.5 text-xl font-extrabold tracking-tight",
             wordmarkClassName
@@ -62,7 +61,6 @@ export function BrandLogo({
           >
             OS
           </span>
-          <span className="sr-only">{companyIdentity.productName}</span>
         </span>
       )}
     </span>

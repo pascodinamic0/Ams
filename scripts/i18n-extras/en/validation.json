@@ -9,6 +9,8 @@
   "dateRequired": "Date is required",
   "selectAtLeastOneGrade": "Select at least one grade",
   "tooManyGrades": "Too many grades",
+  "selectAtLeastOneLevel": "Select at least one school level",
+  "tooManySchoolLevels": "Too many school levels",
   "categoryRequired": "Category is required",
   "amountZeroOrPositive": "Amount must be zero or positive",
   "amountGreaterThanZero": "Amount must be greater than zero",

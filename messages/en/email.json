@@ -3,8 +3,8 @@
     "subject": "Set your ShuleOS password before you lose the invite",
     "greeting": "Hi {name},",
     "greetingFallback": "there",
-    "body": "Your school already added you to ShuleOS. Until you set a password, you cannot sign in — and your role stays locked out of fees, classes, and messages.",
-    "cta": "Set your password now",
+    "body": "Your school already added you to ShuleOS. Until you set a short password (4 digits or 4 letters), you cannot sign in — and your role stays locked out of fees, classes, and messages.",
+    "cta": "Set your 4-character password",
     "expiry": "This link expires. If it does, ask your admin to send a new invite and use the latest email.",
     "text": "Hi {name},\n\nYour school already added you to ShuleOS. Until you set a password, you cannot sign in.\n\nSet your password: {url}\n\nThis link expires. If it does, ask your admin to send a new invite."
   },

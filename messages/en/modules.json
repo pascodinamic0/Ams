@@ -5,15 +5,15 @@
   "partOfPlatform": "Part of the {productName} platform. See everything in",
   "allFeatures": "all features",
   "homepageCta": {
-    "academic": "Grades & report cards",
-    "finance": "Fees & payments",
-    "portals": "Parent portal"
+    "academic": "School life in order",
+    "finance": "Bulletproof finances",
+    "portals": "Families at ease"
   },
   "academic": {
-    "title": "Academic",
+    "title": "School life",
     "tagline": "Report card season shouldn't shut down the office",
     "summary": "When enrollments, attendance, and grades live in separate places, report cards take days and errors multiply. One academic cycle—from admission to Programme National report cards—without the end-of-term panic.",
-    "desc": "Students, classes, timetable, attendance, grades, report cards",
+    "desc": "Every student tracked. Attendance, grades, and report cards — without you carrying it all.",
     "highlights": {
       "0": "Student profiles with guardians, medical notes, and enrollment history",
       "1": "Classes aligned to DRC grade levels",
@@ -33,7 +33,7 @@
     "title": "Finance",
     "tagline": "Stop chasing the same balances every month",
     "summary": "Unpaid balances hide in notebooks until parents dispute them at the gate. Bursars chase the same names every month—that's not a collections problem, it's a visibility problem. Invoices, mobile money, and WhatsApp reminders tied to every student account.",
-    "desc": "Fees, invoices, payments, payroll, tracking",
+    "desc": "Every franc caught. No more leaks, no more guessing.",
     "highlights": {
       "0": "Flexible fee structures by class, term, or boarding status",
       "1": "Automated invoices with balances and payment history per student",
@@ -50,10 +50,10 @@
     "localContext": "Parents expect mobile money and clear fee statements. Every franc unaccounted for in CDF or USD is a dispute waiting at the gate. ShuleOS makes balances visible before collection day—not after."
   },
   "operations": {
-    "title": "Operations",
+    "title": "Organisation",
     "tagline": "Stop losing track outside the classroom",
     "summary": "Transport lists on paper, library books that never return, event registrations in WhatsApp threads—these small leaks add up every week. Library, transport, events, and staff in one place before something slips through.",
-    "desc": "Library, transport, events, staff",
+    "desc": "Transport, books, events, staff — held together, without you chasing.",
     "highlights": {
       "0": "Library catalog with lending, returns, and overdue tracking",
       "1": "Transport routes, bus assignments, and student pickup lists",
@@ -70,10 +70,10 @@
     "localContext": "From school transport lists to prize-giving day registrations, DRC schools lose hours every week on logistics that should take minutes."
   },
   "analytics": {
-    "title": "Analytics",
+    "title": "Oversight",
     "tagline": "Stop deciding blind at term end",
     "summary": "When attendance, fees, and performance live in separate notebooks, directors spend days preparing reports they should read in minutes. Dashboards for trends, collection rates, and branch comparisons—before problems become crises.",
-    "desc": "Dashboards, branch comparison, attendance & finance reports",
+    "desc": "The results, not the details. You see whether the school is growing — without compiling it yourself.",
     "highlights": {
       "0": "Executive dashboards for directors and school owners",
       "1": "Attendance heatmaps and chronic absenteeism alerts",
@@ -90,10 +90,10 @@
     "localContext": "Term reports and fee collection targets shouldn't take a week to compile. ShuleOS dashboards show what leadership needs in minutes—not days of manual aggregation."
   },
   "schoolWebsites": {
-    "title": "Free School Website",
+    "title": "Your visibility",
     "tagline": "Stop losing families who never find you online",
     "summary": "Parents search WhatsApp and Google before they visit. Without a site, they enroll elsewhere. Get a branded school website free with ShuleOS — homepage, admissions, events, hiring, and school visit booking into your admin queue.",
-    "desc": "Your school online with admissions, events, hiring & visits — included free",
+    "desc": "Families find you. Enrolments arrive. Your legacy is visible.",
     "highlights": {
       "0": "Free branded homepage with your logo, colours, and cover image",
       "1": "About, programs, gallery, and contact sections",
@@ -112,10 +112,10 @@
     "localContext": "Every intake season without a website, families choose the school they found first. Launch yours free — and capture enquiries before they go elsewhere."
   },
   "messaging": {
-    "title": "Messaging",
+    "title": "The link with families",
     "tagline": "Stop \"come to the office\" as your default reply",
     "summary": "Parents don't trust \"we'll call you back.\" Unlogged WhatsApp threads mean disputes with no record. Structured messaging between teachers, parents, and admins—with history tied to every student.",
-    "desc": "Real-time communication for everyone",
+    "desc": "Fewer office queues. More trust. You are no longer the school's switchboard.",
     "highlights": {
       "0": "Direct conversations between teachers and guardians",
       "1": "Class-wide and school-wide announcement broadcasts",

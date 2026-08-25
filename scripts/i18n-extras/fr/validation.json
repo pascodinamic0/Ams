@@ -9,6 +9,8 @@
   "dateRequired": "La date est requise",
   "selectAtLeastOneGrade": "Sélectionnez au moins un niveau",
   "tooManyGrades": "Trop de niveaux",
+  "selectAtLeastOneLevel": "Sélectionnez au moins un niveau d'école",
+  "tooManySchoolLevels": "Trop de niveaux d'école",
   "categoryRequired": "La catégorie est requise",
   "amountZeroOrPositive": "Le montant doit être zéro ou positif",
   "amountGreaterThanZero": "Le montant doit être supérieur à zéro",

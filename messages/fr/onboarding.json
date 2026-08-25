@@ -1,6 +1,6 @@
 {
   "gettingStarted": "Premiers pas",
-  "guideDescription": "Parcours optionnel — suivez ces étapes pour configurer votre école depuis le début.",
+  "guideDescription": "Parcours optionnel — chaque étape sautée, c'est une semaine de plus de double saisie. Configurez l'école une fois.",
   "resumeGuide": "Reprendre le guide",
   "expandGuide": "Développer le guide",
   "collapseGuide": "Réduire le guide",
@@ -43,6 +43,9 @@
     "photoUploadFailed": "Impossible de téléverser votre photo. Réessayez.",
     "photoRequired": "Ajoutez une photo de profil pour terminer la configuration.",
     "finish": "Entrer dans ShuleOS",
+    "homescreenAdded": "Je l'ai ajouté",
+    "homescreenSkip": "Continuer dans le navigateur",
+    "homescreenHeadline": "Ajoutez ShuleOS à l'écran d'accueil",
     "completeSuccess": "Votre profil est prêt.",
     "completeFailed": "Impossible de terminer la configuration. Réessayez.",
     "steps": {
@@ -57,25 +60,30 @@
       "photo": {
         "title": "Photo de profil",
         "description": "Ajoutez une photo pour que le personnel et les familles vous reconnaissent d'un coup d'œil. Téléversez un fichier ou prenez-en une avec votre caméra — ou passez et ajoutez-la plus tard dans Paramètres."
+      },
+      "homescreen": {
+        "title": "Écran d'accueil",
+        "description": "Si ShuleOS reste un onglet Safari, le prochain onglet fermé emporte l'école avec lui. Épinglez-le une fois — une dizaine de secondes."
       }
     }
   },
   "structure": {
     "badge": "Structure de l'école",
     "title": "Bienvenue à {school}",
-    "subtitle": "Choisissez le niveau de votre école et les classes que vous enseignez. Nous créerons ensuite les classes vides.",
+    "subtitle": "Cochez chaque niveau que vous enseignez. En oublier un, et ces classes seront inventées plus tard — jamais vraiment alignées avec le reste.",
     "stepProgress": "Étape {current} sur {total} : {title}",
     "skip": "Je configurerai cela moi-même",
     "skipSuccess": "Configuration de structure ignorée. Vous pouvez créer des classes à tout moment.",
     "skipFailed": "Impossible d'ignorer la configuration. Réessayez.",
-    "levelRequired": "Sélectionnez le niveau de votre école pour continuer.",
+    "levelRequired": "Sélectionnez au moins un niveau d'école pour continuer.",
     "gradesRequired": "Sélectionnez au moins un niveau/classe.",
     "duplicateGrade": "Ce niveau est déjà sélectionné.",
     "customGradesOnly": "Ajoutez les noms de niveaux que votre école utilise vraiment.",
     "customGradeLabel": "Ajouter un niveau personnalisé",
     "customGradePlaceholder": "ex. Grade 8, Terminale",
     "addGrade": "Ajouter un niveau",
-    "confirmSummary": "{level} · {grades} niveaux · {classes} classes",
+    "confirmSummary": "{levels} · {grades} niveaux · {classes} classes",
+    "selectAllThatApply": "Sélectionnez tout ce qui s'applique",
     "noStudentsNote": "Classes uniquement — aucun élève démo ne sera créé.",
     "previewLabel": "Aperçu des classes",
     "previewMore": "+{count} de plus",
@@ -84,8 +92,8 @@
     "createFailed": "Impossible de créer les classes. Réessayez.",
     "steps": {
       "level": {
-        "title": "Niveau d'école",
-        "description": "Choisissez le niveau qui correspond à votre établissement pour proposer les bons grades."
+        "title": "Niveaux d'école",
+        "description": "Cochez chaque niveau de cet établissement pour ne pas reconstruire la liste des classes en cours de trimestre."
       },
       "grades": {
         "title": "Niveaux",
@@ -126,31 +134,31 @@
   "steps": {
     "website": {
       "title": "Configurer votre site web public",
-      "description": "Ajoutez votre histoire, coordonnées et image de marque pour que les familles découvrent votre école."
+      "description": "Les familles cherchent avant de visiter. Sans site, elles s'inscrivent ailleurs — ajoutez votre histoire, vos coordonnées et votre image."
     },
     "team": {
       "title": "Inviter votre équipe",
-      "description": "Ajoutez enseignants, personnel financier et autres rôles pour que chacun ait le bon accès."
+      "description": "Les enseignants continuent la double saisie tant qu'ils ne sont pas dedans — ajoutez enseignants, économes et admins avec un tableau de bord selon leur rôle."
     },
     "subjects": {
       "title": "Créer les matières",
-      "description": "Définissez les cours proposés par votre école avant de créer les classes."
+      "description": "Sans matières, carnets de notes et bulletins n'ont rien à rattacher — définissez les cours avant que les classes s'accumulent."
     },
     "classes": {
       "title": "Créer les classes",
-      "description": "Choisissez le niveau de votre école et les classes pour qu'elles existent avant que les inscriptions s'éparpillent."
+      "description": "Sans classes, les inscriptions seront inventées plus tard, jamais vraiment alignées — cochez chaque niveau que vous enseignez."
     },
     "students": {
       "title": "Inscrire votre premier élève",
-      "description": "Ajoutez un dossier élève pour commencer à suivre présences, notes et frais."
+      "description": "Tant que le premier élève n'est pas au registre, présences, notes et frais n'ont nulle part où atterrir."
     },
     "timetable": {
       "title": "Construire l'emploi du temps",
-      "description": "Affectez matières et enseignants aux créneaux horaires."
+      "description": "Sans emploi du temps, les enseignants devinent les salles et les parents ne voient pas la journée — affectez matières et enseignants aux créneaux."
     },
     "publish": {
       "title": "Publier votre site web",
-      "description": "Quand vous êtes prêt, activez votre site public pour que les familles puissent vous trouver et postuler."
+      "description": "Un site non publié perd encore les familles qui ne vous trouvent pas — activez-le quand la page est prête pour qu'elles postulent."
     }
   }
 }

@@ -4,6 +4,7 @@ import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { expandSchoolLevels } from "@/lib/schools/structure-presets";
 import {
   schoolStructureSchema,
   type SchoolStructureInput,
@@ -66,7 +67,9 @@ export async function createSchoolStructure(input: SchoolStructureInput) {
   const auth = await requireStructureAdmin();
   if ("error" in auth) return auth;
 
-  const { grades, school_level } = parsed.data;
+  const { grades, school_levels: rawLevels } = parsed.data;
+  const school_levels = expandSchoolLevels(rawLevels);
+  const school_level = school_levels[0] ?? null;
   const uniqueGrades = [...new Set(grades.map((g) => g.trim()).filter(Boolean))];
 
   if (uniqueGrades.length === 0) {
@@ -100,6 +103,7 @@ export async function createSchoolStructure(input: SchoolStructureInput) {
     .from("schools")
     .update({
       school_level,
+      school_levels,
       structure_setup_completed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     })

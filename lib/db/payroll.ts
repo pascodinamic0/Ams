@@ -1,3 +1,4 @@
+import { logQueryError } from "@/lib/supabase/log-query-error";
 import { createClient } from "@/lib/supabase/server";
 
 export type PayrollListItem = {
@@ -145,7 +146,7 @@ export async function getPayroll(options?: {
 
   const { data, error } = await query;
   if (error) {
-    console.error("getPayroll error:", error);
+    logQueryError("getPayroll error:", error);
     return [];
   }
 
@@ -241,16 +242,35 @@ export async function getPayrollMonths(options?: {
   schoolId?: string;
   branchId?: string;
 }): Promise<PayrollMonthListItem[]> {
-  const records = await getPayroll(options);
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("payroll")
+    .select("payroll_month, payroll_year, staff(school_id, branch_id)");
+
+  if (error) {
+    logQueryError("getPayrollMonths error:", error);
+    return [];
+  }
+
   const monthMap = new Map<string, PayrollMonthListItem>();
-  for (const row of records) {
-    const key = `${row.payroll_year}-${row.payroll_month}`;
+  for (const row of data ?? []) {
+    const staff = row.staff as
+      | { school_id?: string; branch_id?: string | null }
+      | null;
+    if (options?.schoolId && staff?.school_id !== options.schoolId) continue;
+    if (options?.branchId && staff?.branch_id !== options.branchId) continue;
+    const month = Number(row.payroll_month);
+    const year = Number(row.payroll_year);
+    const key = `${year}-${month}`;
     if (!monthMap.has(key)) {
-      const date = new Date(Date.UTC(row.payroll_year, row.payroll_month - 1, 1));
+      const date = new Date(Date.UTC(year, month - 1, 1));
       monthMap.set(key, {
-        month: row.payroll_month,
-        year: row.payroll_year,
-        label: date.toLocaleDateString(undefined, { month: "long", year: "numeric" }),
+        month,
+        year,
+        label: date.toLocaleDateString(undefined, {
+          month: "long",
+          year: "numeric",
+        }),
       });
     }
   }
@@ -274,7 +294,7 @@ export async function getPayrollExcludedStaffIds(options: {
     .eq("payroll_year", options.year);
 
   if (error) {
-    console.error("getPayrollExcludedStaffIds error:", error);
+    logQueryError("getPayrollExcludedStaffIds error:", error);
     return [];
   }
 

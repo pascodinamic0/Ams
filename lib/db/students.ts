@@ -68,12 +68,14 @@ export type StudentListItem = {
   class_name: string | null;
   guardian_name: string | null;
   status: string;
+  tags: string[];
 };
 
 export async function getStudents(options?: {
   search?: string;
   classId?: string;
   status?: string;
+  tag?: string;
   branchId?: string;
   schoolId?: string;
 }): Promise<StudentListItem[]> {
@@ -88,6 +90,7 @@ export async function getStudents(options?: {
       last_name,
       photo_url,
       status,
+      tags,
       class_id,
       classes(name),
       guardian_students(guardians(name))
@@ -105,6 +108,9 @@ export async function getStudents(options?: {
   }
   if (options?.status) {
     query = query.eq("status", options.status);
+  }
+  if (options?.tag) {
+    query = query.contains("tags", [options.tag]);
   }
   if (options?.search) {
     const term = `%${options.search}%`;
@@ -135,6 +141,7 @@ export async function getStudents(options?: {
       class_name: (s.classes as { name?: string } | null)?.name ?? null,
       guardian_name: guardianName,
       status: s.status ?? "active",
+      tags: Array.isArray(s.tags) ? (s.tags as string[]) : [],
     };
   });
 }

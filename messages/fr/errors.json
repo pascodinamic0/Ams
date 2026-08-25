@@ -162,6 +162,7 @@
   "onlyPlatformAdminsDeleteSchools": "Seuls les administrateurs de la plateforme peuvent supprimer des écoles",
   "invalidFormData": "Données de formulaire invalides",
   "noPermissionOnboardStudents": "Vous n'avez pas l'autorisation d'inscrire des élèves",
+  "noPermissionUpdateEnrollment": "Seuls les administrateurs académiques peuvent modifier le statut et les tags d'inscription",
   "failedOnboardStudent": "Échec de l'inscription de l'élève",
   "failedCreateGuardian": "Échec de la création du tuteur",
   "noPermissionSchoolApprovals": "Vous n'avez pas l'autorisation de gérer les approbations d'écoles",

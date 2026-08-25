@@ -34,7 +34,7 @@
   "chartUsersByRole": "Users by role",
   "chartSchoolsByStatus": "Schools by status",
   "noSchoolsYet": "No schools yet",
-  "noSchoolsDesc": "Add your first school to get started",
+  "noSchoolsDesc": "Until a school is on this list, there's nothing to approve or support—add the first one.",
   "noRoles": "No roles",
   "noRolesDesc": "Default roles are seeded during migration",
   "noAuditEntries": "No audit entries",

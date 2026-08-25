@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { logQueryError } from "@/lib/supabase/log-query-error";
 
 export type SubjectListItem = {
   id: string;
@@ -13,7 +14,7 @@ export async function getSubjects(branchId?: string): Promise<SubjectListItem[]>
 
   const { data, error } = await query;
   if (error) {
-    console.error("getSubjects error:", error);
+    logQueryError("getSubjects error:", error);
     return [];
   }
   return data ?? [];

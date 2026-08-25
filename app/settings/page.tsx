@@ -14,9 +14,11 @@ import { PasswordStrength } from "@/components/ui/password-strength";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { InstallAppButton } from "@/components/pwa/install-app-button";
 import { NotificationSettingsCard } from "@/components/settings/notification-settings-card";
+import { PhoneLinkCard } from "@/components/settings/phone-link-card";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { UserAvatar } from "@/components/layout/user-avatar";
+import { expandStaffPin } from "@/lib/auth/staff-pin";
 import { createClient } from "@/lib/supabase/client";
 import { uploadUserAvatar } from "@/lib/profile/avatar";
 import { toast } from "@/lib/toast";
@@ -97,6 +99,7 @@ export default function SettingsPage() {
       <LanguageCard
         lockedLocale={profile?.schoolId ? profile.schoolLocale : null}
       />
+      <PhoneLinkCard />
       <AppInstallCard />
       <SecurityCard />
     </div>
@@ -298,7 +301,7 @@ function SecurityCard() {
       if (email) {
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
-          password: data.current_password,
+          password: expandStaffPin(data.current_password),
         });
         if (signInError) {
           toast.error(tv("currentPasswordIncorrect"));

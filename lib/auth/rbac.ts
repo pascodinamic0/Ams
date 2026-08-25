@@ -105,10 +105,27 @@ export const DISCIPLINE_ROLES: UserRole[] = [
   "supervisor",
 ];
 
+/** School admins who see /academic/tasks (mirrors is_task_workspace_role). */
+export const TASK_WORKSPACE_ROLES: UserRole[] = [
+  "academic_admin",
+  "admin_coordinator",
+  "principal",
+  "registrar",
+  "admissions_officer",
+  "pedagogy_coordinator",
+];
+
 /** Permanently deleting a student record is academic-admin (or platform admin) only. */
 export function canDeleteStudents(role: string | null | undefined): boolean {
   const normalized = normalizeRole(role);
   return normalized === "academic_admin" || normalized === "super_admin";
+}
+
+/** Status / enrollment tags (follow-up, etc.) — academic-admin or platform admin. */
+export function canManageStudentEnrollment(
+  role: string | null | undefined
+): boolean {
+  return canDeleteStudents(role);
 }
 
 /** Enrolling into a full class requires academic-admin (or platform admin) override. */

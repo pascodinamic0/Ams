@@ -1,20 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import {
+  getIosSharePlacement,
+  isIosDevice,
+  isIosInAppBrowser,
+  type IosSharePlacement,
+} from "@/lib/pwa/device";
 import { isStandaloneMode } from "@/lib/pwa/display-mode";
 
 export interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
-
-function isIosDevice() {
-  if (typeof window === "undefined") return false;
-  const ua = window.navigator.userAgent;
-  // Classic iPhone / iPad / iPod user agents
-  if (/iphone|ipad|ipod/i.test(ua)) return true;
-  // iPadOS 13+ reports as Macintosh but is touch-capable
-  return /macintosh/i.test(ua) && window.navigator.maxTouchPoints > 1;
 }
 
 let sharedDeferredPrompt: BeforeInstallPromptEvent | null = null;
@@ -41,31 +38,45 @@ function registerInstallListener() {
   });
 }
 
+function subscribeNoop() {
+  return () => {};
+}
+
+function subscribeStandalone(onStoreChange: () => void) {
+  const media = window.matchMedia("(display-mode: standalone)");
+  media.addEventListener("change", onStoreChange);
+  window.addEventListener("appinstalled", onStoreChange);
+  return () => {
+    media.removeEventListener("change", onStoreChange);
+    window.removeEventListener("appinstalled", onStoreChange);
+  };
+}
+
+/** True only after hydration — safe to read `window` / user agent. */
+function useIsClient() {
+  return useSyncExternalStore(subscribeNoop, () => true, () => false);
+}
+
 export function usePwaInstall() {
+  const isClient = useIsClient();
+  const installed = useSyncExternalStore(
+    subscribeStandalone,
+    isStandaloneMode,
+    () => false
+  );
   const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
-  const [installed, setInstalled] = useState(false);
-  const [ios, setIos] = useState(false);
+    useState<BeforeInstallPromptEvent | null>(() => sharedDeferredPrompt);
 
   useEffect(() => {
     registerInstallListener();
-    setIos(isIosDevice());
-    setInstalled(isStandaloneMode());
 
     function handlePromptChange(prompt: BeforeInstallPromptEvent | null) {
       setDeferredPrompt(prompt);
     }
 
     listeners.add(handlePromptChange);
-    setDeferredPrompt(sharedDeferredPrompt);
-
-    const media = window.matchMedia("(display-mode: standalone)");
-    const handleDisplayChange = () => setInstalled(isStandaloneMode());
-    media.addEventListener("change", handleDisplayChange);
-
     return () => {
       listeners.delete(handlePromptChange);
-      media.removeEventListener("change", handleDisplayChange);
     };
   }, []);
 
@@ -75,14 +86,22 @@ export function usePwaInstall() {
     const { outcome } = await sharedDeferredPrompt.userChoice;
     sharedDeferredPrompt = null;
     notifyListeners();
-    setInstalled(isStandaloneMode());
     return outcome === "accepted";
   }, []);
+
+  const ios = isClient && isIosDevice();
+  const inAppBrowser = isClient && isIosInAppBrowser();
+  const sharePlacement: IosSharePlacement = isClient
+    ? getIosSharePlacement()
+    : "bottom";
 
   return {
     deferredPrompt,
     installed,
     ios,
+    inAppBrowser,
+    sharePlacement,
+    ready: isClient,
     canInstall: Boolean(deferredPrompt),
     install,
   };

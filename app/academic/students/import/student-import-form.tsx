@@ -7,7 +7,9 @@ import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { importStudentsBatch } from "@/lib/actions/students-import";
+import { formatStudentStatusLabel } from "@/lib/students/status";
 import type { StudentImportRow } from "@/lib/validations/academic";
+import { STUDENT_STATUSES } from "@/lib/validations/student";
 import { toast } from "@/lib/toast";
 
 type ClassOption = { id: string; name: string };
@@ -119,10 +121,12 @@ export function StudentImportForm({
   const classNames = useMemo(() => classes.map((c) => c.name).join(", "), [classes]);
 
   function statusLabel(status: StudentImportRow["status"]) {
-    if (status === "active") return tc("active");
-    if (status === "inactive") return tc("inactive");
-    if (status === "graduated") return t("statusGraduated");
-    return status;
+    return formatStudentStatusLabel(status, {
+      active: tc("active"),
+      pending: tc("pending"),
+      inactive: tc("inactive"),
+      graduated: t("statusGraduated"),
+    });
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -187,7 +191,7 @@ export function StudentImportForm({
           continue;
         }
 
-        if (statusRaw && !["active", "inactive", "graduated"].includes(statusRaw)) {
+        if (statusRaw && !(STUDENT_STATUSES as readonly string[]).includes(statusRaw)) {
           errors.push(t("csvInvalidStatus", { row: rowNumber }));
           continue;
         }

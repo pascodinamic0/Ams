@@ -45,6 +45,8 @@
   --mkt-inverse: #0a0a0a;
   --mkt-inverse-ink: #ffffff;
   --mkt-header: rgba(255, 255, 255, 0.9);
+  --mkt-navy: #1a365d;
+  --mkt-navy-light: #2c5282;
   color-scheme: light;
 }
 
@@ -76,6 +78,8 @@ html.dark {
   --mkt-inverse: #ffffff;
   --mkt-inverse-ink: #000000;
   --mkt-header: rgba(0, 0, 0, 0.8);
+  --mkt-navy: #1e3a5f;
+  --mkt-navy-light: #2c5282;
   color-scheme: dark;
 }
 
@@ -123,6 +127,8 @@ html.dark {
   --color-mkt-inverse: var(--mkt-inverse);
   --color-mkt-inverse-ink: var(--mkt-inverse-ink);
   --color-mkt-header: var(--mkt-header);
+  --color-mkt-navy: var(--mkt-navy);
+  --color-mkt-navy-light: var(--mkt-navy-light);
 }
 
 body {
@@ -233,6 +239,8 @@ body {
   --mkt-inverse: #0a0a0a;
   --mkt-inverse-ink: #ffffff;
   --mkt-header: rgba(255, 255, 255, 0.9);
+  --mkt-navy: #1a365d;
+  --mkt-navy-light: #2c5282;
   background: var(--mkt-canvas);
   color: var(--mkt-ink);
 }
@@ -261,6 +269,8 @@ html.dark .marketing-surface {
   --mkt-inverse: #ffffff;
   --mkt-inverse-ink: #000000;
   --mkt-header: rgba(0, 0, 0, 0.8);
+  --mkt-navy: #1e3a5f;
+  --mkt-navy-light: #2c5282;
 }
 
 ::selection {

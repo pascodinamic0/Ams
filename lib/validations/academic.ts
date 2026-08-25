@@ -103,7 +103,7 @@ export const studentImportRowSchema = z.object({
   last_name: z.string().min(1, "lastNameRequired"),
   date_of_birth: z.string().min(1, "dobRequired"),
   class_id: z.string().uuid("classRequired"),
-  status: z.enum(["active", "graduated", "inactive"]).default("active"),
+  status: z.enum(["active", "pending", "graduated", "inactive"]).default("active"),
 });
 
 export type ClassFormData = z.infer<typeof classSchema>;

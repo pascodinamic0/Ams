@@ -4,8 +4,40 @@ import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { requireAdminClient } from "@/lib/supabase/admin";
+import { syncAuthUserPhone } from "@/lib/auth/sync-auth-phone";
+import { normalizeToE164 } from "@/lib/phone/e164";
 import { guardianSchema, type GuardianFormData } from "@/lib/validations";
 import { formatPersonName } from "@/lib/utils";
+
+async function maybeSyncGuardianAuthPhone(guardianId: string) {
+  const supabase = await createClient();
+  const { data: guardian } = await supabase
+    .from("guardians")
+    .select("auth_user_id, phone")
+    .eq("id", guardianId)
+    .maybeSingle();
+
+  if (!guardian?.auth_user_id || !guardian.phone) return;
+
+  const e164 = normalizeToE164(guardian.phone);
+  if (!e164) return;
+
+  const adminResult = requireAdminClient();
+  if ("error" in adminResult) {
+    console.error("maybeSyncGuardianAuthPhone admin:", adminResult.error);
+    return;
+  }
+
+  const result = await syncAuthUserPhone(
+    adminResult.client,
+    guardian.auth_user_id,
+    e164
+  );
+  if (result.error) {
+    console.error("maybeSyncGuardianAuthPhone:", result.error);
+  }
+}
 
 function guardianRowFromForm(data: GuardianFormData) {
   const first_name = data.first_name.trim();
@@ -111,6 +143,8 @@ export async function updateGuardian(
     console.error("updateGuardian error:", error);
     return { error: error.message };
   }
+
+  await maybeSyncGuardianAuthPhone(id);
 
   revalidatePath("/academic");
   revalidatePath("/academic/students");

@@ -3,6 +3,7 @@ export type GetAccessCopy = {
   heroTitle: string;
   heroTitleHighlight: string;
   heroSubtitle: string;
+  seeOffer: string;
   createSchoolAccount: string;
   alreadyHaveAccount: string;
   journeyTitle: string;

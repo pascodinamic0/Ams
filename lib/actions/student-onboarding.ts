@@ -13,6 +13,7 @@ import {
   type StudentOnboardingData,
 } from "@/lib/validations/student-onboarding";
 import { normalizeGender } from "@/lib/validations/student";
+import { normalizeStudentTags } from "@/lib/students/tags";
 import { formatPersonName } from "@/lib/utils";
 import {
   assertClassCapacity,
@@ -150,6 +151,7 @@ export async function createStudentWithGuardians(
         gender: normalizeGender(data.gender),
         class_id: data.class_id,
         status: data.status,
+        tags: normalizeStudentTags(data.tags),
         home_address: data.home_address || null,
         notes: data.notes || null,
         photo_url: data.photo_url?.trim() || null,

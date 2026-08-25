@@ -8,10 +8,14 @@ import { UserAvatar } from "@/components/layout/user-avatar";
 import { getStudentProfileBundle } from "@/lib/db/student-profile";
 import { getClasses } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { canDeleteStudents, canOverrideClassCapacity } from "@/lib/auth/rbac";
+import { canDeleteStudents, canManageStudentEnrollment, canOverrideClassCapacity } from "@/lib/auth/rbac";
 import { formatPersonName } from "@/lib/utils";
 import { DeleteStudentButton } from "../delete-button";
 import { StudentClassAssign } from "@/components/students/student-class-assign";
+import { StudentEnrollmentEditor } from "@/components/students/student-enrollment-editor";
+import { StudentStatusBadge } from "@/components/students/student-status-badge";
+import { formatStudentStatusLabel } from "@/lib/students/status";
+import { normalizeStudentTags } from "@/lib/students/tags";
 
 type GuardianLink = {
   can_pickup?: boolean | null;
@@ -67,6 +71,7 @@ export default async function StudentDetailPage({
   const profile = await getCurrentProfile();
   const canDelete = canDeleteStudents(profile?.role);
   const canOverride = canOverrideClassCapacity(profile?.role);
+  const canManageEnrollment = canManageStudentEnrollment(profile?.role);
 
   const bundle = await getStudentProfileBundle(id);
   if (!bundle) notFound();
@@ -98,6 +103,26 @@ export default async function StudentDetailPage({
   const className =
     (student.classes as { name?: string } | null)?.name ?? tc("emptyDash");
   const termOrder = Object.keys(gradesByTerm).sort();
+  const enrollmentTags = normalizeStudentTags(
+    Array.isArray(student.tags) ? (student.tags as string[]) : []
+  );
+  const statusCopy = {
+    active: tc("active"),
+    pending: tc("pending"),
+    inactive: tc("inactive"),
+    graduated: t("statusGraduated"),
+  };
+  const statusLabel = formatStudentStatusLabel(
+    student.status ?? "active",
+    statusCopy
+  );
+
+  function tagLabel(tag: string) {
+    if (tag === "follow_up") return t("tagFollowUp");
+    if (tag === "incomplete_docs") return t("tagIncompleteDocs");
+    if (tag === "fee_hold") return t("tagFeeHold");
+    return tag;
+  }
 
   return (
     <div className="space-y-6">
@@ -117,9 +142,18 @@ export default async function StudentDetailPage({
                   {t("studentId")}: {tc("emptyDash")}
                 </p>
               )}
-              <span className="rounded-md bg-stone-100 px-2 py-0.5 text-xs capitalize text-stone-600 dark:bg-stone-800 dark:text-stone-300">
-                {student.status}
-              </span>
+              <StudentStatusBadge
+                status={student.status ?? "active"}
+                label={statusLabel}
+              />
+              {enrollmentTags.map((tag) => (
+                <span
+                  key={tag}
+                  className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-900/40 dark:text-amber-100"
+                >
+                  {tagLabel(tag)}
+                </span>
+              ))}
               <span className="text-sm text-stone-500">{className}</span>
             </div>
           </div>
@@ -136,6 +170,17 @@ export default async function StudentDetailPage({
           {canDelete ? <DeleteStudentButton id={id} name={fullName} /> : null}
         </div>
       </div>
+
+      {student.status === "pending" ? (
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
+          {t("studentPendingNotice")}
+        </div>
+      ) : null}
+      {student.status === "inactive" ? (
+        <div className="rounded-lg border border-stone-200 bg-stone-100 px-4 py-3 text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200">
+          {t("studentInactiveNotice")}
+        </div>
+      ) : null}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
@@ -177,11 +222,24 @@ export default async function StudentDetailPage({
               classes={classes}
               canOverrideCapacity={canOverride}
             />
+            {canManageEnrollment ? (
+              <StudentEnrollmentEditor
+                studentId={student.id}
+                currentStatus={student.status ?? "active"}
+                currentTags={enrollmentTags}
+              />
+            ) : null}
             <div className="space-y-2 border-t border-stone-200 pt-4 dark:border-stone-800">
             <p>
               <span className="text-stone-500">{tc("status")}:</span>{" "}
-              {student.status}
+              {statusLabel}
             </p>
+            {enrollmentTags.length > 0 ? (
+              <p>
+                <span className="text-stone-500">{t("enrollmentTags")}:</span>{" "}
+                {enrollmentTags.map(tagLabel).join(", ")}
+              </p>
+            ) : null}
             <p>
               <span className="text-stone-500">{t("dob")}:</span>{" "}
               {student.date_of_birth ?? tc("emptyDash")}

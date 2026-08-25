@@ -2,6 +2,7 @@
   "invalidEmail": "Invalid email",
   "passwordRequired": "Password is required",
   "passwordMinLength": "Password must be at least 8 characters",
+  "passwordStaffPin": "Use exactly 4 digits or 4 letters",
   "passwordUppercase": "Must include an uppercase letter",
   "passwordLowercase": "Must include a lowercase letter",
   "passwordNumber": "Must include a number",

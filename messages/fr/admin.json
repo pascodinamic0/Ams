@@ -34,7 +34,7 @@
   "chartUsersByRole": "Utilisateurs par rôle",
   "chartSchoolsByStatus": "Écoles par statut",
   "noSchoolsYet": "Aucune école pour l'instant",
-  "noSchoolsDesc": "Ajoutez votre première école pour commencer",
+  "noSchoolsDesc": "Tant qu'aucune école n'est sur cette liste, il n'y a rien à approuver ni à soutenir—ajoutez la première.",
   "noRoles": "Aucun rôle",
   "noRolesDesc": "Les rôles par défaut sont créés lors de la migration",
   "noAuditEntries": "Aucune entrée d'audit",

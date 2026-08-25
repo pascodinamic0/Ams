@@ -7,11 +7,14 @@ import { useTranslations } from "next-intl";
 import { z } from "zod";
 import { AuthDivider } from "@/components/auth/auth-divider";
 import { GoogleAuthButton } from "@/components/auth/google-auth-button";
+import { LoginMethodTabs, type LoginMethod } from "@/components/auth/login-method-tabs";
+import { PhoneLoginForm } from "@/components/auth/phone-login-form";
 import { useFormContext } from "react-hook-form";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { expandStaffPin } from "@/lib/auth/staff-pin";
 import { createClient } from "@/lib/supabase/client";
 import { resolvePostAuthDestination } from "@/lib/actions/post-auth-redirect";
 import { toast } from "@/lib/toast";
@@ -68,7 +71,7 @@ export default function LoginPage() {
           <Suspense fallback={<LoginSkeleton />}>
             <LoginOAuthSection />
             <AuthDivider />
-            <LoginFormContent />
+            <LoginCredentialsSection />
           </Suspense>
 
           <p className="mt-6 text-center text-sm text-muted">
@@ -113,6 +116,17 @@ function LoginSkeleton() {
   );
 }
 
+function LoginCredentialsSection() {
+  const [method, setMethod] = useState<LoginMethod>("email");
+
+  return (
+    <>
+      <LoginMethodTabs value={method} onChange={setMethod} />
+      {method === "email" ? <LoginFormContent /> : <PhoneLoginForm />}
+    </>
+  );
+}
+
 function LoginFormContent() {
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
@@ -133,7 +147,10 @@ function LoginFormContent() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { data: authData, error } = await supabase.auth.signInWithPassword(data);
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: expandStaffPin(data.password),
+      });
       if (error) throw error;
 
       let destination = redirectParam ?? "/admin";

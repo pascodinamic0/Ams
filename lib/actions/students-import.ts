@@ -51,6 +51,7 @@ export async function importStudentsBatch(
 
     const studentResult = await createStudent({
       ...parsed.data,
+      tags: [],
       school_id: context.school_id,
       branch_id: context.branch_id,
       overrideCapacity: context.overrideCapacity,

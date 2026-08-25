@@ -28,10 +28,13 @@ export default async function AcademicDisciplinePage() {
         </p>
       </div>
       <DisciplineBoard
+        schoolId={profile.school_id}
         incidents={incidents}
         students={students.map((student) => ({
           id: student.id,
-          name: formatPersonName(student),
+          name: student.class_name
+            ? `${formatPersonName(student)} · ${student.class_name}`
+            : formatPersonName(student),
         }))}
       />
     </div>

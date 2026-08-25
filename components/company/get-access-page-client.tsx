@@ -185,8 +185,16 @@ export function GetAccessPageClient({ copy }: { copy: GetAccessCopy }) {
               {copy.heroTitle}{" "}
               <span className="text-mkt-ink/70">{copy.heroTitleHighlight}</span>
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-sm uppercase tracking-[0.14em] text-mkt-ink/50 sm:mt-8 sm:text-base">
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-mkt-ink/60 sm:mt-8">
               {copy.heroSubtitle}
+            </p>
+            <p className="mt-4">
+              <Link
+                href="/offre"
+                className="text-sm font-semibold text-mkt-navy hover:text-amber-600"
+              >
+                {copy.seeOffer} →
+              </Link>
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-4">
               <Link
@@ -219,7 +227,7 @@ export function GetAccessPageClient({ copy }: { copy: GetAccessCopy }) {
             <h2 className="font-display text-2xl tracking-tight text-mkt-ink sm:text-4xl md:text-5xl">
               {copy.includedTitle}
             </h2>
-            <p className="mt-4 text-sm uppercase tracking-[0.16em] text-mkt-ink/50 sm:mt-6 sm:text-base">
+            <p className="mt-4 text-base text-mkt-ink/55 sm:mt-6">
               {copy.includedSubtitle}
             </p>
 
