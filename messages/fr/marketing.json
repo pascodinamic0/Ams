@@ -85,8 +85,10 @@
     "allFeatures": "Voir toutes les fonctionnalités"
   },
   "offer": {
-    "title": "Offre pour chaque école",
-    "intro": "Délestages, internet faible, pas d'ordinateurs, personnel qui n'a jamais appris le logiciel — la plupart des écoles achètent des outils inutilisés. Future Ready est le package complet : ShuleOS, formation, courant, connexion, une machine sur place et un site web complet offert.",
+    "eyebrow": "Future Ready",
+    "title": "La plupart des écoles achètent un logiciel qui meurt au premier délestage.",
+    "intro": "Future Ready, c'est la pile complète — app, formation, courant, internet, une machine sur place et un site web offert — pour que les outils servent vraiment.",
+    "proofLine": "Installation à Kinshasa · support WhatsApp quand il faut un humain",
     "pillar1Title": "Application de gestion",
     "pillar1Short": "ShuleOS",
     "pillar1Desc": "Frais, notes, présences et messages parents dans un dossier unique.",

@@ -85,8 +85,10 @@
     "allFeatures": "See all features"
   },
   "offer": {
-    "title": "Offer for every school",
-    "intro": "Blackouts, weak internet, no computers, and staff who never learned the software — most schools buy tools that sit unused. Future Ready is the full package: ShuleOS, training, power, connection, a machine on site, and a free school website.",
+    "eyebrow": "Future Ready",
+    "title": "Most schools buy software that dies in the first blackout.",
+    "intro": "Future Ready is the full stack — app, training, power, internet, a machine on site, and a free school website — so the tools actually get used.",
+    "proofLine": "Kinshasa-side setup · WhatsApp support when you need a human",
     "pillar1Title": "Management app",
     "pillar1Short": "ShuleOS",
     "pillar1Desc": "Fees, grades, attendance, and parent messages in one record.",
