@@ -15,6 +15,8 @@ const REALTIME_DEBOUNCE_MS = 400;
  * ~8s is typical for operational dashboards (Jira/ServiceNow-class list freshness).
  */
 const POLL_INTERVAL_MS = 8_000;
+/** Topic suffix so Strict Mode remounts never reuse a subscribed Realtime channel. */
+let liveChannelSeq = 0;
 
 /**
  * Keeps App Router server data fresh without a manual browser reload.
@@ -60,8 +62,11 @@ export function AutoRefreshProvider() {
     let channel: ReturnType<typeof supabase.channel> | null = null;
     let interval: number | undefined;
     let cancelled = false;
+    // Invalidates in-flight startLive() after unmount, sign-out, or a newer start.
+    let liveGeneration = 0;
 
     function stopLive() {
+      liveGeneration += 1;
       if (interval !== undefined) {
         window.clearInterval(interval);
         interval = undefined;
@@ -74,6 +79,7 @@ export function AutoRefreshProvider() {
 
     async function startLive(userId: string) {
       stopLive();
+      const generation = liveGeneration;
       if (cancelled) return;
 
       interval = window.setInterval(() => {
@@ -86,11 +92,12 @@ export function AutoRefreshProvider() {
         .eq("id", userId)
         .maybeSingle();
 
-      if (cancelled) return;
+      if (cancelled || generation !== liveGeneration) return;
 
       const schoolId = profile?.school_id as string | null | undefined;
       const isSuperAdmin = profile?.role === "super_admin";
-      const live = supabase.channel(`school-live:${userId}`);
+      // Unique topic: supabase.channel(name) returns an existing subscribed channel.
+      const live = supabase.channel(`school-live:${userId}:${++liveChannelSeq}`);
 
       if (schoolId) {
         live.on(
@@ -125,6 +132,11 @@ export function AutoRefreshProvider() {
         },
         refreshSoon
       );
+
+      if (cancelled || generation !== liveGeneration) {
+        void supabase.removeChannel(live);
+        return;
+      }
 
       channel = live.subscribe();
     }
