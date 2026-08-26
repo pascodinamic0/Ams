@@ -79,7 +79,12 @@ export function PendingApprovalCard({
           <>
             <SignOutButton />
             <Link href="/settings">
-              <Button variant="outline">{t("accountSettings")}</Button>
+              <Button
+                variant="outline"
+                className="border-white/35 text-white hover:border-white hover:bg-white/10 hover:text-white"
+              >
+                {t("accountSettings")}
+              </Button>
             </Link>
           </>
         ) : (
