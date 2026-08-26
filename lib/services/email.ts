@@ -143,25 +143,31 @@ export async function sendInvitePasswordEmail(opts: {
   to: string;
   name: string;
   setupUrl: string;
+  schoolName?: string | null;
   locale?: string | null;
 }): Promise<SendEmailResult> {
   const locale = opts.locale;
   const displayName = opts.name.trim() || tEmail(locale, "invite.greetingFallback");
   const name = escapeHtml(displayName);
   const url = escapeHtml(opts.setupUrl);
+  const schoolName = opts.schoolName?.trim();
+  const school = schoolName ? escapeHtml(schoolName) : "";
+  const schoolClauseHtml = school ? `, <strong>${school}</strong>,` : "";
+  const schoolClauseText = schoolName ? `, ${schoolName},` : "";
 
   return sendEmail({
     to: opts.to,
     subject: tEmail(locale, "invite.subject"),
     html: `
       <p>${tEmail(locale, "invite.greeting", { name })}</p>
-      <p>${tEmail(locale, "invite.body")}</p>
+      <p>${tEmail(locale, "invite.body", { schoolClause: schoolClauseHtml })}</p>
       <p><a href="${url}">${tEmail(locale, "invite.cta")}</a></p>
       <p>${tEmail(locale, "invite.expiry")}</p>
     `,
     text: tEmail(locale, "invite.text", {
       name: displayName,
       url: opts.setupUrl,
+      schoolClause: schoolClauseText,
     }),
   });
 }

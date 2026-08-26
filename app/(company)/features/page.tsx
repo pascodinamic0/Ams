@@ -1,10 +1,7 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 import { companyIdentity } from "@/lib/company/identity";
+import { HashScroll } from "@/components/company/hash-scroll";
 import {
   GraduationCap,
   School,
@@ -17,92 +14,66 @@ import {
   ArrowRight,
 } from "lucide-react";
 
-function scrollToHashTarget() {
-  const hash = window.location.hash.slice(1);
-  if (!hash) return;
+export default async function FeaturesPage() {
+  const t = await getTranslations("marketing.features");
+  const tNav = await getTranslations("marketing.nav");
 
-  const target = document.getElementById(hash);
-  if (target) {
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-}
-
-export default function FeaturesPage() {
-  const t = useTranslations("marketing.features");
-  const tNav = useTranslations("marketing.nav");
-
-  const features = useMemo(
-    () => [
-      {
-        slug: "academic",
-        title: t("academicModule"),
-        icon: <GraduationCap className="h-5 w-5" />,
-        items: t.raw("academicItems") as string[],
-      },
-      {
-        slug: "teacher",
-        title: t("teacherModule"),
-        icon: <Users className="h-5 w-5" />,
-        items: t.raw("teacherItems") as string[],
-      },
-      {
-        slug: "finance",
-        title: t("financeModule"),
-        icon: <Wallet className="h-5 w-5" />,
-        items: t.raw("financeItems") as string[],
-      },
-      {
-        slug: "operations",
-        title: t("operationsModule"),
-        icon: <Settings className="h-5 w-5" />,
-        items: t.raw("operationsItems") as string[],
-      },
-      {
-        slug: "parent-portal",
-        title: t("parentPortal"),
-        icon: <School className="h-5 w-5" />,
-        items: t.raw("parentItems") as string[],
-      },
-      {
-        slug: "student-portal",
-        title: t("studentPortal"),
-        icon: <BookOpen className="h-5 w-5" />,
-        items: t.raw("studentItems") as string[],
-      },
-      {
-        slug: "analytics",
-        title: t("analyticsModule"),
-        icon: <BarChart3 className="h-5 w-5" />,
-        items: t.raw("analyticsItems") as string[],
-      },
-      {
-        slug: "school-websites",
-        title: t("schoolWebsitesModule"),
-        icon: <Globe className="h-5 w-5" />,
-        items: t.raw("schoolWebsitesItems") as string[],
-      },
-    ],
-    [t]
-  );
-
-  useEffect(() => {
-    const timeoutId = window.setTimeout(scrollToHashTarget, 150);
-    window.addEventListener("hashchange", scrollToHashTarget);
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      window.removeEventListener("hashchange", scrollToHashTarget);
-    };
-  }, []);
+  const features = [
+    {
+      slug: "academic",
+      title: t("academicModule"),
+      icon: GraduationCap,
+      items: t.raw("academicItems") as string[],
+    },
+    {
+      slug: "teacher",
+      title: t("teacherModule"),
+      icon: Users,
+      items: t.raw("teacherItems") as string[],
+    },
+    {
+      slug: "finance",
+      title: t("financeModule"),
+      icon: Wallet,
+      items: t.raw("financeItems") as string[],
+    },
+    {
+      slug: "operations",
+      title: t("operationsModule"),
+      icon: Settings,
+      items: t.raw("operationsItems") as string[],
+    },
+    {
+      slug: "parent-portal",
+      title: t("parentPortal"),
+      icon: School,
+      items: t.raw("parentItems") as string[],
+    },
+    {
+      slug: "student-portal",
+      title: t("studentPortal"),
+      icon: BookOpen,
+      items: t.raw("studentItems") as string[],
+    },
+    {
+      slug: "analytics",
+      title: t("analyticsModule"),
+      icon: BarChart3,
+      items: t.raw("analyticsItems") as string[],
+    },
+    {
+      slug: "school-websites",
+      title: t("schoolWebsitesModule"),
+      icon: Globe,
+      items: t.raw("schoolWebsitesItems") as string[],
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-mkt-canvas pb-24 pt-[calc(env(safe-area-inset-top)+7.5rem)] sm:pt-40 md:pt-44 lg:pt-48">
+      <HashScroll />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-3xl"
-        >
+        <div className="max-w-3xl">
           <p className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.28em] text-mkt-ink/60">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500" aria-hidden />
             {companyIdentity.productName}
@@ -114,57 +85,46 @@ export default function FeaturesPage() {
           <p className="mt-6 max-w-2xl text-base leading-relaxed text-mkt-ink/60 sm:mt-8 sm:text-lg">
             {t("heroSubtitle", { productName: companyIdentity.productName })}
           </p>
-        </motion.div>
+        </div>
 
         <div className="mt-16 grid gap-4 sm:mt-20 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f, idx) => (
-            <motion.div
-              key={f.slug}
-              id={f.slug}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.04 }}
-              className="group scroll-mt-32 border border-mkt-ink/10 bg-transparent p-6 transition-colors hover:border-mkt-ink/25 sm:p-8"
-            >
-              <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-lg bg-mkt-navy text-white">
-                  {f.icon}
+          {features.map((f) => {
+            const Icon = f.icon;
+            return (
+              <div
+                key={f.slug}
+                id={f.slug}
+                className="group scroll-mt-32 border border-mkt-ink/10 bg-transparent p-6 transition-colors hover:border-mkt-ink/25 sm:p-8"
+              >
+                <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-lg bg-mkt-navy text-white">
+                  <Icon className="h-5 w-5" />
                 </div>
                 <h2 className="mb-4 text-lg font-semibold text-mkt-ink sm:text-xl">
                   {f.title}
                 </h2>
-              <ul className="space-y-3">
-                {f.items.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-sm text-mkt-ink/55">
-                    <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-500" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
+                <ul className="space-y-3">
+                  {f.items.map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm text-mkt-ink/55">
+                      <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-500" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-12 text-center"
-        >
+        <div className="mt-12 text-center">
           <Link
             href="/school-management-system"
             className="text-sm font-medium text-amber-500 transition-colors hover:text-amber-400"
           >
             {t("schoolManagementGuide")}
           </Link>
-        </motion.div>
+        </div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-20 border border-mkt-ink/10 px-6 py-12 text-center sm:mt-24 sm:px-12 sm:py-16"
-        >
+        <div className="mt-20 border border-mkt-ink/10 px-6 py-12 text-center sm:mt-24 sm:px-12 sm:py-16">
           <h2 className="font-display text-2xl tracking-tight text-mkt-ink sm:text-4xl">
             {t("ctaTitle")}
           </h2>
@@ -186,7 +146,7 @@ export default function FeaturesPage() {
               {tNav("login")}
             </Link>
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

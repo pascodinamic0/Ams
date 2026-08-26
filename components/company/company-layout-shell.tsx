@@ -135,11 +135,6 @@ export function CompanyLayoutShell({
           </nav>
 
           <div className="flex shrink-0 items-center justify-end gap-1.5 justify-self-end md:gap-2 lg:gap-3">
-            <LanguageSwitcher
-              variant="buttons"
-              tone="marketing"
-              className="hidden sm:flex"
-            />
             <ThemeToggle
               variant="icon"
               tone="marketing"
@@ -160,6 +155,12 @@ export function CompanyLayoutShell({
             >
               {labels.workspace}
             </Link>
+            <LanguageSwitcher
+              variant="buttons"
+              tone="marketing"
+              inverted={useLightChrome}
+              className="hidden sm:block"
+            />
             <button
               type="button"
               aria-label={mobileMenuOpen ? labels.closeMenu : labels.openMenu}

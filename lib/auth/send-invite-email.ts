@@ -29,6 +29,7 @@ export async function sendPasswordSetupEmail(options: {
   email: string;
   name: string;
   role?: string;
+  schoolName?: string | null;
   linkType: "invite" | "recovery";
 }): Promise<{ user?: User; error?: string }> {
   const origin = await getServerRequestOrigin();
@@ -72,6 +73,7 @@ export async function sendPasswordSetupEmail(options: {
     to: options.email,
     name: options.name,
     setupUrl,
+    schoolName: options.schoolName,
     locale: await getLocale(),
   });
 

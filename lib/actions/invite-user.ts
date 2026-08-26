@@ -307,6 +307,13 @@ export async function inviteSchoolUser(input: {
 
   const email = parsed.data.email.toLowerCase().trim();
 
+  const { data: school } = await admin
+    .from("schools")
+    .select("name")
+    .eq("id", schoolId)
+    .maybeSingle();
+  const schoolName = school?.name;
+
   const { data: existingUsers } = await admin.auth.admin.listUsers();
   const existing = existingUsers?.users?.find(
     (u) => u.email?.toLowerCase() === email
@@ -337,6 +344,7 @@ export async function inviteSchoolUser(input: {
           email,
           name: parsed.data.name,
           role: parsed.data.role,
+          schoolName,
           linkType: "recovery",
         });
         if (resent.error) {
@@ -394,6 +402,7 @@ export async function inviteSchoolUser(input: {
       email,
       name: parsed.data.name,
       role: parsed.data.role,
+      schoolName,
       linkType: "recovery",
     });
     if (attached.error || !attached.user) {
@@ -431,6 +440,7 @@ export async function inviteSchoolUser(input: {
     email,
     name: parsed.data.name,
     role: parsed.data.role,
+    schoolName,
     linkType: "invite",
   });
 
