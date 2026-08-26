@@ -1,6 +1,8 @@
+import { cache } from "react";
 import { getRequestConfig } from "next-intl/server";
 import { cookies, headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { isMarketingPath } from "@/lib/i18n/marketing-paths";
 import {
   defaultLocale,
   defaultTimeZone,
@@ -10,7 +12,7 @@ import {
   type Locale,
 } from "./config";
 
-async function loadMessages(locale: string) {
+const loadMessages = cache(async (locale: string) => {
   const [
     common,
     nav,
@@ -92,7 +94,7 @@ async function loadMessages(locale: string) {
     notifications: notifications.default,
     billing: billing.default,
   };
-}
+});
 
 async function resolvePublicSchoolSiteLocale(): Promise<Locale | null> {
   try {
@@ -155,6 +157,9 @@ function resolveVisitorLocale(cookieLocale: string | undefined, acceptLanguage: 
 }
 
 export default getRequestConfig(async () => {
+  const headerStore = await headers();
+  const pathname = headerStore.get("x-pathname");
+
   // Public school sites follow that school's language, not the visitor's browser.
   const publicSiteLocale = await resolvePublicSchoolSiteLocale();
   if (publicSiteLocale) {
@@ -162,6 +167,19 @@ export default getRequestConfig(async () => {
       locale: publicSiteLocale,
       timeZone: defaultTimeZone,
       messages: await loadMessages(publicSiteLocale),
+    };
+  }
+
+  const cookieStore = await cookies();
+  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
+  const acceptLanguage = headerStore.get("accept-language");
+
+  // Marketing + auth funnel: honor the visitor cookie even when logged in.
+  if (isMarketingPath(pathname) && isValidLocale(cookieLocale)) {
+    return {
+      locale: cookieLocale,
+      timeZone: defaultTimeZone,
+      messages: await loadMessages(cookieLocale),
     };
   }
 
@@ -174,9 +192,6 @@ export default getRequestConfig(async () => {
     };
   }
 
-  const cookieStore = await cookies();
-  const cookieLocale = cookieStore.get(LOCALE_COOKIE)?.value;
-  const acceptLanguage = (await headers()).get("accept-language");
   const locale = resolveVisitorLocale(cookieLocale, acceptLanguage);
 
   return {

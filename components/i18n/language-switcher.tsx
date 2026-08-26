@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Check, ChevronDown } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { localeNames, type Locale } from "@/i18n/config";
@@ -59,21 +60,25 @@ export function LanguageSwitcher({
   inverted = false,
 }: LanguageSwitcherProps) {
   const locale = useLocale() as Locale;
+  const router = useRouter();
   const t = useTranslations("settings");
-  const [isPending, startTransition] = useTransition();
+  const [isPending, setIsPending] = useState(false);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  function handleChange(nextLocale: Locale) {
+  async function handleChange(nextLocale: Locale) {
     if (nextLocale === locale) {
       setOpen(false);
       return;
     }
     setOpen(false);
-    startTransition(async () => {
+    setIsPending(true);
+    try {
       await setLocale(nextLocale);
-      window.location.reload();
-    });
+      router.refresh();
+    } finally {
+      setIsPending(false);
+    }
   }
 
   useEffect(() => {

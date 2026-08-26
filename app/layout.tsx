@@ -105,7 +105,12 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="bg-background antialiased text-foreground">
-        <AppIntlProvider locale={locale} timeZone={timeZone} messages={clientMessages}>
+        <AppIntlProvider
+          key={locale}
+          locale={locale}
+          timeZone={timeZone}
+          messages={clientMessages}
+        >
           <ThemeProvider>
             <PwaRoot>{children}</PwaRoot>
             <AppToaster />

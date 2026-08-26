@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -21,10 +22,31 @@ import { companyIdentity } from "@/lib/company/identity";
 import { HeroVideoBackground } from "@/components/company/hero-video-background";
 import { HeroMobileSubtitle } from "@/components/company/hero-mobile-subtitle";
 import { HeroFixesTypewriter } from "@/components/company/hero-fixes-typewriter";
-import { FutureReadyOffer } from "@/components/company/future-ready-offer";
-import { PartnersRow } from "@/components/company/partners-row";
-import { PwaInstallBand } from "@/components/pwa/pwa-install-band";
 import { getPlatformModules } from "@/lib/i18n/modules";
+
+const FutureReadyOffer = dynamic(
+  () =>
+    import("@/components/company/future-ready-offer").then((m) => ({
+      default: m.FutureReadyOffer,
+    })),
+  { ssr: true }
+);
+
+const PartnersRow = dynamic(
+  () =>
+    import("@/components/company/partners-row").then((m) => ({
+      default: m.PartnersRow,
+    })),
+  { ssr: true }
+);
+
+const PwaInstallBand = dynamic(
+  () =>
+    import("@/components/pwa/pwa-install-band").then((m) => ({
+      default: m.PwaInstallBand,
+    })),
+  { ssr: true }
+);
 
 export function HomePage() {
   const t = useTranslations("marketing.home");
