@@ -73,6 +73,7 @@ type NavLabels = {
   exams: string;
   reportCards: string;
   feeStructure: string;
+  pendingEnrollments: string;
   invoices: string;
   outstandingFees: string;
   payments: string;
@@ -91,6 +92,7 @@ type NavLabels = {
   tasks: string;
   discipline: string;
   monthlyActivity: string;
+  dailyActivity: string;
   budget: string;
   billing: string;
 };
@@ -156,6 +158,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic/team", labelKey: "team", icon: icon.users },
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
     { href: "/academic/reports/monthly", labelKey: "monthlyActivity", icon: icon.reports },
+    { href: "/academic/reports/daily", labelKey: "dailyActivity", icon: icon.reports },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
@@ -201,6 +204,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
     { href: "/academic/reports/monthly", labelKey: "monthlyActivity", icon: icon.reports },
+    { href: "/academic/reports/daily", labelKey: "dailyActivity", icon: icon.reports },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
@@ -222,6 +226,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   finance_officer: [
     { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/billing", labelKey: "billing", icon: icon.billing },
+    { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices },
     { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.feeStructure },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices },
     { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.outstandingFees },
@@ -236,6 +241,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   ],
   cashier: [
     { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
+    { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices },
     { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.outstandingFees },
     { href: "/finance/payments", labelKey: "payments", icon: icon.payments },
@@ -244,6 +250,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   accountant: [
     { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/billing", labelKey: "billing", icon: icon.billing },
+    { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices },
     { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.feeStructure },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices },
     { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.outstandingFees },
@@ -323,18 +330,24 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   ],
 };
 
-function getNavForRole(role: string): NavItem[] {
+function getNavForRole(role: string, dailyReportsEnabled = true): NavItem[] {
   const normalized = role?.toLowerCase().replace(/\s/g, "_") ?? "student";
-  return ROLE_NAV[normalized] ?? ROLE_NAV.student;
+  const items = ROLE_NAV[normalized] ?? ROLE_NAV.student;
+  if (dailyReportsEnabled) return items;
+  return items.filter((item) => item.href !== "/academic/reports/daily");
 }
 
 interface SidebarProps {
   role?: string;
+  dailyReportsEnabled?: boolean;
 }
 
-export function Sidebar({ role = "student" }: SidebarProps) {
+export function Sidebar({
+  role = "student",
+  dailyReportsEnabled = true,
+}: SidebarProps) {
   const pathname = usePathname();
-  const navItems = getNavForRole(role);
+  const navItems = getNavForRole(role, dailyReportsEnabled);
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const tMessages = useTranslations("messages");

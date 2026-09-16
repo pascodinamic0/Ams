@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import { ExportPdfButton } from "@/components/students/export-pdf-button";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { canAccessPath, normalizeRole } from "@/lib/auth/rbac";
-import { getMonthlyActivityReport } from "@/lib/db/reports";
+import { getDailyActivityReport } from "@/lib/db/reports";
 import {
   getDailyReportsEnabledForSchool,
   getSchoolCurrencyForSchool,
@@ -15,29 +15,30 @@ import {
   ActivityReportView,
 } from "../activity-report-view";
 import { ReportPeriodTabs } from "../report-period-tabs";
-import { MonthPicker } from "./month-picker";
+import { DatePicker } from "./date-picker";
 
 const ALLOWED_ROLES = new Set(["academic_admin", "principal", "super_admin"]);
 
-function parseMonthParam(raw: string | undefined): { year: number; month: number } {
+function parseDateParam(raw: string | undefined): string {
   const now = new Date();
-  if (raw && /^\d{4}-\d{2}$/.test(raw)) {
-    const [y, m] = raw.split("-").map(Number);
-    if (y >= 2000 && y <= 2100 && m >= 1 && m <= 12) {
-      return { year: y, month: m };
+  const fallback = now.toISOString().slice(0, 10);
+  if (raw && /^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+    const [y, m, d] = raw.split("-").map(Number);
+    if (y >= 2000 && y <= 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+      return raw;
     }
   }
-  return { year: now.getFullYear(), month: now.getMonth() + 1 };
+  return fallback;
 }
 
-export default async function MonthlyActivityReportPage({
+export default async function DailyActivityReportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ month?: string }>;
+  searchParams: Promise<{ date?: string }>;
 }) {
   const profile = await getCurrentProfile();
   if (!profile?.school_id) redirect("/academic");
-  if (!canAccessPath(profile.role, "/academic/reports/monthly")) {
+  if (!canAccessPath(profile.role, "/academic/reports/daily")) {
     redirect("/academic");
   }
 
@@ -46,27 +47,30 @@ export default async function MonthlyActivityReportPage({
     redirect("/academic");
   }
 
+  const dailyEnabled = await getDailyReportsEnabledForSchool(profile.school_id);
+  if (!dailyEnabled) {
+    redirect("/academic/reports/monthly");
+  }
+
   const t = await getTranslations("academic");
   const tc = await getTranslations("common");
   const params = await searchParams;
-  const { year, month } = parseMonthParam(params.month);
-  const monthQuery = `${year}-${String(month).padStart(2, "0")}`;
+  const date = parseDateParam(params.date);
 
-  const [report, currency, dailyEnabled] = await Promise.all([
-    getMonthlyActivityReport(profile.school_id, year, month),
+  const [report, currency] = await Promise.all([
+    getDailyActivityReport(profile.school_id, date),
     getSchoolCurrencyForSchool(profile.school_id),
-    getDailyReportsEnabledForSchool(profile.school_id),
   ]);
 
-  const periodDisplay = format(new Date(year, month - 1, 1), "MMMM yyyy");
-  const today = new Date().toISOString().slice(0, 10);
+  const periodDisplay = format(new Date(`${date}T12:00:00`), "PPPP");
+  const monthQuery = date.slice(0, 7);
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <div>
-          <h1 className="text-2xl font-bold">{t("monthlyReportTitle")}</h1>
-          <p className="mt-1 text-sm text-stone-500">{t("monthlyReportSubtitle")}</p>
+          <h1 className="text-2xl font-bold">{t("dailyReportTitle")}</h1>
+          <p className="mt-1 text-sm text-stone-500">{t("dailyReportSubtitle")}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <ReportPeriodTabs
@@ -74,21 +78,21 @@ export default async function MonthlyActivityReportPage({
             dailyLabel={t("reportPeriodDaily")}
             dailyEnabled={dailyEnabled}
             monthQuery={monthQuery}
-            dateQuery={today}
+            dateQuery={date}
           />
-          <MonthPicker year={year} month={month} label={t("reportMonth")} />
+          <DatePicker date={date} label={t("reportDay")} />
           <ExportPdfButton label={t("exportPdf")} />
         </div>
       </div>
 
       <ActivityReportView
         report={report}
-        mode="monthly"
+        mode="daily"
         currency={currency}
         periodDisplay={periodDisplay}
         labels={{
-          reportLabel: t("monthlyReportLabel"),
-          summary: t("monthlySummary"),
+          reportLabel: t("dailyReportLabel"),
+          summary: t("dailySummary"),
           tasksCompletedCount: t("tasksCompletedCount"),
           financeTasksCompletedCount: t("financeTasksCompletedCount"),
           expensesApprovedCount: t("expensesApprovedCount"),
@@ -101,9 +105,9 @@ export default async function MonthlyActivityReportPage({
           tasksCompletedSection: t("tasksCompletedSection"),
           expenseDecisionsSection: t("expenseDecisionsSection"),
           incomeSection: t("incomeSection"),
-          noTasksCompleted: t("noTasksCompleted"),
-          noExpenseDecisions: t("noExpenseDecisions"),
-          noIncomePayments: t("noIncomePayments"),
+          noTasksCompleted: t("noTasksCompletedDaily"),
+          noExpenseDecisions: t("noExpenseDecisionsDaily"),
+          noIncomePayments: t("noIncomePaymentsDaily"),
           colTask: t("colTask"),
           colDepartment: t("colDepartment"),
           colRelated: t("colRelated"),
@@ -120,7 +124,7 @@ export default async function MonthlyActivityReportPage({
           colIncomeLine: t("colIncomeLine"),
           incomeLineForStudent: t("incomeLineForStudent"),
           newEnrollmentBadge: t("newEnrollmentBadge"),
-          reportFooter: t("monthlyReportFooter"),
+          reportFooter: t("dailyReportFooter"),
           authorizedSignature: t("authorizedSignature"),
           issuedOn: t("issuedOn"),
           emptyDash: tc("emptyDash"),
@@ -133,7 +137,7 @@ export default async function MonthlyActivityReportPage({
         </Link>
       </p>
 
-      <ActivityReportPrintStyles mode="monthly" />
+      <ActivityReportPrintStyles mode="daily" />
     </div>
   );
 }

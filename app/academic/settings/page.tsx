@@ -1,4 +1,5 @@
 import { SchoolCurrencyForm } from "@/components/schools/school-currency-form";
+import { SchoolDailyReportsForm } from "@/components/schools/school-daily-reports-form";
 import { SchoolLocaleForm } from "@/components/schools/school-locale-form";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getSchoolById } from "@/lib/db";
@@ -47,6 +48,11 @@ export default async function AcademicSettingsPage() {
         currencyCode={school.currency_code}
         title={t("currencyTitle")}
         description={t("currencyDescription")}
+      />
+
+      <SchoolDailyReportsForm
+        schoolId={school.id}
+        enabled={school.daily_activity_reports_enabled ?? true}
       />
     </div>
   );

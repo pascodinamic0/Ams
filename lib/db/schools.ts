@@ -29,6 +29,7 @@ export type SchoolRow = {
   owner_id: string | null;
   currency_code: string;
   locale: string;
+  daily_activity_reports_enabled: boolean;
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   subscription_status: import("@/lib/billing/types").SubscriptionStatus;
@@ -186,6 +187,21 @@ export async function getSchoolCurrencyForSchool(
     .single();
 
   return getSchoolCurrency(data?.currency_code ?? DEFAULT_CURRENCY_CODE);
+}
+
+export async function getDailyReportsEnabledForSchool(
+  schoolId: string | null | undefined
+): Promise<boolean> {
+  if (!schoolId) return true;
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("schools")
+    .select("daily_activity_reports_enabled")
+    .eq("id", schoolId)
+    .maybeSingle();
+
+  return data?.daily_activity_reports_enabled ?? true;
 }
 
 export async function getSchoolLocaleForSchool(

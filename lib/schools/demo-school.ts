@@ -32,6 +32,7 @@ export function createDemoSchool(template: WebsiteTemplateId): SchoolRow {
     owner_id: null,
     currency_code: "USD",
     locale: "en",
+    daily_activity_reports_enabled: true,
     stripe_customer_id: null,
     stripe_subscription_id: null,
     subscription_status: "none",

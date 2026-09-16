@@ -241,6 +241,52 @@ export async function updateSchoolCurrency(
   return {} as { error?: string };
 }
 
+const REPORT_SETTINGS_MANAGERS = new Set(["super_admin", "academic_admin", "principal"]);
+
+export async function updateSchoolDailyReportsEnabled(
+  schoolId: string,
+  enabled: boolean
+) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return await actionError("notAuthenticated");
+  }
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, school_id")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile || !REPORT_SETTINGS_MANAGERS.has(profile.role)) {
+    return await actionError("notAuthorizedDailyReports");
+  }
+
+  if (profile.role !== "super_admin" && profile.school_id !== schoolId) {
+    return await actionError("onlyOwnSchoolDailyReports");
+  }
+
+  const { error } = await supabase
+    .from("schools")
+    .update({ daily_activity_reports_enabled: enabled })
+    .eq("id", schoolId);
+
+  if (error) {
+    console.error("updateSchoolDailyReportsEnabled error:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/academic/settings");
+  revalidatePath("/academic/reports/monthly");
+  revalidatePath("/academic/reports/daily");
+  revalidatePath("/academic", "layout");
+  return {} as { error?: string };
+}
+
 const LOCALE_MANAGERS = new Set([
   "super_admin",
   "academic_admin",
