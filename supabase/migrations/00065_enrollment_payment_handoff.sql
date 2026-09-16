@@ -1,5 +1,8 @@
 -- Enrollment desk: pending students + enrollment invoices until finance verifies paper receipt.
 
+-- Must exist before pending students or partial indexes (also in 00062).
+ALTER TYPE public.student_status ADD VALUE IF NOT EXISTS 'pending';
+
 -- Required by confirm_pending_enrollment; also added in 20260810221420_fee_payment_proof.sql.
 ALTER TABLE public.fee_payments
   ADD COLUMN IF NOT EXISTS proof_url TEXT;
@@ -17,9 +20,8 @@ ALTER TABLE public.fee_invoices
 ALTER TABLE public.students
   ADD COLUMN IF NOT EXISTS enrollment_receipt_ref TEXT;
 
-CREATE INDEX IF NOT EXISTS idx_students_pending_school
-  ON public.students (school_id, created_at DESC)
-  WHERE status = 'pending';
+-- Pending-student partial index lives in 00066 (Postgres cannot use a new enum
+-- value in the same transaction that adds it).
 
 CREATE INDEX IF NOT EXISTS idx_fee_invoices_enrollment_student
   ON public.fee_invoices (student_id)
