@@ -93,11 +93,13 @@ export {
 export {
   getStudents,
   getStudentsForBilling,
+  getStudentsForInscriptionExport,
   type BillingStudentOption,
   getStudentById,
   getStudentByAuthUserId,
   type StudentListItem,
   type StudentPortalProfile,
+  type StudentInscriptionExportRow,
 } from "./students";
 export {
   getGuardians,

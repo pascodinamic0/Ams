@@ -19,6 +19,7 @@ import {
   assertClassCapacity,
   notifyClassMainTeacher,
 } from "@/lib/services/class-enrollment";
+import { normalizeInscriptionFields } from "@/lib/students/inscription";
 
 async function insertGuardian(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -139,6 +140,8 @@ export async function createStudentWithGuardians(
     });
     if ("error" in capacityCheck) return capacityCheck;
 
+    const inscription = normalizeInscriptionFields(data);
+
     const { data: student, error: studentError } = await supabase
       .from("students")
       .insert({
@@ -152,8 +155,7 @@ export async function createStudentWithGuardians(
         class_id: data.class_id,
         status: data.status,
         tags: normalizeStudentTags(data.tags),
-        home_address: data.home_address || null,
-        notes: data.notes || null,
+        ...inscription,
         photo_url: data.photo_url?.trim() || null,
       })
       .select("id, student_id, first_name, middle_name, last_name")

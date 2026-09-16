@@ -5,7 +5,8 @@ import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { StudentListFilters } from "@/components/students/student-list-filters";
-import { getStudents } from "@/lib/db";
+import { StudentsInscriptionExportButton } from "@/components/students/students-inscription-export-button";
+import { getStudents, getStudentsForInscriptionExport } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { canDeleteStudents } from "@/lib/auth/rbac";
 import { getTranslations } from "next-intl/server";
@@ -46,6 +47,11 @@ export default async function StudentsPage({
   const students = await getStudents({
     status: statusFilter,
     tag: tagFilter,
+  });
+  const exportRows = await getStudentsForInscriptionExport({
+    schoolId: profile?.school_id ?? undefined,
+    branchId: profile?.branch_id ?? undefined,
+    status: statusFilter,
   });
 
   const statusCopy = {
@@ -98,6 +104,47 @@ export default async function StudentsPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">{t("studentsTitle")}</h1>
         <div className="flex gap-2">
+          {students.length > 0 ? (
+            <StudentsInscriptionExportButton
+              rows={exportRows}
+              buttonLabel={t("exportInscriptionCsv")}
+              yesNo={{
+                yes: tc("yes"),
+                no: tc("no"),
+                empty: tc("emptyDash"),
+                male: t("genderMale"),
+                female: t("genderFemale"),
+              }}
+              columnLabels={{
+                student_id: t("studentId"),
+                school_year: t("schoolYear"),
+                last_name: t("familyName"),
+                middle_name: t("postName"),
+                first_name: t("givenName"),
+                gender: t("gender"),
+                date_of_birth: t("dateOfBirth"),
+                place_of_birth: t("placeOfBirth"),
+                previous_school: t("previousSchool"),
+                class_name: t("desiredClass"),
+                father_name: t("fatherNames"),
+                mother_name: t("motherNames"),
+                responsible_profession: t("responsibleProfession"),
+                address_number: t("addressNumber"),
+                address_avenue: t("addressAvenue"),
+                address_quartier: t("addressQuartier"),
+                address_commune: t("addressCommune"),
+                home_address: t("homeAddress"),
+                contact_phone: t("contactPhone"),
+                chronic_illness: t("chronicIllness"),
+                visual_problem: t("visualProblem"),
+                physical_problem: t("physicalProblem"),
+                allergies: t("allergies"),
+                difficulties: t("difficulties"),
+                notes: tc("notes"),
+                status: tc("status"),
+              }}
+            />
+          ) : null}
           <Link href="/academic/students/import">
             <Button variant="outline">{t("importCsv")}</Button>
           </Link>
