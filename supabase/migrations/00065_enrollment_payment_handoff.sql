@@ -1,8 +1,18 @@
 -- Enrollment desk: pending students + enrollment invoices until finance verifies paper receipt.
 
+-- Required by confirm_pending_enrollment; also added in 20260810221420_fee_payment_proof.sql.
+ALTER TABLE public.fee_payments
+  ADD COLUMN IF NOT EXISTS proof_url TEXT;
+
 ALTER TABLE public.fee_invoices
-  ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'regular'
-  CONSTRAINT fee_invoices_source_check CHECK (source IN ('regular', 'enrollment'));
+  ADD COLUMN IF NOT EXISTS source TEXT NOT NULL DEFAULT 'regular';
+
+ALTER TABLE public.fee_invoices
+  DROP CONSTRAINT IF EXISTS fee_invoices_source_check;
+
+ALTER TABLE public.fee_invoices
+  ADD CONSTRAINT fee_invoices_source_check
+  CHECK (source IN ('regular', 'enrollment'));
 
 ALTER TABLE public.students
   ADD COLUMN IF NOT EXISTS enrollment_receipt_ref TEXT;
