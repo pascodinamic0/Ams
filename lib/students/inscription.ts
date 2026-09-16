@@ -19,7 +19,7 @@ export function composeInscriptionAddress(
   const avenue = parts.address_avenue?.trim();
   const quartier = parts.address_quartier?.trim();
   const commune = parts.address_commune?.trim();
-  if (number) bits.push(`n° ${number}`);
+  if (number) bits.push(`No. ${number}`);
   if (avenue) bits.push(`Av. ${avenue}`);
   if (quartier) bits.push(`Q/ ${quartier}`);
   if (commune) bits.push(`C/ ${commune}`);

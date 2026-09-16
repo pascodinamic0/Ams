@@ -36,15 +36,15 @@ COMMENT ON COLUMN public.students.place_of_birth IS
 COMMENT ON COLUMN public.students.previous_school IS
   'Ecole de provenance from the fiche d''inscription';
 COMMENT ON COLUMN public.students.father_name IS
-  'Noms du père from the fiche d''inscription';
+  'Noms du pere from the fiche d''inscription';
 COMMENT ON COLUMN public.students.mother_name IS
-  'Noms de la mère from the fiche d''inscription';
+  'Noms de la mere from the fiche d''inscription';
 COMMENT ON COLUMN public.students.responsible_profession IS
   'Profession du responsable from the fiche d''inscription';
 COMMENT ON COLUMN public.students.contact_phone IS
-  'Téléphone from the fiche d''inscription (family contact)';
+  'Telephone from the fiche d''inscription (family contact)';
 COMMENT ON COLUMN public.students.address_number IS
-  'Adresse n° from the fiche d''inscription';
+  'Adresse numero from the fiche d''inscription';
 COMMENT ON COLUMN public.students.address_avenue IS
   'Adresse avenue (AV) from the fiche d''inscription';
 COMMENT ON COLUMN public.students.address_quartier IS
@@ -54,10 +54,10 @@ COMMENT ON COLUMN public.students.address_commune IS
 COMMENT ON COLUMN public.students.chronic_illness IS
   'Maladie chronique (Oui/Non) from the fiche d''inscription';
 COMMENT ON COLUMN public.students.visual_problem IS
-  'Problème visuel (Oui/Non) from the fiche d''inscription';
+  'Probleme visuel (Oui/Non) from the fiche d''inscription';
 COMMENT ON COLUMN public.students.physical_problem IS
-  'Problème physique (Oui/Non) from the fiche d''inscription';
+  'Probleme physique (Oui/Non) from the fiche d''inscription';
 COMMENT ON COLUMN public.students.allergies IS
-  'Allergique à from the fiche d''inscription';
+  'Allergique a from the fiche d''inscription';
 COMMENT ON COLUMN public.students.difficulties IS
-  'Difficulté à from the fiche d''inscription';
+  'Difficulte a from the fiche d''inscription';

@@ -15,7 +15,7 @@ function FicheRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="grid gap-1 border-b border-stone-200 py-2 sm:grid-cols-[14rem_1fr] print:grid-cols-[12rem_1fr]">
       <dt className="text-sm font-medium text-stone-600">{label}</dt>
-      <dd className="text-sm text-stone-900">{value || "—"}</dd>
+      <dd className="text-sm text-stone-900">{value || "-"}</dd>
     </div>
   );
 }
@@ -48,7 +48,7 @@ export default async function StudentInscriptionFichePage({
     tc("emptyDash");
   const placeAndDob = [student.place_of_birth, student.date_of_birth]
     .filter(Boolean)
-    .join(" — ") || tc("emptyDash");
+    .join(" - ") || tc("emptyDash");
   const genderLabel =
     student.gender === "male"
       ? t("genderMale")
@@ -77,7 +77,7 @@ export default async function StudentInscriptionFichePage({
         <header className="mb-6 border-b border-stone-300 pb-4 text-center">
           <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
             {t("inscriptionFicheNumber", {
-              number: student.student_id ?? "………",
+              number: student.student_id ?? ".........",
             })}
           </p>
           <h2 className="mt-2 text-xl font-bold uppercase">

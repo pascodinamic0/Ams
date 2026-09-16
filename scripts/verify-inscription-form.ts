@@ -19,12 +19,12 @@ assert.equal(
     address_quartier: "Masangu",
     address_commune: "Mont-Ngafula",
   }),
-  "n° 34, Av. des Aveugles, Q/ Masangu, C/ Mont-Ngafula"
+  "No. 34, Av. des Aveugles, Q/ Masangu, C/ Mont-Ngafula"
 );
 
-assert.equal(formatYesNo(true, { yes: "Oui", no: "Non", empty: "—" }), "Oui");
-assert.equal(formatYesNo(false, { yes: "Oui", no: "Non", empty: "—" }), "Non");
-assert.equal(formatYesNo(null, { yes: "Oui", no: "Non", empty: "—" }), "—");
+assert.equal(formatYesNo(true, { yes: "Oui", no: "Non", empty: "-" }), "Oui");
+assert.equal(formatYesNo(false, { yes: "Oui", no: "Non", empty: "-" }), "Non");
+assert.equal(formatYesNo(null, { yes: "Oui", no: "Non", empty: "-" }), "-");
 
 assert.equal(optionalYesNoSchema.parse("true"), true);
 assert.equal(optionalYesNoSchema.parse("false"), false);
@@ -54,7 +54,7 @@ const normalized = normalizeInscriptionFields({
 assert.equal(normalized.school_year, 2026);
 assert.equal(normalized.previous_school, null);
 assert.equal(normalized.chronic_illness, false);
-assert.match(String(normalized.home_address), /n° 34/);
+assert.match(String(normalized.home_address), /No. 34/);
 
 const partial = pickNormalizedInscriptionFields({
   place_of_birth: "Kinshasa",
@@ -103,7 +103,6 @@ assert.equal(parsed.success, true, JSON.stringify(parsed.error?.issues));
 const onboarded = studentOnboardingSchema.safeParse(paperSample);
 assert.equal(onboarded.success, true, JSON.stringify(onboarded.error?.issues));
 
-// Every paper-form field must be present on the validated payload
 const requiredPaperKeys = [
   "last_name",
   "middle_name",
