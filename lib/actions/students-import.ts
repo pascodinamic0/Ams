@@ -4,6 +4,7 @@ import { actionError } from "@/lib/i18n/action-error";
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { canOnboardStudents } from "@/lib/auth/rbac";
 import { createStudent } from "@/lib/actions/students";
 import { studentImportRowSchema, type StudentImportRow } from "@/lib/validations/academic";
 import { getTranslations } from "next-intl/server";
@@ -20,11 +21,27 @@ export async function importStudentsBatch(
   context: { school_id: string; branch_id: string; overrideCapacity?: boolean }
 ): Promise<StudentImportResult | { error: string }> {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) return await actionError("notAuthenticated");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, school_id, branch_id")
+    .eq("id", user.id)
+    .single();
+
+  if (!canOnboardStudents(profile?.role)) {
+    return await actionError("noPermissionOnboardStudents");
+  }
 
   if (!context.school_id || !context.branch_id) {
     return await actionError("schoolAndBranchRequired");
+  }
+
+  if (profile?.school_id && profile.school_id !== context.school_id) {
+    return await actionError("noPermissionOnboardStudents");
   }
 
   const result: StudentImportResult = {
@@ -62,7 +79,8 @@ export async function importStudentsBatch(
       const message =
         typeof studentResult.error === "string"
           ? studentResult.error
-          : Object.values(studentResult.error).flat().join(", ") || te("failedCreateStudent");
+          : Object.values(studentResult.error).flat().join(", ") ||
+            te("failedCreateStudent");
       result.errors.push({ row: rowNumber, message });
       continue;
     }

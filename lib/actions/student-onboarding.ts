@@ -5,7 +5,7 @@ import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { ACADEMIC_PORTAL_ROLES } from "@/lib/auth/rbac";
+import { canOnboardStudents } from "@/lib/auth/rbac";
 import {
   studentOnboardingSchema,
   type GuardianOnboardingData,
@@ -85,16 +85,6 @@ async function insertPickupPersons(
   return {} as { error?: string };
 }
 
-const STUDENT_ONBOARDING_ROLES = new Set([
-  "super_admin",
-  "academic_admin",
-  "admin_coordinator",
-  "registrar",
-  "admissions_officer",
-  "pedagogy_coordinator",
-  "principal",
-].filter((role) => ACADEMIC_PORTAL_ROLES.includes(role as typeof ACADEMIC_PORTAL_ROLES[number])));
-
 export async function createStudentWithGuardians(
   input: StudentOnboardingData & {
     school_id: string;
@@ -125,8 +115,7 @@ export async function createStudentWithGuardians(
       .eq("id", user.id)
       .single();
 
-    const role = profile?.role ?? "";
-    if (!STUDENT_ONBOARDING_ROLES.has(role)) {
+    if (!canOnboardStudents(profile?.role)) {
       return await actionError("noPermissionOnboardStudents");
     }
 
@@ -135,7 +124,7 @@ export async function createStudentWithGuardians(
     const capacityCheck = await assertClassCapacity({
       classId: data.class_id,
       override: input.overrideCapacity,
-      callerRole: role,
+      callerRole: profile?.role,
     });
     if ("error" in capacityCheck) return capacityCheck;
 

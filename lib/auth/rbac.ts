@@ -115,6 +115,25 @@ export const TASK_WORKSPACE_ROLES: UserRole[] = [
   "pedagogy_coordinator",
 ];
 
+/** Staff roles allowed to onboard / bulk-import students (enrollment desk). */
+export const STUDENT_ONBOARDING_ROLES: UserRole[] = [
+  "academic_admin",
+  "admin_coordinator",
+  "registrar",
+  "admissions_officer",
+  "pedagogy_coordinator",
+  "principal",
+];
+
+/** Onboard or bulk-import students — enrollment roles + platform admin. */
+export function canOnboardStudents(role: string | null | undefined): boolean {
+  const normalized = normalizeRole(role);
+  return (
+    normalized === "super_admin" ||
+    STUDENT_ONBOARDING_ROLES.includes(normalized)
+  );
+}
+
 /** Permanently deleting a student record is academic-admin (or platform admin) only. */
 export function canDeleteStudents(role: string | null | undefined): boolean {
   const normalized = normalizeRole(role);
@@ -286,6 +305,14 @@ export function canAccessPath(
     pathname.startsWith("/academic/team/")
   ) {
     return normalized === "academic_admin";
+  }
+
+  // Bulk student import is enrollment-desk roles only
+  if (
+    pathname === "/academic/students/import" ||
+    pathname.startsWith("/academic/students/import/")
+  ) {
+    return canOnboardStudents(normalized);
   }
 
   // Discipline is teacher-level only (not academic admin / principal / coordinator)

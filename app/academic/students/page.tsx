@@ -7,7 +7,7 @@ import { UserAvatar } from "@/components/layout/user-avatar";
 import { StudentListFilters } from "@/components/students/student-list-filters";
 import { getStudents } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { canDeleteStudents } from "@/lib/auth/rbac";
+import { canDeleteStudents, canOnboardStudents } from "@/lib/auth/rbac";
 import { getTranslations } from "next-intl/server";
 import { DeleteStudentButton } from "./delete-button";
 import { StudentStatusBadge } from "@/components/students/student-status-badge";
@@ -34,6 +34,7 @@ export default async function StudentsPage({
   const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
   const canDelete = canDeleteStudents(profile?.role);
+  const canImport = canOnboardStudents(profile?.role);
   const params = await searchParams;
   const statusFilter =
     params.status &&
@@ -98,12 +99,16 @@ export default async function StudentsPage({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold">{t("studentsTitle")}</h1>
         <div className="flex gap-2">
-          <Link href="/academic/students/import">
-            <Button variant="outline">{t("importCsv")}</Button>
-          </Link>
-          <Link href="/academic/students/new">
-            <Button>{t("onboardStudent")}</Button>
-          </Link>
+          {canImport ? (
+            <Link href="/academic/students/import">
+              <Button variant="outline">{t("importCsv")}</Button>
+            </Link>
+          ) : null}
+          {canImport ? (
+            <Link href="/academic/students/new">
+              <Button>{t("onboardStudent")}</Button>
+            </Link>
+          ) : null}
         </div>
       </div>
 
@@ -121,7 +126,7 @@ export default async function StudentsPage({
             hasFilters ? t("noStudentsMatchFiltersDesc") : t("noStudentsDesc")
           }
           action={
-            hasFilters ? undefined : (
+            hasFilters || !canImport ? undefined : (
               <Link href="/academic/students/new">
                 <Button>{t("onboardStudent")}</Button>
               </Link>

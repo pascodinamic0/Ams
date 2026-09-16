@@ -8,6 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { importStudentsBatch } from "@/lib/actions/students-import";
 import { formatStudentStatusLabel } from "@/lib/students/status";
+import {
+  downloadStudentImportExcelTemplate,
+  normalizeImportDate,
+  normalizeImportHeader,
+  readImportRowsFromFile,
+  resolveImportClassId,
+  STUDENT_IMPORT_HEADERS,
+  STUDENT_IMPORT_REQUIRED_HEADERS,
+} from "@/lib/students/import-file";
 import type { StudentImportRow } from "@/lib/validations/academic";
 import { STUDENT_STATUSES } from "@/lib/validations/student";
 import { toast } from "@/lib/toast";
@@ -19,83 +28,6 @@ interface Props {
   branchId: string;
   classes: ClassOption[];
   canOverrideCapacity?: boolean;
-}
-
-const EXPECTED_HEADERS = ["first_name", "middle_name", "last_name", "date_of_birth", "class", "status"] as const;
-const REQUIRED_HEADERS = ["first_name", "last_name", "date_of_birth", "class"] as const;
-
-function parseCsv(text: string): string[][] {
-  const rows: string[][] = [];
-  let row: string[] = [];
-  let field = "";
-  let inQuotes = false;
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const next = text[i + 1];
-
-    if (inQuotes) {
-      if (char === '"' && next === '"') {
-        field += '"';
-        i++;
-      } else if (char === '"') {
-        inQuotes = false;
-      } else {
-        field += char;
-      }
-      continue;
-    }
-
-    if (char === '"') {
-      inQuotes = true;
-      continue;
-    }
-
-    if (char === ",") {
-      row.push(field.trim());
-      field = "";
-      continue;
-    }
-
-    if (char === "\n" || (char === "\r" && next === "\n")) {
-      row.push(field.trim());
-      if (row.some((cell) => cell.length > 0)) rows.push(row);
-      row = [];
-      field = "";
-      if (char === "\r") i++;
-      continue;
-    }
-
-    if (char !== "\r") {
-      field += char;
-    }
-  }
-
-  if (field.length > 0 || row.length > 0) {
-    row.push(field.trim());
-    if (row.some((cell) => cell.length > 0)) rows.push(row);
-  }
-
-  return rows;
-}
-
-function normalizeHeader(value: string) {
-  return value.trim().toLowerCase().replace(/\s+/g, "_");
-}
-
-function resolveClassId(
-  value: string,
-  classes: ClassOption[]
-): string | undefined {
-  const trimmed = value.trim();
-  if (!trimmed) return undefined;
-
-  const byId = classes.find((c) => c.id === trimmed);
-  if (byId) return byId.id;
-
-  const lower = trimmed.toLowerCase();
-  const byName = classes.find((c) => c.name.toLowerCase() === lower);
-  return byName?.id;
 }
 
 export function StudentImportForm({
@@ -129,7 +61,7 @@ export function StudentImportForm({
     });
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     setImportResult(null);
     setPreview([]);
@@ -142,18 +74,18 @@ export function StudentImportForm({
 
     setFileName(file.name);
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const text = String(reader.result ?? "");
-      const rows = parseCsv(text);
+    try {
+      const rows = await readImportRowsFromFile(file);
 
       if (rows.length < 2) {
         setParseErrors([t("csvMustHaveRows")]);
         return;
       }
 
-      const headers = rows[0].map(normalizeHeader);
-      const missing = REQUIRED_HEADERS.filter((h) => !headers.includes(h));
+      const headers = rows[0].map(normalizeImportHeader);
+      const missing = STUDENT_IMPORT_REQUIRED_HEADERS.filter(
+        (h) => !headers.includes(h)
+      );
       if (missing.length > 0) {
         setParseErrors([t("csvMissingColumns", { columns: missing.join(", ") })]);
         return;
@@ -166,26 +98,35 @@ export function StudentImportForm({
       for (let i = 1; i < rows.length; i++) {
         const cells = rows[i];
         const rowNumber = i + 1;
-        const firstName = cells[index.first_name] ?? "";
-        const middleName = index.middle_name !== undefined ? (cells[index.middle_name] ?? "") : "";
-        const lastName = cells[index.last_name] ?? "";
-        const dob = cells[index.date_of_birth] ?? "";
-        const classValue = cells[index.class] ?? "";
-        const statusRaw = (cells[index.status] ?? "active").toLowerCase();
+        const firstName = (cells[index.first_name] ?? "").trim();
+        const middleName =
+          index.middle_name !== undefined
+            ? (cells[index.middle_name] ?? "").trim()
+            : "";
+        const lastName = (cells[index.last_name] ?? "").trim();
+        const dobRaw = cells[index.date_of_birth] ?? "";
+        const classValue = (cells[index.class] ?? "").trim();
+        const statusRaw = (cells[index.status] ?? "active").trim().toLowerCase();
 
-        if (!firstName && !lastName && !dob) continue;
+        if (!firstName && !lastName && !String(dobRaw).trim()) continue;
 
-        if (!firstName || !lastName || !dob) {
+        if (!firstName || !lastName || !String(dobRaw).trim()) {
           errors.push(t("csvRowRequiredFields", { row: rowNumber }));
           continue;
         }
 
-        if (!classValue.trim()) {
+        const dob = normalizeImportDate(dobRaw);
+        if (!dob) {
+          errors.push(t("csvInvalidDate", { row: rowNumber }));
+          continue;
+        }
+
+        if (!classValue) {
           errors.push(t("csvClassRequired", { row: rowNumber }));
           continue;
         }
 
-        const classId = resolveClassId(classValue, classes);
+        const classId = resolveImportClassId(classValue, classes);
         if (!classId) {
           errors.push(t("csvUnknownClass", { row: rowNumber, className: classValue }));
           continue;
@@ -208,8 +149,10 @@ export function StudentImportForm({
 
       setParseErrors(errors);
       setPreview(parsed);
-    };
-    reader.readAsText(file);
+    } catch {
+      setParseErrors([t("csvParseFailed")]);
+      setPreview([]);
+    }
   }
 
   async function handleImport() {
@@ -246,15 +189,7 @@ export function StudentImportForm({
   }
 
   function downloadTemplate() {
-    const header = EXPECTED_HEADERS.join(",");
-    const example = `Jane,Marie,Doe,2015-03-12,${classes[0]?.name ?? "Grade 1"},active`;
-    const blob = new Blob([`${header}\n${example}\n`], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = "students-import-template.csv";
-    anchor.click();
-    URL.revokeObjectURL(url);
+    downloadStudentImportExcelTemplate(classes[0]?.name ?? "Grade 1");
   }
 
   return (
@@ -262,34 +197,45 @@ export function StudentImportForm({
       <div className="rounded-lg border border-stone-200 p-4 dark:border-stone-700">
         <h2 className="font-semibold">{t("csvFormat")}</h2>
         <p className="mt-1 text-sm text-stone-500">
-          {t("csvColumns")} <code className="text-xs">first_name, middle_name, last_name, date_of_birth, class, status</code>
+          {t("csvColumns")}{" "}
+          <code className="text-xs">{STUDENT_IMPORT_HEADERS.join(", ")}</code>
         </p>
         <p className="mt-2 text-sm text-stone-500">
-          {t("csvMiddleNameOptional")}{" "}
-          {t("csvClassHint")}
-          {classNames ? ` ${t("csvAvailableClasses", { classes: classNames })}` : ` ${t("csvNoClasses")}`}
+          {t("csvMiddleNameOptional")} {t("csvClassHint")}
+          {classNames
+            ? ` ${t("csvAvailableClasses", { classes: classNames })}`
+            : ` ${t("csvNoClasses")}`}
         </p>
         <p className="mt-2 text-sm text-stone-500">
-          {t("csvDateFormat")}{" "}
-          {t("csvStatusOptional")}
+          {t("csvDateFormat")} {t("csvStatusOptional")}
         </p>
-        <Button type="button" variant="outline" size="sm" className="mt-3" onClick={downloadTemplate}>
-          {t("downloadTemplate")}
-        </Button>
+        <p className="mt-2 text-sm text-stone-500">{t("csvExcelHint")}</p>
       </div>
 
-      <div>
-        <Label htmlFor="csv-file">{t("uploadCsv")}</Label>
-        <input
-          id="csv-file"
-          type="file"
-          accept=".csv,text/csv"
-          onChange={handleFileChange}
-          className="mt-1 block w-full text-sm text-stone-500 file:mr-4 file:rounded-lg file:border-0 file:bg-primary-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-hover hover:file:bg-primary-light dark:file:bg-teal-950/50 dark:file:text-teal-200"
-        />
-        {fileName && (
-          <p className="mt-1 text-xs text-stone-500">{t("selectedFile", { fileName })}</p>
-        )}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div className="min-w-0 flex-1">
+          <Label htmlFor="csv-file">{t("uploadCsv")}</Label>
+          <input
+            id="csv-file"
+            type="file"
+            accept=".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+            onChange={handleFileChange}
+            className="mt-1 block w-full text-sm text-stone-500 file:mr-4 file:rounded-lg file:border-0 file:bg-primary-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-primary-hover hover:file:bg-primary-light dark:file:bg-teal-950/50 dark:file:text-teal-200"
+          />
+          {fileName && (
+            <p className="mt-1 text-xs text-stone-500">
+              {t("selectedFile", { fileName })}
+            </p>
+          )}
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          className="shrink-0"
+          onClick={downloadTemplate}
+        >
+          {t("downloadExcelTemplate")}
+        </Button>
       </div>
 
       {parseErrors.length > 0 && (
@@ -322,7 +268,10 @@ export function StudentImportForm({
               </thead>
               <tbody>
                 {preview.slice(0, 10).map((row, i) => (
-                  <tr key={`${row.first_name}-${row.last_name}-${i}`} className="border-t border-stone-200 dark:border-stone-700">
+                  <tr
+                    key={`${row.first_name}-${row.last_name}-${i}`}
+                    className="border-t border-stone-200 dark:border-stone-700"
+                  >
                     <td className="px-3 py-2">{row.first_name}</td>
                     <td className="px-3 py-2">{row.middle_name || tc("emptyDash")}</td>
                     <td className="px-3 py-2">{row.last_name}</td>
@@ -347,7 +296,10 @@ export function StudentImportForm({
       {importResult && (
         <div className="rounded-lg border border-stone-200 p-4 text-sm dark:border-stone-700">
           <p>
-            {t("importResult", { created: importResult.created, failed: importResult.failed })}
+            {t("importResult", {
+              created: importResult.created,
+              failed: importResult.failed,
+            })}
           </p>
           {importResult.errors.length > 0 && (
             <ul className="mt-2 list-inside list-disc space-y-1 text-red-600">
@@ -379,7 +331,9 @@ export function StudentImportForm({
           onClick={handleImport}
           disabled={importing || preview.length === 0}
         >
-          {importing ? t("importing") : t("importStudentsCount", { count: preview.length })}
+          {importing
+            ? t("importing")
+            : t("importStudentsCount", { count: preview.length })}
         </Button>
         <Link href="/academic/students">
           <Button type="button" variant="outline">
