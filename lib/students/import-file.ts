@@ -6,6 +6,8 @@ export const STUDENT_IMPORT_HEADERS = [
   "last_name",
   "date_of_birth",
   "class",
+  "fee_structure",
+  "enrollment_receipt_ref",
   "status",
 ] as const;
 
@@ -241,7 +243,9 @@ export function buildStudentImportExcelTemplate(
     "Doe",
     "2015-03-12",
     exampleClassName || "Grade 1",
-    "active",
+    "",
+    "",
+    "pending",
   ];
 
   const workbook = XLSX.utils.book_new();
@@ -264,9 +268,19 @@ export function buildStudentImportExcelTemplate(
     ["date_of_birth", "Yes", "Use YYYY-MM-DD (example: 2015-03-12)"],
     ["class", "Yes", "Exact class name from your school, or class UUID"],
     [
+      "fee_structure",
+      "No",
+      "Fee structure name or UUID. If omitted, the class must have exactly one applicable fee.",
+    ],
+    [
+      "enrollment_receipt_ref",
+      "No",
+      "Paper receipt number from the manual facture book (optional)",
+    ],
+    [
       "status",
       "No",
-      "active | pending | inactive | graduated (defaults to active)",
+      "Ignored on import — all rows are created as pending until finance confirms payment",
     ],
   ]);
   instructions["!cols"] = [{ wch: 16 }, { wch: 10 }, { wch: 55 }];

@@ -23,6 +23,7 @@
   "missedLessons": "Leçons manquées",
   "exams": "Examens",
   "reportCards": "Bulletins",
+  "pendingEnrollments": "Inscriptions en attente",
   "feeStructure": "Structure des frais",
   "invoices": "Factures",
   "outstandingFees": "Frais impayés",
@@ -56,6 +57,7 @@
   "tasks": "Tâches",
   "discipline": "Discipline",
   "monthlyActivity": "Activité mensuelle",
+  "dailyActivity": "Activité quotidienne",
   "budget": "Plan budgétaire",
   "billing": "Facturation"
 }

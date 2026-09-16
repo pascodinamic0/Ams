@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { StudentForm } from "@/components/forms/student-form";
 import { Button } from "@/components/ui/button";
-import { getSchoolCampusId, getClasses, getGuardians } from "@/lib/db";
+import { getSchoolCampusId, getClasses, getGuardians, getSchoolCurrencyForSchool } from "@/lib/db";
+import { getFeeStructures } from "@/lib/db/fee-structures";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { canOverrideClassCapacity } from "@/lib/auth/rbac";
 import { getTranslations } from "next-intl/server";
@@ -16,9 +17,11 @@ export default async function NewStudentPage() {
     branchId = (await getSchoolCampusId(schoolId)) ?? "";
   }
 
-  const [classes, guardians] = await Promise.all([
+  const [classes, guardians, feeStructures, currency] = await Promise.all([
     getClasses(branchId || undefined),
     getGuardians(),
+    getFeeStructures({ branchId, schoolId }),
+    schoolId ? getSchoolCurrencyForSchool(schoolId) : Promise.resolve({ code: "USD" }),
   ]);
 
   if (!schoolId || !branchId) {
@@ -49,6 +52,8 @@ export default async function NewStudentPage() {
         schoolId={schoolId}
         branchId={branchId}
         classes={classes}
+        feeStructures={feeStructures}
+        currencyCode={currency.code}
         existingGuardians={guardians.map((g) => ({ id: g.id, name: g.name }))}
         canOverrideCapacity={canOverrideClassCapacity(profile?.role)}
       />

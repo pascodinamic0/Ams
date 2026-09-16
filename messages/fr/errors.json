@@ -158,6 +158,8 @@
   "slugInUse": "Cet identifiant d'URL est déjà utilisé",
   "notAuthorizedCurrency": "Non autorisé à mettre à jour la devise de l'école",
   "onlyOwnSchoolCurrency": "Vous ne pouvez mettre à jour la devise que pour votre propre école",
+  "notAuthorizedDailyReports": "Non autorisé à mettre à jour les paramètres de rapport",
+  "onlyOwnSchoolDailyReports": "Vous ne pouvez mettre à jour les paramètres de rapport que pour votre propre école",
   "invalidCurrency": "Devise invalide",
   "onlyPlatformAdminsDeleteSchools": "Seuls les administrateurs de la plateforme peuvent supprimer des écoles",
   "invalidFormData": "Données de formulaire invalides",
@@ -197,5 +199,9 @@
   "enrollmentApplicationNote": "Candidature d'inscription pour {studentName} (réf. {ref})",
   "classNotFound": "Classe introuvable",
   "classAtCapacity": "{className} est pleine. Augmentez la capacité ou choisissez une autre classe.",
-  "classRequired": "La classe est requise"
+  "classRequired": "La classe est requise",
+  "feeStructureRequired": "Le forfait de frais d'inscription est requis",
+  "feeStructureAmbiguous": "Plusieurs forfaits correspondent à cette classe — précisez fee_structure dans la ligne d'import",
+  "feeStructureRequiredForClass": "Aucun forfait pour cette classe — ajoutez-en un dans Finance d'abord",
+  "enrollmentProofRequired": "La photo du reçu papier est requise pour activer l'élève"
 }

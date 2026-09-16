@@ -20,6 +20,7 @@ import {
   notifyClassMainTeacher,
 } from "@/lib/services/class-enrollment";
 import { normalizeInscriptionFields } from "@/lib/students/inscription";
+import { createEnrollmentInvoiceRpc } from "@/lib/services/enrollment-fees";
 
 async function insertGuardian(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -91,6 +92,8 @@ export async function createStudentWithGuardians(
     school_id: string;
     branch_id: string;
     overrideCapacity?: boolean;
+    fee_structure_id: string;
+    enrollment_receipt_ref?: string;
   }
 ) {
   try {
@@ -142,8 +145,9 @@ export async function createStudentWithGuardians(
         date_of_birth: data.date_of_birth,
         gender: normalizeGender(data.gender),
         class_id: data.class_id,
-        status: data.status,
+        status: "pending",
         tags: normalizeStudentTags(data.tags),
+        enrollment_receipt_ref: input.enrollment_receipt_ref?.trim() || null,
         ...inscription,
         photo_url: data.photo_url?.trim() || null,
       })
@@ -207,11 +211,18 @@ export async function createStudentWithGuardians(
       return { error: pickupResult.error };
     }
 
-    await notifyClassMainTeacher({
-      classId: data.class_id,
-      studentId: student.id,
-      studentName: formatPersonName(student),
-    });
+    const invoiceResult = await createEnrollmentInvoiceRpc(
+      supabase,
+      student.id,
+      input.fee_structure_id
+    );
+    if ("error" in invoiceResult) {
+      await supabase.from("students").delete().eq("id", student.id);
+      return { error: invoiceResult.error };
+    }
+
+    revalidatePath("/finance/enrollments");
+    revalidatePath("/finance");
 
     revalidatePath("/academic");
     revalidatePath("/academic/students");

@@ -106,7 +106,15 @@ export function StudentImportForm({
         const lastName = (cells[index.last_name] ?? "").trim();
         const dobRaw = cells[index.date_of_birth] ?? "";
         const classValue = (cells[index.class] ?? "").trim();
-        const statusRaw = (cells[index.status] ?? "active").trim().toLowerCase();
+        const feeStructureRaw =
+          index.fee_structure !== undefined
+            ? (cells[index.fee_structure] ?? "").trim()
+            : "";
+        const receiptRef =
+          index.enrollment_receipt_ref !== undefined
+            ? (cells[index.enrollment_receipt_ref] ?? "").trim()
+            : "";
+        const statusRaw = (cells[index.status] ?? "pending").trim().toLowerCase();
 
         if (!firstName && !lastName && !String(dobRaw).trim()) continue;
 
@@ -143,7 +151,9 @@ export function StudentImportForm({
           last_name: lastName,
           date_of_birth: dob,
           class_id: classId,
-          status: (statusRaw || "active") as StudentImportRow["status"],
+          status: (statusRaw || "pending") as StudentImportRow["status"],
+          fee_structure: feeStructureRaw || undefined,
+          enrollment_receipt_ref: receiptRef || undefined,
         });
       }
 

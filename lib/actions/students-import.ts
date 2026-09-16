@@ -8,6 +8,8 @@ import { canOnboardStudents } from "@/lib/auth/rbac";
 import { createStudent } from "@/lib/actions/students";
 import { studentImportRowSchema, type StudentImportRow } from "@/lib/validations/academic";
 import { getTranslations } from "next-intl/server";
+import { getFeeStructures } from "@/lib/db/fee-structures";
+import { resolveImportFeeStructureId } from "@/lib/services/enrollment-fees";
 
 export type StudentImportResult = {
   created: number;
@@ -44,6 +46,11 @@ export async function importStudentsBatch(
     return await actionError("noPermissionOnboardStudents");
   }
 
+  const feeStructures = await getFeeStructures({
+    branchId: context.branch_id,
+    schoolId: context.school_id,
+  });
+
   const result: StudentImportResult = {
     created: 0,
     failed: 0,
@@ -66,11 +73,27 @@ export async function importStudentsBatch(
       continue;
     }
 
+    const feeResolved = resolveImportFeeStructureId(
+      feeStructures,
+      parsed.data.class_id,
+      parsed.data.fee_structure_id ?? parsed.data.fee_structure
+    );
+    if ("error" in feeResolved) {
+      result.failed++;
+      const key = feeResolved.error;
+      const message = te.has(key) ? te(key) : key;
+      result.errors.push({ row: rowNumber, message });
+      continue;
+    }
+
     const studentResult = await createStudent({
       ...parsed.data,
+      status: "pending",
       tags: [],
       school_id: context.school_id,
       branch_id: context.branch_id,
+      fee_structure_id: feeResolved.id,
+      enrollment_receipt_ref: parsed.data.enrollment_receipt_ref,
       overrideCapacity: context.overrideCapacity,
     });
 
@@ -94,6 +117,8 @@ export async function importStudentsBatch(
   if (result.created > 0) {
     revalidatePath("/academic/students");
     revalidatePath("/academic");
+    revalidatePath("/finance/enrollments");
+    revalidatePath("/finance");
   }
 
   return result;

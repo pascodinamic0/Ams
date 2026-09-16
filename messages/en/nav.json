@@ -23,6 +23,7 @@
   "missedLessons": "Missed lessons",
   "exams": "Exams",
   "reportCards": "Report Cards",
+  "pendingEnrollments": "Pending enrollments",
   "feeStructure": "Fee Structure",
   "invoices": "Invoices",
   "outstandingFees": "Outstanding fees",
@@ -56,6 +57,7 @@
   "tasks": "Tasks",
   "discipline": "Discipline",
   "monthlyActivity": "Monthly activity",
+  "dailyActivity": "Daily activity",
   "budget": "Budget plan",
   "billing": "Billing"
 }

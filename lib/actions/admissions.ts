@@ -141,9 +141,14 @@ export async function convertAdmissionToStudent(
   admissionId: string,
   branchId: string,
   classId: string,
-  options?: { overrideCapacity?: boolean }
+  options?: {
+    overrideCapacity?: boolean;
+    fee_structure_id: string;
+    enrollment_receipt_ref?: string;
+  }
 ) {
   if (!classId) return await actionError("classRequired");
+  if (!options?.fee_structure_id) return await actionError("feeStructureRequired");
 
   const supabase = await createClient();
   const { data: app, error } = await supabase
@@ -194,8 +199,10 @@ export async function convertAdmissionToStudent(
     date_of_birth: app.dob ?? "2000-01-01",
     gender: normalizeGender(app.gender) ?? undefined,
     class_id: classId,
-    status: "active",
+    status: "pending",
     tags: [],
+    fee_structure_id: options.fee_structure_id,
+    enrollment_receipt_ref: options.enrollment_receipt_ref,
     overrideCapacity: options?.overrideCapacity,
     existing_guardian_can_pickup: false,
     add_secondary_guardian: false,
@@ -227,6 +234,9 @@ export async function convertAdmissionToStudent(
     studentId: studentResult.data.id,
   });
   if (statusError) return { error: statusError };
+
+  revalidatePath("/finance/enrollments");
+  revalidatePath("/finance");
 
   return { data: { studentId: studentResult.data.id } };
 }

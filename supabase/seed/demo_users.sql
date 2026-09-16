@@ -10,6 +10,11 @@ FROM schools s
 JOIN branches b ON b.school_id = s.id
 ORDER BY s.created_at, b.created_at
 LIMIT 1;
+SELECT seed_demo_auth_user('admissions@ams.demo', 'AMSdemo2026!', 'admissions_officer', 'Responsable des inscriptions', s.id, b.id)
+FROM schools s
+JOIN branches b ON b.school_id = s.id
+ORDER BY s.created_at, b.created_at
+LIMIT 1;
 SELECT seed_demo_auth_user('teacher@ams.demo', 'AMSdemo2026!', 'teacher', 'Demo Teacher', s.id, b.id)
 FROM schools s
 JOIN branches b ON b.school_id = s.id

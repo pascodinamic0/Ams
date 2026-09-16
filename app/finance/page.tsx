@@ -6,6 +6,7 @@ import {
   getExpenseTotal,
   getFinanceKPIs,
   getPayrollTotals,
+  getPendingEnrollmentCount,
   getSchoolCurrencyForSchool,
 } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
@@ -30,7 +31,7 @@ export default async function FinanceDashboard() {
   };
   const showBudget = role !== "cashier" && Boolean(profile?.school_id);
 
-  const [kpis, payrollTotals, operatingExpenses, currency, budgetPlans] =
+  const [kpis, payrollTotals, operatingExpenses, currency, budgetPlans, pendingEnrollments] =
     await Promise.all([
       getFinanceKPIs(scope),
       getPayrollTotals(scope),
@@ -39,6 +40,7 @@ export default async function FinanceDashboard() {
       showBudget && profile?.school_id
         ? getBudgetPlans(profile.school_id)
         : Promise.resolve([]),
+      getPendingEnrollmentCount(scope),
     ]);
   const formatCurrency = (value: number) => formatMoney(value, currency.code);
   const cashAvailable = kpis.collected - payrollTotals.paid - operatingExpenses;
@@ -62,8 +64,16 @@ export default async function FinanceDashboard() {
           ? t("budgetStatusArchived")
           : "";
 
+  const pendingEnrollmentMetric = {
+    label: t("pendingEnrollmentsTitle"),
+    value: String(pendingEnrollments),
+    hint: t("pendingEnrollmentsHint"),
+    href: "/finance/enrollments",
+  };
+
   const metrics = isCashier
     ? [
+        pendingEnrollmentMetric,
         {
           label: t("feesCollected"),
           value: formatCurrency(kpis.collected),
@@ -77,6 +87,7 @@ export default async function FinanceDashboard() {
         },
       ]
     : [
+        pendingEnrollmentMetric,
         {
           label: t("schoolFeesCollected"),
           value: formatCurrency(kpis.collected),

@@ -23,6 +23,7 @@ import {
   normalizeInscriptionFields,
   pickNormalizedInscriptionFields,
 } from "@/lib/students/inscription";
+import { createEnrollmentInvoiceRpc } from "@/lib/services/enrollment-fees";
 
 type StudentActionContext = {
   school_id: string;
@@ -31,7 +32,10 @@ type StudentActionContext = {
 };
 
 export async function createStudent(
-  input: StudentFormData & StudentActionContext
+  input: StudentFormData & StudentActionContext & {
+    fee_structure_id: string;
+    enrollment_receipt_ref?: string;
+  }
 ) {
   const parsed = studentSchema.safeParse(input);
   if (!parsed.success) {
@@ -68,8 +72,9 @@ export async function createStudent(
       date_of_birth: parsed.data.date_of_birth,
       gender: normalizeGender(parsed.data.gender),
       class_id: parsed.data.class_id,
-      status: parsed.data.status,
+      status: "pending",
       tags: normalizeStudentTags(parsed.data.tags),
+      enrollment_receipt_ref: input.enrollment_receipt_ref?.trim() || null,
       ...inscription,
       photo_url: parsed.data.photo_url?.trim() || null,
     })
@@ -81,12 +86,18 @@ export async function createStudent(
     return { error: error.message };
   }
 
-  await notifyClassMainTeacher({
-    classId: parsed.data.class_id,
-    studentId: data.id,
-    studentName: formatPersonName(data),
-  });
+  const invoiceResult = await createEnrollmentInvoiceRpc(
+    supabase,
+    data.id,
+    input.fee_structure_id
+  );
+  if ("error" in invoiceResult) {
+    await supabase.from("students").delete().eq("id", data.id);
+    return { error: invoiceResult.error };
+  }
 
+  revalidatePath("/finance/enrollments");
+  revalidatePath("/finance");
   revalidatePath("/academic");
   revalidatePath("/academic/students");
   revalidatePath("/academic/classes");

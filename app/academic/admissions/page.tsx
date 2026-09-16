@@ -1,6 +1,7 @@
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getAdmissions, getClasses } from "@/lib/db";
+import { getAdmissions, getClasses, getSchoolCurrencyForSchool } from "@/lib/db";
+import { getFeeStructures } from "@/lib/db/fee-structures";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { canOverrideClassCapacity } from "@/lib/auth/rbac";
 import { getTranslations } from "next-intl/server";
@@ -10,13 +11,18 @@ export default async function AdmissionsPage() {
   const t = await getTranslations("academic");
   const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
-  const admissions = await getAdmissions(profile?.school_id ?? undefined);
+  const schoolId = profile?.school_id ?? "";
+  const admissions = await getAdmissions(schoolId || undefined);
   const branchId = profile?.branch_id ?? "";
-  const classes = branchId
-    ? await getClasses(branchId)
-    : profile?.school_id
-      ? await getClasses({ schoolId: profile.school_id })
-      : [];
+  const [classes, feeStructures, currency] = await Promise.all([
+    branchId
+      ? getClasses(branchId)
+      : schoolId
+        ? getClasses({ schoolId })
+        : Promise.resolve([]),
+    getFeeStructures({ branchId: branchId || undefined, schoolId: schoolId || undefined }),
+    schoolId ? getSchoolCurrencyForSchool(schoolId) : Promise.resolve({ code: "USD" }),
+  ]);
   const canOverride = canOverrideClassCapacity(profile?.role);
   function formatVisitDate(date: string, time: string | null) {
     const formatted = new Date(`${date}T00:00:00`).toLocaleDateString(undefined, {
@@ -50,6 +56,8 @@ export default async function AdmissionsPage() {
         branchId={branchId}
         defaultClassId={row.class_id as string | null}
         classes={classes}
+        feeStructures={feeStructures}
+        currencyCode={currency.code}
         canOverrideCapacity={canOverride}
       />
     ),

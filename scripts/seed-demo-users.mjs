@@ -18,6 +18,7 @@ const DEMO_PASSWORD = "AMSdemo2026!";
 const DEMO_USERS = [
   { email: "super.admin@ams.demo", role: "super_admin", name: "Super Admin Demo", schoolScoped: false },
   { email: "academic.admin@ams.demo", role: "academic_admin", name: "Academic Admin", schoolScoped: true },
+  { email: "admissions@ams.demo", role: "admissions_officer", name: "Responsable des inscriptions", schoolScoped: true },
   { email: "teacher@ams.demo", role: "teacher", name: "Demo Teacher", schoolScoped: true },
   { email: "finance@ams.demo", role: "finance_officer", name: "Finance Officer", schoolScoped: true },
   { email: "operations@ams.demo", role: "operations_manager", name: "Operations Manager", schoolScoped: true },

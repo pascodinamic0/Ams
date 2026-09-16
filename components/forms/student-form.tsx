@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFormContext, useWatch, type FieldErrors } from "react-hook-form";
 import { Camera } from "lucide-react";
@@ -22,6 +22,9 @@ const STUDENT_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 
 import { formatClassOptionLabel, isClassFull } from "@/lib/utils/class-options";
 import type { ClassListItem } from "@/lib/db/classes";
+import type { FeeStructureListItem } from "@/lib/db/fee-structures";
+import { filterFeeStructuresForClass } from "@/lib/services/enrollment-fees";
+import { formatMoney } from "@/lib/currency";
 import {
   formatSchoolYear,
   getCurrentSchoolYearStart,
@@ -32,6 +35,8 @@ interface Props {
   schoolId: string;
   branchId: string;
   classes: ClassListItem[];
+  feeStructures: FeeStructureListItem[];
+  currencyCode?: string;
   existingGuardians: { id: string; name: string }[];
   canOverrideCapacity?: boolean;
 }
@@ -81,6 +86,8 @@ export function StudentForm({
   schoolId,
   branchId,
   classes,
+  feeStructures,
+  currencyCode = "USD",
   existingGuardians,
   canOverrideCapacity = false,
 }: Props) {
@@ -134,7 +141,11 @@ export function StudentForm({
         toast.error(formatActionError(result.error));
         return;
       }
-      toast.success(t("studentOnboarded", { studentId: "data" in result ? result.data?.student_id ?? "" : "" }));
+      toast.success(
+        t("studentOnboardedPending", {
+          studentId: "data" in result ? result.data?.student_id ?? "" : "",
+        })
+      );
       if ("data" in result && result.data?.id) {
         router.push(`/academic/students/${result.data.id}`);
       }
@@ -152,12 +163,14 @@ export function StudentForm({
     <FormWrapper
       schema={studentOnboardingSchema}
       defaultValues={{
-        status: "active",
+        status: "pending",
         tags: [],
         school_year: getCurrentSchoolYearStart(),
         add_secondary_guardian: false,
         existing_guardian_can_pickup: false,
         photo_url: "",
+        fee_structure_id: "",
+        enrollment_receipt_ref: "",
         primary_guardian: defaultPrimaryGuardian,
         pickup_persons: [],
       }}
@@ -175,6 +188,8 @@ export function StudentForm({
           <StudentFormFields
             schoolId={schoolId}
             classes={classes}
+            feeStructures={feeStructures}
+            currencyCode={currencyCode}
             existingGuardians={existingGuardians}
             canOverrideCapacity={canOverrideCapacity}
             overrideCapacity={overrideCapacity}
@@ -446,6 +461,8 @@ function PickupPersonsFields() {
 function StudentFormFields({
   schoolId,
   classes,
+  feeStructures,
+  currencyCode,
   existingGuardians,
   canOverrideCapacity,
   overrideCapacity,
@@ -453,6 +470,8 @@ function StudentFormFields({
 }: {
   schoolId: string;
   classes: ClassListItem[];
+  feeStructures: FeeStructureListItem[];
+  currencyCode: string;
   existingGuardians: { id: string; name: string }[];
   canOverrideCapacity: boolean;
   overrideCapacity: boolean;
@@ -467,9 +486,21 @@ function StudentFormFields({
   const primaryAddress = useWatch({ name: "primary_guardian.address" });
   const photoUrl = useWatch({ name: "photo_url" }) ?? "";
   const selectedClassId = useWatch({ name: "class_id" });
+  const selectedFeeStructureId = useWatch({ name: "fee_structure_id" });
   const tags = useWatch({ name: "tags" }) ?? [];
   const selectedClass = classes.find((c) => c.id === selectedClassId);
   const classIsFull = selectedClass ? isClassFull(selectedClass) : false;
+  const applicableFeeStructures = selectedClassId
+    ? filterFeeStructuresForClass(feeStructures, selectedClassId)
+    : [];
+  useEffect(() => {
+    if (
+      selectedFeeStructureId &&
+      !applicableFeeStructures.some((fs) => fs.id === selectedFeeStructureId)
+    ) {
+      setValue("fee_structure_id", "", { shouldValidate: true });
+    }
+  }, [selectedClassId, selectedFeeStructureId, applicableFeeStructures, setValue]);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [cameraUploading, setCameraUploading] = useState(false);
 
@@ -725,27 +756,56 @@ function StudentFormFields({
 
       <div className="border-t border-stone-200 dark:border-stone-800" />
 
-      <FormSection title={t("enrollment")} description={t("enrollmentDesc")}>
+      <FormSection title={t("enrollment")} description={t("enrollmentPendingDesc")}>
+        <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-100">
+          {t("enrollmentPendingNotice")}
+        </p>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={tc("status")} htmlFor="status" error={errors.status?.message}>
+          <Field
+            label={t("enrollmentFeeStructure")}
+            htmlFor="fee_structure_id"
+            required
+            error={errors.fee_structure_id?.message}
+            hint={t("enrollmentFeeStructureHint")}
+          >
             <Select
-              id="status"
-              options={[
-                { value: "active", label: tc("active") },
-                { value: "pending", label: tc("pending") },
-                { value: "inactive", label: tc("inactive") },
-                { value: "graduated", label: t("statusGraduated") },
-              ]}
-              {...register("status")}
+              id="fee_structure_id"
+              placeholder={
+                selectedClassId
+                  ? t("selectFeeStructure")
+                  : t("selectClassFirst")
+              }
+              disabled={!selectedClassId || applicableFeeStructures.length === 0}
+              options={applicableFeeStructures.map((fs) => ({
+                value: fs.id,
+                label: `${fs.name} — ${formatMoney(fs.amount, currencyCode)}`,
+              }))}
+              value={selectedFeeStructureId ?? ""}
+              onChange={(e) =>
+                setValue("fee_structure_id", e.target.value, {
+                  shouldValidate: true,
+                })
+              }
             />
           </Field>
-          <div className="flex items-end">
-            <p className="text-xs text-stone-500 dark:text-stone-400">
-              {t("desiredClassOnFile", {
-                year: formatSchoolYear(getCurrentSchoolYearStart()),
-              })}
-            </p>
-          </div>
+          <Field
+            label={t("paperReceiptNumber")}
+            htmlFor="enrollment_receipt_ref"
+            hint={t("paperReceiptNumberHint")}
+          >
+            <Input
+              id="enrollment_receipt_ref"
+              {...register("enrollment_receipt_ref")}
+              placeholder={t("paperReceiptNumberPlaceholder")}
+            />
+          </Field>
+        </div>
+        <div className="flex items-end">
+          <p className="text-xs text-stone-500 dark:text-stone-400">
+            {t("desiredClassOnFile", {
+              year: formatSchoolYear(getCurrentSchoolYearStart()),
+            })}
+          </p>
         </div>
         <div>
           <p className="text-sm font-medium text-stone-700 dark:text-stone-300">

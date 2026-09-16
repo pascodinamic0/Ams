@@ -8,11 +8,11 @@ You can do all of this at **$0**:
 
 | Step | Action |
 |------|--------|
-| **Apply for credits** | [Twilio for Startups](https://www.twilio.com/startups) ó up to $5K if Digni Digital LLC qualifies (free to apply) |
-| **Start WABA** | Meta Business Manager ? WhatsApp Business account (free to begin; verification takes 1ñ2 weeks) |
+| **Apply for credits** | [Twilio for Startups](https://www.twilio.com/startups) ÔøΩ up to $5K if Digni Digital LLC qualifies (free to apply) |
+| **Start WABA** | Meta Business Manager ? WhatsApp Business account (free to begin; verification takes 1ÔøΩ2 weeks) |
 | **Supabase UI prep** | Dashboard ? Auth ? Providers ? Phone ? enable (Twilio fields can wait) |
-| **Link test user phone** | `bun run seed:phone-auth-test` ó sets `auth.users.phone` on hosted project |
-| **Local end-to-end demo** | `supabase start` + test OTP below ó no Twilio send |
+| **Link test user phone** | `bun run seed:phone-auth-test` ÔøΩ sets `auth.users.phone` on hosted project |
+| **Local end-to-end demo** | `supabase start` + test OTP below ÔøΩ no Twilio send |
 
 ### Free local phone login (test OTP)
 
@@ -29,13 +29,13 @@ Test mapping lives in [`supabase/config.toml`](../supabase/config.toml) (`[auth.
 ## 1. Twilio Verify + WhatsApp Sender
 
 1. Log in to [Twilio Console](https://console.twilio.com/).
-2. Create a **Verify Service** (`VAù`) under Verify ? Services.
+2. Create a **Verify Service** (`VAÔøΩ`) under Verify ? Services.
 3. Enable **Fraud Guard** on the Verify service.
 4. Create or reuse a **WhatsApp Sender** (WABA + phone number):
    - Messaging ? Senders ? WhatsApp Senders
-   - Complete Meta business verification (often 1ù2 weeks)
+   - Complete Meta business verification (often 1ÔøΩ2 weeks)
    - Use a **dedicated** sender for OTPs (not the same number as fee reminders)
-5. Create a **Messaging Service** (`MGù`) and attach the WhatsApp Sender.
+5. Create a **Messaging Service** (`MGÔøΩ`) and attach the WhatsApp Sender.
 6. In Verify ? your service ? **WhatsApp** tab, select the Messaging Service.
 7. Confirm authentication templates are approved in Meta Business Manager.
 
@@ -74,8 +74,8 @@ supabase stop && supabase start
 
 WhatsApp login only works when `auth.users.phone` is set:
 
-- **Parents:** guardian record with `auth_user_id` + `phone` ù synced automatically on guardian save.
-- **Staff:** Settings ? **Phone for WhatsApp sign-in** ù verify via OTP after linking.
+- **Parents:** guardian record with `auth_user_id` + `phone` ÔøΩ synced automatically on guardian save.
+- **Staff:** Settings ? **Phone for WhatsApp sign-in** ÔøΩ verify via OTP after linking.
 - **Invited users:** link phone in Settings after first email/password login.
 
 ## 5. Production checklist
@@ -94,7 +94,7 @@ WhatsApp login only works when `auth.users.phone` is set:
 | Symptom | Likely cause |
 |---------|----------------|
 | OTP never arrives | WABA not verified, wrong Messaging Service on Verify, or Meta template pending |
-| Error 63018 | WhatsApp messaging limit exceeded ù check Meta limits |
+| Error 63018 | WhatsApp messaging limit exceeded ÔøΩ check Meta limits |
 | Error 63008 | Verify WhatsApp Messaging Service not configured |
-| "No account" on login | Phone not linked on `auth.users` ù use Settings or guardian sync |
+| "No account" on login | Phone not linked on `auth.users` ÔøΩ use Settings or guardian sync |
 | Works in prod, not local | `config.toml` Twilio Verify block or `test_otp` mapping missing |

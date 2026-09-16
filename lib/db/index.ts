@@ -91,6 +91,11 @@ export {
   type SchoolDirectoryItem,
 } from "./schools";
 export {
+  getPendingEnrollments,
+  getPendingEnrollmentCount,
+  type PendingEnrollmentRow,
+} from "./pending-enrollments";
+export {
   getStudents,
   getStudentsForBilling,
   getStudentsForInscriptionExport,

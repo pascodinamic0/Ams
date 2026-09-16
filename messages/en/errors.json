@@ -158,6 +158,8 @@
   "slugInUse": "Slug already in use",
   "notAuthorizedCurrency": "Not authorized to update school currency",
   "onlyOwnSchoolCurrency": "You can only update currency for your own school",
+  "notAuthorizedDailyReports": "Not authorized to update report settings",
+  "onlyOwnSchoolDailyReports": "You can only update report settings for your own school",
   "invalidCurrency": "Invalid currency",
   "onlyPlatformAdminsDeleteSchools": "Only platform administrators can delete schools",
   "invalidFormData": "Invalid form data",
@@ -197,5 +199,9 @@
   "enrollmentApplicationNote": "Enrollment application for {studentName} (ref {ref})",
   "classNotFound": "Class not found",
   "classAtCapacity": "{className} is at capacity. Raise the limit or choose another class.",
-  "classRequired": "Class is required"
+  "classRequired": "Class is required",
+  "feeStructureRequired": "Enrollment fee package is required",
+  "feeStructureAmbiguous": "Multiple fee packages match this class — specify fee_structure in the import row",
+  "feeStructureRequiredForClass": "No fee package configured for this class — add one in Finance first",
+  "enrollmentProofRequired": "Paper receipt photo is required to activate the student"
 }

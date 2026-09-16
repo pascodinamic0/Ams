@@ -81,5 +81,7 @@
   "atLeastOneParticipant": "At least one participant required",
   "firstMessageEmpty": "First message cannot be empty",
   "messageBodyRequired": "Message body is required",
-  "invalidRow": "Invalid row"
+  "invalidRow": "Invalid row",
+  "feeStructureRequired": "Enrollment fee package is required",
+  "proofRequired": "Paper receipt photo is required"
 }

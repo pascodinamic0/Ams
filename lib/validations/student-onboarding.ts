@@ -34,6 +34,10 @@ export const studentOnboardingSchema = studentSchema.extend({
   add_secondary_guardian: z.boolean().default(false),
   secondary_guardian: guardianOnboardingSchema.optional(),
   pickup_persons: z.array(pickupPersonSchema).default([]),
+  /** Required enrollment fee package — finance verifies payment against this invoice. */
+  fee_structure_id: z.string().uuid("feeStructureRequired"),
+  /** Paper receipt number from the manual facture book (optional until parent pays). */
+  enrollment_receipt_ref: z.string().optional(),
 }).superRefine((data, ctx) => {
   const hasPrimary =
     Boolean(data.existing_guardian_id) ||

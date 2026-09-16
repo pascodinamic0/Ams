@@ -98,6 +98,7 @@
       "title": "Guichet de paiement",
       "subtitle": "Encaisser les frais, confirmer les soldes et tenir les reçus du jour.",
       "focusQuestion": "Qui doit encore payer aujourd'hui ?",
+      "pendingEnrollments": "Inscriptions en attente",
       "recordPayment": "Enregistrer un paiement",
       "unpaidList": "Liste des impayés",
       "findInvoice": "Trouver une facture"
@@ -116,6 +117,7 @@
       "title": "Bureau finance",
       "subtitle": "Gérez factures, paiements, paie, dépenses, budget annuel et opérations de frais.",
       "focusQuestion": "Quel travail finance est inachevé ?",
+      "pendingEnrollments": "Inscriptions en attente",
       "yearlyBudget": "Budget annuel",
       "outstandingFees": "Frais en souffrance",
       "recordPayment": "Enregistrer un paiement",

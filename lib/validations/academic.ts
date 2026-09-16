@@ -106,7 +106,11 @@ export const studentImportRowSchema = z.object({
     .min(1, "dobRequired")
     .regex(/^\d{4}-\d{2}-\d{2}$/, "invalidDate"),
   class_id: z.string().uuid("classRequired"),
-  status: z.enum(["active", "pending", "graduated", "inactive"]).default("active"),
+  /** Import always creates pending students; column ignored if present. */
+  status: z.enum(["active", "pending", "graduated", "inactive"]).default("pending"),
+  fee_structure_id: z.string().uuid("feeStructureRequired").optional(),
+  fee_structure: z.string().optional(),
+  enrollment_receipt_ref: z.string().optional(),
 });
 
 export type ClassFormData = z.infer<typeof classSchema>;

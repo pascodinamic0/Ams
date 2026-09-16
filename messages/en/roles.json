@@ -98,6 +98,7 @@
       "title": "Payment desk",
       "subtitle": "Collect fees, confirm balances, and keep daily receipts clean.",
       "focusQuestion": "Who still needs to pay today?",
+      "pendingEnrollments": "Pending enrollments",
       "recordPayment": "Record payment",
       "unpaidList": "Unpaid list",
       "findInvoice": "Find invoice"
@@ -116,6 +117,7 @@
       "title": "Finance office",
       "subtitle": "Manage invoices, payments, payroll, expenses, yearly budget, and fee operations.",
       "focusQuestion": "What finance work is unfinished?",
+      "pendingEnrollments": "Pending enrollments",
       "yearlyBudget": "Yearly budget",
       "outstandingFees": "Outstanding fees",
       "recordPayment": "Record payment",

@@ -81,5 +81,7 @@
   "atLeastOneParticipant": "Au moins un participant est requis",
   "firstMessageEmpty": "Le premier message ne peut pas être vide",
   "messageBodyRequired": "Le corps du message est requis",
-  "invalidRow": "Ligne invalide"
+  "invalidRow": "Ligne invalide",
+  "feeStructureRequired": "Le forfait de frais d'inscription est requis",
+  "proofRequired": "La photo du reçu papier est requise"
 }
