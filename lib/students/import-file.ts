@@ -126,9 +126,9 @@ export function normalizeImportDate(value: unknown): string | null {
 
   if (value instanceof Date && !Number.isNaN(value.getTime())) {
     return toIsoDate(
-      value.getUTCFullYear(),
-      value.getUTCMonth() + 1,
-      value.getUTCDate()
+      value.getFullYear(),
+      value.getMonth() + 1,
+      value.getDate()
     );
   }
 
