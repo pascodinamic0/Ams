@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 type Props = {
+  basePath: string;
   monthlyLabel: string;
   dailyLabel: string;
   dailyEnabled: boolean;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function ReportPeriodTabs({
+  basePath,
   monthlyLabel,
   dailyLabel,
   dailyEnabled,
@@ -19,13 +21,13 @@ export function ReportPeriodTabs({
   dateQuery,
 }: Props) {
   const pathname = usePathname();
-  const isMonthly = pathname.includes("/reports/monthly");
+  const isMonthly = pathname.includes(`${basePath}/monthly`);
   const monthlyHref = monthQuery
-    ? `/academic/reports/monthly?month=${monthQuery}`
-    : "/academic/reports/monthly";
+    ? `${basePath}/monthly?month=${monthQuery}`
+    : `${basePath}/monthly`;
   const dailyHref = dateQuery
-    ? `/academic/reports/daily?date=${dateQuery}`
-    : "/academic/reports/daily";
+    ? `${basePath}/daily?date=${dateQuery}`
+    : `${basePath}/daily`;
 
   return (
     <div className="inline-flex rounded-lg border border-stone-200 p-1 dark:border-stone-700">

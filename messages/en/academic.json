@@ -228,6 +228,8 @@
   "balance": "Balance",
   "libraryHistory": "Library",
   "noLibraryIssues": "No library loans for this student yet.",
+  "activityReportTitle": "Activity report",
+  "activityReportSubtitle": "Income, tasks, and expense decisions — switch between monthly and daily inside the report.",
   "monthlyReportTitle": "Monthly activity report",
   "monthlyReportSubtitle": "Official summary of academic admin work for leadership and investors.",
   "monthlyReportLabel": "Monthly activity report",

@@ -228,6 +228,8 @@
   "balance": "Solde",
   "libraryHistory": "Bibliothèque",
   "noLibraryIssues": "Aucun emprunt de bibliothèque pour cet élève pour le moment.",
+  "activityReportTitle": "Rapport d'activité",
+  "activityReportSubtitle": "Recettes, tâches et décisions de dépenses — basculez entre mensuel et quotidien dans le rapport.",
   "monthlyReportTitle": "Rapport d'activité mensuel",
   "monthlyReportSubtitle": "Résumé officiel du travail de l'administration académique pour la direction et les investisseurs.",
   "monthlyReportLabel": "Rapport d'activité mensuel",

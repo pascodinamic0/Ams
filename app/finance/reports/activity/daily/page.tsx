@@ -21,7 +21,7 @@ import {
 } from "@/lib/reports/activity-report-access";
 import { getActivityReportViewLabels } from "@/lib/reports/activity-report-labels";
 
-const PORTAL = "academic" as const;
+const PORTAL = "finance" as const;
 const BASE_PATH = getActivityReportBasePath(PORTAL);
 
 function parseDateParam(raw: string | undefined): string {
@@ -36,7 +36,7 @@ function parseDateParam(raw: string | undefined): string {
   return fallback;
 }
 
-export default async function DailyActivityReportPage({
+export default async function FinanceDailyActivityReportPage({
   searchParams,
 }: {
   searchParams: Promise<{ date?: string }>;

@@ -283,7 +283,10 @@ export async function updateSchoolDailyReportsEnabled(
   revalidatePath("/academic/settings");
   revalidatePath("/academic/reports/monthly");
   revalidatePath("/academic/reports/daily");
+  revalidatePath("/finance/reports/activity/monthly");
+  revalidatePath("/finance/reports/activity/daily");
   revalidatePath("/academic", "layout");
+  revalidatePath("/finance", "layout");
   return {} as { error?: string };
 }
 

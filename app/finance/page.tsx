@@ -71,6 +71,13 @@ export default async function FinanceDashboard() {
     href: "/finance/enrollments",
   };
 
+  const activityReportMetric = {
+    label: t("activityReportTitle"),
+    value: t("activityReportDashboardValue"),
+    hint: t("activityReportDashboardHint"),
+    href: "/finance/reports/activity/monthly",
+  };
+
   const metrics = isCashier
     ? [
         pendingEnrollmentMetric,
@@ -88,6 +95,7 @@ export default async function FinanceDashboard() {
       ]
     : [
         pendingEnrollmentMetric,
+        activityReportMetric,
         {
           label: t("schoolFeesCollected"),
           value: formatCurrency(kpis.collected),

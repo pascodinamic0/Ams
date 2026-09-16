@@ -57,7 +57,7 @@
   "tasks": "Tâches",
   "discipline": "Discipline",
   "monthlyActivity": "Activité mensuelle",
-  "dailyActivity": "Activité quotidienne",
+  "activityReport": "Rapport d'activité",
   "budget": "Plan budgétaire",
   "billing": "Facturation"
 }

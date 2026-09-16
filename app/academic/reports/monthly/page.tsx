@@ -1,23 +1,28 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { format } from "date-fns";
 import { ExportPdfButton } from "@/components/students/export-pdf-button";
+import {
+  ActivityReportPrintStyles,
+  ActivityReportView,
+} from "@/components/reports/activity-report-view";
+import { MonthPicker } from "@/components/reports/month-picker";
+import { ReportPeriodTabs } from "@/components/reports/report-period-tabs";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { canAccessPath, normalizeRole } from "@/lib/auth/rbac";
 import { getMonthlyActivityReport } from "@/lib/db/reports";
 import {
   getDailyReportsEnabledForSchool,
   getSchoolCurrencyForSchool,
 } from "@/lib/db/schools";
 import {
-  ActivityReportPrintStyles,
-  ActivityReportView,
-} from "../activity-report-view";
-import { ReportPeriodTabs } from "../report-period-tabs";
-import { MonthPicker } from "./month-picker";
+  canViewActivityReport,
+  getActivityReportBasePath,
+  getActivityReportHomePath,
+} from "@/lib/reports/activity-report-access";
+import { getActivityReportViewLabels } from "@/lib/reports/activity-report-labels";
 
-const ALLOWED_ROLES = new Set(["academic_admin", "principal", "super_admin"]);
+const PORTAL = "academic" as const;
+const BASE_PATH = getActivityReportBasePath(PORTAL);
 
 function parseMonthParam(raw: string | undefined): { year: number; month: number } {
   const now = new Date();
@@ -36,26 +41,21 @@ export default async function MonthlyActivityReportPage({
   searchParams: Promise<{ month?: string }>;
 }) {
   const profile = await getCurrentProfile();
-  if (!profile?.school_id) redirect("/academic");
-  if (!canAccessPath(profile.role, "/academic/reports/monthly")) {
-    redirect("/academic");
-  }
-
-  const role = normalizeRole(profile.role);
-  if (!ALLOWED_ROLES.has(role)) {
-    redirect("/academic");
+  if (!profile?.school_id) redirect(getActivityReportHomePath(PORTAL));
+  if (!canViewActivityReport(profile.role)) {
+    redirect(getActivityReportHomePath(PORTAL));
   }
 
   const t = await getTranslations("academic");
-  const tc = await getTranslations("common");
   const params = await searchParams;
   const { year, month } = parseMonthParam(params.month);
   const monthQuery = `${year}-${String(month).padStart(2, "0")}`;
 
-  const [report, currency, dailyEnabled] = await Promise.all([
+  const [report, currency, dailyEnabled, labels] = await Promise.all([
     getMonthlyActivityReport(profile.school_id, year, month),
     getSchoolCurrencyForSchool(profile.school_id),
     getDailyReportsEnabledForSchool(profile.school_id),
+    getActivityReportViewLabels("monthly"),
   ]);
 
   const periodDisplay = format(new Date(year, month - 1, 1), "MMMM yyyy");
@@ -65,18 +65,24 @@ export default async function MonthlyActivityReportPage({
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <div>
-          <h1 className="text-2xl font-bold">{t("monthlyReportTitle")}</h1>
-          <p className="mt-1 text-sm text-stone-500">{t("monthlyReportSubtitle")}</p>
+          <h1 className="text-2xl font-bold">{t("activityReportTitle")}</h1>
+          <p className="mt-1 text-sm text-stone-500">{t("activityReportSubtitle")}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <ReportPeriodTabs
+            basePath={BASE_PATH}
             monthlyLabel={t("reportPeriodMonthly")}
             dailyLabel={t("reportPeriodDaily")}
             dailyEnabled={dailyEnabled}
             monthQuery={monthQuery}
             dateQuery={today}
           />
-          <MonthPicker year={year} month={month} label={t("reportMonth")} />
+          <MonthPicker
+            year={year}
+            month={month}
+            label={t("reportMonth")}
+            basePath={BASE_PATH}
+          />
           <ExportPdfButton label={t("exportPdf")} />
         </div>
       </div>
@@ -86,52 +92,8 @@ export default async function MonthlyActivityReportPage({
         mode="monthly"
         currency={currency}
         periodDisplay={periodDisplay}
-        labels={{
-          reportLabel: t("monthlyReportLabel"),
-          summary: t("monthlySummary"),
-          tasksCompletedCount: t("tasksCompletedCount"),
-          financeTasksCompletedCount: t("financeTasksCompletedCount"),
-          expensesApprovedCount: t("expensesApprovedCount"),
-          expensesRejectedCount: t("expensesRejectedCount"),
-          approvedExpenseTotal: t("approvedExpenseTotal"),
-          rejectedExpenseTotal: t("rejectedExpenseTotal"),
-          incomeCollectedTotal: t("incomeCollectedTotal"),
-          newEnrollmentIncomeTotal: t("newEnrollmentIncomeTotal"),
-          netIncomeTotal: t("netIncomeTotal"),
-          tasksCompletedSection: t("tasksCompletedSection"),
-          expenseDecisionsSection: t("expenseDecisionsSection"),
-          incomeSection: t("incomeSection"),
-          noTasksCompleted: t("noTasksCompleted"),
-          noExpenseDecisions: t("noExpenseDecisions"),
-          noIncomePayments: t("noIncomePayments"),
-          colTask: t("colTask"),
-          colDepartment: t("colDepartment"),
-          colRelated: t("colRelated"),
-          colCompleted: t("colCompleted"),
-          colCategory: t("colCategory"),
-          colAmount: t("colAmount"),
-          colDecision: t("colDecision"),
-          colReceipt: t("colReceipt"),
-          colDecidedOn: t("colDecidedOn"),
-          colStudent: t("colStudent"),
-          colClass: t("colClass"),
-          colMethod: t("colMethod"),
-          colPaidOn: t("colPaidOn"),
-          colIncomeLine: t("colIncomeLine"),
-          incomeLineForStudent: t("incomeLineForStudent"),
-          newEnrollmentBadge: t("newEnrollmentBadge"),
-          reportFooter: t("monthlyReportFooter"),
-          authorizedSignature: t("authorizedSignature"),
-          issuedOn: t("issuedOn"),
-          emptyDash: tc("emptyDash"),
-        }}
+        labels={labels}
       />
-
-      <p className="text-sm text-stone-500 print:hidden">
-        <Link href="/academic/tasks" className="text-blue-600 hover:underline">
-          {t("backToTasks")}
-        </Link>
-      </p>
 
       <ActivityReportPrintStyles mode="monthly" />
     </div>

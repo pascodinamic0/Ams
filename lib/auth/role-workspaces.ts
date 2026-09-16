@@ -128,7 +128,8 @@ const SPECS: Record<string, WorkspaceSpec> = {
     role: "accountant",
     metricHints: ["collected", "outstanding", "payroll", "expenses", "budget"],
     actions: [
-      { href: "/finance/budget", key: "yearlyBudget" },
+      { href: "/finance/reports/activity/monthly", key: "activityReport" },
+      { href: "/finance/budget", key: "yearlyBudget", variant: "ghost" },
       { href: "/finance/reports", key: "financeReports", variant: "ghost" },
       { href: "/finance/payroll", key: "payroll", variant: "ghost" },
       { href: "/finance/expenses", key: "expenses", variant: "ghost" },
@@ -140,6 +141,7 @@ const SPECS: Record<string, WorkspaceSpec> = {
     metricHints: ["collected", "outstanding", "payroll", "expenses", "budget"],
     actions: [
       { href: "/finance/enrollments", key: "pendingEnrollments" },
+      { href: "/finance/reports/activity/monthly", key: "activityReport", variant: "ghost" },
       { href: "/finance/budget", key: "yearlyBudget", variant: "ghost" },
       { href: "/finance/outstanding", key: "outstandingFees", variant: "ghost" },
       { href: "/finance/payments", key: "recordPayment", variant: "ghost" },

@@ -6,9 +6,10 @@ type Props = {
   year: number;
   month: number;
   label: string;
+  basePath: string;
 };
 
-export function MonthPicker({ year, month, label }: Props) {
+export function MonthPicker({ year, month, label, basePath }: Props) {
   const router = useRouter();
   const value = `${year}-${String(month).padStart(2, "0")}`;
 
@@ -21,7 +22,7 @@ export function MonthPicker({ year, month, label }: Props) {
         onChange={(e) => {
           const next = e.target.value;
           if (!next) return;
-          router.push(`/academic/reports/monthly?month=${next}`);
+          router.push(`${basePath}/monthly?month=${next}`);
         }}
         className="rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-sm dark:border-stone-700 dark:bg-stone-900"
       />

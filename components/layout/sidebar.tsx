@@ -91,8 +91,7 @@ type NavLabels = {
   finance: string;
   tasks: string;
   discipline: string;
-  monthlyActivity: string;
-  dailyActivity: string;
+  activityReport: string;
   budget: string;
   billing: string;
 };
@@ -157,8 +156,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/academic/team", labelKey: "team", icon: icon.users },
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/academic/reports/monthly", labelKey: "monthlyActivity", icon: icon.reports },
-    { href: "/academic/reports/daily", labelKey: "dailyActivity", icon: icon.reports },
+    { href: "/academic/reports/monthly", labelKey: "activityReport", icon: icon.reports },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
@@ -203,8 +201,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/academic/reports/monthly", labelKey: "monthlyActivity", icon: icon.reports },
-    { href: "/academic/reports/daily", labelKey: "dailyActivity", icon: icon.reports },
+    { href: "/academic/reports/monthly", labelKey: "activityReport", icon: icon.reports },
     { href: "/academic/students", labelKey: "students", icon: icon.students },
     { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
     { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
@@ -227,6 +224,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices },
+    { href: "/finance/reports/activity/monthly", labelKey: "activityReport", icon: icon.reports },
     { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.feeStructure },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices },
     { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.outstandingFees },
@@ -251,6 +249,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
     { href: "/billing", labelKey: "billing", icon: icon.billing },
     { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices },
+    { href: "/finance/reports/activity/monthly", labelKey: "activityReport", icon: icon.reports },
     { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.feeStructure },
     { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices },
     { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.outstandingFees },
@@ -330,24 +329,18 @@ const ROLE_NAV: Record<string, NavItem[]> = {
   ],
 };
 
-function getNavForRole(role: string, dailyReportsEnabled = true): NavItem[] {
+function getNavForRole(role: string): NavItem[] {
   const normalized = role?.toLowerCase().replace(/\s/g, "_") ?? "student";
-  const items = ROLE_NAV[normalized] ?? ROLE_NAV.student;
-  if (dailyReportsEnabled) return items;
-  return items.filter((item) => item.href !== "/academic/reports/daily");
+  return ROLE_NAV[normalized] ?? ROLE_NAV.student;
 }
 
 interface SidebarProps {
   role?: string;
-  dailyReportsEnabled?: boolean;
 }
 
-export function Sidebar({
-  role = "student",
-  dailyReportsEnabled = true,
-}: SidebarProps) {
+export function Sidebar({ role = "student" }: SidebarProps) {
   const pathname = usePathname();
-  const navItems = getNavForRole(role, dailyReportsEnabled);
+  const navItems = getNavForRole(role);
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const tMessages = useTranslations("messages");
