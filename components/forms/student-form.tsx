@@ -22,6 +22,11 @@ const STUDENT_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 
 import { formatClassOptionLabel, isClassFull } from "@/lib/utils/class-options";
 import type { ClassListItem } from "@/lib/db/classes";
+import {
+  formatSchoolYear,
+  getCurrentSchoolYearStart,
+  schoolYearOptions,
+} from "@/lib/academic/school-year";
 
 interface Props {
   schoolId: string;
@@ -149,6 +154,7 @@ export function StudentForm({
       defaultValues={{
         status: "active",
         tags: [],
+        school_year: getCurrentSchoolYearStart(),
         add_secondary_guardian: false,
         existing_guardian_can_pickup: false,
         photo_url: "",
@@ -162,7 +168,7 @@ export function StudentForm({
         <CardHeader>
           <CardTitle>{t("studentOnboarding")}</CardTitle>
           <p className="text-sm text-stone-500 dark:text-stone-400">
-            {t("studentOnboardingDesc")}
+            {t("studentOnboardingFicheDesc")}
           </p>
         </CardHeader>
         <CardContent className="space-y-8">
@@ -297,7 +303,7 @@ function GuardianFields({
       <Field label={t("homeAddress")} htmlFor={`${prefix}.address`}>
         <Textarea id={`${prefix}.address`} rows={2} {...register(`${prefix}.address`)} />
       </Field>
-      <Field label={t("workplace")} htmlFor={`${prefix}.workplace`}>
+      <Field label={t("workplace")} htmlFor={`${prefix}.workplace`} hint={t("workplaceHint")}>
         <Input id={`${prefix}.workplace`} {...register(`${prefix}.workplace`)} />
       </Field>
       <label className="flex items-start gap-2 text-sm text-stone-700 dark:text-stone-300">
@@ -497,22 +503,47 @@ function StudentFormFields({
 
   return (
     <>
-      <FormSection title={t("childInformation")} description={t("childInformationDesc")}>
-        <div className="grid gap-4 sm:grid-cols-3">
-          <Field label={t("firstName")} htmlFor="first_name" required error={errors.first_name?.message}>
-            <Input id="first_name" {...register("first_name")} error={!!errors.first_name} />
+      <FormSection title={t("ficheIdentity")} description={t("ficheIdentityDesc")}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label={t("schoolYear")}
+            htmlFor="school_year"
+            hint={t("schoolYearHint")}
+            error={errors.school_year?.message}
+          >
+            <Select
+              id="school_year"
+              options={schoolYearOptions().map((opt) => ({
+                value: String(opt.value),
+                label: opt.label,
+              }))}
+              {...register("school_year")}
+            />
           </Field>
-          <Field label={t("middleName")} htmlFor="middle_name" error={errors.middle_name?.message}>
+          <Field label={t("desiredClass")} htmlFor="class_id" required error={errors.class_id?.message}>
+            <Select
+              id="class_id"
+              placeholder={t("selectClassRequired")}
+              options={classes.map((c) => ({
+                value: c.id,
+                label: formatClassOptionLabel(c),
+              }))}
+              {...register("class_id")}
+            />
+          </Field>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Field label={t("familyName")} htmlFor="last_name" required error={errors.last_name?.message}>
+            <Input id="last_name" {...register("last_name")} error={!!errors.last_name} />
+          </Field>
+          <Field label={t("postName")} htmlFor="middle_name" hint={t("postNameHint")} error={errors.middle_name?.message}>
             <Input id="middle_name" {...register("middle_name")} error={!!errors.middle_name} />
           </Field>
-          <Field label={t("lastName")} htmlFor="last_name" required error={errors.last_name?.message}>
-            <Input id="last_name" {...register("last_name")} error={!!errors.last_name} />
+          <Field label={t("givenName")} htmlFor="first_name" required error={errors.first_name?.message}>
+            <Input id="first_name" {...register("first_name")} error={!!errors.first_name} />
           </Field>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={t("dateOfBirth")} htmlFor="date_of_birth" required error={errors.date_of_birth?.message}>
-            <Input id="date_of_birth" type="date" {...register("date_of_birth")} error={!!errors.date_of_birth} />
-          </Field>
           <Field label={t("gender")} htmlFor="gender">
             <Select
               id="gender"
@@ -524,7 +555,80 @@ function StudentFormFields({
               {...register("gender")}
             />
           </Field>
+          <Field label={t("dateOfBirth")} htmlFor="date_of_birth" required error={errors.date_of_birth?.message}>
+            <Input id="date_of_birth" type="date" {...register("date_of_birth")} error={!!errors.date_of_birth} />
+          </Field>
         </div>
+        <Field label={t("placeOfBirth")} htmlFor="place_of_birth" hint={t("placeOfBirthHint")}>
+          <Input id="place_of_birth" {...register("place_of_birth")} placeholder={t("placeOfBirthPlaceholder")} />
+        </Field>
+        <Field label={t("previousSchool")} htmlFor="previous_school">
+          <Input id="previous_school" {...register("previous_school")} />
+        </Field>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label={t("fatherNames")} htmlFor="father_name">
+            <Input id="father_name" {...register("father_name")} />
+          </Field>
+          <Field label={t("motherNames")} htmlFor="mother_name">
+            <Input id="mother_name" {...register("mother_name")} />
+          </Field>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label={t("responsibleProfession")} htmlFor="responsible_profession">
+            <Input id="responsible_profession" {...register("responsible_profession")} />
+          </Field>
+          <Field label={t("contactPhone")} htmlFor="contact_phone" hint={t("contactPhoneHint")}>
+            <Input id="contact_phone" type="tel" {...register("contact_phone")} placeholder="+243…" />
+          </Field>
+        </div>
+        <div>
+          <p className="mb-2 text-sm font-medium text-stone-700 dark:text-stone-300">
+            {t("address")}
+          </p>
+          <p className="mb-3 text-xs text-stone-500 dark:text-stone-400">
+            {t("addressStructuredHint")}
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Field label={t("addressNumber")} htmlFor="address_number">
+              <Input id="address_number" {...register("address_number")} />
+            </Field>
+            <Field label={t("addressAvenue")} htmlFor="address_avenue">
+              <Input id="address_avenue" {...register("address_avenue")} />
+            </Field>
+            <Field label={t("addressQuartier")} htmlFor="address_quartier">
+              <Input id="address_quartier" {...register("address_quartier")} />
+            </Field>
+            <Field label={t("addressCommune")} htmlFor="address_commune">
+              <Input id="address_commune" {...register("address_commune")} />
+            </Field>
+          </div>
+        </div>
+        <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
+          <input
+            type="checkbox"
+            className="rounded border-stone-300"
+            {...register("same_address_as_guardian")}
+            onChange={(e) => {
+              register("same_address_as_guardian").onChange(e);
+              if (e.target.checked && primaryAddress) {
+                setValue("home_address", primaryAddress);
+              }
+            }}
+          />
+          {t("sameAddressAsGuardian")}
+        </label>
+        <Field
+          label={t("childHomeAddress")}
+          htmlFor="home_address"
+          hint={t("homeAddressFallbackHint")}
+        >
+          <Textarea
+            id="home_address"
+            rows={2}
+            disabled={sameAddress}
+            {...register("home_address")}
+          />
+        </Field>
         <Field
           label={t("studentPhoto")}
           htmlFor="photo_url"
@@ -568,19 +672,61 @@ function StudentFormFields({
 
       <div className="border-t border-stone-200 dark:border-stone-800" />
 
-      <FormSection title={t("enrollment")} description={t("enrollmentDesc")}>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field label={t("class")} htmlFor="class_id" required error={errors.class_id?.message}>
+      <FormSection title={t("ficheOtherInfo")} description={t("ficheOtherInfoDesc")}>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <Field label={t("chronicIllness")} htmlFor="chronic_illness">
             <Select
-              id="class_id"
-              placeholder={t("selectClassRequired")}
-              options={classes.map((c) => ({
-                value: c.id,
-                label: formatClassOptionLabel(c),
-              }))}
-              {...register("class_id")}
+              id="chronic_illness"
+              placeholder={t("selectOptional")}
+              options={[
+                { value: "true", label: tc("yes") },
+                { value: "false", label: tc("no") },
+              ]}
+              {...register("chronic_illness")}
             />
           </Field>
+          <Field label={t("visualProblem")} htmlFor="visual_problem">
+            <Select
+              id="visual_problem"
+              placeholder={t("selectOptional")}
+              options={[
+                { value: "true", label: tc("yes") },
+                { value: "false", label: tc("no") },
+              ]}
+              {...register("visual_problem")}
+            />
+          </Field>
+          <Field label={t("physicalProblem")} htmlFor="physical_problem">
+            <Select
+              id="physical_problem"
+              placeholder={t("selectOptional")}
+              options={[
+                { value: "true", label: tc("yes") },
+                { value: "false", label: tc("no") },
+              ]}
+              {...register("physical_problem")}
+            />
+          </Field>
+        </div>
+        <Field label={t("allergies")} htmlFor="allergies" hint={t("allergiesHint")}>
+          <Input id="allergies" {...register("allergies")} placeholder={t("allergiesPlaceholder")} />
+        </Field>
+        <Field label={t("difficulties")} htmlFor="difficulties" hint={t("difficultiesHint")}>
+          <Input id="difficulties" {...register("difficulties")} placeholder={t("difficultiesPlaceholder")} />
+        </Field>
+        <Field
+          label={t("notesAboutChild")}
+          htmlFor="notes"
+          hint={t("notesAboutChildHint")}
+        >
+          <Textarea id="notes" rows={3} {...register("notes")} placeholder={t("notesAboutChildPlaceholder")} />
+        </Field>
+      </FormSection>
+
+      <div className="border-t border-stone-200 dark:border-stone-800" />
+
+      <FormSection title={t("enrollment")} description={t("enrollmentDesc")}>
+        <div className="grid gap-4 sm:grid-cols-2">
           <Field label={tc("status")} htmlFor="status" error={errors.status?.message}>
             <Select
               id="status"
@@ -593,6 +739,13 @@ function StudentFormFields({
               {...register("status")}
             />
           </Field>
+          <div className="flex items-end">
+            <p className="text-xs text-stone-500 dark:text-stone-400">
+              {t("desiredClassOnFile", {
+                year: formatSchoolYear(getCurrentSchoolYearStart()),
+              })}
+            </p>
+          </div>
         </div>
         <div>
           <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
@@ -650,40 +803,6 @@ function StudentFormFields({
             </span>
           </label>
         ) : null}
-      </FormSection>
-
-      <div className="border-t border-stone-200 dark:border-stone-800" />
-
-      <FormSection title={t("childHomeHealth")} description={t("childHomeHealthDesc")}>
-        <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
-          <input
-            type="checkbox"
-            className="rounded border-stone-300"
-            {...register("same_address_as_guardian")}
-            onChange={(e) => {
-              register("same_address_as_guardian").onChange(e);
-              if (e.target.checked && primaryAddress) {
-                setValue("home_address", primaryAddress);
-              }
-            }}
-          />
-          {t("sameAddressAsGuardian")}
-        </label>
-        <Field label={t("childHomeAddress")} htmlFor="home_address">
-          <Textarea
-            id="home_address"
-            rows={2}
-            disabled={sameAddress}
-            {...register("home_address")}
-          />
-        </Field>
-        <Field
-          label={t("notesAboutChild")}
-          htmlFor="notes"
-          hint={t("notesAboutChildHint")}
-        >
-          <Textarea id="notes" rows={3} {...register("notes")} placeholder={t("notesAboutChildPlaceholder")} />
-        </Field>
       </FormSection>
 
       <div className="border-t border-stone-200 dark:border-stone-800" />

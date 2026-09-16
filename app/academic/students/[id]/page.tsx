@@ -16,6 +16,11 @@ import { StudentEnrollmentEditor } from "@/components/students/student-enrollmen
 import { StudentStatusBadge } from "@/components/students/student-status-badge";
 import { formatStudentStatusLabel } from "@/lib/students/status";
 import { normalizeStudentTags } from "@/lib/students/tags";
+import {
+  composeInscriptionAddress,
+  formatYesNo,
+} from "@/lib/students/inscription";
+import { formatSchoolYear } from "@/lib/academic/school-year";
 
 type GuardianLink = {
   can_pickup?: boolean | null;
@@ -164,6 +169,11 @@ export default async function StudentDetailPage({
               {tc("back")}
             </Button>
           </Link>
+          <Link href={`/academic/students/${id}/inscription`}>
+            <Button variant="outline" size="sm">
+              {t("exportInscriptionFiche")}
+            </Button>
+          </Link>
           <Link href={`/academic/students/${id}/report-card`}>
             <Button size="sm">{t("exportReportCard")}</Button>
           </Link>
@@ -240,10 +250,36 @@ export default async function StudentDetailPage({
                 {enrollmentTags.map(tagLabel).join(", ")}
               </p>
             ) : null}
+            {student.school_year != null ? (
+              <p>
+                <span className="text-stone-500">{t("schoolYear")}:</span>{" "}
+                {formatSchoolYear(student.school_year)}
+              </p>
+            ) : null}
+            <p>
+              <span className="text-stone-500">{t("familyName")}:</span>{" "}
+              {student.last_name}
+            </p>
+            {student.middle_name ? (
+              <p>
+                <span className="text-stone-500">{t("postName")}:</span>{" "}
+                {student.middle_name}
+              </p>
+            ) : null}
+            <p>
+              <span className="text-stone-500">{t("givenName")}:</span>{" "}
+              {student.first_name}
+            </p>
             <p>
               <span className="text-stone-500">{t("dob")}:</span>{" "}
               {student.date_of_birth ?? tc("emptyDash")}
             </p>
+            {student.place_of_birth ? (
+              <p>
+                <span className="text-stone-500">{t("placeOfBirth")}:</span>{" "}
+                {student.place_of_birth}
+              </p>
+            ) : null}
             {student.gender === "male" || student.gender === "female" ? (
               <p>
                 <span className="text-stone-500">{t("gender")}:</span>{" "}
@@ -251,14 +287,86 @@ export default async function StudentDetailPage({
               </p>
             ) : null}
             <p>
-              <span className="text-stone-500">{t("class")}:</span> {className}
+              <span className="text-stone-500">{t("desiredClass")}:</span>{" "}
+              {className}
             </p>
-            {student.home_address ? (
+            {student.previous_school ? (
               <p>
-                <span className="text-stone-500">{t("homeAddress")}:</span>{" "}
-                {student.home_address}
+                <span className="text-stone-500">{t("previousSchool")}:</span>{" "}
+                {student.previous_school}
               </p>
             ) : null}
+            {student.father_name ? (
+              <p>
+                <span className="text-stone-500">{t("fatherNames")}:</span>{" "}
+                {student.father_name}
+              </p>
+            ) : null}
+            {student.mother_name ? (
+              <p>
+                <span className="text-stone-500">{t("motherNames")}:</span>{" "}
+                {student.mother_name}
+              </p>
+            ) : null}
+            {student.responsible_profession ? (
+              <p>
+                <span className="text-stone-500">{t("responsibleProfession")}:</span>{" "}
+                {student.responsible_profession}
+              </p>
+            ) : null}
+            {student.contact_phone ? (
+              <p>
+                <span className="text-stone-500">{t("contactPhone")}:</span>{" "}
+                {student.contact_phone}
+              </p>
+            ) : null}
+            {composeInscriptionAddress(student) || student.home_address ? (
+              <p>
+                <span className="text-stone-500">{t("address")}:</span>{" "}
+                {composeInscriptionAddress(student) || student.home_address}
+              </p>
+            ) : null}
+            <div className="space-y-1 border-t border-stone-100 pt-3 dark:border-stone-800">
+              <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                {t("ficheOtherInfo")}
+              </p>
+              <p>
+                <span className="text-stone-500">{t("chronicIllness")}:</span>{" "}
+                {formatYesNo(student.chronic_illness, {
+                  yes: tc("yes"),
+                  no: tc("no"),
+                  empty: tc("emptyDash"),
+                })}
+              </p>
+              <p>
+                <span className="text-stone-500">{t("visualProblem")}:</span>{" "}
+                {formatYesNo(student.visual_problem, {
+                  yes: tc("yes"),
+                  no: tc("no"),
+                  empty: tc("emptyDash"),
+                })}
+              </p>
+              <p>
+                <span className="text-stone-500">{t("physicalProblem")}:</span>{" "}
+                {formatYesNo(student.physical_problem, {
+                  yes: tc("yes"),
+                  no: tc("no"),
+                  empty: tc("emptyDash"),
+                })}
+              </p>
+              {student.allergies ? (
+                <p>
+                  <span className="text-stone-500">{t("allergies")}:</span>{" "}
+                  {student.allergies}
+                </p>
+              ) : null}
+              {student.difficulties ? (
+                <p>
+                  <span className="text-stone-500">{t("difficulties")}:</span>{" "}
+                  {student.difficulties}
+                </p>
+              ) : null}
+            </div>
             {student.notes ? (
               <div>
                 <p className="text-stone-500">{tc("notes")}:</p>

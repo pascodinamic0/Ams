@@ -18,6 +18,21 @@ export const optionalGenderSchema = z.preprocess(
   z.enum(GENDERS, { error: "invalidGender" }).optional()
 );
 
+/** Oui/Non selects submit as "true"/"false"/"". */
+export const optionalYesNoSchema = z.preprocess((val) => {
+  if (val === "" || val == null || val === undefined) return undefined;
+  if (val === true || val === "true" || val === "yes") return true;
+  if (val === false || val === "false" || val === "no") return false;
+  return val;
+}, z.boolean().optional());
+
+/** School-year start integer from <select> (empty → undefined). */
+export const optionalSchoolYearSchema = z.preprocess((val) => {
+  if (val === "" || val == null || val === undefined) return undefined;
+  const n = typeof val === "number" ? val : Number(val);
+  return Number.isFinite(n) ? n : undefined;
+}, z.number().int().min(2000).max(2100).optional());
+
 export function normalizeGender(
   value: string | null | undefined
 ): Gender | null {
@@ -36,7 +51,23 @@ export const studentSchema = z.object({
   class_id: z.string().uuid("classRequired"),
   status: z.enum(STUDENT_STATUSES).default("active"),
   tags: z.array(studentTagSchema).default([]),
+  school_year: optionalSchoolYearSchema,
+  place_of_birth: z.string().optional(),
+  previous_school: z.string().optional(),
+  father_name: z.string().optional(),
+  mother_name: z.string().optional(),
+  responsible_profession: z.string().optional(),
+  contact_phone: z.string().optional(),
+  address_number: z.string().optional(),
+  address_avenue: z.string().optional(),
+  address_quartier: z.string().optional(),
+  address_commune: z.string().optional(),
   home_address: z.string().optional(),
+  chronic_illness: optionalYesNoSchema,
+  visual_problem: optionalYesNoSchema,
+  physical_problem: optionalYesNoSchema,
+  allergies: z.string().optional(),
+  difficulties: z.string().optional(),
   notes: z.string().optional(),
   photo_url: z.string().url("invalidPhotoUrl").optional().or(z.literal("")),
 });

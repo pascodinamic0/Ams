@@ -19,6 +19,10 @@ import {
   notifyClassMainTeacher,
 } from "@/lib/services/class-enrollment";
 import { formatPersonName } from "@/lib/utils";
+import {
+  normalizeInscriptionFields,
+  pickNormalizedInscriptionFields,
+} from "@/lib/students/inscription";
 
 type StudentActionContext = {
   school_id: string;
@@ -51,6 +55,8 @@ export async function createStudent(
   });
   if ("error" in capacityCheck) return capacityCheck;
 
+  const inscription = normalizeInscriptionFields(parsed.data);
+
   const { data, error } = await supabase
     .from("students")
     .insert({
@@ -64,8 +70,7 @@ export async function createStudent(
       class_id: parsed.data.class_id,
       status: parsed.data.status,
       tags: normalizeStudentTags(parsed.data.tags),
-      home_address: parsed.data.home_address || null,
-      notes: parsed.data.notes || null,
+      ...inscription,
       photo_url: parsed.data.photo_url?.trim() || null,
     })
     .select("id, student_id, first_name, middle_name, last_name")
@@ -136,6 +141,9 @@ export async function updateStudent(
     if ("error" in capacityCheck) return capacityCheck;
   }
 
+  const inscriptionPatch = pickNormalizedInscriptionFields(parsed.data);
+  const hasInscriptionKeys = Object.keys(inscriptionPatch).length > 0;
+
   const { data: updated, error } = await supabase
     .from("students")
     .update({
@@ -152,6 +160,7 @@ export async function updateStudent(
       ...(parsed.data.tags !== undefined
         ? { tags: normalizeStudentTags(parsed.data.tags) }
         : {}),
+      ...(hasInscriptionKeys ? inscriptionPatch : {}),
     })
     .eq("id", id)
     .select("id, class_id, first_name, middle_name, last_name")

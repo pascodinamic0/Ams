@@ -228,3 +228,114 @@ export async function getStudentById(id: string) {
   }
   return data;
 }
+
+export type StudentInscriptionExportRow = {
+  student_id: string | null;
+  school_year: number | null;
+  last_name: string;
+  middle_name: string | null;
+  first_name: string;
+  gender: string | null;
+  date_of_birth: string | null;
+  place_of_birth: string | null;
+  previous_school: string | null;
+  class_name: string | null;
+  father_name: string | null;
+  mother_name: string | null;
+  responsible_profession: string | null;
+  address_number: string | null;
+  address_avenue: string | null;
+  address_quartier: string | null;
+  address_commune: string | null;
+  home_address: string | null;
+  contact_phone: string | null;
+  chronic_illness: boolean | null;
+  visual_problem: boolean | null;
+  physical_problem: boolean | null;
+  allergies: string | null;
+  difficulties: string | null;
+  notes: string | null;
+  status: string;
+};
+
+/** Full fiche d'inscription fields for CSV extract. */
+export async function getStudentsForInscriptionExport(options?: {
+  schoolId?: string;
+  branchId?: string;
+  status?: string;
+}): Promise<StudentInscriptionExportRow[]> {
+  const supabase = await createClient();
+  let query = supabase
+    .from("students")
+    .select(
+      `
+      student_id,
+      school_year,
+      last_name,
+      middle_name,
+      first_name,
+      gender,
+      date_of_birth,
+      place_of_birth,
+      previous_school,
+      father_name,
+      mother_name,
+      responsible_profession,
+      address_number,
+      address_avenue,
+      address_quartier,
+      address_commune,
+      home_address,
+      contact_phone,
+      chronic_illness,
+      visual_problem,
+      physical_problem,
+      allergies,
+      difficulties,
+      notes,
+      status,
+      classes(name)
+    `
+    )
+    .order("last_name", { ascending: true })
+    .order("first_name", { ascending: true });
+
+  if (options?.schoolId) query = query.eq("school_id", options.schoolId);
+  if (options?.branchId) query = query.eq("branch_id", options.branchId);
+  if (options?.status) query = query.eq("status", options.status);
+
+  const { data, error } = await query;
+  if (error) {
+    console.error("getStudentsForInscriptionExport error:", error);
+    return [];
+  }
+
+  return (data ?? []).map((s) => ({
+    student_id: s.student_id,
+    school_year: s.school_year ?? null,
+    last_name: s.last_name,
+    middle_name: s.middle_name ?? null,
+    first_name: s.first_name,
+    gender: s.gender ?? null,
+    date_of_birth: s.date_of_birth ?? null,
+    place_of_birth: s.place_of_birth ?? null,
+    previous_school: s.previous_school ?? null,
+    class_name: (s.classes as { name?: string } | null)?.name ?? null,
+    father_name: s.father_name ?? null,
+    mother_name: s.mother_name ?? null,
+    responsible_profession: s.responsible_profession ?? null,
+    address_number: s.address_number ?? null,
+    address_avenue: s.address_avenue ?? null,
+    address_quartier: s.address_quartier ?? null,
+    address_commune: s.address_commune ?? null,
+    home_address: s.home_address ?? null,
+    contact_phone: s.contact_phone ?? null,
+    chronic_illness: s.chronic_illness ?? null,
+    visual_problem: s.visual_problem ?? null,
+    physical_problem: s.physical_problem ?? null,
+    allergies: s.allergies ?? null,
+    difficulties: s.difficulties ?? null,
+    notes: s.notes ?? null,
+    status: s.status ?? "active",
+  }));
+}
