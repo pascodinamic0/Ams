@@ -87,6 +87,7 @@ const paperSample = {
   physical_problem: false,
   allergies: "",
   difficulties: "",
+  fee_structure_id: "22222222-2222-4222-8222-222222222222",
   primary_guardian: {
     first_name: "CHADRACK",
     last_name: "DIKANDA",
@@ -102,6 +103,55 @@ assert.equal(parsed.success, true, JSON.stringify(parsed.error?.issues));
 
 const onboarded = studentOnboardingSchema.safeParse(paperSample);
 assert.equal(onboarded.success, true, JSON.stringify(onboarded.error?.issues));
+
+const withoutGuardian = studentOnboardingSchema.safeParse({
+  ...paperSample,
+  primary_guardian: {
+    first_name: "",
+    last_name: "",
+    email: "",
+    relation: "guardian" as const,
+    can_pickup: false,
+  },
+  pickup_persons: [{ full_name: "", phone: "", relationship: "", notes: "" }],
+});
+assert.equal(
+  withoutGuardian.success,
+  true,
+  JSON.stringify(withoutGuardian.error?.issues)
+);
+
+const partialGuardian = studentOnboardingSchema.safeParse({
+  ...paperSample,
+  primary_guardian: {
+    first_name: "",
+    last_name: "",
+    email: "parent@example.com",
+    relation: "father" as const,
+    can_pickup: false,
+  },
+});
+assert.equal(partialGuardian.success, false);
+assert.ok(
+  partialGuardian.error?.issues.some((issue) => issue.message === "guardianFirstNameToSave"),
+  JSON.stringify(partialGuardian.error?.issues)
+);
+
+const badGuardianEmail = studentOnboardingSchema.safeParse({
+  ...paperSample,
+  primary_guardian: {
+    first_name: "CHADRACK",
+    last_name: "DIKANDA",
+    email: "not-an-email",
+    relation: "father" as const,
+    can_pickup: true,
+  },
+});
+assert.equal(badGuardianEmail.success, false);
+assert.ok(
+  badGuardianEmail.error?.issues.some((issue) => issue.message === "guardianEmailInvalid"),
+  JSON.stringify(badGuardianEmail.error?.issues)
+);
 
 const requiredPaperKeys = [
   "last_name",

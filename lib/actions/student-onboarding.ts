@@ -3,10 +3,11 @@
 import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { canOnboardStudents } from "@/lib/auth/rbac";
 import {
+  guardianAddSchema,
+  isSavableGuardian,
   studentOnboardingSchema,
   type GuardianOnboardingData,
   type PickupPersonData,
@@ -33,10 +34,10 @@ async function insertGuardian(
     .insert({
       school_id: schoolId,
       name: fullName,
-      first_name: guardian.first_name.trim(),
+      first_name: guardian.first_name?.trim() || "",
       middle_name: guardian.middle_name?.trim() || null,
-      last_name: guardian.last_name.trim(),
-      email: guardian.email,
+      last_name: guardian.last_name?.trim() || "",
+      email: guardian.email?.trim() || "",
       phone: guardian.whatsapp || null,
       relation: guardian.relation,
       address: guardian.address || null,
@@ -101,7 +102,13 @@ export async function createStudentWithGuardians(
       ...input,
       existing_guardian_id: input.existing_guardian_id || undefined,
       gender: normalizeGender(input.gender) ?? undefined,
-      pickup_persons: input.pickup_persons ?? [],
+      pickup_persons: (input.pickup_persons ?? []).filter(
+        (person) =>
+          Boolean(person.full_name?.trim()) ||
+          Boolean(person.phone?.trim()) ||
+          Boolean(person.relationship?.trim()) ||
+          Boolean(person.notes?.trim())
+      ),
     };
 
     const parsed = studentOnboardingSchema.safeParse(normalized);
@@ -133,6 +140,12 @@ export async function createStudentWithGuardians(
     if ("error" in capacityCheck) return capacityCheck;
 
     const inscription = normalizeInscriptionFields(data);
+    const hasGuardian =
+      Boolean(data.existing_guardian_id) || isSavableGuardian(data.primary_guardian);
+    const tags = normalizeStudentTags([
+      ...(data.tags ?? []),
+      ...(!hasGuardian ? (["incomplete_docs"] as const) : []),
+    ]);
 
     const { data: student, error: studentError } = await supabase
       .from("students")
@@ -146,7 +159,7 @@ export async function createStudentWithGuardians(
         gender: normalizeGender(data.gender),
         class_id: data.class_id,
         status: "pending",
-        tags: normalizeStudentTags(data.tags),
+        tags,
         enrollment_receipt_ref: input.enrollment_receipt_ref?.trim() || null,
         ...inscription,
         photo_url: data.photo_url?.trim() || null,
@@ -167,7 +180,7 @@ export async function createStudentWithGuardians(
         id: data.existing_guardian_id,
         canPickup: Boolean(data.existing_guardian_can_pickup),
       });
-    } else if (data.primary_guardian) {
+    } else if (isSavableGuardian(data.primary_guardian) && data.primary_guardian) {
       const result = await insertGuardian(supabase, input.school_id, data.primary_guardian);
       if ("error" in result && result.error) {
         await supabase.from("students").delete().eq("id", student.id);
@@ -181,7 +194,11 @@ export async function createStudentWithGuardians(
       }
     }
 
-    if (data.add_secondary_guardian && data.secondary_guardian) {
+    if (
+      data.add_secondary_guardian &&
+      isSavableGuardian(data.secondary_guardian) &&
+      data.secondary_guardian
+    ) {
       const result = await insertGuardian(supabase, input.school_id, data.secondary_guardian);
       if ("error" in result && result.error) {
         return { error: result.error };
@@ -248,7 +265,12 @@ export async function addGuardianToStudent(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return await actionError("notAuthenticated");
 
-  const result = await insertGuardian(supabase, schoolId, guardian);
+  const parsed = guardianAddSchema.safeParse(guardian);
+  if (!parsed.success) {
+    return await zodIssueError(parsed.error.issues[0]?.message);
+  }
+
+  const result = await insertGuardian(supabase, schoolId, parsed.data);
   if ("error" in result && result.error) {
     return { error: result.error };
   }
@@ -260,7 +282,7 @@ export async function addGuardianToStudent(
     supabase,
     result.data.id,
     studentId,
-    Boolean(guardian.can_pickup)
+    Boolean(parsed.data.can_pickup)
   );
   if (linkResult.error) return { error: linkResult.error };
 

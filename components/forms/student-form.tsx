@@ -102,7 +102,34 @@ export function StudentForm({
   }
 
   function onInvalid(errors: FieldErrors<StudentOnboardingData>) {
-    toast.error(formatActionError(errors) ?? t("completeRequiredFields"));
+    const seen = new Set<string>();
+    const messages: string[] = [];
+    const walk = (error: unknown) => {
+      if (!error) return;
+      if (typeof error === "string") {
+        if (!seen.has(error)) {
+          seen.add(error);
+          messages.push(error);
+        }
+        return;
+      }
+      if (typeof error === "object" && error !== null && "message" in error) {
+        const message = (error as { message?: unknown }).message;
+        if (typeof message === "string" && !seen.has(message)) {
+          seen.add(message);
+          messages.push(message);
+        }
+      }
+      if (Array.isArray(error)) {
+        for (const item of error) walk(item);
+        return;
+      }
+      if (typeof error === "object" && error !== null) {
+        for (const value of Object.values(error)) walk(value);
+      }
+    };
+    walk(errors);
+    toast.error(messages.slice(0, 3).join(" · ") || t("completeRequiredFields"));
   }
 
   async function onSubmit(data: StudentOnboardingData) {
@@ -286,18 +313,23 @@ function GuardianFields({
   return (
     <>
       <div className="grid gap-4 sm:grid-cols-3">
-        <Field label={t("firstName")} htmlFor={`${prefix}.first_name`} required error={guardianErrors.first_name?.message}>
+        <Field label={t("firstName")} htmlFor={`${prefix}.first_name`} error={guardianErrors.first_name?.message}>
           <Input id={`${prefix}.first_name`} {...register(`${prefix}.first_name`)} error={!!guardianErrors.first_name} />
         </Field>
         <Field label={t("middleName")} htmlFor={`${prefix}.middle_name`} error={guardianErrors.middle_name?.message}>
           <Input id={`${prefix}.middle_name`} {...register(`${prefix}.middle_name`)} error={!!guardianErrors.middle_name} />
         </Field>
-        <Field label={t("lastName")} htmlFor={`${prefix}.last_name`} required error={guardianErrors.last_name?.message}>
+        <Field label={t("lastName")} htmlFor={`${prefix}.last_name`} error={guardianErrors.last_name?.message}>
           <Input id={`${prefix}.last_name`} {...register(`${prefix}.last_name`)} error={!!guardianErrors.last_name} />
         </Field>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={tc("email")} htmlFor={`${prefix}.email`} required error={guardianErrors.email?.message}>
+        <Field
+          label={tc("email")}
+          htmlFor={`${prefix}.email`}
+          hint={t("guardianEmailOptionalHint")}
+          error={guardianErrors.email?.message}
+        >
           <Input id={`${prefix}.email`} type="email" {...register(`${prefix}.email`)} error={!!guardianErrors.email} />
         </Field>
         <Field

@@ -12,7 +12,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { addGuardianToStudent } from "@/lib/actions/student-onboarding";
-import { guardianOnboardingSchema, type GuardianOnboardingData } from "@/lib/validations/student-onboarding";
+import { guardianAddSchema, type GuardianOnboardingData } from "@/lib/validations/student-onboarding";
 import { toast } from "@/lib/toast";
 
 interface Props {
@@ -44,7 +44,7 @@ export function AddGuardianForm({ studentId, schoolId }: Props) {
 
   return (
     <FormWrapper
-      schema={guardianOnboardingSchema}
+      schema={guardianAddSchema}
       defaultValues={{
         relation: "guardian",
         first_name: "",
@@ -106,7 +106,7 @@ function AddGuardianFields() {
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor="email" required>{tc("email")}</Label>
+          <Label htmlFor="email">{tc("email")}</Label>
           <Input id="email" type="email" {...register("email")} error={!!errors.email} />
           {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
         </div>
