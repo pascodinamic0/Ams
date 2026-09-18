@@ -87,7 +87,17 @@ export async function importStudentsBatch(
     }
 
     const studentResult = await createStudent({
-      ...parsed.data,
+      first_name: parsed.data.first_name,
+      middle_name: parsed.data.middle_name,
+      last_name: parsed.data.last_name,
+      gender: parsed.data.gender,
+      place_of_birth: parsed.data.place_of_birth,
+      date_of_birth: parsed.data.date_of_birth,
+      previous_school: parsed.data.previous_school,
+      father_name: parsed.data.parent_name,
+      contact_phone: parsed.data.parent_phone,
+      home_address: parsed.data.address,
+      class_id: parsed.data.class_id,
       status: "pending",
       tags: [],
       school_id: context.school_id,

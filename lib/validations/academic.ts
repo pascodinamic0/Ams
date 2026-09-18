@@ -101,10 +101,16 @@ export const studentImportRowSchema = z.object({
   first_name: z.string().min(1, "firstNameRequired"),
   middle_name: z.string().optional(),
   last_name: z.string().min(1, "lastNameRequired"),
+  gender: optionalGenderSchema,
+  place_of_birth: z.string().optional(),
   date_of_birth: z
     .string()
     .min(1, "dobRequired")
     .regex(/^\d{4}-\d{2}-\d{2}$/, "invalidDate"),
+  previous_school: z.string().optional(),
+  parent_name: z.string().optional(),
+  parent_phone: z.string().optional(),
+  address: z.string().optional(),
   class_id: z.string().uuid("classRequired"),
   /** Import always creates pending students; column ignored if present. */
   status: z.enum(["active", "pending", "graduated", "inactive"]).default("pending"),

@@ -3,19 +3,21 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { importStudentsBatch } from "@/lib/actions/students-import";
-import { formatStudentStatusLabel } from "@/lib/students/status";
 import {
+  displayImportHeader,
   downloadStudentImportExcelTemplate,
+  getStudentImportDisplayHeaders,
+  mapImportHeaders,
   normalizeImportDate,
-  normalizeImportHeader,
+  parseImportGender,
   readImportRowsFromFile,
   resolveImportClassId,
-  STUDENT_IMPORT_HEADERS,
   STUDENT_IMPORT_REQUIRED_HEADERS,
+  type StudentImportHeader,
 } from "@/lib/students/import-file";
 import type { StudentImportRow } from "@/lib/validations/academic";
 import { STUDENT_STATUSES } from "@/lib/validations/student";
@@ -30,6 +32,16 @@ interface Props {
   canOverrideCapacity?: boolean;
 }
 
+function cellAt(
+  cells: string[],
+  index: Record<string, number>,
+  key: string
+): string {
+  const i = index[key];
+  if (i === undefined) return "";
+  return String(cells[i] ?? "").trim();
+}
+
 export function StudentImportForm({
   schoolId,
   branchId,
@@ -38,6 +50,7 @@ export function StudentImportForm({
 }: Props) {
   const t = useTranslations("academic");
   const tc = useTranslations("common");
+  const locale = useLocale();
   const router = useRouter();
   const [fileName, setFileName] = useState<string | null>(null);
   const [preview, setPreview] = useState<StudentImportRow[]>([]);
@@ -51,15 +64,17 @@ export function StudentImportForm({
   } | null>(null);
 
   const classNames = useMemo(() => classes.map((c) => c.name).join(", "), [classes]);
-
-  function statusLabel(status: StudentImportRow["status"]) {
-    return formatStudentStatusLabel(status, {
-      active: tc("active"),
-      pending: tc("pending"),
-      inactive: tc("inactive"),
-      graduated: t("statusGraduated"),
-    });
-  }
+  const displayHeaders = useMemo(
+    () => getStudentImportDisplayHeaders(locale),
+    [locale]
+  );
+  const requiredLabels = useMemo(
+    () =>
+      STUDENT_IMPORT_REQUIRED_HEADERS.map((key) =>
+        displayImportHeader(key, locale)
+      ).join(", "),
+    [locale]
+  );
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -82,43 +97,46 @@ export function StudentImportForm({
         return;
       }
 
-      const headers = rows[0].map(normalizeImportHeader);
+      const index = mapImportHeaders(rows[0]);
       const missing = STUDENT_IMPORT_REQUIRED_HEADERS.filter(
-        (h) => !headers.includes(h)
+        (h) => index[h] === undefined
       );
       if (missing.length > 0) {
-        setParseErrors([t("csvMissingColumns", { columns: missing.join(", ") })]);
+        setParseErrors([
+          t("csvMissingColumns", {
+            columns: missing
+              .map((key) => displayImportHeader(key, locale))
+              .join(", "),
+          }),
+        ]);
         return;
       }
 
-      const index = Object.fromEntries(headers.map((h, i) => [h, i]));
       const parsed: StudentImportRow[] = [];
       const errors: string[] = [];
 
       for (let i = 1; i < rows.length; i++) {
         const cells = rows[i];
         const rowNumber = i + 1;
-        const firstName = (cells[index.first_name] ?? "").trim();
-        const middleName =
-          index.middle_name !== undefined
-            ? (cells[index.middle_name] ?? "").trim()
-            : "";
-        const lastName = (cells[index.last_name] ?? "").trim();
-        const dobRaw = cells[index.date_of_birth] ?? "";
-        const classValue = (cells[index.class] ?? "").trim();
-        const feeStructureRaw =
-          index.fee_structure !== undefined
-            ? (cells[index.fee_structure] ?? "").trim()
-            : "";
-        const receiptRef =
-          index.enrollment_receipt_ref !== undefined
-            ? (cells[index.enrollment_receipt_ref] ?? "").trim()
-            : "";
-        const statusRaw = (cells[index.status] ?? "pending").trim().toLowerCase();
+        const firstName = cellAt(cells, index, "first_name");
+        const middleName = cellAt(cells, index, "middle_name");
+        const lastName = cellAt(cells, index, "last_name");
+        const genderRaw = cellAt(cells, index, "gender");
+        const placeOfBirth = cellAt(cells, index, "place_of_birth");
+        const dobRaw = cellAt(cells, index, "date_of_birth");
+        const previousSchool = cellAt(cells, index, "previous_school");
+        const parentName = cellAt(cells, index, "parent_name");
+        const parentPhone = cellAt(cells, index, "parent_phone");
+        const address = cellAt(cells, index, "address");
+        const classValue = cellAt(cells, index, "class");
+        const feeStructureRaw = cellAt(cells, index, "fee_structure");
+        const receiptRef = cellAt(cells, index, "enrollment_receipt_ref");
+        const statusRaw =
+          cellAt(cells, index, "status").toLowerCase() || "pending";
 
-        if (!firstName && !lastName && !String(dobRaw).trim()) continue;
+        if (!firstName && !lastName && !dobRaw) continue;
 
-        if (!firstName || !lastName || !String(dobRaw).trim()) {
+        if (!firstName || !lastName || !dobRaw) {
           errors.push(t("csvRowRequiredFields", { row: rowNumber }));
           continue;
         }
@@ -129,6 +147,15 @@ export function StudentImportForm({
           continue;
         }
 
+        let gender: StudentImportRow["gender"];
+        if (genderRaw) {
+          gender = parseImportGender(genderRaw);
+          if (!gender) {
+            errors.push(t("csvInvalidGender", { row: rowNumber }));
+            continue;
+          }
+        }
+
         if (!classValue) {
           errors.push(t("csvClassRequired", { row: rowNumber }));
           continue;
@@ -136,11 +163,16 @@ export function StudentImportForm({
 
         const classId = resolveImportClassId(classValue, classes);
         if (!classId) {
-          errors.push(t("csvUnknownClass", { row: rowNumber, className: classValue }));
+          errors.push(
+            t("csvUnknownClass", { row: rowNumber, className: classValue })
+          );
           continue;
         }
 
-        if (statusRaw && !(STUDENT_STATUSES as readonly string[]).includes(statusRaw)) {
+        if (
+          statusRaw &&
+          !(STUDENT_STATUSES as readonly string[]).includes(statusRaw)
+        ) {
           errors.push(t("csvInvalidStatus", { row: rowNumber }));
           continue;
         }
@@ -149,7 +181,13 @@ export function StudentImportForm({
           first_name: firstName,
           middle_name: middleName || undefined,
           last_name: lastName,
+          gender,
+          place_of_birth: placeOfBirth || undefined,
           date_of_birth: dob,
+          previous_school: previousSchool || undefined,
+          parent_name: parentName || undefined,
+          parent_phone: parentPhone || undefined,
+          address: address || undefined,
           class_id: classId,
           status: (statusRaw || "pending") as StudentImportRow["status"],
           fee_structure: feeStructureRaw || undefined,
@@ -199,8 +237,49 @@ export function StudentImportForm({
   }
 
   function downloadTemplate() {
-    downloadStudentImportExcelTemplate(classes[0]?.name ?? "Grade 1");
+    downloadStudentImportExcelTemplate(
+      classes[0]?.name ?? (locale.startsWith("fr") ? "1ère A" : "Grade 1"),
+      locale
+    );
   }
+
+  const previewColumns: {
+    key: StudentImportHeader;
+    render: (row: StudentImportRow) => string;
+  }[] = [
+    { key: "first_name", render: (row) => row.first_name },
+    { key: "middle_name", render: (row) => row.middle_name || tc("emptyDash") },
+    { key: "last_name", render: (row) => row.last_name },
+    {
+      key: "gender",
+      render: (row) =>
+        row.gender === "male"
+          ? "M"
+          : row.gender === "female"
+            ? "F"
+            : tc("emptyDash"),
+    },
+    {
+      key: "place_of_birth",
+      render: (row) => row.place_of_birth || tc("emptyDash"),
+    },
+    { key: "date_of_birth", render: (row) => row.date_of_birth },
+    {
+      key: "previous_school",
+      render: (row) => row.previous_school || tc("emptyDash"),
+    },
+    { key: "parent_name", render: (row) => row.parent_name || tc("emptyDash") },
+    {
+      key: "parent_phone",
+      render: (row) => row.parent_phone || tc("emptyDash"),
+    },
+    { key: "address", render: (row) => row.address || tc("emptyDash") },
+    {
+      key: "class",
+      render: (row) =>
+        classes.find((c) => c.id === row.class_id)?.name ?? tc("emptyDash"),
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -208,16 +287,16 @@ export function StudentImportForm({
         <h2 className="font-semibold">{t("csvFormat")}</h2>
         <p className="mt-1 text-sm text-stone-500">
           {t("csvColumns")}{" "}
-          <code className="text-xs">{STUDENT_IMPORT_HEADERS.join(", ")}</code>
+          <code className="text-xs">{displayHeaders.join(", ")}</code>
         </p>
         <p className="mt-2 text-sm text-stone-500">
-          {t("csvMiddleNameOptional")} {t("csvClassHint")}
+          {t("csvRequiredColumns", { columns: requiredLabels })} {t("csvClassHint")}
           {classNames
             ? ` ${t("csvAvailableClasses", { classes: classNames })}`
             : ` ${t("csvNoClasses")}`}
         </p>
         <p className="mt-2 text-sm text-stone-500">
-          {t("csvDateFormat")} {t("csvStatusOptional")}
+          {t("csvDateFormat")} {t("csvGenderHint")} {t("csvOptionalContactFields")}
         </p>
         <p className="mt-2 text-sm text-stone-500">{t("csvExcelHint")}</p>
       </div>
@@ -265,15 +344,17 @@ export function StudentImportForm({
             {t("rowsReady", { count: preview.length })}
           </p>
           <div className="overflow-x-auto rounded-lg border border-stone-200 dark:border-stone-700">
-            <table className="w-full min-w-[600px] text-sm">
+            <table className="w-full min-w-[900px] text-sm">
               <thead className="bg-stone-100 dark:bg-stone-800">
                 <tr>
-                  <th className="px-3 py-2 text-left font-medium">{t("firstName")}</th>
-                  <th className="px-3 py-2 text-left font-medium">{t("middleName")}</th>
-                  <th className="px-3 py-2 text-left font-medium">{t("lastName")}</th>
-                  <th className="px-3 py-2 text-left font-medium">{t("dob")}</th>
-                  <th className="px-3 py-2 text-left font-medium">{t("class")}</th>
-                  <th className="px-3 py-2 text-left font-medium">{tc("status")}</th>
+                  {previewColumns.map((col) => (
+                    <th
+                      key={col.key}
+                      className="px-3 py-2 text-left font-medium"
+                    >
+                      {displayImportHeader(col.key, locale)}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
@@ -282,14 +363,11 @@ export function StudentImportForm({
                     key={`${row.first_name}-${row.last_name}-${i}`}
                     className="border-t border-stone-200 dark:border-stone-700"
                   >
-                    <td className="px-3 py-2">{row.first_name}</td>
-                    <td className="px-3 py-2">{row.middle_name || tc("emptyDash")}</td>
-                    <td className="px-3 py-2">{row.last_name}</td>
-                    <td className="px-3 py-2">{row.date_of_birth}</td>
-                    <td className="px-3 py-2">
-                      {classes.find((c) => c.id === row.class_id)?.name ?? tc("emptyDash")}
-                    </td>
-                    <td className="px-3 py-2">{statusLabel(row.status)}</td>
+                    {previewColumns.map((col) => (
+                      <td key={col.key} className="px-3 py-2">
+                        {col.render(row)}
+                      </td>
+                    ))}
                   </tr>
                 ))}
               </tbody>

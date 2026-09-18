@@ -1,14 +1,18 @@
 import * as XLSX from "xlsx";
+import type { Gender } from "@/lib/validations/student";
 
 export const STUDENT_IMPORT_HEADERS = [
   "first_name",
   "middle_name",
   "last_name",
+  "gender",
+  "place_of_birth",
   "date_of_birth",
+  "previous_school",
+  "parent_name",
+  "parent_phone",
+  "address",
   "class",
-  "fee_structure",
-  "enrollment_receipt_ref",
-  "status",
 ] as const;
 
 export const STUDENT_IMPORT_REQUIRED_HEADERS = [
@@ -19,14 +23,184 @@ export const STUDENT_IMPORT_REQUIRED_HEADERS = [
 ] as const;
 
 export type StudentImportHeader = (typeof STUDENT_IMPORT_HEADERS)[number];
+export type ImportLocale = "fr" | "en";
 
-/** Strip BOM and normalize header labels from CSV/Excel. */
+const HEADER_ALIASES: Record<StudentImportHeader, readonly string[]> = {
+  first_name: ["first_name", "firstname", "first", "nom", "given_name"],
+  middle_name: [
+    "middle_name",
+    "middlename",
+    "second_name",
+    "secondname",
+    "deuxieme_prenom",
+    "postnom",
+    "post_nom",
+    "post_name",
+  ],
+  last_name: [
+    "last_name",
+    "lastname",
+    "nom_de_famille",
+    "family_name",
+    "surname",
+  ],
+  gender: ["gender", "sex", "sexe", "genre"],
+  place_of_birth: [
+    "place_of_birth",
+    "lieu_de_naissance",
+    "lieu_naissance",
+    "pob",
+  ],
+  date_of_birth: [
+    "date_of_birth",
+    "date_de_naissance",
+    "date_naissance",
+    "dob",
+    "naissance",
+  ],
+  previous_school: [
+    "previous_school",
+    "ecole_de_provenance",
+    "ecole_dorigine",
+    "ecole_d_origine",
+    "ecole_origine",
+    "ecole_de_origine",
+  ],
+  parent_name: [
+    "parent_name",
+    "nom_du_parent",
+    "noms_du_parent",
+    "name_of_parent",
+    "father_name",
+  ],
+  parent_phone: [
+    "parent_phone",
+    "telephone_du_parent",
+    "telephone_parent",
+    "numero_telephone_du_parent",
+    "contact_phone",
+    "phone",
+  ],
+  address: ["address", "adresse", "home_address"],
+  class: ["class", "classe"],
+};
+
+const LEGACY_OPTIONAL_ALIASES: Record<string, readonly string[]> = {
+  fee_structure: ["fee_structure", "structure_tarifaire"],
+  enrollment_receipt_ref: [
+    "enrollment_receipt_ref",
+    "numero_recu",
+    "n_de_recu",
+  ],
+  status: ["status", "statut"],
+};
+
+const DISPLAY_HEADERS: Record<ImportLocale, Record<StudentImportHeader, string>> =
+  {
+    fr: {
+      first_name: "Nom",
+      middle_name: "Deuxième prénom",
+      last_name: "Nom de famille",
+      gender: "Sexe",
+      place_of_birth: "Lieu de naissance",
+      date_of_birth: "Date de naissance",
+      previous_school: "École de provenance",
+      parent_name: "Nom du parent",
+      parent_phone: "Téléphone du parent",
+      address: "Adresse",
+      class: "Classe",
+    },
+    en: {
+      first_name: "First name",
+      middle_name: "Second name",
+      last_name: "Last name",
+      gender: "Sex",
+      place_of_birth: "Place of birth",
+      date_of_birth: "Date of birth",
+      previous_school: "Previous school",
+      parent_name: "Parent name",
+      parent_phone: "Parent phone",
+      address: "Address",
+      class: "Class",
+    },
+  };
+
+const REQUIRED_HEADER_SET = new Set<string>(STUDENT_IMPORT_REQUIRED_HEADERS);
+
+export function importLocaleFromApp(locale: string): ImportLocale {
+  return locale.toLowerCase().startsWith("fr") ? "fr" : "en";
+}
+
+export function getStudentImportDisplayHeaders(locale: string): string[] {
+  const loc = importLocaleFromApp(locale);
+  return STUDENT_IMPORT_HEADERS.map((key) => DISPLAY_HEADERS[loc][key]);
+}
+
+export function displayImportHeader(
+  key: StudentImportHeader,
+  locale: string
+): string {
+  return DISPLAY_HEADERS[importLocaleFromApp(locale)][key];
+}
+
+/** Strip BOM, accents, and punctuation so FR/EN labels map to the same key. */
 export function normalizeImportHeader(value: string): string {
   return value
     .replace(/^\uFEFF/, "")
     .trim()
     .toLowerCase()
-    .replace(/\s+/g, "_");
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .replace(/['’]/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_|_$/g, "");
+}
+
+export function canonicalImportHeader(
+  value: string
+): StudentImportHeader | "fee_structure" | "enrollment_receipt_ref" | "status" | null {
+  const normalized = normalizeImportHeader(value);
+  if (!normalized) return null;
+
+  for (const key of STUDENT_IMPORT_HEADERS) {
+    if (HEADER_ALIASES[key].includes(normalized)) return key;
+  }
+  for (const [key, aliases] of Object.entries(LEGACY_OPTIONAL_ALIASES)) {
+    if (aliases.includes(normalized)) {
+      return key as "fee_structure" | "enrollment_receipt_ref" | "status";
+    }
+  }
+  return null;
+}
+
+export function mapImportHeaders(headerRow: string[]): Record<string, number> {
+  const index: Record<string, number> = {};
+  headerRow.forEach((raw, i) => {
+    const canonical = canonicalImportHeader(raw);
+    if (canonical && index[canonical] === undefined) {
+      index[canonical] = i;
+    }
+  });
+  return index;
+}
+
+export function parseImportGender(value: string): Gender | undefined {
+  const key = normalizeImportHeader(value);
+  if (!key) return undefined;
+  if (
+    key === "m" ||
+    key === "male" ||
+    key === "masculin" ||
+    key === "masc" ||
+    key === "h" ||
+    key === "homme"
+  ) {
+    return "male";
+  }
+  if (key === "f" || key === "female" || key === "feminin" || key === "femme") {
+    return "female";
+  }
+  return undefined;
 }
 
 function detectDelimiter(headerLine: string): "," | ";" {
@@ -135,7 +309,6 @@ export function normalizeImportDate(value: unknown): string | null {
   }
 
   if (typeof value === "number" && Number.isFinite(value)) {
-    // Excel serial date (days since 1899-12-30)
     const parsed = XLSX.SSF.parse_date_code(value);
     if (!parsed) return null;
     return toIsoDate(parsed.y, parsed.m, parsed.d);
@@ -154,10 +327,8 @@ export function normalizeImportDate(value: unknown): string | null {
     const a = Number(slash[1]);
     const b = Number(slash[2]);
     const year = Number(slash[3]);
-    // Prefer day-first when first part looks like a day (>12)
     if (a > 12 && b <= 12) return toIsoDate(year, b, a);
     if (b > 12 && a <= 12) return toIsoDate(year, a, b);
-    // Default to day-first (common for school locales outside the US)
     return toIsoDate(year, b, a);
   }
 
@@ -203,7 +374,6 @@ export async function readImportRowsFromFile(file: File): Promise<string[][]> {
           return normalizeImportDate(cell) ?? "";
         }
         if (typeof cell === "number") {
-          // Prefer date normalization for numeric DOB cells; otherwise stringify
           return String(cell);
         }
         return String(cell ?? "").trim();
@@ -232,72 +402,124 @@ export function resolveImportClassId(
   return byName?.id;
 }
 
+function templateCopy(locale: ImportLocale) {
+  if (locale === "fr") {
+    return {
+      sheet: "Élèves",
+      instructionsSheet: "Instructions",
+      instructionHeaders: ["Colonne", "Obligatoire", "Notes"],
+      yes: "Oui",
+      no: "Non",
+      notes: {
+        first_name: "Prénom de l'élève (colonne Nom)",
+        middle_name: "Deuxième prénom ou post-nom (facultatif)",
+        last_name: "Nom de famille de l'élève",
+        gender: "M (masculin) ou F (féminin)",
+        place_of_birth: "Ville ou lieu de naissance",
+        date_of_birth: "Utiliser AAAA-MM-JJ (exemple : 2015-03-12)",
+        previous_school: "École d'où vient l'élève",
+        parent_name: "Nom du parent ou responsable",
+        parent_phone: "Numéro de téléphone du parent",
+        address: "Adresse du foyer",
+        class: "Nom exact de la classe, ou UUID",
+      } satisfies Record<StudentImportHeader, string>,
+      example: [
+        "Jean",
+        "Marie",
+        "Mwamba",
+        "M",
+        "Kinshasa",
+        "2015-03-12",
+        "École Saint-Joseph",
+        "Marie Mwamba",
+        "+243 810 000 000",
+        "Av. Lumumba, Kinshasa",
+      ],
+      fileName: "modele-import-eleves.xlsx",
+    };
+  }
+
+  return {
+    sheet: "Students",
+    instructionsSheet: "Instructions",
+    instructionHeaders: ["Column", "Required", "Notes"],
+    yes: "Yes",
+    no: "No",
+    notes: {
+      first_name: "Student first name (Nom column in French)",
+      middle_name: "Second name / post-name (optional)",
+      last_name: "Student last name",
+      gender: "M (male) or F (female)",
+      place_of_birth: "City or place of birth",
+      date_of_birth: "Use YYYY-MM-DD (example: 2015-03-12)",
+      previous_school: "School the student is coming from",
+      parent_name: "Parent or guardian name",
+      parent_phone: "Parent telephone number",
+      address: "Home address",
+      class: "Exact class name from your school, or class UUID",
+    } satisfies Record<StudentImportHeader, string>,
+    example: [
+      "Jane",
+      "Marie",
+      "Doe",
+      "F",
+      "Kinshasa",
+      "2015-03-12",
+      "St Joseph School",
+      "Marie Doe",
+      "+243 810 000 000",
+      "Av. Lumumba, Kinshasa",
+    ],
+    fileName: "students-import-template.xlsx",
+  };
+}
+
 /** Build an .xlsx template with required columns and one example row. */
 export function buildStudentImportExcelTemplate(
-  exampleClassName: string
+  exampleClassName: string,
+  locale: string = "fr"
 ): ArrayBuffer {
-  const headers = [...STUDENT_IMPORT_HEADERS];
+  const loc = importLocaleFromApp(locale);
+  const copy = templateCopy(loc);
+  const headers = getStudentImportDisplayHeaders(loc);
   const example = [
-    "Jane",
-    "Marie",
-    "Doe",
-    "2015-03-12",
-    exampleClassName || "Grade 1",
-    "",
-    "",
-    "pending",
+    ...copy.example,
+    exampleClassName || (loc === "fr" ? "1ère A" : "Grade 1"),
   ];
 
   const workbook = XLSX.utils.book_new();
   const sheet = XLSX.utils.aoa_to_sheet([headers, example]);
-  sheet["!cols"] = [
-    { wch: 14 },
-    { wch: 14 },
-    { wch: 14 },
-    { wch: 14 },
-    { wch: 18 },
-    { wch: 10 },
-  ];
-  XLSX.utils.book_append_sheet(workbook, sheet, "Students");
+  sheet["!cols"] = headers.map((h) => ({ wch: Math.max(16, h.length + 2) }));
+  XLSX.utils.book_append_sheet(workbook, sheet, copy.sheet);
 
-  const instructions = XLSX.utils.aoa_to_sheet([
-    ["Column", "Required", "Notes"],
-    ["first_name", "Yes", "Student given name"],
-    ["middle_name", "No", "Optional middle name"],
-    ["last_name", "Yes", "Student family name"],
-    ["date_of_birth", "Yes", "Use YYYY-MM-DD (example: 2015-03-12)"],
-    ["class", "Yes", "Exact class name from your school, or class UUID"],
-    [
-      "fee_structure",
-      "No",
-      "Fee structure name or UUID. If omitted, the class must have exactly one applicable fee.",
-    ],
-    [
-      "enrollment_receipt_ref",
-      "No",
-      "Paper receipt number from the manual facture book (optional)",
-    ],
-    [
-      "status",
-      "No",
-      "Ignored on import — all rows are created as pending until finance confirms payment",
-    ],
-  ]);
-  instructions["!cols"] = [{ wch: 16 }, { wch: 10 }, { wch: 55 }];
-  XLSX.utils.book_append_sheet(workbook, instructions, "Instructions");
+  const instructionRows = [
+    copy.instructionHeaders,
+    ...STUDENT_IMPORT_HEADERS.map((key) => [
+      DISPLAY_HEADERS[loc][key],
+      REQUIRED_HEADER_SET.has(key) ? copy.yes : copy.no,
+      copy.notes[key],
+    ]),
+  ];
+  const instructions = XLSX.utils.aoa_to_sheet(instructionRows);
+  instructions["!cols"] = [{ wch: 24 }, { wch: 12 }, { wch: 55 }];
+  XLSX.utils.book_append_sheet(workbook, instructions, copy.instructionsSheet);
 
   return XLSX.write(workbook, { bookType: "xlsx", type: "array" }) as ArrayBuffer;
 }
 
-export function downloadStudentImportExcelTemplate(exampleClassName: string) {
-  const buffer = buildStudentImportExcelTemplate(exampleClassName);
+export function downloadStudentImportExcelTemplate(
+  exampleClassName: string,
+  locale: string = "fr"
+) {
+  const loc = importLocaleFromApp(locale);
+  const buffer = buildStudentImportExcelTemplate(exampleClassName, loc);
   const blob = new Blob([buffer], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = "students-import-template.xlsx";
+  anchor.download = templateCopy(loc).fileName;
   anchor.click();
   URL.revokeObjectURL(url);
 }
