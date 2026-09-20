@@ -118,17 +118,18 @@ export function StudentImportForm({
       for (let i = 1; i < rows.length; i++) {
         const cells = rows[i];
         const rowNumber = i + 1;
-        const firstName = cellAt(cells, index, "first_name");
-        const middleName = cellAt(cells, index, "middle_name");
         const lastName = cellAt(cells, index, "last_name");
+        const middleName = cellAt(cells, index, "middle_name");
+        const firstName = cellAt(cells, index, "first_name");
         const genderRaw = cellAt(cells, index, "gender");
         const placeOfBirth = cellAt(cells, index, "place_of_birth");
         const dobRaw = cellAt(cells, index, "date_of_birth");
+        const classValue = cellAt(cells, index, "class");
         const previousSchool = cellAt(cells, index, "previous_school");
         const parentName = cellAt(cells, index, "parent_name");
         const parentPhone = cellAt(cells, index, "parent_phone");
         const address = cellAt(cells, index, "address");
-        const classValue = cellAt(cells, index, "class");
+        const parentProfession = cellAt(cells, index, "parent_profession");
         const feeStructureRaw = cellAt(cells, index, "fee_structure");
         const receiptRef = cellAt(cells, index, "enrollment_receipt_ref");
         const statusRaw =
@@ -188,6 +189,7 @@ export function StudentImportForm({
           parent_name: parentName || undefined,
           parent_phone: parentPhone || undefined,
           address: address || undefined,
+          parent_profession: parentProfession || undefined,
           class_id: classId,
           status: (statusRaw || "pending") as StudentImportRow["status"],
           fee_structure: feeStructureRaw || undefined,
@@ -247,9 +249,9 @@ export function StudentImportForm({
     key: StudentImportHeader;
     render: (row: StudentImportRow) => string;
   }[] = [
-    { key: "first_name", render: (row) => row.first_name },
-    { key: "middle_name", render: (row) => row.middle_name || tc("emptyDash") },
     { key: "last_name", render: (row) => row.last_name },
+    { key: "middle_name", render: (row) => row.middle_name || tc("emptyDash") },
+    { key: "first_name", render: (row) => row.first_name },
     {
       key: "gender",
       render: (row) =>
@@ -265,6 +267,11 @@ export function StudentImportForm({
     },
     { key: "date_of_birth", render: (row) => row.date_of_birth },
     {
+      key: "class",
+      render: (row) =>
+        classes.find((c) => c.id === row.class_id)?.name ?? tc("emptyDash"),
+    },
+    {
       key: "previous_school",
       render: (row) => row.previous_school || tc("emptyDash"),
     },
@@ -275,9 +282,8 @@ export function StudentImportForm({
     },
     { key: "address", render: (row) => row.address || tc("emptyDash") },
     {
-      key: "class",
-      render: (row) =>
-        classes.find((c) => c.id === row.class_id)?.name ?? tc("emptyDash"),
+      key: "parent_profession",
+      render: (row) => row.parent_profession || tc("emptyDash"),
     },
   ];
 

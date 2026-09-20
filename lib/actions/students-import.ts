@@ -97,6 +97,7 @@ export async function importStudentsBatch(
       father_name: parsed.data.parent_name,
       contact_phone: parsed.data.parent_phone,
       home_address: parsed.data.address,
+      responsible_profession: parsed.data.parent_profession,
       class_id: parsed.data.class_id,
       status: "pending",
       tags: [],

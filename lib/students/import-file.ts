@@ -2,22 +2,23 @@ import * as XLSX from "xlsx";
 import type { Gender } from "@/lib/validations/student";
 
 export const STUDENT_IMPORT_HEADERS = [
-  "first_name",
-  "middle_name",
   "last_name",
+  "middle_name",
+  "first_name",
   "gender",
   "place_of_birth",
   "date_of_birth",
+  "class",
   "previous_school",
   "parent_name",
   "parent_phone",
   "address",
-  "class",
+  "parent_profession",
 ] as const;
 
 export const STUDENT_IMPORT_REQUIRED_HEADERS = [
-  "first_name",
   "last_name",
+  "first_name",
   "date_of_birth",
   "class",
 ] as const;
@@ -26,7 +27,14 @@ export type StudentImportHeader = (typeof STUDENT_IMPORT_HEADERS)[number];
 export type ImportLocale = "fr" | "en";
 
 const HEADER_ALIASES: Record<StudentImportHeader, readonly string[]> = {
-  first_name: ["first_name", "firstname", "first", "nom", "given_name"],
+  last_name: [
+    "last_name",
+    "lastname",
+    "nom",
+    "nom_de_famille",
+    "family_name",
+    "surname",
+  ],
   middle_name: [
     "middle_name",
     "middlename",
@@ -35,29 +43,33 @@ const HEADER_ALIASES: Record<StudentImportHeader, readonly string[]> = {
     "deuxieme_prenom",
     "postnom",
     "post_nom",
+    "post_non",
     "post_name",
   ],
-  last_name: [
-    "last_name",
-    "lastname",
-    "nom_de_famille",
-    "family_name",
-    "surname",
+  first_name: [
+    "first_name",
+    "firstname",
+    "first",
+    "prenom",
+    "prenon",
+    "given_name",
   ],
   gender: ["gender", "sex", "sexe", "genre"],
   place_of_birth: [
     "place_of_birth",
     "lieu_de_naissance",
+    "lieu_des_naissance",
     "lieu_naissance",
     "pob",
   ],
   date_of_birth: [
     "date_of_birth",
     "date_de_naissance",
+    "date_de_naisasance",
     "date_naissance",
     "dob",
-    "naissance",
   ],
+  class: ["class", "classe"],
   previous_school: [
     "previous_school",
     "ecole_de_provenance",
@@ -68,6 +80,8 @@ const HEADER_ALIASES: Record<StudentImportHeader, readonly string[]> = {
   ],
   parent_name: [
     "parent_name",
+    "nom_du_tuteur",
+    "non_du_tuteur",
     "nom_du_parent",
     "noms_du_parent",
     "name_of_parent",
@@ -75,14 +89,23 @@ const HEADER_ALIASES: Record<StudentImportHeader, readonly string[]> = {
   ],
   parent_phone: [
     "parent_phone",
+    "telephone",
     "telephone_du_parent",
+    "telephone_du_tuteur",
     "telephone_parent",
     "numero_telephone_du_parent",
     "contact_phone",
     "phone",
   ],
   address: ["address", "adresse", "home_address"],
-  class: ["class", "classe"],
+  parent_profession: [
+    "parent_profession",
+    "profession_du_parent",
+    "profession_du_responsable",
+    "profession_du_tuteur",
+    "responsible_profession",
+    "profession",
+  ],
 };
 
 const LEGACY_OPTIONAL_ALIASES: Record<string, readonly string[]> = {
@@ -98,30 +121,32 @@ const LEGACY_OPTIONAL_ALIASES: Record<string, readonly string[]> = {
 const DISPLAY_HEADERS: Record<ImportLocale, Record<StudentImportHeader, string>> =
   {
     fr: {
-      first_name: "Nom",
-      middle_name: "Deuxième prénom",
-      last_name: "Nom de famille",
+      last_name: "Nom",
+      middle_name: "Post-nom",
+      first_name: "Prénom",
       gender: "Sexe",
       place_of_birth: "Lieu de naissance",
       date_of_birth: "Date de naissance",
-      previous_school: "École de provenance",
-      parent_name: "Nom du parent",
-      parent_phone: "Téléphone du parent",
-      address: "Adresse",
       class: "Classe",
+      previous_school: "École de provenance",
+      parent_name: "Nom du tuteur",
+      parent_phone: "Téléphone",
+      address: "Adresse",
+      parent_profession: "Profession du parent",
     },
     en: {
-      first_name: "First name",
-      middle_name: "Second name",
-      last_name: "Last name",
-      gender: "Sex",
-      place_of_birth: "Place of birth",
-      date_of_birth: "Date of birth",
-      previous_school: "Previous school",
-      parent_name: "Parent name",
-      parent_phone: "Parent phone",
-      address: "Address",
-      class: "Class",
+      last_name: "Nom",
+      middle_name: "Post-nom",
+      first_name: "Prénom",
+      gender: "Sexe",
+      place_of_birth: "Lieu de naissance",
+      date_of_birth: "Date de naissance",
+      class: "Classe",
+      previous_school: "École de provenance",
+      parent_name: "Nom du tuteur",
+      parent_phone: "Téléphone",
+      address: "Adresse",
+      parent_profession: "Profession du parent",
     },
   };
 
@@ -402,6 +427,44 @@ export function resolveImportClassId(
   return byName?.id;
 }
 
+function exampleValues(
+  locale: ImportLocale,
+  exampleClassName: string
+): Record<StudentImportHeader, string> {
+  const className =
+    exampleClassName || (locale === "fr" ? "1ère A" : "Grade 1");
+  if (locale === "fr") {
+    return {
+      last_name: "Mwamba",
+      middle_name: "Marie",
+      first_name: "Jean",
+      gender: "M",
+      place_of_birth: "Kinshasa",
+      date_of_birth: "2015-03-12",
+      class: className,
+      previous_school: "École Saint-Joseph",
+      parent_name: "Marie Mwamba",
+      parent_phone: "+243 810 000 000",
+      address: "Av. Lumumba, Kinshasa",
+      parent_profession: "Commerçante",
+    };
+  }
+  return {
+    last_name: "Mwamba",
+    middle_name: "Marie",
+    first_name: "Jean",
+    gender: "M",
+    place_of_birth: "Kinshasa",
+    date_of_birth: "2015-03-12",
+    class: className,
+    previous_school: "École Saint-Joseph",
+    parent_name: "Marie Mwamba",
+    parent_phone: "+243 810 000 000",
+    address: "Av. Lumumba, Kinshasa",
+    parent_profession: "Commerçante",
+  };
+}
+
 function templateCopy(locale: ImportLocale) {
   if (locale === "fr") {
     return {
@@ -411,30 +474,19 @@ function templateCopy(locale: ImportLocale) {
       yes: "Oui",
       no: "Non",
       notes: {
-        first_name: "Prénom de l'élève (colonne Nom)",
-        middle_name: "Deuxième prénom ou post-nom (facultatif)",
-        last_name: "Nom de famille de l'élève",
+        last_name: "Nom de famille de l'élève (colonne Nom)",
+        middle_name: "Post-nom tel qu'écrit sur la fiche (facultatif)",
+        first_name: "Prénom de l'élève",
         gender: "M (masculin) ou F (féminin)",
         place_of_birth: "Ville ou lieu de naissance",
         date_of_birth: "Utiliser AAAA-MM-JJ (exemple : 2015-03-12)",
-        previous_school: "École d'où vient l'élève",
-        parent_name: "Nom du parent ou responsable",
-        parent_phone: "Numéro de téléphone du parent",
-        address: "Adresse du foyer",
         class: "Nom exact de la classe, ou UUID",
+        previous_school: "École d'où vient l'élève",
+        parent_name: "Nom du tuteur ou responsable",
+        parent_phone: "Numéro de téléphone du tuteur",
+        address: "Adresse du foyer",
+        parent_profession: "Profession du parent ou responsable",
       } satisfies Record<StudentImportHeader, string>,
-      example: [
-        "Jean",
-        "Marie",
-        "Mwamba",
-        "M",
-        "Kinshasa",
-        "2015-03-12",
-        "École Saint-Joseph",
-        "Marie Mwamba",
-        "+243 810 000 000",
-        "Av. Lumumba, Kinshasa",
-      ],
       fileName: "modele-import-eleves.xlsx",
     };
   }
@@ -446,30 +498,19 @@ function templateCopy(locale: ImportLocale) {
     yes: "Yes",
     no: "No",
     notes: {
-      first_name: "Student first name (Nom column in French)",
-      middle_name: "Second name / post-name (optional)",
-      last_name: "Student last name",
+      last_name: "Family name (Nom)",
+      middle_name: "Post-nom (optional)",
+      first_name: "Given name (Prénom)",
       gender: "M (male) or F (female)",
       place_of_birth: "City or place of birth",
       date_of_birth: "Use YYYY-MM-DD (example: 2015-03-12)",
-      previous_school: "School the student is coming from",
-      parent_name: "Parent or guardian name",
-      parent_phone: "Parent telephone number",
-      address: "Home address",
       class: "Exact class name from your school, or class UUID",
+      previous_school: "School the student is coming from",
+      parent_name: "Guardian / tutor name",
+      parent_phone: "Guardian telephone number",
+      address: "Home address",
+      parent_profession: "Parent or guardian profession",
     } satisfies Record<StudentImportHeader, string>,
-    example: [
-      "Jane",
-      "Marie",
-      "Doe",
-      "F",
-      "Kinshasa",
-      "2015-03-12",
-      "St Joseph School",
-      "Marie Doe",
-      "+243 810 000 000",
-      "Av. Lumumba, Kinshasa",
-    ],
     fileName: "students-import-template.xlsx",
   };
 }
@@ -482,10 +523,8 @@ export function buildStudentImportExcelTemplate(
   const loc = importLocaleFromApp(locale);
   const copy = templateCopy(loc);
   const headers = getStudentImportDisplayHeaders(loc);
-  const example = [
-    ...copy.example,
-    exampleClassName || (loc === "fr" ? "1ère A" : "Grade 1"),
-  ];
+  const values = exampleValues(loc, exampleClassName);
+  const example = STUDENT_IMPORT_HEADERS.map((key) => values[key]);
 
   const workbook = XLSX.utils.book_new();
   const sheet = XLSX.utils.aoa_to_sheet([headers, example]);

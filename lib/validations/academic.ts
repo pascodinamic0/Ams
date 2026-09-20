@@ -111,6 +111,7 @@ export const studentImportRowSchema = z.object({
   parent_name: z.string().optional(),
   parent_phone: z.string().optional(),
   address: z.string().optional(),
+  parent_profession: z.string().optional(),
   class_id: z.string().uuid("classRequired"),
   /** Import always creates pending students; column ignored if present. */
   status: z.enum(["active", "pending", "graduated", "inactive"]).default("pending"),
