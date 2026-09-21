@@ -16,7 +16,7 @@ const CORE_NAMESPACES = [
 ] as const;
 
 /** Public marketing site. */
-const MARKETING_NAMESPACES = ["marketing", "modules", "blog", "schools"] as const;
+const MARKETING_NAMESPACES = ["marketing", "modules", "blog", "schools", "pay"] as const;
 
 /**
  * App namespaces for authenticated areas. Sent together with marketing so

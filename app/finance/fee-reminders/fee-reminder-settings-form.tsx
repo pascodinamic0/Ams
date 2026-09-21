@@ -15,8 +15,10 @@ interface Props {
   defaultCurrencySymbol?: string;
 }
 
-const DEFAULT_MORNING = "Dear {guardian_name}, this is a reminder that {student_name}'s school fees of {currency}{amount} are due on {due_date}. Kindly make payment to avoid disruption.";
-const DEFAULT_FINAL = "Dear {guardian_name}, your payment grace period has ended. Please do not bring {student_name} to school until the outstanding balance of {currency}{amount} is cleared. Contact the school office for assistance.";
+const DEFAULT_MORNING =
+  "Dear {guardian_name}, this is a reminder that {student_name}'s school fees of {currency}{amount} are due on {due_date}. Pay the exact amount here before the term slips: {pay_link}";
+const DEFAULT_FINAL =
+  "Dear {guardian_name}, your payment grace period has ended. Please do not bring {student_name} to school until the outstanding balance of {currency}{amount} is cleared. Pay the exact amount here: {pay_link}";
 
 export function FeeReminderSettingsForm({
   schoolId,
@@ -82,6 +84,7 @@ export function FeeReminderSettingsForm({
     { var: "{amount}", desc: t("varAmount") },
     { var: "{currency}", desc: t("varCurrency") },
     { var: "{due_date}", desc: t("varDueDate") },
+    { var: "{pay_link}", desc: t("varPayLink") },
   ];
 
   return (
@@ -239,7 +242,8 @@ export function FeeReminderSettingsForm({
                   .replace(/\{student_name\}/g, "Kwame Asante")
                   .replace(/\{amount\}/g, "250.00")
                   .replace(/\{currency\}/g, currency || defaultCurrencySymbol)
-                  .replace(/\{due_date\}/g, "Mar 1, 2026")}
+                  .replace(/\{due_date\}/g, "Mar 1, 2026")
+                  .replace(/\{pay_link\}/g, "https://www.shuleos.app/pay/example")}
               </p>
             </div>
           </div>

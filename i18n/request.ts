@@ -39,6 +39,7 @@ const loadMessages = cache(async (locale: string) => {
     outreach,
     notifications,
     billing,
+    pay,
   ] = await Promise.all([
     import(`../messages/${locale}/common.json`),
     import(`../messages/${locale}/nav.json`),
@@ -65,6 +66,7 @@ const loadMessages = cache(async (locale: string) => {
     import(`../messages/${locale}/outreach.json`),
     import(`../messages/${locale}/notifications.json`),
     import(`../messages/${locale}/billing.json`),
+    import(`../messages/${locale}/pay.json`),
   ]);
 
   return {
@@ -93,8 +95,24 @@ const loadMessages = cache(async (locale: string) => {
     outreach: outreach.default,
     notifications: notifications.default,
     billing: billing.default,
+    pay: pay.default,
   };
 });
+
+async function resolvePayPageLocale(): Promise<Locale | null> {
+  try {
+    const pathname = (await headers()).get("x-pathname");
+    const match = pathname?.match(/^\/pay\/([^/?#]+)/);
+    const token = match?.[1];
+    if (!token) return null;
+
+    const { getPublicInvoicePayment } = await import("@/lib/db/payment-links");
+    const invoice = await getPublicInvoicePayment(token);
+    return isValidLocale(invoice?.school_locale) ? invoice.school_locale : null;
+  } catch {
+    return null;
+  }
+}
 
 async function resolvePublicSchoolSiteLocale(): Promise<Locale | null> {
   try {
@@ -167,6 +185,15 @@ export default getRequestConfig(async () => {
       locale: publicSiteLocale,
       timeZone: defaultTimeZone,
       messages: await loadMessages(publicSiteLocale),
+    };
+  }
+
+  const payPageLocale = await resolvePayPageLocale();
+  if (payPageLocale && !isValidLocale((await cookies()).get(LOCALE_COOKIE)?.value)) {
+    return {
+      locale: payPageLocale,
+      timeZone: defaultTimeZone,
+      messages: await loadMessages(payPageLocale),
     };
   }
 

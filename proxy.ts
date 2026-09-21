@@ -46,6 +46,7 @@ function isPublicRoute(pathname: string): boolean {
   if (pathname.startsWith("/schools/")) return true;
   if (pathname.startsWith("/modules/")) return true;
   if (pathname.startsWith("/blog/")) return true;
+  if (pathname === "/pay" || pathname.startsWith("/pay/")) return true;
   return false;
 }
 
