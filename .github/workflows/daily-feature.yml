@@ -1,0 +1,67 @@
+name: Daily feature tour and brief
+
+on:
+  pull_request:
+    types: [labeled, synchronize, opened, reopened]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  tour-and-email:
+    if: contains(github.event.pull_request.labels.*.name, 'daily-feature')
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Wait for Vercel preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
+        id: vercel
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 600
+          check_interval: 10
+
+      - name: Record feature tour
+        env:
+          PREVIEW_URL: ${{ steps.vercel.outputs.url }}
+          DAILY_TOUR_LOGIN_EMAIL: ${{ secrets.DAILY_TOUR_LOGIN_EMAIL }}
+          DAILY_TOUR_LOGIN_PASSWORD: ${{ secrets.DAILY_TOUR_LOGIN_PASSWORD }}
+        run: node scripts/record-feature-tour.mjs
+
+      - name: Upload tour assets to Supabase
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          TOUR_UPLOAD_PREFIX: pr-${{ github.event.pull_request.number }}-run-${{ github.run_id }}
+        run: node scripts/upload-daily-feature-tours.mjs
+
+      - name: Send founder brief email
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_FROM: ${{ secrets.RESEND_FROM }}
+          OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
+          PREVIEW_URL: ${{ steps.vercel.outputs.url }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_DATE: pr-${{ github.event.pull_request.number }}-run-${{ github.run_id }}
+        run: node scripts/send-daily-feature-brief.mjs

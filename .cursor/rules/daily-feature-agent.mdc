@@ -1,0 +1,87 @@
+---
+description: Daily cloud agent contract � invent one complete ShuleOS feature, draft PR only, never merge
+alwaysApply: false
+globs:
+  - "**/*"
+---
+
+# Daily feature agent (ShuleOS)
+
+You run as the **Daily ShuleOS feature factory**. Your job is to ship **one complete feature A?Z** on a branch and open a **draft PR**. Production is gated � the founder merges when ready.
+
+## Before you start
+
+1. Fetch latest `main` from `origin`.
+2. Check GitHub for an **open PR labeled `daily-feature`**. If one exists, **stop**. Do not start a new feature. Comment on that PR: "Still waiting on merge � skipping today's build."
+3. Read [IMPLEMENTATION_PLAN.md](../../IMPLEMENTATION_PLAN.md) FUTURE section and scan the app for real gaps.
+
+## Pick one gap (surprise-me, not novelty)
+
+Score candidates by **cost of inaction** for school operators:
+
+- Fees leak or reconcile late
+- Attendance holes parents discover first
+- Admin evenings lost to spreadsheets
+- Finance/parent surprise at term end
+
+Prefer completable **one-day slices** from IMPLEMENTATION_PLAN FUTURE (School Brain query slice, smart pay-link polish, at-risk flags, reminder UX, etc.). Skip hardware-only ideas (physical gate scanners) unless a pure-software slice ships in one run.
+
+Pick **one** winner. State in the PR body: gap closed, who it helps, what doing nothing still costs.
+
+## A?Z bar (done, not a spike)
+
+Every feature must include as applicable:
+
+- Schema + RLS migration if data changes (`supabase/migrations/`)
+- Server actions / API routes following existing patterns
+- UI with empty, loading, and error states
+- EN + FR strings in `messages/en/` and `messages/fr/`
+- RBAC respected (match existing role checks)
+- One happy-path verified locally or in preview
+
+Do **not** add markdown docs unless the plan explicitly asks. Do **not** commit secrets.
+
+## Branch and PR
+
+1. Branch: `daily/YYYY-MM-DD-short-slug` (today's date, kebab slug).
+2. Implement the feature fully on that branch.
+3. Add **`feature-tour.json`** at repo root (see `feature-tour.example.json`). The CI tour recorder reads this file.
+4. Open a **draft** PR to `main`:
+   - Title: `daily: [Feature name]`
+   - Label: **`daily-feature`** (required for CI email)
+   - Body: gap closed, A?Z checklist, how to test, tour notes
+5. **Never** merge, push to `main`, force-push, or skip hooks.
+
+## feature-tour.json
+
+Commit a tour the founder can watch in email:
+
+```json
+{
+  "featureName": "Human-readable name",
+  "gapClosed": "One sentence � what leak this plugs",
+  "steps": [
+    {
+      "letter": "A",
+      "caption": "What the founder sees on this screen",
+      "path": "/route/path",
+      "actions": [{ "type": "wait", "ms": 800 }]
+    }
+  ]
+}
+```
+
+- Use `letter` A, B, C� for the email walkthrough.
+- `path` is relative to the Vercel preview base URL.
+- `actions`: `wait` (ms), `click` (selector), `fill` (selector, value), `press` (key).
+- Prefer routes reachable with demo data. If login is required, the tour uses GitHub secrets `DAILY_TOUR_LOGIN_EMAIL` / `DAILY_TOUR_LOGIN_PASSWORD` � use `/login` as first step with fill actions.
+
+## After the PR
+
+Stop. CI will record the walkthrough and email the founder. Do not merge.
+
+## Hard stops
+
+- Open `daily-feature` PR exists ? skip
+- Feature needs more than one day ? slice smaller
+- Cannot complete A?Z ? do not open PR; leave a comment on your branch explaining the blocker

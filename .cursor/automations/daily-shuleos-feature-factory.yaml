@@ -1,0 +1,25 @@
+# Cursor Automation prefill — open in Agents Window → Automations → New
+# Full setup: Docs/daily-feature-automation.md
+
+name: Daily ShuleOS feature factory
+description: Invent one complete A→Z ShuleOS feature from product gaps; draft PR only. CI emails the founder walkthrough.
+
+workflow:
+  triggers:
+    - cron:
+        cron: "0 7 * * *"
+  actions: []
+  prompts:
+    - |
+      Follow .cursor/rules/daily-feature-agent.mdc in the AMS repo (pascodinamic0/Ams).
+
+      1. Fetch latest origin/main.
+      2. If an open PR labeled daily-feature exists, stop — do not build a new feature. Comment that you are waiting on merge.
+      3. Pick the highest cost-of-inaction gap (fees leak, attendance holes, parent surprise, admin evenings). Prefer one-day slices from IMPLEMENTATION_PLAN.md FUTURE section.
+      4. Branch daily/YYYY-MM-DD-slug and implement A→Z: schema/RLS if needed, UI, EN+FR strings, RBAC, empty/error states.
+      5. Commit feature-tour.json at repo root (see feature-tour.example.json).
+      6. Open a DRAFT PR to main titled "daily: [Feature name]", label daily-feature, never merge.
+  gitConfig:
+    repo: pascodinamic0/Ams
+    branch: main
+  memoryEnabled: true

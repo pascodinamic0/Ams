@@ -172,6 +172,12 @@ export async function sendInvitePasswordEmail(opts: {
   });
 }
 
+export { sendDailyFeatureBrief } from "@/lib/email/daily-feature-brief";
+export type {
+  DailyFeatureBriefInput,
+  DailyFeatureTourStep,
+} from "@/lib/email/daily-feature-brief";
+
 export async function sendPlainTextEmail(opts: {
   to: string;
   subject: string;

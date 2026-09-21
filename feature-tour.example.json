@@ -1,0 +1,34 @@
+{
+  "featureName": "Example � overdue fees at a glance",
+  "gapClosed": "Principals reconcile fees in spreadsheets until term end; this surfaces overdue counts on login.",
+  "steps": [
+    {
+      "letter": "A",
+      "caption": "Login � finance admin lands on the dashboard",
+      "path": "/login",
+      "actions": [
+        { "type": "wait", "ms": 600 },
+        { "type": "fill", "selector": "input[type='email']", "value": "__DAILY_TOUR_LOGIN_EMAIL__" },
+        { "type": "fill", "selector": "input[type='password']", "value": "__DAILY_TOUR_LOGIN_PASSWORD__" },
+        { "type": "click", "selector": "button[type='submit']" },
+        { "type": "wait", "ms": 2000 }
+      ]
+    },
+    {
+      "letter": "B",
+      "caption": "Finance overview � overdue total visible without exporting",
+      "path": "/finance",
+      "actions": [{ "type": "wait", "ms": 1200 }]
+    },
+    {
+      "letter": "C",
+      "caption": "Invoice list � filter to overdue only",
+      "path": "/finance/invoices",
+      "actions": [
+        { "type": "wait", "ms": 800 },
+        { "type": "click", "selector": "[data-testid='filter-overdue']" },
+        { "type": "wait", "ms": 1000 }
+      ]
+    }
+  ]
+}

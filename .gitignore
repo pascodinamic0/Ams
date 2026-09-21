@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/tour-output
 
 # next.js
 /.next/
