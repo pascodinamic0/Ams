@@ -72,6 +72,12 @@ export const FINANCE_PORTAL_ROLES: UserRole[] = [
   "accountant",
 ];
 
+/** Finance desk + platform admin can copy/share invoice payment links. */
+export function canSharePaymentLinks(role: string | null | undefined): boolean {
+  const normalized = normalizeRole(role);
+  return normalized === "super_admin" || FINANCE_PORTAL_ROLES.includes(normalized);
+}
+
 export const OPERATIONS_PORTAL_ROLES: UserRole[] = [
   "operations_manager",
   "operations_officer",
