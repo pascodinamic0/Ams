@@ -100,7 +100,7 @@ export async function sendWhatsAppBulk(
 
 /**
  * Interpolate a message template with dynamic variables.
- * Supports: {guardian_name}, {student_name}, {amount}, {currency}, {due_date}, {school_name}
+ * Supports: {guardian_name}, {student_name}, {amount}, {currency}, {due_date}, {school_name}, {pay_link}
  */
 export function interpolateTemplate(
   template: string,

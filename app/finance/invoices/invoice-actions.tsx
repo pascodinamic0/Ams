@@ -3,19 +3,37 @@
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { DeleteInvoiceButton } from "./delete-button";
+import { CopyPaymentLinkButton } from "@/components/finance/copy-payment-link-button";
 
 export function InvoiceActions({
   id,
   status,
+  payUrl,
+  studentName,
+  amountLabel,
+  dueDate,
 }: {
   id: string;
   status: string;
+  payUrl?: string | null;
+  studentName: string;
+  amountLabel: string;
+  dueDate: string;
 }) {
   const t = useTranslations("finance");
   const locked = status === "paid";
 
   return (
     <div className="flex flex-wrap gap-1">
+      {!locked ? (
+        <CopyPaymentLinkButton
+          invoiceId={id}
+          payUrl={payUrl}
+          studentName={studentName}
+          amountLabel={amountLabel}
+          dueDate={dueDate}
+        />
+      ) : null}
       {!locked ? (
         <Link
           href={`/finance/invoices?edit=${id}`}

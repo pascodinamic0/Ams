@@ -1,0 +1,75 @@
+{
+  "id": "smart-payment-links",
+  "date": "2026-09-21",
+  "slug": "smart-payment-links",
+  "feature": "Smart payment links",
+  "headline": "Unpaid invoices leak when the reminder has no exact-amount link.",
+  "costOfInaction": "Every night without a pay link, parents see a number and still have to hunt, log in, or wait at the office. That delay is cash already earned walking out of the term.",
+  "gap": "fees leak",
+  "audience": ["finance_officer", "cashier", "accountant", "parent"],
+  "locales": ["en", "fr"],
+  "routes": [
+    "/finance/outstanding",
+    "/finance/invoices",
+    "/finance/fee-reminders",
+    "/pay/[token]"
+  ],
+  "steps": [
+    {
+      "id": "outstanding-copy",
+      "route": "/finance/outstanding",
+      "selector": "[data-tour='copy-pay-link']",
+      "title": {
+        "en": "Copy the exact-amount link",
+        "fr": "Copiez le lien au montant exact"
+      },
+      "body": {
+        "en": "Each open invoice has a private pay link. Copy it or the WhatsApp text before this balance ages another day.",
+        "fr": "Chaque facture ouverte a un lien de paiement privé. Copiez-le ou le texte WhatsApp avant que ce solde ne vieillisse encore un jour."
+      },
+      "cta": {
+        "en": "Copy pay link",
+        "fr": "Copier le lien de paiement"
+      }
+    },
+    {
+      "id": "invoices-copy",
+      "route": "/finance/invoices",
+      "selector": "[data-tour='copy-pay-link']",
+      "title": {
+        "en": "Send the bill, not a scavenger hunt",
+        "fr": "Envoyez la facture, pas une chasse au trésor"
+      },
+      "body": {
+        "en": "From the invoice list, copy a link that opens only this student, this invoice, and this amount due.",
+        "fr": "Depuis la liste des factures, copiez un lien qui n'ouvre que cet élève, cette facture et ce montant dû."
+      }
+    },
+    {
+      "id": "reminder-template",
+      "route": "/finance/fee-reminders",
+      "selector": "#morning-template",
+      "title": {
+        "en": "Nightly reminders now carry {pay_link}",
+        "fr": "Les rappels de nuit portent maintenant {pay_link}"
+      },
+      "body": {
+        "en": "If the template forgets the placeholder, the cron still appends the URL. Parents get a way to pay, not only a warning.",
+        "fr": "Si le modèle oublie le placeholder, la tâche ajoute quand même l'URL. Les parents reçoivent un moyen de payer, pas seulement un avertissement."
+      }
+    },
+    {
+      "id": "public-pay",
+      "route": "/pay/[token]",
+      "selector": "main",
+      "title": {
+        "en": "Parents land on the exact amount",
+        "fr": "Les parents arrivent sur le montant exact"
+      },
+      "body": {
+        "en": "No login required. Invalid or already-paid links explain what to do instead of a blank screen.",
+        "fr": "Aucune connexion requise. Un lien invalide ou déjà payé explique quoi faire, au lieu d'un écran vide."
+      }
+    }
+  ]
+}

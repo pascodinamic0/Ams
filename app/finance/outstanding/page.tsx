@@ -6,6 +6,7 @@ import {
   getSchoolById,
   getSchoolCurrencyForSchool,
 } from "@/lib/db";
+import { getAppOrigin } from "@/lib/auth/app-url";
 import { OutstandingBoard } from "./outstanding-board";
 
 export default async function OutstandingFeesPage() {
@@ -40,6 +41,7 @@ export default async function OutstandingFeesPage() {
       }
       currencyCode={currency.code}
       issuedOn={issuedOn}
+      payOrigin={getAppOrigin()}
       labels={{
         title: t("outstandingTitle"),
         subtitle: t("outstandingSubtitle"),

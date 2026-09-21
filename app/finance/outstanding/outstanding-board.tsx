@@ -7,7 +7,9 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DeleteInvoiceButton } from "@/app/finance/invoices/delete-button";
+import { CopyPaymentLinkButton } from "@/components/finance/copy-payment-link-button";
 import { formatMoney } from "@/lib/currency";
+import { buildPaymentLinkUrl } from "@/lib/payments/payment-links";
 import type { InvoiceListItem, OutstandingStudentGroup } from "@/lib/db/invoices";
 
 type SchoolInfo = {
@@ -82,12 +84,14 @@ export function OutstandingBoard({
   school,
   currencyCode,
   issuedOn,
+  payOrigin,
   labels,
 }: {
   invoices: InvoiceListItem[];
   school: SchoolInfo | null;
   currencyCode: string;
   issuedOn: string;
+  payOrigin: string;
   labels: Labels;
 }) {
   const [search, setSearch] = useState("");
@@ -294,6 +298,17 @@ export function OutstandingBoard({
                     <td className="px-3 py-2">{statusLabel(inv)}</td>
                     <td className="px-3 py-2">
                       <div className="flex flex-wrap items-center gap-1">
+                        <CopyPaymentLinkButton
+                          invoiceId={inv.id}
+                          payUrl={
+                            inv.payment_token
+                              ? buildPaymentLinkUrl(payOrigin, inv.payment_token)
+                              : null
+                          }
+                          studentName={inv.student_name}
+                          amountLabel={money(inv.balance)}
+                          dueDate={inv.due_date}
+                        />
                         <Button
                           type="button"
                           variant="ghost"

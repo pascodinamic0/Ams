@@ -22,6 +22,12 @@ import { isEmailConfigured, sendPlainTextEmail } from "@/lib/services/email";
 import { getSchoolCurrency } from "@/lib/currency";
 import { format, addDays, differenceInDays } from "date-fns";
 import { formatPersonName } from "@/lib/utils";
+import { getAppOrigin } from "@/lib/auth/app-url";
+import {
+  appendPayLinkIfMissing,
+  buildPaymentLinkUrl,
+  isValidPaymentToken,
+} from "@/lib/payments/payment-links";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -84,7 +90,7 @@ export async function POST(req: NextRequest) {
     const { data: invoices, error: invErr } = await supabase
       .from("fee_invoices")
       .select(`
-        id, amount, amount_paid, due_date, status,
+        id, amount, amount_paid, due_date, status, payment_token,
         students(
           id, first_name, middle_name, last_name, school_id,
           guardian_students(
@@ -110,7 +116,14 @@ export async function POST(req: NextRequest) {
       }>;
     };
 
-    type InvoiceRow = typeof invoices extends (infer T)[] | null | undefined ? T & { students: InvoiceStudent | null } : never;
+    type InvoiceRow = typeof invoices extends (infer T)[] | null | undefined
+      ? T & {
+          students: InvoiceStudent | null;
+          payment_token?: string | null;
+        }
+      : never;
+
+    const origin = getAppOrigin();
 
     for (const invoice of (invoices ?? []) as unknown as InvoiceRow[]) {
       const student = invoice.students;
@@ -130,6 +143,10 @@ export async function POST(req: NextRequest) {
         const guardian = link.guardians;
         if (!guardian?.phone && !guardian?.email) continue;
 
+        const payLink = isValidPaymentToken(invoice.payment_token)
+          ? buildPaymentLinkUrl(origin, invoice.payment_token)
+          : "";
+
         const vars = {
           guardian_name: guardian.name,
           student_name: studentName,
@@ -137,6 +154,7 @@ export async function POST(req: NextRequest) {
           currency: currencySymbol,
           due_date: format(dueDate, "MMM d, yyyy"),
           school_name: "",
+          pay_link: payLink,
         };
 
         let shouldSend = false;
@@ -169,7 +187,10 @@ export async function POST(req: NextRequest) {
           ? setting.final_warning_template
           : setting.morning_message_template;
 
-        const message = interpolateTemplate(template, vars);
+        const message = appendPayLinkIfMissing(
+          interpolateTemplate(template, vars),
+          payLink
+        );
         let delivered = false;
 
         if (guardian.phone) {

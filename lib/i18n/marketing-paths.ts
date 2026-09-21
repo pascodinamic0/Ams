@@ -36,6 +36,7 @@ export function isMarketingPath(pathname: string | null | undefined): boolean {
     "/pending",
     "/onboarding",
     "/schools",
+    "/pay",
   ];
 
   return prefixes.some(

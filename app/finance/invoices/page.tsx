@@ -11,6 +11,10 @@ import { getTranslations } from "next-intl/server";
 import { InvoiceForm } from "./invoice-form";
 import { InvoiceFilters } from "./invoice-filters";
 import { InvoiceActions } from "./invoice-actions";
+import { getSchoolCurrencyForSchool } from "@/lib/db/schools";
+import { formatMoney } from "@/lib/currency";
+import { buildPaymentLinkUrl } from "@/lib/payments/payment-links";
+import { getAppOrigin } from "@/lib/auth/app-url";
 
 export default async function InvoicesPage({
   searchParams,
@@ -26,7 +30,7 @@ export default async function InvoicesPage({
 
   const canLoadSchoolData = Boolean(schoolId) || isSuperAdmin;
 
-  const [invoices, students, feeStructures] = canLoadSchoolData
+  const [invoices, students, feeStructures, currency] = canLoadSchoolData
     ? await Promise.all([
         getInvoices({
           schoolId,
@@ -38,8 +42,16 @@ export default async function InvoicesPage({
           status: "active",
         }),
         getFeeStructures(schoolId ? { schoolId } : undefined),
+        getSchoolCurrencyForSchool(schoolId),
       ])
-    : [[], [], []];
+    : await Promise.all([
+        Promise.resolve([] as Awaited<ReturnType<typeof getInvoices>>),
+        Promise.resolve([] as Awaited<ReturnType<typeof getStudentsForBilling>>),
+        Promise.resolve([] as Awaited<ReturnType<typeof getFeeStructures>>),
+        getSchoolCurrencyForSchool(schoolId),
+      ]);
+
+  const origin = getAppOrigin();
 
   const editingInvoice = params.edit
     ? invoices.find((inv) => inv.id === params.edit) ?? null
@@ -47,7 +59,20 @@ export default async function InvoicesPage({
 
   const tableData = invoices.map((row) => ({
     ...row,
-    actions: <InvoiceActions id={row.id} status={row.status} />,
+    actions: (
+      <InvoiceActions
+        id={row.id}
+        status={row.status}
+        payUrl={
+          row.payment_token
+            ? buildPaymentLinkUrl(origin, row.payment_token)
+            : null
+        }
+        studentName={row.student_name}
+        amountLabel={formatMoney(row.balance, currency.code)}
+        dueDate={row.due_date}
+      />
+    ),
   }));
 
   return (

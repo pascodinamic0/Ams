@@ -1,0 +1,22 @@
+{
+  "id": "feature-id-kebab",
+  "date": "YYYY-MM-DD",
+  "slug": "feature-id-kebab",
+  "feature": "Human-readable feature name",
+  "headline": "One-line cost of inaction.",
+  "costOfInaction": "Specific loss ? price already paid ? small next step. Pair loss with hope.",
+  "gap": "fees leak | attendance holes | parent surprise | admin evenings",
+  "audience": ["finance_officer", "parent"],
+  "locales": ["en", "fr"],
+  "routes": ["/path"],
+  "steps": [
+    {
+      "id": "step-id",
+      "route": "/path",
+      "selector": "[data-tour='step-id']",
+      "title": { "en": "Title", "fr": "Titre" },
+      "body": { "en": "Body", "fr": "Corps" },
+      "cta": { "en": "Stop the leaks", "fr": "Stoppez les fuites" }
+    }
+  ]
+}
