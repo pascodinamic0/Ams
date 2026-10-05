@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
-import { JetBrains_Mono, Outfit, Plus_Jakarta_Sans, Source_Serif_4 } from "next/font/google";
+import localFont from "next/font/local";
 import { getLocale, getMessages, getTimeZone, getTranslations } from "next-intl/server";
 import { AppIntlProvider } from "@/components/i18n/app-intl-provider";
 import { AppToaster } from "@/components/ui/app-toaster";
@@ -13,30 +13,32 @@ import { pwaAppleTouchIconPath, pwaIconPath, withPwaAssetRevision } from "@/lib/
 import { pwaThemeColor } from "@/lib/pwa/config";
 import "./globals.css";
 
-const jakartaSans = Plus_Jakarta_Sans({
+// Self-hosted so production builds do not fetch Google Fonts CSS.
+const jakartaSans = localFont({
+  src: "./fonts/plus-jakarta-sans-latin.woff2",
   variable: "--font-jakarta-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: "200 800",
   display: "swap",
 });
 
-const jetbrainsMono = JetBrains_Mono({
+const jetbrainsMono = localFont({
+  src: "./fonts/jetbrains-mono-latin.woff2",
   variable: "--font-jetbrains-mono",
-  subsets: ["latin"],
+  weight: "100 800",
   display: "swap",
 });
 
-const sourceSerif = Source_Serif_4({
+const sourceSerif = localFont({
+  src: "./fonts/source-serif-4-latin.woff2",
   variable: "--font-source-serif",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: "200 900",
   display: "swap",
 });
 
-const outfit = Outfit({
+const outfit = localFont({
+  src: "./fonts/outfit-latin.woff2",
   variable: "--font-outfit",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: "100 900",
   display: "swap",
 });
 
