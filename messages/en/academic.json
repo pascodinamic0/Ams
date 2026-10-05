@@ -532,7 +532,11 @@
   "exportInscriptionFiche": "Print registration form",
   "inscriptionFicheTitle": "Registration form — school year {year}",
   "inscriptionFicheNumber": "No. {number}",
-  "inscriptionSectionIdentity": "I. Identity",
+  "inscriptionSectionIdentity": "Identity",
+  "inscriptionSectionFamily": "Family",
+  "inscriptionSectionHealth": "Health",
   "inscriptionSectionOther": "II. Other information",
+  "inscriptionGuardianSignature": "Guardian signature",
+  "inscriptionSchoolSignature": "School signature",
   "lieuEtDateNaissance": "Place and date of birth"
 }

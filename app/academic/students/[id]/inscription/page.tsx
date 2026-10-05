@@ -3,22 +3,18 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { ExportPdfButton } from "@/components/students/export-pdf-button";
-import { getStudentById } from "@/lib/db";
-import { formatPersonName } from "@/lib/utils";
+import { StudentInscriptionFiche } from "@/components/students/student-inscription-fiche";
+import { getSchoolById, getStudentById } from "@/lib/db";
+import { formatStudentName } from "@/lib/utils";
 import { formatSchoolYear } from "@/lib/academic/school-year";
 import {
   composeInscriptionAddress,
   formatYesNo,
 } from "@/lib/students/inscription";
-
-function FicheRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid gap-1 border-b border-stone-200 py-2 sm:grid-cols-[14rem_1fr] print:grid-cols-[12rem_1fr]">
-      <dt className="text-sm font-medium text-stone-600">{label}</dt>
-      <dd className="text-sm text-stone-900">{value || "-"}</dd>
-    </div>
-  );
-}
+import {
+  IMPORT_DOB_NOTE,
+  IMPORT_DOB_PLACEHOLDER,
+} from "@/lib/students/import-file";
 
 export default async function StudentInscriptionFichePage({
   params,
@@ -31,37 +27,44 @@ export default async function StudentInscriptionFichePage({
   const student = await getStudentById(id);
   if (!student) notFound();
 
+  const school = student.school_id
+    ? await getSchoolById(student.school_id)
+    : null;
+
   const yesNo = {
     yes: tc("yes"),
     no: tc("no"),
     empty: tc("emptyDash"),
   };
+  const empty = tc("emptyDash");
   const className =
-    (student.classes as { name?: string } | null)?.name ?? tc("emptyDash");
+    (student.classes as { name?: string } | null)?.name ?? empty;
   const schoolYearLabel =
     student.school_year != null
       ? formatSchoolYear(student.school_year)
-      : tc("emptyDash");
+      : empty;
   const address =
-    composeInscriptionAddress(student) ||
-    student.home_address ||
-    tc("emptyDash");
-  const placeAndDob = [student.place_of_birth, student.date_of_birth]
-    .filter(Boolean)
-    .join(" - ") || tc("emptyDash");
+    composeInscriptionAddress(student) || student.home_address || empty;
+  const dobIncomplete =
+    student.date_of_birth === IMPORT_DOB_PLACEHOLDER &&
+    student.notes === IMPORT_DOB_NOTE;
   const genderLabel =
     student.gender === "male"
       ? t("genderMale")
       : student.gender === "female"
         ? t("genderFemale")
-        : tc("emptyDash");
+        : empty;
+  const fullName = formatStudentName(student) || empty;
+  const notes = dobIncomplete ? "" : (student.notes ?? "");
 
   return (
     <div className="w-full space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <div>
-          <h1 className="text-2xl font-bold">{t("exportInscriptionFiche")}</h1>
-          <p className="text-sm text-stone-500">{formatPersonName(student)}</p>
+          <h1 className="font-editorial text-2xl font-semibold tracking-tight">
+            {t("exportInscriptionFiche")}
+          </h1>
+          <p className="text-sm text-muted">{fullName}</p>
         </div>
         <div className="flex gap-2">
           <Link href={`/academic/students/${id}`}>
@@ -73,84 +76,93 @@ export default async function StudentInscriptionFichePage({
         </div>
       </div>
 
-      <article className="rounded-lg border border-stone-200 bg-white p-6 text-stone-900 shadow-sm print:border-0 print:shadow-none">
-        <header className="mb-6 border-b border-stone-300 pb-4 text-center">
-          <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
-            {t("inscriptionFicheNumber", {
-              number: student.student_id ?? ".........",
-            })}
-          </p>
-          <h2 className="mt-2 text-xl font-bold uppercase">
-            {t("inscriptionFicheTitle", { year: schoolYearLabel })}
-          </h2>
-        </header>
+      <StudentInscriptionFiche
+        school={
+          school
+            ? {
+                name: school.name,
+                logoUrl: school.logo_url,
+                address: school.address,
+                phone: school.contact_phone,
+                primaryColor: school.theme_primary_color || "#0d9488",
+              }
+            : null
+        }
+        data={{
+          fullName,
+          lastName: student.last_name || empty,
+          middleName: student.middle_name || empty,
+          firstName: student.first_name || empty,
+          gender: genderLabel,
+          placeOfBirth: student.place_of_birth || empty,
+          dateOfBirth: dobIncomplete
+            ? t("dobToComplete")
+            : student.date_of_birth || empty,
+          previousSchool: student.previous_school || empty,
+          className,
+          fatherName: student.father_name || empty,
+          motherName: student.mother_name || empty,
+          profession: student.responsible_profession || empty,
+          address,
+          phone: student.contact_phone || empty,
+          chronicIllness: formatYesNo(student.chronic_illness, yesNo),
+          visualProblem: formatYesNo(student.visual_problem, yesNo),
+          physicalProblem: formatYesNo(student.physical_problem, yesNo),
+          allergies: student.allergies || empty,
+          difficulties: student.difficulties || empty,
+          notes,
+          photoUrl: student.photo_url ?? null,
+        }}
+        labels={{
+          title: t("inscriptionFicheTitle", { year: schoolYearLabel }),
+          number: t("inscriptionFicheNumber", {
+            number: student.student_id ?? ".........",
+          }),
+          identity: t("inscriptionSectionIdentity"),
+          family: t("inscriptionSectionFamily"),
+          health: t("inscriptionSectionHealth"),
+          familyName: t("familyName"),
+          postName: t("postName"),
+          givenName: t("givenName"),
+          gender: t("gender"),
+          placeOfBirth: t("placeOfBirth"),
+          dob: t("dob"),
+          previousSchool: t("previousSchool"),
+          desiredClass: t("desiredClass"),
+          fatherNames: t("fatherNames"),
+          motherNames: t("motherNames"),
+          profession: t("responsibleProfession"),
+          address: t("address"),
+          phone: t("contactPhone"),
+          chronicIllness: t("chronicIllness"),
+          visualProblem: t("visualProblem"),
+          physicalProblem: t("physicalProblem"),
+          allergies: t("allergies"),
+          difficulties: t("difficulties"),
+          notes: t("notesAboutChild"),
+          photo: t("photo"),
+          guardianSignature: t("inscriptionGuardianSignature"),
+          schoolSignature: t("inscriptionSchoolSignature"),
+          yes: tc("yes"),
+        }}
+      />
 
-        <section className="mb-8">
-          <h3 className="mb-3 text-sm font-bold uppercase tracking-wide">
-            {t("inscriptionSectionIdentity")}
-          </h3>
-          <dl>
-            <FicheRow label={t("familyName")} value={student.last_name} />
-            <FicheRow
-              label={t("postName")}
-              value={student.middle_name ?? ""}
-            />
-            <FicheRow label={t("givenName")} value={student.first_name} />
-            <FicheRow label={t("gender")} value={genderLabel} />
-            <FicheRow label={t("lieuEtDateNaissance")} value={placeAndDob} />
-            <FicheRow
-              label={t("previousSchool")}
-              value={student.previous_school ?? ""}
-            />
-            <FicheRow label={t("desiredClass")} value={className} />
-            <FicheRow
-              label={t("fatherNames")}
-              value={student.father_name ?? ""}
-            />
-            <FicheRow
-              label={t("motherNames")}
-              value={student.mother_name ?? ""}
-            />
-            <FicheRow
-              label={t("responsibleProfession")}
-              value={student.responsible_profession ?? ""}
-            />
-            <FicheRow label={t("address")} value={address} />
-            <FicheRow
-              label={t("contactPhone")}
-              value={student.contact_phone ?? ""}
-            />
-          </dl>
-        </section>
-
-        <section>
-          <h3 className="mb-3 text-sm font-bold uppercase tracking-wide">
-            {t("inscriptionSectionOther")}
-          </h3>
-          <dl>
-            <FicheRow
-              label={t("chronicIllness")}
-              value={formatYesNo(student.chronic_illness, yesNo)}
-            />
-            <FicheRow
-              label={t("visualProblem")}
-              value={formatYesNo(student.visual_problem, yesNo)}
-            />
-            <FicheRow
-              label={t("physicalProblem")}
-              value={formatYesNo(student.physical_problem, yesNo)}
-            />
-            <FicheRow label={t("allergies")} value={student.allergies ?? ""} />
-            <FicheRow
-              label={t("difficulties")}
-              value={student.difficulties ?? ""}
-            />
-            {student.notes ? (
-              <FicheRow label={t("notesAboutChild")} value={student.notes} />
-            ) : null}
-          </dl>
-        </section>
-      </article>
+      <style>{`
+        @media print {
+          @page { size: A4; margin: 10mm; }
+          body * { visibility: hidden; }
+          .inscription-fiche, .inscription-fiche * { visibility: visible; }
+          .inscription-fiche {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            min-height: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+        }
+      `}</style>
     </div>
   );
 }

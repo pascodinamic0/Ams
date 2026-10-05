@@ -532,7 +532,11 @@
   "exportInscriptionFiche": "Imprimer la fiche d'inscription",
   "inscriptionFicheTitle": "Fiche d'inscription — année scolaire {year}",
   "inscriptionFicheNumber": "N° {number}",
-  "inscriptionSectionIdentity": "I. Identité",
+  "inscriptionSectionIdentity": "Identité",
+  "inscriptionSectionFamily": "Famille",
+  "inscriptionSectionHealth": "Santé",
   "inscriptionSectionOther": "II. Autres informations",
+  "inscriptionGuardianSignature": "Signature du responsable",
+  "inscriptionSchoolSignature": "Signature de la direction",
   "lieuEtDateNaissance": "Lieu et date de naissance"
 }
