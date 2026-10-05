@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight, Rocket, UserPlus, Users, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { companyIdentity } from "@/lib/company/identity";
 import type { GetAccessCopy } from "@/lib/company/get-access-copy";
 
 function OnboardingJourney({ copy }: { copy: GetAccessCopy }) {
@@ -258,7 +259,14 @@ export function GetAccessPageClient({ copy }: { copy: GetAccessCopy }) {
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <p className="mt-5 text-[10px] font-semibold uppercase tracking-[0.2em] text-mkt-ink/35">
-                {copy.joinRevolution}
+                <Link
+                  href={companyIdentity.contact.whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-mkt-ink/60"
+                >
+                  {copy.joinRevolution}
+                </Link>
               </p>
             </div>
           </motion.div>

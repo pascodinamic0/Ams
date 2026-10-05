@@ -5,6 +5,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { BrandLogo } from "@/components/company/brand-logo";
+import { SchoolBrandMark } from "@/components/layout/school-brand-mark";
+import type { SchoolShellBranding } from "@/lib/schools/shell-branding";
+import { AppIntlProvider } from "@/components/i18n/app-intl-provider";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { LogoutButton } from "@/components/layout/logout-button";
 import { MOBILE_TAB_BAR_HEIGHT, MobileTabBar } from "@/components/layout/mobile-tab-bar";
@@ -26,6 +29,8 @@ export interface AppShellProps {
   mobileMode?: AppShellMobileMode;
   /** When true, hide personal language switcher (school locale is locked). */
   localeLocked?: boolean;
+  /** School name and logo for the signed-in shell header. */
+  schoolBranding?: SchoolShellBranding | null;
 }
 
 function resolveMobileMode(pathname: string, mobileMode?: AppShellMobileMode): AppShellMobileMode {
@@ -34,7 +39,27 @@ function resolveMobileMode(pathname: string, mobileMode?: AppShellMobileMode): A
   return "tabs";
 }
 
+type AppShellClientProps = AppShellProps & {
+  locale: string;
+  timeZone: string;
+  messages: Record<string, unknown>;
+  schoolBranding?: SchoolShellBranding | null;
+};
+
 export function AppShellClient({
+  locale,
+  timeZone,
+  messages,
+  ...props
+}: AppShellClientProps) {
+  return (
+    <AppIntlProvider locale={locale} timeZone={timeZone} messages={messages}>
+      <AppShellView {...props} />
+    </AppIntlProvider>
+  );
+}
+
+function AppShellView({
   children,
   sidebar,
   header,
@@ -42,6 +67,7 @@ export function AppShellClient({
   role = "student",
   mobileMode,
   localeLocked = false,
+  schoolBranding = null,
 }: AppShellProps) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
@@ -98,9 +124,18 @@ export function AppShellClient({
             }}
           >
             <div className="flex h-16 shrink-0 items-center justify-between border-b border-stone-200 px-4 pt-[env(safe-area-inset-top)] md:pt-0 dark:border-stone-800">
-              <Link href={dashboardHref}>
-                <BrandLogo size={32} wordmarkClassName="text-base font-bold text-stone-900 dark:text-white" />
-              </Link>
+              {schoolBranding ? (
+                <SchoolBrandMark
+                  branding={schoolBranding}
+                  href={dashboardHref}
+                  variant="sidebar"
+                  className="min-w-0 flex-1 pr-2"
+                />
+              ) : (
+                <Link href={dashboardHref}>
+                  <BrandLogo size={32} wordmarkClassName="text-base font-bold text-stone-900 dark:text-white" />
+                </Link>
+              )}
               <button
                 type="button"
                 onClick={() => setSidebarOpen(false)}
@@ -171,9 +206,18 @@ export function AppShellClient({
                   </svg>
                 </button>
 
-                <div className="min-w-0 truncate text-sm font-semibold text-stone-900 dark:text-white sm:text-base">
-                  {header}
-                </div>
+                {isMobile && schoolBranding ? (
+                  <SchoolBrandMark
+                    branding={schoolBranding}
+                    href={dashboardHref}
+                    variant="compact"
+                    className="min-w-0 flex-1"
+                  />
+                ) : (
+                  <div className="min-w-0 truncate text-sm font-semibold text-stone-900 dark:text-white sm:text-base">
+                    {header}
+                  </div>
+                )}
               </div>
 
               <div className="flex shrink-0 items-center gap-2">

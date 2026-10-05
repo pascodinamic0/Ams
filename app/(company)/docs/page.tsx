@@ -41,7 +41,7 @@ const guides = [
   {
     icon: Shield,
     title: "Security & privacy",
-    description: `Learn how ${companyIdentity.productName} protects school data and meets compliance requirements.`,
+    description: `How ${companyIdentity.productName} handles school data: roles, access, and the privacy policy — not a named compliance certification.`,
     href: "/privacy",
   },
 ];

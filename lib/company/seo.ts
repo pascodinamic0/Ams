@@ -36,9 +36,11 @@ export function softwareApplicationJsonLd() {
     operatingSystem: "Web, PWA",
     offers: {
       "@type": "Offer",
-      price: "0",
       priceCurrency: "USD",
-      description: "School management system for DRC and African schools",
+      availability: "https://schema.org/OnlineOnly",
+      url: absoluteUrl("/get-access"),
+      description:
+        "School management software for DRC private schools. Access after school approval; plan pricing is shown at billing, not as a free catalog.",
     },
     description: companyIdentity.tagline,
     url: absoluteUrl("/school-management-system"),

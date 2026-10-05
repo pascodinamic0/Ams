@@ -63,17 +63,17 @@ export const schoolReportCardSoftware: BlogPostContent = {
     {
       question: "Can ShuleOS generate Programme National report cards?",
       answer:
-        "Yes. ShuleOS maps gradebooks and exams to DRC Programme National formats so teachers print bulletins from the same file they used daily.",
+        "ShuleOS prints term report cards from the same gradebook teachers used daily. They are school cards, not a certified official Programme National ministry grid.",
     },
     {
       question: "How long should report-card week take?",
       answer:
-        "With integrated software, bulk generation and review should take hours  not a week of manual copying from registers.",
+        "With grades already in the gradebook, you print cards instead of copying registers. We do not publish a timed study of \"hours not a week.\"",
     },
   ],
   ...blogCtaEn,
   closing: [
     "Another all-nighter for bulletins is report card software you didn't install in September.",
-    "Connect gradebook to Programme National output before the next term ends.",
+    "Connect the gradebook to printable cards before the next term ends.",
   ],
 };

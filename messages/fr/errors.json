@@ -203,5 +203,8 @@
   "feeStructureRequired": "Le forfait de frais d'inscription est requis",
   "feeStructureAmbiguous": "Plusieurs forfaits correspondent à cette classe — précisez fee_structure dans la ligne d'import",
   "feeStructureRequiredForClass": "Aucun forfait pour cette classe — ajoutez-en un dans Finance d'abord",
-  "enrollmentProofRequired": "La photo du reçu papier est requise pour activer l'élève"
+  "enrollmentProofRequired": "La photo du reçu papier est requise pour activer l'élève",
+  "enrollmentFeeAlreadyPaid": "Un paiement est déjà enregistré sur cette facture d'inscription, le forfait ne peut plus être modifié.",
+  "enrollmentFeeNotFound": "Aucune facture d'inscription ouverte à modifier.",
+  "studentNotPending": "Seul un élève en attente peut changer le forfait d'inscription."
 }

@@ -28,16 +28,16 @@ export const schoolManagementSystemEn: MoneyPageContent = {
   locale: "en",
   title: "School Management System",
   metaDescription:
-    "ShuleOS school management system for DRC and African schools: academics, fee collection, mobile money, parent portals, Programme National report cards, and offline attendance.",
+    "ShuleOS school management system for DRC private schools: fees, grades, attendance, parent messages, a school website, and attendance that still marks when the signal drops.",
   eyebrow: "School management system",
   headline: "Your school already runs a system. It's costing you every week.",
   subtitle:
-    "Notebooks, WhatsApp, and spreadsheets are a school management system - just one that leaks fees, grades, and trust. ShuleOS replaces it with one record: every role, every duty, nothing loseable.",
+    "Notebooks, WhatsApp, and spreadsheets are a school management system — just one that leaks fees, grades, and trust. ShuleOS replaces it with one record staff still operate.",
   sections: [
     {
       title: "Academic management",
       body: [
-        "Admissions, classes, timetable, attendance, gradebook, exams, and Programme National report cards - in the teacher workflow, not rebuilt from chats at term end.",
+        "Admissions, classes, timetable, attendance, gradebook, exams, and printable term report cards from the gradebook — not rebuilt from chats at term end. These are school report cards, not a claimed official ministry bulletin grid.",
       ],
       moduleHref: "/modules/academic",
       moduleLabel: "Academic module",
@@ -47,7 +47,7 @@ export const schoolManagementSystemEn: MoneyPageContent = {
     {
       title: "Fee collection & finance",
       body: [
-        "Fee structures, invoices in CDF and USD, mobile money, WhatsApp fee reminders, expenses, payroll, and collection reports the bursar can defend before the gate queue forms.",
+        "Fee structures, invoices, recorded payments (including mobile money received at the school), WhatsApp fee reminders when connected, expenses, payroll, and collection reports the bursar can defend before the gate queue forms. Each school uses one currency in the app.",
       ],
       moduleHref: "/modules/finance",
       moduleLabel: "Finance module",
@@ -57,7 +57,7 @@ export const schoolManagementSystemEn: MoneyPageContent = {
     {
       title: "Parent & student portals",
       body: [
-        "Balances, grades, attendance, timetable, assignments, and messages on the phone - so parents stop learning by accident and the office stops being a helpdesk.",
+        "Balances, grades, attendance, timetable, assignments, and messages on the phone — so parents stop learning by accident and the office stops being a helpdesk. Parents see the amount due and how to pay; in-app card checkout is not enabled yet.",
       ],
       moduleHref: "/modules/parent-student-portals",
       moduleLabel: "Parent & student portals",
@@ -67,7 +67,7 @@ export const schoolManagementSystemEn: MoneyPageContent = {
     {
       title: "Offline attendance",
       body: [
-        "Installable PWA with attendance that survives dead signal - sync when connectivity returns. The roll call cannot wait for the router.",
+        "Installable PWA: teachers can mark attendance when the signal drops, then sync. Most of the app still needs a connection. Payments are not recorded offline.",
       ],
       moduleHref: "/modules/academic",
       moduleLabel: "Attendance in Academic",
@@ -77,7 +77,7 @@ export const schoolManagementSystemEn: MoneyPageContent = {
     {
       title: "Messaging & outreach",
       body: [
-        "Logged WhatsApp and SMS campaigns with delivery trails - not unlogged chats that become disputes with no proof.",
+        "In-app messages and WhatsApp outreach when connected — not unlogged chats that become disputes with no proof. SMS campaigns are not available.",
       ],
       moduleHref: "/modules/messaging",
       moduleLabel: "Messaging module",
@@ -85,14 +85,14 @@ export const schoolManagementSystemEn: MoneyPageContent = {
     {
       title: "Built for DRC & Africa",
       body: [
-        "French and English, Kinshasa support hours, national curriculum bulletins, multi-currency fees, and workflows that match how private schools actually run.",
+        "French and English, Kinshasa WhatsApp hours, printable term report cards, and workflows aimed at how private schools actually run. Contact Kinshasa for schools outside the city.",
       ],
       blogHref: "/blog/school-management-system-drc",
       blogLabel: "School management system DRC",
     },
   ],
   ctaPrimary: "Stop the leaks",
-  ctaSecondary: "See what it's costing you",
+  ctaSecondary: "See all features",
   ctaTertiary: "WhatsApp us",
   relatedBlogLabel: "School management guides",
   relatedBlogLinks: [
@@ -107,7 +107,7 @@ export const logicielGestionScolaireFr: MoneyPageContent = {
   locale: "fr",
   title: "Logiciel de gestion scolaire",
   metaDescription:
-    "Logiciel de gestion scolaire ShuleOS pour la RDC : academique, frais, mobile money, portails parents, bulletins Programme National et presences hors ligne.",
+    "Logiciel de gestion scolaire ShuleOS pour les ecoles privees en RDC : frais, notes, presences, messages parents, site scolaire, et appel qui continue quand le reseau coupe.",
   eyebrow: "Logiciel de gestion scolaire",
   headline: "Votre ecole a deja un systeme. Il lui coute chaque semaine.",
   subtitle:
@@ -116,7 +116,7 @@ export const logicielGestionScolaireFr: MoneyPageContent = {
     {
       title: "Gestion academique",
       body: [
-        "Admissions, classes, emploi du temps, presences, carnet de notes, examens et bulletins Programme National - dans le flux enseignant, pas reconstruits depuis les chats.",
+        "Admissions, classes, emploi du temps, presences, carnet de notes, examens et bulletins imprimables depuis le carnet — pas reconstruits depuis les chats. Ce sont des cartes de notes, pas une grille ministerielle officielle.",
       ],
       moduleHref: "/modules/academic",
       moduleLabel: "Module academique",
@@ -126,7 +126,7 @@ export const logicielGestionScolaireFr: MoneyPageContent = {
     {
       title: "Frais et finance",
       body: [
-        "Grilles de frais, factures CDF/USD, mobile money, rappels WhatsApp, depenses, paie et rapports de recouvrement.",
+        "Grilles de frais, factures, paiements enregistres (y compris un paiement mobile money recu a l'ecole), rappels WhatsApp lorsqu'ils sont connectes, depenses, paie et rapports de recouvrement. Une devise par ecole dans l'application.",
       ],
       moduleHref: "/modules/finance",
       moduleLabel: "Module finance",
@@ -134,7 +134,7 @@ export const logicielGestionScolaireFr: MoneyPageContent = {
     {
       title: "Portails parents et eleves",
       body: [
-        "Soldes, notes, absences, emploi du temps et messages sur le telephone - sans file a la secretariat.",
+        "Soldes, notes, absences, emploi du temps et messages sur le telephone — sans file au secretariat. Les parents voient le montant du et comment payer ; le paiement par carte dans l'app n'est pas encore active.",
       ],
       moduleHref: "/modules/parent-student-portals",
       moduleLabel: "Portails parents & eleves",
@@ -142,14 +142,14 @@ export const logicielGestionScolaireFr: MoneyPageContent = {
     {
       title: "Presences hors ligne",
       body: [
-        "PWA installable : l'appel continue quand le reseau coupe, synchronisation au retour du signal.",
+        "PWA installable : l'appel peut continuer quand le reseau coupe, puis se synchronise. Le reste de l'app a besoin d'une connexion. Les paiements ne s'enregistrent pas hors ligne.",
       ],
       blogHref: "/blog/systeme-de-gestion-scolaire-rdc",
       blogLabel: "Systeme de gestion scolaire RDC",
     },
   ],
   ctaPrimary: "Stopper les fuites",
-  ctaSecondary: "Voir ce que ca coute",
+  ctaSecondary: "Voir les fonctionnalites",
   ctaTertiary: "Nous contacter",
   relatedBlogLabel: "Guides gestion scolaire",
   relatedBlogLinks: [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
@@ -10,7 +10,6 @@ import { importStudentsBatch } from "@/lib/actions/students-import";
 import {
   displayImportHeader,
   downloadStudentImportExcelTemplate,
-  getStudentImportDisplayHeaders,
   mapImportHeaders,
   normalizeImportDate,
   parseImportGender,
@@ -62,19 +61,6 @@ export function StudentImportForm({
     failed: number;
     errors: { row: number; message: string }[];
   } | null>(null);
-
-  const classNames = useMemo(() => classes.map((c) => c.name).join(", "), [classes]);
-  const displayHeaders = useMemo(
-    () => getStudentImportDisplayHeaders(locale),
-    [locale]
-  );
-  const requiredLabels = useMemo(
-    () =>
-      STUDENT_IMPORT_REQUIRED_HEADERS.map((key) =>
-        displayImportHeader(key, locale)
-      ).join(", "),
-    [locale]
-  );
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -291,20 +277,7 @@ export function StudentImportForm({
     <div className="space-y-6">
       <div className="rounded-lg border border-stone-200 p-4 dark:border-stone-700">
         <h2 className="font-semibold">{t("csvFormat")}</h2>
-        <p className="mt-1 text-sm text-stone-500">
-          {t("csvColumns")}{" "}
-          <code className="text-xs">{displayHeaders.join(", ")}</code>
-        </p>
-        <p className="mt-2 text-sm text-stone-500">
-          {t("csvRequiredColumns", { columns: requiredLabels })} {t("csvClassHint")}
-          {classNames
-            ? ` ${t("csvAvailableClasses", { classes: classNames })}`
-            : ` ${t("csvNoClasses")}`}
-        </p>
-        <p className="mt-2 text-sm text-stone-500">
-          {t("csvDateFormat")} {t("csvGenderHint")} {t("csvOptionalContactFields")}
-        </p>
-        <p className="mt-2 text-sm text-stone-500">{t("csvExcelHint")}</p>
+        <p className="mt-1 text-sm text-stone-500">{t("csvExcelHint")}</p>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">

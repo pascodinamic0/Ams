@@ -50,9 +50,9 @@ export const whatIsSchoolManagementSystem: BlogPostContent = {
         "Academic management: admissions, classes, timetable, attendance, gradebook, exams, and report cards aligned to your national programme.",
         "Finance: fee structures, invoicing, payment tracking, expenses, payroll, and collection reports ? especially if you bill in more than one currency.",
         "Parent and student portals: balances, grades, attendance, timetable, assignments, and messages on the phone ? so the office is not a helpdesk.",
-        "Communication: logged messaging, mass WhatsApp or SMS, and outreach with a trail ? not only unlogged chats.",
+        "Communication: logged messaging and WhatsApp outreach when connected — SMS campaigns are not available.",
         "Operations: library, transport, events, and staff records for the work that never fit in a register.",
-        "Analytics: attendance trends, collection rates, and branch comparison while the term is still running.",
+        "Analytics: attendance and collection rates while the term is still running.",
         "Public presence: a branded school website with online admissions feeding the same admin queue.",
       ],
     },
@@ -69,17 +69,17 @@ export const whatIsSchoolManagementSystem: BlogPostContent = {
       body: [
         "People use the terms interchangeably, but a student information system (SIS) often emphasises academic records ? enrollment, demographics, grades ? while a full school management system adds finance, HR, communication, and operations.",
         "If you only need transcripts, an SIS might suffice. If fees, parents, and daily operations leak without a ledger, you need the broader platform.",
-        "ShuleOS covers both: Programme National report cards and the bursar's ledger in one place.",
+        "ShuleOS covers both: printable term report cards from the gradebook and the bursar's ledger in one place.",
       ],
     },
     {
       title: "What African and DRC schools should demand",
       body: [
         "French and English interfaces for staff and parents.",
-        "Multi-currency fees (CDF and USD are normal in Kinshasa).",
-        "Mobile money and WhatsApp-native reminders ? parents already pay and communicate on the phone.",
-        "Offline-capable attendance when the connection drops mid-roll.",
-        "National curriculum report cards (Programme National in DRC), not only generic GPA exports.",
+        "Fees in the currency the school uses in the app (Kinshasa parents often pay in cash, dollars, or mobile money in the city — that is not the same as a dual CDF+USD ledger in software).",
+        "Recorded payments and WhatsApp reminders when connected — parents already pay and communicate on the phone.",
+        "Offline-capable attendance when the connection drops mid-roll — most of the app still needs a connection.",
+        "Printable term report cards from the gradebook, not only generic GPA exports. Official Programme National grid mapping is not claimed.",
         "Support in your timezone ? not a ticket queue eight hours away.",
       ],
     },
@@ -102,7 +102,7 @@ export const whatIsSchoolManagementSystem: BlogPostContent = {
     {
       question: "How much does a school management system cost?",
       answer:
-        "Pricing varies by student count and modules. Hidden costs matter more: setup fees, per-SMS charges, and staff time bending foreign software. Compare total cost including the afternoons your team spends off-platform.",
+        "ShuleOS access is priced after school approval, then shown at billing. Compare total cost including the evenings your team spends off-platform — not a student-count catalog on this page.",
     },
     {
       question: "Can a small private school use school management software?",
@@ -118,6 +118,6 @@ export const whatIsSchoolManagementSystem: BlogPostContent = {
   ...blogCtaEn,
   closing: [
     "Another term on notebooks and WhatsApp is already a school management system ? just an expensive one.",
-    "A purpose-built school management platform is the small next step: one afternoon to put fees, grades, and parents in one record before the next rentre locks in the same leaks.",
+    "A purpose-built school management platform is the small next step: request access, wait for review, then put fees, grades, and parents in one record before the next rentrée locks in the same leaks.",
   ],
 };

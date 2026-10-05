@@ -31,6 +31,7 @@
     "@sentry/nextjs": "^10.39.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.97.0",
+    "caniuse-lite": "^1.0.30001810",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.34.4",

@@ -32,7 +32,7 @@
   "installFromBrowserMenu": "Installer depuis le menu du navigateur",
   "installProduct": "Installer {productName}",
   "iosInstallHint": "Ajoutez-le à votre écran d'accueil pour un accès rapide. Appuyez sur Partager, puis Ajouter à l'écran d'accueil.",
-  "androidInstallHint": "Installez l'application sur cet appareil pour un accès plus rapide, le plein écran et le hors ligne.",
+  "androidInstallHint": "Installez l'application sur cet appareil pour un accès plus rapide, le plein écran, et l'appel en file quand le signal coupe.",
   "shareThenAddToHomeScreen": "Partager, puis Ajouter à l'écran d'accueil",
   "dismissInstallPrompt": "Fermer l'invite d'installation",
   "iosGuide": {

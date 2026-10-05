@@ -23,13 +23,13 @@ export const schoolAttendanceSoftware: BlogPostContent = {
   date: "2026-08-13",
   readTime: "8 min read",
   metaDescription:
-    "School attendance software for African schools: daily rolls, absence alerts, offline PWA sync, and dashboards directors trust mid-term.",
+    "School attendance software for DRC private schools: daily rolls, queued offline PWA sync, and dashboards from the same register.",
   coverImage: coverImage("school-attendance-software"),
   coverImageAlt:
     "A teacher taking roll with a paper register and a phone that has no signal, students in uniform behind her.",
   intro: [
     "Attendance is the earliest signal in any school  and the first record to break. Teachers rewrite lists when paper tears; online apps freeze when the connection drops; directors only see gaps weeks later.",
-    "School attendance software should make the roll call faster than paper and more reliable than a chat forward. In Kinshasa and across the DRC, that also means offline-first: the day counts even when Vodacom doesn't.",
+    "School attendance software should make the roll call faster than paper and more reliable than a chat forward. In Kinshasa that also means queued attendance when the signal drops: the day can still count.",
   ],
   sections: [
     {
@@ -43,11 +43,11 @@ export const schoolAttendanceSoftware: BlogPostContent = {
     {
       title: "Features to require in school attendance software",
       body: [
-        "Bulk marking by class with same-day edits and audit history.",
-        "Absence alerts to guardians  before the gate dispute.",
-        "Offline capture with automatic sync when connectivity returns.",
-        "Heatmaps and trends for directors: which class empties, which day spikes.",
-        "Export for ministry or board reporting without a week of copy-paste.",
+        "Bulk marking by class with same-day edits.",
+        "Guardians who can see attendance in the parent portal — not a promise of automated absence-alert campaigns.",
+        "Offline capture with sync when connectivity returns.",
+        "Attendance charts from the rolls teachers marked — not heatmaps or chronic-absenteeism alerts.",
+        "Exportable attendance reports for the office — not a certified ministry template.",
       ],
     },
     {
@@ -71,7 +71,7 @@ export const schoolAttendanceSoftware: BlogPostContent = {
     {
       question: "What is the best attendance system for schools?",
       answer:
-        "One that teachers can complete in under two minutes per class, works offline, and feeds dashboards and parent portals automatically.",
+        "One that teachers can mark on the phone, queues when the signal drops, then syncs — and feeds dashboards and parent portals from that same roll.",
     },
     {
       question: "Can teachers mark attendance without internet?",

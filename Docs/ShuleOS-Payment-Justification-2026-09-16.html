@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>ShuleOS — Rapport de travaux réalisés</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 22mm 20mm 24mm 20mm;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 11pt;
+      line-height: 1.6;
+      color: #1c1917;
+      margin: 0;
+      text-align: left;
+    }
+
+    .cover {
+      text-align: center;
+      page-break-after: always;
+      padding: 42mm 8mm 20mm 8mm;
+    }
+
+    .cover-rule {
+      width: 72px;
+      height: 2px;
+      background: #1b3a4b;
+      margin: 0 auto 22px auto;
+    }
+
+    .cover-kicker {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9pt;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #57534e;
+      margin: 0 0 18px 0;
+    }
+
+    .cover h1 {
+      font-size: 28pt;
+      line-height: 1.2;
+      font-weight: 700;
+      color: #1b3a4b;
+      margin: 0 0 14px 0;
+      max-width: 140mm;
+    }
+
+    .cover .subtitle {
+      font-size: 13pt;
+      color: #44403c;
+      margin: 0 auto 28px auto;
+      max-width: 130mm;
+      line-height: 1.5;
+    }
+
+    .cover-meta {
+      width: 128mm;
+      margin: 18px auto 0 auto;
+      border-top: 1px solid #d6d3d1;
+      border-bottom: 1px solid #d6d3d1;
+      padding: 8px 0;
+    }
+
+    .cover-meta table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .cover-meta td {
+      padding: 8px 8px;
+      vertical-align: middle;
+      text-align: left;
+      font-size: 10.5pt;
+    }
+
+    .cover-meta td.label {
+      width: 48mm;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 8pt;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #78716c;
+      white-space: nowrap;
+    }
+
+    .cover-foot {
+      margin-top: 36px;
+      font-size: 9.5pt;
+      color: #78716c;
+      max-width: 120mm;
+      font-style: italic;
+    }
+
+    h2 {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 13.5pt;
+      color: #1b3a4b;
+      text-align: center;
+      letter-spacing: 0.04em;
+      margin: 28px 0 8px 0;
+      page-break-after: avoid;
+    }
+
+    h2::after {
+      content: "";
+      display: block;
+      width: 48px;
+      height: 1.5px;
+      background: #1b3a4b;
+      margin: 10px auto 18px auto;
+    }
+
+    h3 {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11pt;
+      color: #1b3a4b;
+      margin: 22px 0 8px 0;
+      page-break-after: avoid;
+    }
+
+    p {
+      margin: 0 0 12px 0;
+      text-align: justify;
+    }
+
+    .intro {
+      text-align: center;
+      font-size: 11.5pt;
+      color: #44403c;
+      max-width: 155mm;
+      margin: 0 auto 28px auto;
+    }
+
+    ul {
+      margin: 4px 0 16px 0;
+      padding: 0 0 0 22px;
+    }
+
+    li {
+      margin: 0 0 8px 0;
+    }
+
+    .block {
+      margin: 0 0 18px 0;
+    }
+
+    .item-title {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11pt;
+      font-weight: 700;
+      color: #1b3a4b;
+      text-align: center;
+      margin: 0 0 10px 0;
+    }
+
+    .field {
+      margin-bottom: 8px;
+    }
+
+    .field strong {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9pt;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #57534e;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .status-card {
+      border: 1px solid #d6d3d1;
+      padding: 14px 18px 12px 18px;
+      margin: 0 0 14px 0;
+    }
+
+    .status-head {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .status-head h3 {
+      margin: 0 0 8px 0;
+      font-size: 11pt;
+    }
+
+    .badge {
+      display: inline-block;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 8.5pt;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 2px;
+    }
+
+    .ok { background: #ecfdf3; color: #166534; }
+    .partial { background: #fff7ed; color: #9a3412; }
+    .no { background: #fef2f2; color: #991b1b; }
+
+    .commit {
+      border-bottom: 1px solid #e7e5e4;
+      padding: 14px 4px 16px 4px;
+      margin: 0 0 4px 0;
+      page-break-inside: avoid;
+    }
+
+    .commit:last-child { border-bottom: 0; }
+
+    .sha {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 10pt;
+      color: #1b3a4b;
+      text-align: center;
+      margin: 0 0 4px 0;
+    }
+
+    .when {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9pt;
+      color: #78716c;
+      text-align: center;
+      margin: 0 0 8px 0;
+    }
+
+    .tech-row {
+      display: table;
+      width: 100%;
+      margin: 0 0 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .tech-label {
+      display: table-cell;
+      width: 38mm;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9.5pt;
+      font-weight: 700;
+      color: #1b3a4b;
+      vertical-align: top;
+      padding-right: 12px;
+    }
+
+    .tech-body {
+      display: table-cell;
+      vertical-align: top;
+    }
+
+    .files {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9.5pt;
+      line-height: 1.55;
+      color: #44403c;
+    }
+
+    .summary-box {
+      border: 1.5px solid #1b3a4b;
+      padding: 22px 24px;
+      margin: 10px 0 18px 0;
+    }
+
+    .summary-box h3 {
+      text-align: center;
+      margin-top: 0;
+    }
+
+    .signoff {
+      text-align: center;
+      font-size: 9.5pt;
+      color: #78716c;
+      font-style: italic;
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid #d6d3d1;
+    }
+
+    .two-lines {
+      text-align: center;
+      color: #57534e;
+      font-size: 10.5pt;
+      margin: 0 0 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <section class="cover">
+    <p class="cover-kicker">Justification de travaux</p>
+    <div class="cover-rule"></div>
+    <h1>Rapport de réalisation<br />ShuleOS</h1>
+    <p class="subtitle">Document de soubassement pour paiement, établi à partir de l’historique Git et du code source du projet.</p>
+    <div class="cover-meta">
+      <table>
+        <tr><td class="label">Projet</td><td>ShuleOS (dépôt AMS)</td></tr>
+        <tr><td class="label">Date d’inspection</td><td>16 septembre 2026</td></tr>
+        <tr><td class="label">Branche Git</td><td>main (à jour avec origin/main)</td></tr>
+        <tr><td class="label">Commit HEAD</td><td>6cc9c59</td></tr>
+        <tr><td class="label">Arbre de travail</td><td>Propre — aucune modification non commitée</td></tr>
+        <tr><td class="label">Périmètre</td><td>16 sept. 2026 · 69 fichiers · +4 321 / −588 lignes</td></tr>
+      </table>
+    </div>
+    <p class="cover-foot">Ce rapport ne décrit que ce qui est vérifiable dans le dépôt. Une demande n’est pas considérée comme réalisée si le code ou l’historique Git ne la confirment pas. Les données de production (classes et capacités en base) ne sont pas certifiées ici.</p>
+  </section>
+
+  <p class="intro">Les travaux ci-dessous sont présents dans le code commité sur <strong>main</strong> au commit <strong>6cc9c59</strong>.</p>
+
+  <h2>1. Modifications récemment réalisées</h2>
+
+  <div class="block">
+    <p class="item-title">1.1 Alignement de l’inscription sur la fiche papier</p>
+    <div class="field"><strong>Ce qui a été modifié</strong> L’enregistrement d’un élève capture désormais les champs de la fiche type La Richarde : année scolaire, classe désirée, Nom / Post-nom / Prénom, lieu de naissance, école de provenance, noms du père et de la mère, profession du responsable, téléphone, adresse structurée (n°, avenue, quartier, commune) et questions de santé (maladie chronique, problème visuel, problème physique, allergies, difficultés).</div>
+    <div class="field"><strong>Pourquoi</strong> Ces informations n’étaient pas stockées en colonnes structurées. Le détail de la fiche papier se perdait après la saisie.</div>
+    <div class="field"><strong>Comportement actuel</strong> Les nouveaux élèves conservent ces colonnes. Le profil élève et une fiche imprimable à l’adresse /academic/students/[id]/inscription les affichent. Un export CSV des colonnes d’inscription est disponible.</div>
+    <div class="field files"><strong>Module et fichiers</strong> Académique ? Élèves. Fichiers principaux : components/forms/student-form.tsx, lib/students/inscription.ts, lib/validations/student.ts, lib/db/students.ts, supabase/migrations/00063_student_inscription_form_fields.sql, app/academic/students/[id]/inscription/page.tsx, components/students/students-inscription-export-button.tsx.</div>
+  </div>
+
+  <div class="block">
+    <p class="item-title">1.2 Import groupé d’élèves (CSV / Excel)</p>
+    <div class="field"><strong>Ce qui a été modifié</strong> Analyseur d’import CSV (virgule ou point-virgule, champs entre guillemets) et Excel via la bibliothèque xlsx, avec téléchargement d’un modèle. Colonnes facultatives fee_structure et enrollment_receipt_ref. Les dates Excel utilisent le calendrier local pour éviter un décalage d’un jour dû au fuseau UTC.</div>
+    <div class="field"><strong>Pourquoi</strong> L’import précédent n’était pas fiable pour les tableurs réellement utilisés par l’école.</div>
+    <div class="field"><strong>Comportement actuel</strong> Le personnel peut télécharger un modèle et importer des lignes rattachées aux classes, et au forfait de frais lorsqu’il est fourni.</div>
+    <div class="field files"><strong>Module et fichiers</strong> Académique ? Élèves ? Import. lib/students/import-file.ts, lib/actions/students-import.ts, app/academic/students/import/*, package.json (dépendance xlsx).</div>
+  </div>
+
+  <div class="block">
+    <p class="item-title">1.3 Passage de l’inscription vers la finance</p>
+    <div class="field"><strong>Ce qui a été modifié</strong> Les nouveaux élèves sont créés avec le statut pending (en attente). Un forfait de frais est obligatoire. Le système crée une facture d’inscription (fee_invoices.source = enrollment) liée à ce forfait. La finance confirme le reçu papier et le paiement, puis l’élève peut être activé.</div>
+    <div class="field"><strong>Pourquoi</strong> Le secrétariat et la caisse n’étaient pas reliés. La finance ne pouvait pas vérifier le forfait annoncé à l’inscription.</div>
+    <div class="field"><strong>Comportement actuel</strong> Le bureau académique choisit le forfait. La file finance à /finance/enrollments affiche les élèves en attente, le nom du forfait, le montant et le solde de la facture, ainsi que la référence du reçu. La confirmation enregistre la preuve de paiement et peut activer l’élève.</div>
+    <div class="field files"><strong>Module et fichiers</strong> Élèves / admissions académiques ; inscriptions finance. lib/validations/student-onboarding.ts, lib/services/enrollment-fees.ts, lib/actions/enrollment-payments.ts, lib/db/pending-enrollments.ts, app/finance/enrollments/*, migrations 00065 et 00066.</div>
+  </div>
+
+  <div class="block">
+    <p class="item-title">1.4 Rapports d’activité quotidiens</p>
+    <div class="field"><strong>Ce qui a été modifié</strong> Rapport d’activité quotidien (recettes, tâches, décisions de dépenses), avec un paramètre d’école pour l’afficher ou le masquer. Politiques de sécurité pour que la direction puisse lire les factures et paiements de frais. Le même rapport est ensuite exposé sur le tableau de bord finance et /finance/reports/activity/*.</div>
+    <div class="field"><strong>Pourquoi</strong> La direction avait besoin d’un aperçu quotidien, et non seulement d’un rapport académique mensuel.</div>
+    <div class="field"><strong>Comportement actuel</strong> Les rôles autorisés ouvrent les rapports quotidien et mensuel depuis la navigation académique ou finance.</div>
+    <div class="field files"><strong>Module et fichiers</strong> components/reports/activity-report-view.tsx, lib/db/reports.ts, lib/reports/activity-report-access.ts, supabase/migrations/00064_daily_activity_reports.sql, components/schools/school-daily-reports-form.tsx.</div>
+  </div>
+
+  <div class="block">
+    <p class="item-title">1.5 Corrections techniques du même jour</p>
+    <ul>
+      <li>Correction UTF-8 de l’aide d’inscription et de la page fiche (commit 25380b0).</li>
+      <li>Ordre et syntaxe de la migration d’inscription-finance (a6db0ee).</li>
+      <li>Index des élèves en attente séparé dans la migration 00066 (3ddd448), car PostgreSQL ne peut pas utiliser une nouvelle valeur d’énumération dans la même transaction qui l’ajoute.</li>
+    </ul>
+  </div>
+
+  <h2>2. Exigences demandées — état vérifié</h2>
+  <p class="two-lines">Chaque point est classé : réalisé, partiellement réalisé, ou non réalisé, uniquement d’après le dépôt.</p>
+
+  <div class="status-card">
+    <div class="status-head">
+      <h3>Champs du nom : Nom ? Prénom ? Post-nom</h3>
+      <span class="badge partial">Partiellement réalisé</span>
+    </div>
+    <p>Les libellés français existent : familyName = « Nom », givenName = « Prénom », postName = « Post-nom » (messages/fr/academic.json). Sur le formulaire élève et la fiche imprimable, l’ordre à l’écran est <strong>Nom ? Post-nom ? Prénom</strong>, et non Nom ? Prénom ? Post-nom. Les colonnes restent last_name, middle_name, first_name. Les formulaires tuteur utilisent encore Prénom puis Nom.</p>
+  </div>
+
+  <div class="status-card">
+    <div class="status-head">
+      <h3>Capacité des classes portée à 30 élèves</h3>
+      <span class="badge no">Non réalisé</span>
+    </div>
+    <p>Aucun code, script de données ou migration ne fixe la capacité à 30. Le schéma est classes.capacity INTEGER (nullable). La création de structure n’insère que le nom et le niveau. Le personnel peut saisir une capacité ? 1 dans /academic/classes (class-form.tsx, class-capacity-editor.tsx, 14 août 2026). Il est impossible de vérifier dans ce dépôt si les classes d’une école en production ont été réglées à 30.</p>
+  </div>
+
+  <div class="status-card">
+    <div class="status-head">
+      <h3>Option « Même adresse que le parent »</h3>
+      <span class="badge partial">Partiellement réalisé</span>
+    </div>
+    <p>Une case à cocher existe et copie l’adresse du tuteur principal vers l’adresse de l’enfant. Le texte français est <strong>« Même adresse que le tuteur principal »</strong>, et non « Même adresse que le parent ». Introduit dans le commit de localisation 3939ec4 (12 août 2026) et toujours présent.</p>
+  </div>
+
+  <div class="status-card">
+    <div class="status-head">
+      <h3>Classes manquantes ajoutées ou corrigées</h3>
+      <span class="badge no">Non réalisé</span>
+    </div>
+    <p>Les préréglages de niveaux restent des listes anglaises (nursery / primary / form) dans lib/schools/structure-presets.ts. Aucun commit récent n’ajoute les noms de classes congolaises. Le personnel peut créer des noms personnalisés lors de la configuration et dans /academic/classes. Les lignes de classes en production ne sont pas dans Git.</p>
+  </div>
+
+  <div class="status-card">
+    <div class="status-head">
+      <h3>Choix du forfait de frais à l’inscription</h3>
+      <span class="badge ok">Réalisé</span>
+    </div>
+    <p>Le champ fee_structure_id est obligatoire dans le schéma d’inscription. La liste déroulante affiche les forfaits applicables à la classe choisie, avec le montant. La même sélection existe à l’approbation des admissions et à l’import Excel/CSV (colonne fee_structure).</p>
+  </div>
+
+  <div class="status-card">
+    <div class="status-head">
+      <h3>Forfait lié à l’inscription et au paiement</h3>
+      <span class="badge ok">Réalisé</span>
+    </div>
+    <p>La fonction create_enrollment_invoice écrit une facture avec fee_structure_id, le montant du forfait et source = enrollment. La confirmation finance paie cette facture. La file d’attente affiche fee_structure_name. Référence de reçu papier facultative sur l’élève (enrollment_receipt_ref).</p>
+  </div>
+
+  <div class="status-card">
+    <div class="status-head">
+      <h3>« Année académique » remplacé par « Année scolaire »</h3>
+      <span class="badge ok">Réalisé</span>
+    </div>
+    <p>messages/fr/common.json, clé schoolYear = « Année scolaire » depuis le 11 août 2026 (ae98e9c). La fiche élève reprend le même libellé le 16 septembre (messages/fr/academic.json). Git ne contient pas l’ancienne chaîne « Année académique » pour cette clé. Les textes marketing et de rôle utilisent encore « académique » pour le module et l’administrateur académique, ce qui est un autre concept.</p>
+  </div>
+
+  <h3>Autres travaux du même périmètre</h3>
+  <p>Au-delà de la liste demandée : sections identité et santé de la fiche ; fiche imprimable et CSV ; statut d’élève en attente jusqu’à confirmation finance ; numéro de reçu papier ; choix du forfait à l’approbation des admissions ; modèle d’import ; rapports d’activité quotidiens et mensuels avec recettes de frais ; bureau des inscriptions finance ; contrôles de rôles (qui inscrit, qui confirme le paiement, qui lit les rapports).</p>
+
+  <h2>3. Travaux techniques effectués</h2>
+
+  <div class="tech-row">
+    <div class="tech-label">Interface</div>
+    <div class="tech-body">Formulaire élève reconstruit autour de la fiche ; sélection du forfait ; confirmation finance ; import et modèle ; vues de rapport d’activité ; navigation ; paramètre académique.</div>
+  </div>
+  <div class="tech-row">
+    <div class="tech-label">Serveur</div>
+    <div class="tech-body">Actions serveur : inscription, import, admissions, confirmation d’inscription, paramètres de rapport.</div>
+  </div>
+  <div class="tech-row">
+    <div class="tech-label">Base de données</div>
+    <div class="tech-body">Migrations 00063 (colonnes de fiche), 00064 (rapport quotidien et RLS), 00065 (factures d’inscription et fonctions), 00066 (index pending).</div>
+  </div>
+  <div class="tech-row">
+    <div class="tech-label">API / RPC</div>
+    <div class="tech-body">create_enrollment_invoice et confirm_pending_enrollment (SECURITY DEFINER, contrôles de rôle).</div>
+  </div>
+  <div class="tech-row">
+    <div class="tech-label">Autorisation</div>
+    <div class="tech-body">Le portail académique crée les factures d’inscription ; la finance confirme ; la direction peut lire les tables de frais ; canOnboardStudents ; rôles du rapport d’activité.</div>
+  </div>
+  <div class="tech-row">
+    <div class="tech-label">Validation</div>
+    <div class="tech-body">Zod : classe obligatoire, UUID de forfait obligatoire, année scolaire 2000–2100, champs santé oui/non, résolution du forfait à l’import par identifiant ou nom. La capacité de classe reste contrôlée à l’inscription.</div>
+  </div>
+  <div class="tech-row">
+    <div class="tech-label">Interface utilisateur</div>
+    <div class="tech-body">Libellés français de la fiche ; avis d’inscription en attente ; file finance ; onglets de période de rapport.</div>
+  </div>
+  <div class="tech-row">
+    <div class="tech-label">Corrections</div>
+    <div class="tech-body">Dates Excel ; UTF-8 ; ordre d’énumération PostgreSQL ; fusion des branches d’agents.</div>
+  </div>
+  <div class="tech-row">
+    <div class="tech-label">Configuration</div>
+    <div class="tech-body">Ajout de xlsx et @types/xlsx.</div>
+  </div>
+  <div class="tech-row">
+    <div class="tech-label">Tests</div>
+    <div class="tech-body">scripts/verify-inscription-form.ts (assertions Node). Ce n’est pas une suite de tests de bout en bout.</div>
+  </div>
+  <div class="tech-row">
+    <div class="tech-label">Déploiement</div>
+    <div class="tech-body">Le code est sur origin/main. Ce document ne vérifie pas l’application des migrations SQL sur le projet Supabase hébergé.</div>
+  </div>
+
+  <h2>4. Fichiers et ressources concernés</h2>
+  <h3>Inscription des élèves</h3>
+  <ul class="files">
+    <li>components/forms/student-form.tsx — mise en page de la fiche, noms, case adresse, forfait.</li>
+    <li>lib/students/inscription.ts — composition d’adresse et normalisation.</li>
+    <li>lib/validations/student.ts et student-onboarding.ts — schémas.</li>
+    <li>lib/actions/student-onboarding.ts — insertion de l’élève en attente et appel RPC de facture.</li>
+    <li>lib/actions/students.ts — persistance à la création et à la mise à jour.</li>
+    <li>lib/db/students.ts — lecture des champs de fiche.</li>
+    <li>app/academic/students/… et [id]/inscription/page.tsx — fiche imprimable.</li>
+    <li>components/students/students-inscription-export-button.tsx</li>
+    <li>supabase/migrations/00063_student_inscription_form_fields.sql ; scripts/verify-inscription-form.ts</li>
+    <li>messages/en/academic.json et messages/fr/academic.json</li>
+  </ul>
+  <h3>Import</h3>
+  <ul class="files">
+    <li>lib/students/import-file.ts, lib/actions/students-import.ts, app/academic/students/import/*, package.json / package-lock.json</li>
+  </ul>
+  <h3>Inscription et finance</h3>
+  <ul class="files">
+    <li>lib/services/enrollment-fees.ts, lib/actions/enrollment-payments.ts, lib/db/pending-enrollments.ts, lib/actions/admissions.ts</li>
+    <li>app/academic/admissions/*, app/finance/enrollments/*, app/finance/page.tsx</li>
+    <li>migrations 00065_enrollment_payment_handoff.sql et 00066_enrollment_pending_index.sql</li>
+  </ul>
+  <h3>Rapports et traductions</h3>
+  <ul class="files">
+    <li>lib/db/reports.ts, components/reports/*, app/academic/reports/*, app/finance/reports/activity/*, lib/reports/activity-report-*.ts</li>
+    <li>00064_daily_activity_reports.sql, components/layout/sidebar.tsx, lib/auth/role-workspaces.ts</li>
+    <li>messages/en|fr/{academic,finance,nav,roles,errors,validation}.json ; extraits de données de démonstration</li>
+    <li>Docs/PHONE_WHATSAPP_AUTH.md a été touché dans le commit d’inscription-finance ; ce n’est pas la fonctionnalité principale du secrétariat.</li>
+  </ul>
+
+  <h2>5. Historique Git du projet</h2>
+  <p class="two-lines">Aucune modification non commitée. Les informations ci-dessous proviennent de git show. Rien n’a été inventé.</p>
+
+  <h3>Commits du 16 septembre 2026</h3>
+
+  <div class="commit">
+    <p class="sha">b67beef</p>
+    <p class="when">16 septembre 2026 · 06:05:47 UTC · Cursor Agent</p>
+    <p><strong>Correction de l’import CSV/Excel et ajout d’un modèle Excel.</strong> Analyseur, modèle, droits d’import, bibliothèque xlsx.</p>
+  </div>
+  <div class="commit">
+    <p class="sha">c285847</p>
+    <p class="when">16 septembre 2026 · 06:06:56 UTC · Cursor Agent</p>
+    <p><strong>Utilisation du calendrier local pour les dates Excel.</strong> Évite un décalage d’un jour sur la date de naissance.</p>
+  </div>
+  <div class="commit">
+    <p class="sha">67060f2</p>
+    <p class="when">16 septembre 2026 · 06:05:59 UTC · Cursor Agent</p>
+    <p><strong>Alignement de l’inscription sur les champs de la fiche papier.</strong> Champs de fiche, migration 00063, fiche imprimable.</p>
+  </div>
+  <div class="commit">
+    <p class="sha">25380b0</p>
+    <p class="when">16 septembre 2026 · 06:10:52 UTC · Cursor Agent</p>
+    <p><strong>Correction de l’encodage UTF-8</strong> de l’aide d’inscription et de la page fiche, pour que le français compile.</p>
+  </div>
+  <div class="commit">
+    <p class="sha">9ed6b4c</p>
+    <p class="when">16 septembre 2026 · 10:56:46 +0100 · Pascal Digny</p>
+    <p><strong>Fusion des branches d’agents</strong> pour l’import et le formulaire d’inscription. Ce merge reprend la liste de fichiers de 67060f2 ; ce n’est pas une seconde implémentation.</p>
+  </div>
+  <div class="commit">
+    <p class="sha">84b7cc8</p>
+    <p class="when">16 septembre 2026 · 11:59:44 +0100 · Pascal Digny</p>
+    <p><strong>Passage du paiement d’inscription des admissions vers la finance.</strong> Élèves en attente, forfait, file finance, fonctions SQL.</p>
+  </div>
+  <div class="commit">
+    <p class="sha">8ae108c</p>
+    <p class="when">16 septembre 2026 · 11:59:52 +0100 · Pascal Digny</p>
+    <p><strong>Rapports d’activité quotidiens avec recettes de frais</strong> pour la direction, et politiques de lecture.</p>
+  </div>
+  <div class="commit">
+    <p class="sha">a6db0ee</p>
+    <p class="when">16 septembre 2026 · 12:03:39 +0100 · Pascal Digny</p>
+    <p><strong>Correction de l’ordre et de la syntaxe</strong> de la migration d’inscription-finance, pour que 00065 s’applique proprement.</p>
+  </div>
+  <div class="commit">
+    <p class="sha">3ddd448</p>
+    <p class="when">16 septembre 2026 · 12:06:04 +0100 · Pascal Digny</p>
+    <p><strong>Correction de l’énumération student_status</strong> avant l’index pending. L’index est séparé dans 00066.</p>
+  </div>
+  <div class="commit">
+    <p class="sha">6cc9c59</p>
+    <p class="when">16 septembre 2026 · 12:33:52 +0100 · Pascal Digny</p>
+    <p><strong>Unification de la navigation du rapport d’activité</strong> et exposition sur le tableau de bord finance. Commit HEAD actuel.</p>
+  </div>
+
+  <h3>Commits antérieurs utiles à la liste demandée</h3>
+  <ul>
+    <li>ae98e9c (11 août 2026) — schoolYear = « Année scolaire » dans les chaînes françaises communes.</li>
+    <li>3939ec4 (12 août 2026) — « Même adresse que le tuteur principal ».</li>
+    <li>c807d5b (14 août 2026) — éditeur de capacité de classe.</li>
+  </ul>
+  <p class="two-lines">Les fichiers touchés par chaque commit du 16 septembre correspondent à git show --stat sur ces identifiants.</p>
+
+  <h2>6. Environnement de développement et travaux logiciels</h2>
+  <p>Il s’agit de <strong>deux lignes de coût distinctes</strong>. Elles ne doivent pas être confondues.</p>
+  <p><strong>1. Travaux de développement réalisés.</strong> Les commits Git et les modifications d’application décrits aux sections 1 à 5. C’est le travail d’implémentation logicielle.</p>
+  <p><strong>2. Dépense continue d’environnement / d’outils.</strong> Un environnement de développement professionnel est nécessaire pour continuer à modifier le système. <strong>Cursor est l’outil utilisé</strong> pour réaliser et poursuivre ces travaux : plusieurs commits du 16 septembre sont signés Cursor Agent &lt;cursoragent@cursor.com&gt; et co-signés Pascal Digny. L’abonnement actuel est d’environ <strong>200 USD par mois</strong> pour cet environnement. Ce montant <strong>n’apparaît pas comme un poste du produit ShuleOS</strong> et <strong>ne doit pas</strong> être présenté comme une part des honoraires de développement, sauf contrat distinct.</p>
+
+  <h3>Pourquoi cet environnement reste nécessaire</h3>
+  <p>ShuleOS est une application Next.js 16 / React 19 / TypeScript / Supabase. Poursuivre le travail exige d’éditer le TypeScript et le SQL, d’exécuter l’application en local, de déboguer les formulaires, les fonctions et la sécurité par lignes, d’appliquer les migrations, de vérifier le français et l’anglais, et de gérer Git. Ce n’est pas un dépôt de fichiers ponctuel. Les points encore ouverts dans ce dépôt (ordre des champs de nom, libellé exact « parent », capacité par défaut à 30, catalogue de classes RDC) exigent le même environnement.</p>
+  <ul>
+    <li>édition et maintenance du code ;</li>
+    <li>débogage des flux d’inscription, de finance et d’import ;</li>
+    <li>mise en œuvre des exigences restantes et futures ;</li>
+    <li>test des changements en local avant la production ;</li>
+    <li>gestion du projet (Git, migrations, localisation) ;</li>
+    <li>poursuite des modifications après cette livraison.</li>
+  </ul>
+
+  <h2>7. Synthèse pour le paiement</h2>
+  <p class="two-lines">Texte pouvant accompagner une demande de paiement.</p>
+
+  <div class="summary-box">
+    <h3>Ce qui a été demandé</h3>
+    <p>Adapter l’inscription et l’administration académique de ShuleOS à la pratique scolaire congolaise : ordre Nom / Prénom / Post-nom ; capacité de classe de 30 ; option « Même adresse que le parent » ; classes manquantes ; choix du forfait de frais à l’inscription, lié au paiement ; libellé « Année scolaire ».</p>
+  </div>
+  <div class="summary-box">
+    <h3>Ce qui a effectivement été réalisé</h3>
+    <p>Vérifié dans le code le 16 septembre 2026, avec les travaux antérieurs de libellé et d’éditeur de capacité cités plus haut : le dossier élève reprend la fiche papier (identité, adresse structurée, santé). Le personnel doit choisir le forfait à l’inscription (également aux admissions et à l’import). Ce forfait devient une facture d’inscription ; la finance confirme le reçu papier et le paiement avant l’activation de l’élève. L’année est libellée « Année scolaire ». L’import Excel/CSV a été reconstruit. La direction dispose de rapports d’activité quotidiens incluant les recettes de frais, également côté finance.</p>
+  </div>
+  <div class="summary-box">
+    <h3>Ce qui reste incomplet (écarts vérifiés)</h3>
+    <p>Les champs de nom sont bien libellés mais ordonnés Nom ? Post-nom ? Prénom. Le raccourci d’adresse dit « tuteur principal », et non « parent ». Le dépôt ne montre pas que la capacité a été fixée à 30 ni que des classes manquantes ont été ajoutées ; la capacité est modifiable et les noms de classes se créent à la main. Le contenu de la base de production est hors Git.</p>
+  </div>
+  <div class="summary-box">
+    <h3>Nature technique et état actuel</h3>
+    <p>Formulaires et écrans académiques et finance ; actions serveur ; quatre migrations SQL avec fonctions et politiques de sécurité ; validation ; bibliothèque d’import ; corrections d’encodage et de migration PostgreSQL. Tête de main : 6cc9c59. Le code est commité et poussé. L’application des migrations sur l’hébergement n’est pas prouvée par cette inspection du dépôt.</p>
+  </div>
+  <div class="summary-box">
+    <h3>Environnement de développement</h3>
+    <p>Ces travaux ont été réalisés, et les suivants le seraient, dans un environnement professionnel (Cursor). Les environ 200 USD par mois constituent une dépense d’outil continue, distincte du travail de développement décrit aux sections 1 à 5.</p>
+  </div>
+
+  <p class="signoff">Établi à partir de l’inspection du dépôt Git AMS / ShuleOS le 16 septembre 2026. Ce document ne certifie ni les données de production, ni l’état des migrations hébergées, ni les termes d’un contrat commercial. Il certifie uniquement ce qui figure dans le contrôle de version au commit HEAD 6cc9c59.</p>
+</body>
+</html>

@@ -1,6 +1,6 @@
 export function RouteLoading({ label = "Loading..." }: { label?: string }) {
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-4 py-2" role="status" aria-live="polite" aria-label={label}>
+    <div className="w-full space-y-4 py-2" role="status" aria-live="polite" aria-label={label}>
       <div className="h-8 w-48 animate-pulse rounded-lg bg-stone-200 dark:bg-stone-800" />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (

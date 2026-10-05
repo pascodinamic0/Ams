@@ -57,7 +57,7 @@ export default async function StudentInscriptionFichePage({
         : tc("emptyDash");
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="w-full space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
         <div>
           <h1 className="text-2xl font-bold">{t("exportInscriptionFiche")}</h1>

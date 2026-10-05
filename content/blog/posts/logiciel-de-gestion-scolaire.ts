@@ -44,10 +44,10 @@ export const logicielDeGestionScolaire: BlogPostContent = {
     {
       title: "Modules indispensables",
       body: [
-        "Académique : admissions, classes, emploi du temps, présences, carnet de notes, examens, bulletins Programme National.",
-        "Finance : grilles de frais, factures, mobile money, rappels WhatsApp, dépenses et paie.",
+        "Académique : admissions, classes, emploi du temps, présences, carnet de notes, examens, bulletins imprimables.",
+        "Finance : grilles de frais, factures, paiements enregistrés, rappels WhatsApp si connecté, dépenses et paie.",
         "Portails parents et élèves : soldes, notes, absences, devoirs sur le téléphone.",
-        "Messagerie tracée et campagnes SMS/WhatsApp.",
+        "Messagerie tracée et WhatsApp si connecté — pas de campagnes SMS.",
         "Opérations : bibliothèque, transport, événements, personnel.",
         "Analytique : présences, encaissements, performance par site.",
       ],
@@ -63,8 +63,8 @@ export const logicielDeGestionScolaire: BlogPostContent = {
     {
       title: "Critères pour la RDC",
       body: [
-        "Français et anglais, frais en CDF et USD, bulletins Programme National.",
-        "Présences hors ligne quand le réseau coupe.",
+        "Français et anglais, une devise par école dans l'app, bulletins imprimables depuis le carnet.",
+        "Présences en file hors ligne quand le réseau coupe — le reste de l'app a besoin d'une connexion.",
         "Support à Kinshasa en horaires WAT  pas une file de tickets à l'étranger.",
       ],
     },
@@ -73,7 +73,7 @@ export const logicielDeGestionScolaire: BlogPostContent = {
     {
       question: "Quel est le meilleur logiciel de gestion scolaire ?",
       answer:
-        "Celui que votre équipe utilise chaque jour et qui correspond à votre réalité : devise, curriculum, mobile money et WhatsApp. En RDC, ShuleOS est conçu à Kinshasa pour ces workflows.",
+        "Celui que votre équipe utilise chaque jour et qui correspond à votre réalité : langue, devise, WhatsApp, présences quand le réseau coupe. En RDC, ShuleOS est conçu à Kinshasa pour ces workflows — ce n'est pas un classement « n°1 ».",
     },
     {
       question: "Une petite école privée peut-elle utiliser un logiciel scolaire ?",

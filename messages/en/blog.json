@@ -2,9 +2,9 @@
   "index": {
     "eyebrow": "Blog",
     "title": "School management system guides",
-    "subtitle": "Practical guides on fees, attendance, parent portals, report cards, and the cost of another term on notebooks and WhatsApp — for DRC and African schools.",
+    "subtitle": "Practical guides on fees, attendance, parent portals, report cards, and the cost of another term on notebooks and WhatsApp — for DRC private schools.",
     "metaTitle": "School management system guides",
-    "metaDescription": "School management system guides: fees, attendance software, parent portals, Programme National report cards, and DRC school software from ShuleOS.",
+    "metaDescription": "School management system guides: fees, attendance software, parent portals, printable report cards, and DRC school software from ShuleOS.",
     "readArticle": "Read article",
     "backToBlog": "Back to blog",
     "allCategories": "All",
@@ -14,16 +14,16 @@
   },
   "posts": {
     "why-every-kinshasa-school-should-run-on-shuleos": {
-      "title": "Kinshasa schools already pay for ShuleOS. They just don't have it yet.",
-      "excerpt": "Two-thirds of Kinshasa primary schools are private. Fees run in CDF and USD. Parents live on WhatsApp. The internet drops. Another term on notebooks is the expensive choice — here's the map.",
+      "title": "Another Kinshasa term on notebooks is already costing you.",
+      "excerpt": "Two-thirds of Kinshasa primary schools are private. Parents live on WhatsApp. The internet drops. Another term on notebooks is the expensive choice — here's the map.",
       "date": "2026-08-12",
       "readTime": "14 min read",
-      "metaDescription": "Why every Kinshasa school should run on ShuleOS: private-school economics, CDF/USD fees, WhatsApp parents, Programme National report cards, offline attendance, and support from Batetela.",
+      "metaDescription": "What Kinshasa private schools lose on notebooks and WhatsApp: fees, bulletins, parent queues, attendance when the signal drops — and how ShuleOS keeps one record, with support from Batetela.",
       "coverImageAlt": "A Kinshasa school gate at dusk: parents, uniforms, handwritten ledgers, cash, and a phone — the system the city already runs on.",
       "intro": [
         "Kinshasa is not waiting for a school operating system. It already has one: cash at the gate, a register in a drawer, a WhatsApp group that never ends, and a bursar who reconciles after the term has already leaked.",
         "That system has a price. In this city, most primary schools are private — they run on parent fees, not a ministry payroll. When balances live in three places, the school finances the gap. When parents only learn a balance at the gate, collections slip. When report cards are rebuilt from chats, the office shuts down for a week.",
-        "ShuleOS was built in Kinshasa for that reality: Programme National, French first, CDF and USD, mobile money, WhatsApp, attendance that survives a dead signal. The next term does not have to buy the same leaks again."
+        "ShuleOS was built in Kinshasa for that reality: French first, WhatsApp contact, printable report cards, attendance that can queue when the signal dies. The next term does not have to buy the same leaks again."
       ],
       "factsTitle": "The Kinshasa facts, not the brochure",
       "facts": [
@@ -44,7 +44,7 @@
         },
         {
           "value": "CDF + USD",
-          "label": "how fees actually get paid. A tool that only speaks one currency is already lying to the bursar."
+          "label": "how fees often get paid in the city. The app uses one currency per school — don't expect a dual CDF+USD ledger in-product today."
         },
         {
           "value": "8:00–18:00",
@@ -65,10 +65,10 @@
       ],
       "flowAfter": [
         "One student file: guardians, class, fees, attendance, grades",
-        "Invoices in CDF and USD, paid by mobile money, visible to the parent",
+        "Invoices with history, payments recorded by staff, visible to the parent",
         "WhatsApp reminders with a trail — before the gate dispute",
         "Attendance marked on the phone, offline, then synced",
-        "Programme National report cards from the gradebook, not from chats",
+        "Printable term report cards from the gradebook, not from chats",
         "A dashboard the director can trust mid-term, not after the damage"
       ],
       "termCostTitle": "You don't need our number. Use yours.",
@@ -86,11 +86,11 @@
       "modules": [
         {
           "title": "Academic",
-          "detail": "Admissions, classes, timetable, attendance, gradebook, exams, and Programme National report cards."
+          "detail": "Admissions, classes, timetable, attendance, gradebook, exams, and printable term report cards."
         },
         {
           "title": "Finance",
-          "detail": "Fee structures, invoices, mobile money, WhatsApp reminders, expenses, payroll, and reports the bursar can defend."
+          "detail": "Fee structures, invoices, recorded payments, WhatsApp reminders when connected, expenses, payroll, and reports the bursar can defend."
         },
         {
           "title": "Parent & student portals",
@@ -98,7 +98,7 @@
         },
         {
           "title": "Messaging",
-          "detail": "Logged conversations plus mass WhatsApp and SMS, so unlogged chats stop becoming disputes with no proof."
+          "detail": "Logged conversations plus WhatsApp when connected — SMS campaigns are not available."
         },
         {
           "title": "Operations",
@@ -106,11 +106,11 @@
         },
         {
           "title": "Analytics",
-          "detail": "Attendance, collections, performance, and branch comparison — mid-term, not after the damage."
+          "detail": "Attendance and collections in-app — mid-term, not after the damage. No dedicated branch-comparison page."
         },
         {
-          "title": "Free school website",
-          "detail": "Branded homepage, online admissions, events, hiring, and visit booking into your admin queue."
+          "title": "School website",
+          "detail": "Branded homepage, online admissions, events, and visit booking into your admin queue."
         },
         {
           "title": "Roles & audit",
@@ -146,7 +146,7 @@
           "costLabel": "What it costs",
           "cost": "Balances in three places. Parents disputing at the gate. Collections that look fine until someone reconciles — too late to recover the term.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Fee structures by class, term, or boarding. Invoices with history. CDF and USD. Mobile-money-ready amounts. WhatsApp reminders before the due date — not after the queue forms. Expenses, payroll, and reports beside the same ledger.",
+          "fix": "Fee structures by class or term. Invoices with history. Recorded cash and mobile-money payments. WhatsApp reminders when connected. Expenses, payroll, and reports beside the same ledger. One currency per school in the app.",
           "whoLabel": "Who breathes easier",
           "who": "Bursars who should not spend Sunday reconstructing what was paid in cash, on the phone, and \"to the teacher.\""
         },
@@ -162,7 +162,7 @@
           "costLabel": "What it costs",
           "cost": "The secretariat becomes a helpdesk. Teachers repeat the same update twenty times. Parents find out by accident — and then they don't pay, or they don't come back.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "A parent portal for performance, fees, timetable, messages, and events. A student portal for assignments, grades, library, and timetable. Mass WhatsApp, SMS, and in-app outreach with a trail — so the school can prove what was said.",
+          "fix": "A parent portal for performance, fees, timetable, messages, and events. A student portal to view assignments, grades, library, and timetable. WhatsApp and in-app outreach with a trail when connected — SMS campaigns are not available.",
           "whoLabel": "Who breathes easier",
           "who": "Parents who should not travel across Kinshasa for a balance; offices that should not be a call centre every fee week."
         },
@@ -171,14 +171,14 @@
           "imageAlt": "A Kinshasa teacher at night surrounded by paper report cards, with a laptop showing a clean digital bulletin.",
           "imageCaption": "Report-card week is not a printing problem. It is the bill for a term of grades that lived in registers, chats, and memory.",
           "body": [
-            "The Congolese school year runs roughly September to July. The bulletin is not a US-style GPA export. Teachers are expected to report against Programme National learning areas, term by term, in a format families and inspectors recognise. When grades live in a register, a chat, and a personal spreadsheet, that format gets rebuilt by hand — usually at night, usually with errors that become parent fights.",
-            "Foreign student-information systems fail here in a boring way: they assume a different report card, a different year, a different language of work. Staff then keep a paper parallel. The parallel is what shuts the office down.",
-            "ShuleOS keeps attendance, the gradebook, assignments, exams, and Programme National report cards in the teacher workflow. The term should end with printable cards, not a scramble."
+            "The Congolese school year runs roughly September to July. Families expect a bulletin they recognise. When grades live in a register, a chat, and a personal spreadsheet, that card gets rebuilt by hand — usually at night, usually with errors that become parent fights.",
+            "Foreign student-information systems often assume a different report card, year, and language of work. Staff then keep a paper parallel. The parallel is what shuts the office down.",
+            "ShuleOS keeps attendance, the gradebook, assignments, exams, and printable term cards in the teacher workflow. These cards are not a certified official Programme National grid."
           ],
           "costLabel": "What it costs",
           "cost": "Evenings gone. Printing week as an all-nighter. Errors that turn into meetings. Academic records nobody would sign if they had to defend them in October.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Classes aligned to DRC grade levels. Daily attendance. Gradebooks and exams mapped to national curriculum strands. Report cards that come out of the same file the teacher already used all term.",
+          "fix": "Configurable class names. Daily attendance. Gradebooks and exams. Report cards that come out of the same file the teacher already used all term.",
           "whoLabel": "Who breathes easier",
           "who": "Teachers who want evenings back; pedagogy leads who need the same bulletin logic across every class."
         },
@@ -189,12 +189,12 @@
           "body": [
             "At the end of 2025, about 34.7 million people in the DRC used the internet — 30.5% of the population. There were 64.7 million mobile connections, many of them voice-only. Kinshasa is an island of coverage compared with the interior. It is still an island that blinks.",
             "A classroom with a dead connection does not pause the day. Teachers fall back to paper, then double-enter at night — if they remember, if the list survived the bag. Directors then make decisions on reconstructed guesses: who is chronically absent, which class is emptying, whether the fee reminder should have gone to that family.",
-            "ShuleOS installs on the phone like an app. Attendance keeps working offline and syncs when the signal returns. The day still counts."
+            "ShuleOS installs on the phone like an app. Teachers can mark attendance offline and sync when the signal returns. The rest of the app still needs a connection."
           ],
           "costLabel": "What it costs",
           "cost": "Ghost rolls. Night-time re-entry. Absences parents hear about when it is already a discipline meeting — or a lost fee.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "An installable PWA, no special hardware. Bulk marking, absence alerts, and offline sync — so the register is the same object the director reads later.",
+          "fix": "An installable PWA. Bulk marking and offline attendance sync — so the register can match what the director reads later. Absence alerts and heatmaps are not in the product.",
           "whoLabel": "Who breathes easier",
           "who": "Teachers in rooms where connectivity is optional; directors who need real attendance, not a reconstructed week."
         },
@@ -205,12 +205,12 @@
           "body": [
             "Kinshasa has no shortage of private schools. That is the point: families choose. They ask in WhatsApp groups. They search. They judge the first screen. A school with no professional site, and admissions on paper that get lost in a drawer, is not \"traditional.\" It is invisible at the exact moment a parent is ready to enroll.",
             "Paper admissions mean delays, incomplete files, and families who never finish. Every intake season without a site, some of those families choose the school they found first.",
-            "ShuleOS includes a branded public website — homepage, admissions, events, hiring, school-visit booking — feeding straight into the admin queue. Interest becomes a file, not a maybe."
+            "ShuleOS includes a branded public website — homepage, admissions, events, school-visit booking — feeding straight into the admin queue. Interest becomes a file, not a maybe. Careers listings are not shipped."
           ],
           "costLabel": "What it costs",
           "cost": "Empty seats you will still staff. Forms that vanish. A first impression that looks like 2012 while the school next door looks open.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "A free branded site with your colours and cover image. Online admissions into the same academic core. Events, careers listings, and visit booking without a second tool.",
+          "fix": "A branded site with your colours and cover image, included with the school plan after approval. Online admissions into the same academic core. Events and visit booking without a second tool.",
           "whoLabel": "Who breathes easier",
           "who": "Directors competing for families who decide on a phone screen in Gombe, Lemba, or Ngaliema — not in your courtyard."
         },
@@ -221,12 +221,12 @@
           "body": [
             "A Kinshasa director is already running a business, a ministry-facing school, and a community. The information to do that job exists. It is just late. Attendance in one book, fees in another, grades in a third, branch numbers in a WhatsApp forward. By the time someone types it into a spreadsheet, the term has moved on.",
             "That delay has a shape: a class that emptied in October, a collection shortfall that was obvious in November, a teacher whose register never matched. You cannot hire, chase, or intervene in July.",
-            "ShuleOS puts students, attendance, finance, and branch performance on dashboards leadership can read in minutes — exportable for a board or an inspection, not rebuilt for one."
+            "ShuleOS puts students, attendance, and finance on dashboards leadership can open in the app — exportable for a board, not rebuilt for one. There is no dedicated branch-comparison page."
           ],
           "costLabel": "What it costs",
           "cost": "Decisions made blind. Reports that take a week. Multi-campus operators reconciling five versions of the truth.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Executive dashboards, attendance heatmaps, collection rates, academic trends, branch comparison — the view you needed in October.",
+          "fix": "Executive dashboards, collection rates, academic trends — the view you needed in October. Not heatmaps, not a branch-comparison page.",
           "whoLabel": "Who breathes easier",
           "who": "Principals and multi-branch owners who should not wait for a bursar's Sunday spreadsheet to know if the school is healthy."
         },
@@ -235,25 +235,25 @@
           "imageAlt": "A Kinshasa high-rise office at dusk, Congolese support staff on laptops and phones helping a school, city skyline in the windows.",
           "imageCaption": "Support that keeps Kinshasa hours, speaks French first, and already knows what a bulletin and a mobile-money receipt look like.",
           "body": [
-            "Tools built for other systems ignore the things that are not optional here: Programme National report cards, CDF and USD in the same week, French-first staff, WhatsApp-heavy parents, classrooms where the internet is a guest. You can translate the menus. You cannot translate the workflow. Staff keep the paper parallel, and you have paid for two systems.",
-            "ShuleOS is a product of Digni Digital LLC, based at Crown Towers on Batetela, 15th floor, Kinshasa. Support runs Monday to Friday, 8:00 to 18:00 WAT, on WhatsApp and email — the same channels the school already uses. Onboarding is four steps, most of it in an afternoon: register, launch the public site, invite every role, open the portals.",
-            "No setup fees. No special hardware. The school you already run, in one place that does not forget."
+            "Tools built for other systems often ignore French-first staff, WhatsApp-heavy parents, classrooms where the internet is a guest, and bulletins that are not a US GPA export. You can translate the menus. You cannot always translate the workflow. Staff keep the paper parallel, and you have paid for two systems.",
+            "ShuleOS is a product of Digni Digital LLC, with a published Kinshasa office at Crown Towers on Batetela. Support hours are Monday to Friday, 8:00 to 18:00 WAT, on WhatsApp and email. Access is register, email confirm, review (usually 1–2 business days), then billing.",
+            "The school website is included with the school plan after approval. Power, internet, and computers are quoted on WhatsApp if you need them — they are not in self-serve signup."
           ],
           "costLabel": "What it costs",
           "cost": "Another year bending foreign software until it almost fits — while the real school still lives in notebooks.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "French and English. Local fee and curriculum workflows. WhatsApp-native reminders. Mobile money. Offline attendance. Roles and audit logs. Support from the same city as the school.",
+          "fix": "French and English. Local fee and curriculum workflows. WhatsApp reminders when connected. Recorded payments. Offline attendance queue. Roles and audit logs. Support from the same city as the school.",
           "whoLabel": "Who breathes easier",
           "who": "Kinshasa schools tired of importing a system that was never asked to survive this city."
         }
       ],
       "midCtaTitle": "Fee season and report cards don't wait for a better moment",
-      "midCtaBody": "Every week off-platform is another queue, another dispute, another evening of double entry. One afternoon to go live beats another Kinshasa term of leaks.",
+      "midCtaBody": "Every week off-platform is another queue, another dispute, another evening of double entry. Request access before the next Kinshasa term locks in the same leaks.",
       "midCtaPrimary": "Stop the leaks",
-      "midCtaSecondary": "See what it's costing you",
+      "midCtaSecondary": "See all features",
       "closing": [
         "Kinshasa already voted: this is a private-school city, a mobile-money city, a WhatsApp city, and a city where the signal drops. The school that still runs on notebooks is not preserving tradition. It is paying, every week, for a system it never chose.",
-        "ShuleOS is the small next step: one afternoon to put fees, grades, parents, and the public site in one place — before the next rentrée locks in the same leaks."
+        "ShuleOS is the small next step: request access, wait for review, then put fees, grades, parents, and the public site in one place — before the next rentrée locks in the same leaks."
       ],
       "sourcesLabel": "Sources",
       "sources": [
@@ -266,7 +266,7 @@
         "ShuleOS / Digni Digital LLC: Kinshasa office at Immeuble Crown Towers, Sur Batetela, Floor 15, Office 1502; support Monday–Friday, 8:00–18:00 WAT."
       ],
       "ctaPrimary": "Stop the leaks",
-      "ctaSecondary": "See what it's costing you",
+      "ctaSecondary": "See all features",
       "ctaTertiary": "Fix it before the next rentrée",
       "relatedLabel": "Explore related modules",
       "relatedFinance": "Finance",
@@ -291,7 +291,7 @@
           "costLabel": "What it costs",
           "cost": "Balances live in three places. Parents dispute at the gate. Collections look fine until someone reconciles — too late.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Fee structures, invoices, payments, expenses, payroll, and finance reports in one place. Parents see exact balances and pay with mobile money. WhatsApp fee reminders go out before the term slips away — not after the queue forms.",
+          "fix": "Fee structures, invoices, payments, expenses, payroll, and finance reports in one place. Parents see exact balances and pay instructions. WhatsApp fee reminders can go out when connected — not after the queue forms.",
           "whoLabel": "Who breathes easier",
           "who": "Bursars, cashiers, and directors who need numbers they can trust before the next board meeting."
         },
@@ -300,7 +300,7 @@
           "costLabel": "What it costs",
           "cost": "Grades scatter across registers and chats. Printing week becomes all-nighters. Errors become parent fights.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Attendance, gradebook, assignments, exams, and Programme National report cards in the teacher workflow — so the term ends with printable cards, not a scramble.",
+          "fix": "Attendance, gradebook, assignments, exams, and printable term cards in the teacher workflow — so the term ends with cards from the gradebook, not a scramble. Not an official ministry bulletin format.",
           "whoLabel": "Who breathes easier",
           "who": "Teachers who want evenings back; academic admins who need consistency across classes."
         },
@@ -309,7 +309,7 @@
           "costLabel": "What it costs",
           "cost": "\"Come to the office\" becomes the default answer. Trust erodes when fees and grades arrive late — or wrong.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Parent portal for performance, fees and payments, timetable, messages, and events. Student portal for assignments, grades, library, and timetable. Mass WhatsApp, SMS, and in-app outreach with a trail — so unlogged chats stop becoming disputes with no proof.",
+          "fix": "Parent portal for performance, fees and payments, timetable, messages, and events. Student portal to view assignments, grades, library, and timetable. WhatsApp and in-app outreach with a trail when connected — SMS campaigns are not available.",
           "whoLabel": "Who breathes easier",
           "who": "Parents who shouldn't need a trip for a balance; offices that shouldn't be a helpdesk for every question."
         },
@@ -354,7 +354,7 @@
           "costLabel": "What it costs",
           "cost": "By the time the spreadsheet is \"done,\" the term is over. Branch gaps, attendance dips, and collection shortfalls stay invisible until it's expensive.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "Dashboards for students, attendance, finance, and branch performance — so you act mid-term, not after the damage.",
+          "fix": "Dashboards for students, attendance, and finance — so you can look mid-term, not after the damage. No dedicated branch-comparison page.",
           "whoLabel": "Who breathes easier",
           "who": "Principals and multi-branch operators who need one view, not five reconciliations."
         },
@@ -370,23 +370,23 @@
         {
           "title": "Built for DRC reality — not a foreign SIS with a translation layer",
           "costLabel": "What it costs",
-          "cost": "Tools built for other systems ignore Programme National report cards, CDF/USD fee habits, French-first staff, WhatsApp-heavy parents, and Kinshasa support hours.",
+          "cost": "Tools built for other systems ignore French-first staff, WhatsApp-heavy parents, Kinshasa hours, and bulletins that are not a US GPA export.",
           "fixLabel": "What ShuleOS fixes",
-          "fix": "French and English, local fee and curriculum workflows, WhatsApp-native reminders and outreach, mobile money payments, offline-capable attendance, and support from Kinshasa.",
+          "fix": "French and English, local fee workflows, WhatsApp reminders when connected, recorded payments, queued offline attendance, and support from Kinshasa.",
           "whoLabel": "Who breathes easier",
           "who": "Schools tired of bending foreign software until it almost fits."
         }
       ],
       "midCtaTitle": "Fee season and report cards don't wait",
-      "midCtaBody": "Every week off-platform is another queue, another dispute, another evening lost to double entry. One afternoon to go live beats another term of leaks.",
+      "midCtaBody": "Every week off-platform is another queue, another dispute, another evening lost to double entry. Request access before the next term locks in the same leaks.",
       "midCtaPrimary": "Stop the leaks",
-      "midCtaSecondary": "See what it's costing you",
+      "midCtaSecondary": "See all features",
       "closing": [
         "Another term on notebooks and WhatsApp has a price you already know — you just haven't put one number on it yet.",
-        "ShuleOS is the small next step: one afternoon to go live, fees and grades and parents in one place, before the next term locks in the same leaks."
+        "ShuleOS is the small next step: request access, wait for review, then put fees, grades, and parents in one place before the next term locks in the same leaks."
       ],
       "ctaPrimary": "Stop the leaks",
-      "ctaSecondary": "See what it's costing you",
+      "ctaSecondary": "See all features",
       "ctaTertiary": "Fix it before the next term",
       "relatedLabel": "Explore related modules",
       "relatedFinance": "Finance",

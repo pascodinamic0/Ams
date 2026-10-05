@@ -169,6 +169,15 @@ export async function updateSchool(
   revalidatePath(`/admin/schools/${id}`);
   revalidatePath("/academic/website");
   revalidatePath("/academic/settings");
+  revalidatePath("/academic", "layout");
+  revalidatePath("/finance", "layout");
+  revalidatePath("/teacher", "layout");
+  revalidatePath("/parent", "layout");
+  revalidatePath("/student", "layout");
+  revalidatePath("/operations", "layout");
+  revalidatePath("/outreach", "layout");
+  revalidatePath("/analytics", "layout");
+  revalidatePath("/settings", "layout");
   revalidatePath("/finance");
   revalidatePath("/finance/expenses");
   revalidatePath("/finance/payroll");

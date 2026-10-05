@@ -2,11 +2,11 @@
 export const blogCtaEn = {
   midCtaTitle: "Fee season and report cards don't wait",
   midCtaBody:
-    "Every week off-platform is another queue, another dispute, another evening lost to double entry. One afternoon to go live beats another term of leaks.",
+    "Every week off-platform is another queue, another dispute, another evening lost to double entry. Request access before the next term locks in the same leaks.",
   midCtaPrimary: "Stop the leaks",
-  midCtaSecondary: "See what it's costing you",
+  midCtaSecondary: "See all features",
   ctaPrimary: "Stop the leaks",
-  ctaSecondary: "See what it's costing you",
+  ctaSecondary: "See all features",
   ctaTertiary: "Fix it before the next term",
   relatedLabel: "Explore related modules",
   relatedFinance: "Finance",
@@ -18,11 +18,11 @@ export const blogCtaEn = {
 export const blogCtaFr = {
   midCtaTitle: "La saison des frais et des bulletins n'attend pas",
   midCtaBody:
-    "Chaque semaine hors plateforme, c'est une file de plus, un litige de plus, une soirée perdue à ressaisir. Une après-midi pour démarrer vaut mieux qu'un trimestre de fuites.",
+    "Chaque semaine hors plateforme, c'est une file de plus, un litige de plus, une soirée perdue à ressaisir. Demandez l'accès avant que le prochain trimestre ne verrouille les mêmes fuites.",
   midCtaPrimary: "Stopper les fuites",
-  midCtaSecondary: "Voir ce que ça vous coûte",
+  midCtaSecondary: "Voir les fonctionnalités",
   ctaPrimary: "Stopper les fuites",
-  ctaSecondary: "Voir ce que ça vous coûte",
+  ctaSecondary: "Voir les fonctionnalités",
   ctaTertiary: "Corriger avant le prochain trimestre",
   relatedLabel: "Modules associés",
   relatedFinance: "Finance",

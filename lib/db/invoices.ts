@@ -15,6 +15,7 @@ export type InvoiceListItem = {
   description: string | null;
   fee_structure_id: string | null;
   fee_structure_name: string | null;
+  source: string | null;
 };
 
 export type OutstandingStudentGroup = {
@@ -46,6 +47,7 @@ function mapInvoiceRow(inv: {
   status: string | null;
   description: string | null;
   fee_structure_id?: string | null;
+  source?: string | null;
   students: {
     id?: string;
     student_id?: string;
@@ -75,6 +77,7 @@ function mapInvoiceRow(inv: {
     description: inv.description,
     fee_structure_id: inv.fee_structure_id ?? null,
     fee_structure_name: inv.fee_structures?.name ?? null,
+    source: inv.source ?? null,
     school_id: s?.school_id,
     branch_id: s?.branch_id,
   };
@@ -97,6 +100,7 @@ export async function getInvoices(options?: {
       status,
       description,
       fee_structure_id,
+      source,
       students(
         id,
         student_id,
@@ -185,6 +189,7 @@ export async function getInvoicesForGuardian(
       status,
       description,
       fee_structure_id,
+      source,
       students(
         id,
         student_id,
@@ -228,6 +233,7 @@ export async function getInvoicesForStudent(
       status,
       description,
       fee_structure_id,
+      source,
       students(
         id,
         student_id,

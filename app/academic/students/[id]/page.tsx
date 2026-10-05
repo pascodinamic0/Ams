@@ -8,7 +8,15 @@ import { UserAvatar } from "@/components/layout/user-avatar";
 import { getStudentProfileBundle } from "@/lib/db/student-profile";
 import { getClasses } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { canDeleteStudents, canManageStudentEnrollment, canOverrideClassCapacity } from "@/lib/auth/rbac";
+import {
+  canDeleteStudents,
+  canManageStudentEnrollment,
+  canOnboardStudents,
+  canOverrideClassCapacity,
+} from "@/lib/auth/rbac";
+import { getFeeStructures } from "@/lib/db/fee-structures";
+import { filterFeeStructuresForClass } from "@/lib/services/enrollment-fees";
+import { StudentEnrollmentFeeEditor } from "@/components/students/student-enrollment-fee-editor";
 import { formatPersonName } from "@/lib/utils";
 import { DeleteStudentButton } from "../delete-button";
 import { StudentClassAssign } from "@/components/students/student-class-assign";
@@ -77,9 +85,26 @@ export default async function StudentDetailPage({
   const canDelete = canDeleteStudents(profile?.role);
   const canOverride = canOverrideClassCapacity(profile?.role);
   const canManageEnrollment = canManageStudentEnrollment(profile?.role);
+  const canChangeEnrollmentFee = canOnboardStudents(profile?.role);
 
   const bundle = await getStudentProfileBundle(id);
   if (!bundle) notFound();
+
+  const enrollmentInvoices = bundle.invoices.filter(
+    (invoice) => invoice.source === "enrollment"
+  );
+  const enrollmentInvoice =
+    enrollmentInvoices.length === 1 ? enrollmentInvoices[0] : null;
+  const applicableFeeStructures =
+    canChangeEnrollmentFee && bundle.student.class_id
+      ? filterFeeStructuresForClass(
+          await getFeeStructures({
+            branchId: bundle.student.branch_id ?? undefined,
+            schoolId: bundle.student.school_id ?? undefined,
+          }),
+          bundle.student.class_id
+        )
+      : [];
 
   const branchId = profile?.branch_id ?? bundle.student.branch_id;
   const classes = branchId
@@ -555,6 +580,24 @@ export default async function StudentDetailPage({
             <CardTitle>{t("feesInvoices")}</CardTitle>
           </CardHeader>
           <CardContent>
+            {canChangeEnrollmentFee &&
+            enrollmentInvoice &&
+            enrollmentInvoice.amount_paid === 0 &&
+            applicableFeeStructures.length > 0 ? (
+              <StudentEnrollmentFeeEditor
+                studentId={student.id}
+                currentFeeStructureId={enrollmentInvoice.fee_structure_id}
+                feeStructures={applicableFeeStructures}
+                currencyCode={bundle.school?.currency_code ?? "USD"}
+              />
+            ) : null}
+            {canChangeEnrollmentFee &&
+            enrollmentInvoice &&
+            enrollmentInvoice.amount_paid > 0 ? (
+              <p className="mb-4 text-sm text-stone-500">
+                {t("enrollmentFeeLockedPaid")}
+              </p>
+            ) : null}
             {invoices.length === 0 ? (
               <p className="text-sm text-stone-500">{t("noInvoicesYet")}</p>
             ) : (
@@ -565,6 +608,7 @@ export default async function StudentDetailPage({
                       <th className="py-2 font-medium">{t("fee")}</th>
                       <th className="py-2 font-medium">{t("amount")}</th>
                       <th className="py-2 font-medium">{t("balance")}</th>
+                      <th className="py-2 font-medium">{t("due")}</th>
                       <th className="py-2 font-medium">{tc("status")}</th>
                     </tr>
                   </thead>
@@ -581,6 +625,7 @@ export default async function StudentDetailPage({
                         </td>
                         <td className="py-2">{inv.amount}</td>
                         <td className="py-2">{inv.balance}</td>
+                        <td className="py-2">{inv.due_date}</td>
                         <td className="py-2 capitalize">{inv.status}</td>
                       </tr>
                     ))}

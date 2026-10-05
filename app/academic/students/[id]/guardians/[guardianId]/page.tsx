@@ -37,7 +37,7 @@ export default async function StudentGuardianPage({
       : splitPersonName(guardian.name);
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="w-full space-y-6">
       <div>
         <p className="text-sm text-stone-500">
           {t("guardianFor", { name: formatPersonName(student) })}

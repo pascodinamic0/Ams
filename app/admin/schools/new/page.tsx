@@ -84,7 +84,7 @@ function NewSchoolForm() {
   }
 
   return (
-    <div className={step === 3 ? "mx-auto max-w-5xl" : "mx-auto max-w-2xl"}>
+    <div className="w-full">
       <div className="mb-6 flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{t("newSchoolTitle")}</h1>
         <Link
@@ -192,7 +192,7 @@ export default function NewSchoolPage() {
   const tc = useTranslations("common");
 
   return (
-    <Suspense fallback={<div className="mx-auto max-w-2xl animate-pulse">{tc("loading")}</div>}>
+    <Suspense fallback={<div className="w-full animate-pulse">{tc("loading")}</div>}>
       <NewSchoolForm />
     </Suspense>
   );

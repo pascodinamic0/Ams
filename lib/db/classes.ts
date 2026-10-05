@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { logQueryError } from "@/lib/supabase/log-query-error";
 
 export type ClassListItem = {
   id: string;
@@ -35,7 +36,7 @@ async function attachStudentCounts<T extends { id: string }>(
       .eq("status", "active");
 
     if (studentsError) {
-      console.error("attachStudentCounts error:", studentsError);
+      logQueryError("attachStudentCounts error:", studentsError);
     } else {
       for (const s of students ?? []) {
         if (s.class_id) countByClass[s.class_id] = (countByClass[s.class_id] ?? 0) + 1;

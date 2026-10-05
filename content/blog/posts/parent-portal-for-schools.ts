@@ -23,7 +23,7 @@ export const parentPortalForSchools: BlogPostContent = {
   date: "2026-08-11",
   readTime: "8 min read",
   metaDescription:
-    "Parent portal for schools: balances, grades, attendance, timetable, and logged messaging vs WhatsApp-only communication for African schools.",
+    "Parent portal for schools: balances, grades, attendance, timetable, and logged messaging vs WhatsApp-only communication for DRC private schools.",
   coverImage: coverImage("parent-portal-for-schools"),
   coverImageAlt:
     "A parent at home in the evening checking the school on her phone while her child does homework.",
@@ -37,7 +37,7 @@ export const parentPortalForSchools: BlogPostContent = {
       body: [
         "Current fee balance and payment history with receipts.",
         "Grades and report cards as they are published  not after a gate argument.",
-        "Attendance and absence alerts while they still matter.",
+        "Attendance and absences on the student record — not automated absence-alert campaigns.",
         "Timetable, events, and assignments for each enrolled child.",
         "Secure messaging with the school  logged, not lost in a chat scroll.",
       ],
@@ -76,7 +76,7 @@ export const parentPortalForSchools: BlogPostContent = {
     {
       question: "Can parents pay fees through the portal?",
       answer:
-        "Yes  when fee management is integrated, parents see the exact balance and pay via mobile money or recorded cash at the office.",
+        "Parents see the exact balance and how the school asks them to pay (cash or mobile money at the school). In-app card checkout is not enabled yet.",
     },
   ],
   ...blogCtaEn,

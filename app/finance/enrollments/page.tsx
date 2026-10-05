@@ -37,7 +37,7 @@ export default async function PendingEnrollmentsPage() {
         <div className="grid gap-4 lg:grid-cols-2">
           {rows.map((row) => (
             <ConfirmEnrollmentForm
-              key={row.student_id}
+              key={row.invoice_id ?? row.student_id}
               row={row}
               schoolId={scope.schoolId}
               currencyCode={currency.code}

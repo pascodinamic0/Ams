@@ -14,6 +14,7 @@ export type PendingEnrollmentRow = {
   invoice_balance: number;
   fee_structure_name: string | null;
   invoice_status: string | null;
+  due_date: string | null;
 };
 
 export async function getPendingEnrollments(options?: {
@@ -64,6 +65,7 @@ export async function getPendingEnrollments(options?: {
       amount,
       amount_paid,
       status,
+      due_date,
       fee_structures(name)
     `
     )
@@ -74,29 +76,36 @@ export async function getPendingEnrollments(options?: {
     console.error("getPendingEnrollments invoices error:", invoiceError);
   }
 
-  const invoiceByStudent = new Map(
-    (invoices ?? []).map((inv) => [inv.student_id as string, inv])
-  );
+  const invoicesByStudent = new Map<string, NonNullable<typeof invoices>>();
+  for (const invoice of invoices ?? []) {
+    const studentId = invoice.student_id as string;
+    const list = invoicesByStudent.get(studentId) ?? [];
+    list.push(invoice);
+    invoicesByStudent.set(studentId, list);
+  }
 
-  return students.map((s) => {
-    const inv = invoiceByStudent.get(s.id);
-    const amount = inv ? Number(inv.amount) : 0;
-    const paid = inv ? Number(inv.amount_paid ?? 0) : 0;
-    return {
-      student_id: s.id,
-      student_number: s.student_id,
-      student_name: formatPersonName(s),
-      class_name: (s.classes as { name?: string } | null)?.name ?? null,
-      enrollment_receipt_ref: s.enrollment_receipt_ref,
-      onboarded_at: s.created_at ?? "",
-      invoice_id: inv?.id ?? null,
-      invoice_amount: amount,
-      invoice_paid: paid,
-      invoice_balance: Math.max(0, amount - paid),
-      fee_structure_name:
-        (inv?.fee_structures as { name?: string } | null)?.name ?? null,
-      invoice_status: inv?.status ?? null,
-    };
+  return students.flatMap((s) => {
+    const list = invoicesByStudent.get(s.id) ?? [null];
+    return list.map((inv) => {
+      const amount = inv ? Number(inv.amount) : 0;
+      const paid = inv ? Number(inv.amount_paid ?? 0) : 0;
+      return {
+        student_id: s.id,
+        student_number: s.student_id,
+        student_name: formatPersonName(s),
+        class_name: (s.classes as { name?: string } | null)?.name ?? null,
+        enrollment_receipt_ref: s.enrollment_receipt_ref,
+        onboarded_at: s.created_at ?? "",
+        invoice_id: inv?.id ?? null,
+        invoice_amount: amount,
+        invoice_paid: paid,
+        invoice_balance: Math.max(0, amount - paid),
+        fee_structure_name:
+          (inv?.fee_structures as { name?: string } | null)?.name ?? null,
+        invoice_status: inv?.status ?? null,
+        due_date: inv?.due_date ?? null,
+      };
+    });
   });
 }
 

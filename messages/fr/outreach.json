@@ -31,7 +31,7 @@
   "message": "Message",
   "sendImmediately": "Envoyer immédiatement",
   "campaignSavedDraft": "Campagne enregistrée en brouillon",
-  "composeSubtitle": "Rédigez un message et envoyez-le aux parents via WhatsApp, SMS ou notification dans l'application.",
+  "composeSubtitle": "Rédigez un message et envoyez-le aux parents via WhatsApp ou notification dans l'application.",
   "channelWhatsappLabel": "WhatsApp",
   "channelWhatsappDesc": "Envoyé directement sur le WhatsApp des parents",
   "channelInAppLabel": "Alerte dans l'application",

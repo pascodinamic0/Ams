@@ -7,6 +7,12 @@ import { createClient } from "@/lib/supabase/client";
 
 /** Minimum gap between refreshes to avoid double-firing on focus+visibility+realtime. */
 const MIN_REFRESH_GAP_MS = 2_000;
+/**
+ * RSC renders on heavy pages take longer than the poll interval.
+ * A second refresh aborts the first, and React then retries the shell
+ * on the client without the translation provider.
+ */
+const REFRESH_SETTLE_MS = 12_000;
 /** Collapse bursts of DB writes (attendance grid, bulk invoices) into one refresh. */
 const REALTIME_DEBOUNCE_MS = 400;
 /**
@@ -25,6 +31,7 @@ let liveChannelSeq = 0;
 export function AutoRefreshProvider() {
   const router = useRouter();
   const lastRefreshAt = useRef(0);
+  const inFlightUntil = useRef(0);
   const debounceTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
@@ -32,11 +39,13 @@ export function AutoRefreshProvider() {
 
     const refreshNow = () => {
       const now = Date.now();
+      if (now < inFlightUntil.current) return;
       if (now - lastRefreshAt.current < MIN_REFRESH_GAP_MS) return;
       if (typeof document !== "undefined" && document.visibilityState === "hidden") {
         return;
       }
       lastRefreshAt.current = now;
+      inFlightUntil.current = now + REFRESH_SETTLE_MS;
       router.refresh();
       // Let the RSC refresh start first so it does not abort badge Server Actions.
       if (liveNotifyTimer !== undefined) window.clearTimeout(liveNotifyTimer);

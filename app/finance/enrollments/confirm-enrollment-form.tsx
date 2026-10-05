@@ -39,6 +39,7 @@ export function ConfirmEnrollmentForm({
   const [cameraUploading, setCameraUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  const fieldKey = row.invoice_id ?? row.student_id;
   const storagePath = schoolId ? `${schoolId}/payment-proofs` : null;
   const amountNum = Number(amount);
   const mismatch =
@@ -103,9 +104,11 @@ export function ConfirmEnrollmentForm({
           <p className="text-xs text-stone-500">{t("enrollmentAmountDue")}</p>
           <p className="font-medium">
             {formatMoney(row.invoice_balance, currencyCode)}
-            {row.fee_structure_name ? (
+            {row.fee_structure_name || row.due_date ? (
               <span className="ml-1 text-xs font-normal text-stone-500">
-                ({row.fee_structure_name})
+                (
+                {[row.fee_structure_name, row.due_date].filter(Boolean).join(" · ")}
+                )
               </span>
             ) : null}
           </p>
@@ -114,9 +117,9 @@ export function ConfirmEnrollmentForm({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor={`amount-${row.student_id}`}>{tc("amount")}</Label>
+          <Label htmlFor={`amount-${fieldKey}`}>{tc("amount")}</Label>
           <Input
-            id={`amount-${row.student_id}`}
+            id={`amount-${fieldKey}`}
             type="number"
             min={0.01}
             step="0.01"
@@ -134,9 +137,9 @@ export function ConfirmEnrollmentForm({
           ) : null}
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor={`method-${row.student_id}`}>{t("colMethod")}</Label>
+          <Label htmlFor={`method-${fieldKey}`}>{t("colMethod")}</Label>
           <Select
-            id={`method-${row.student_id}`}
+            id={`method-${fieldKey}`}
             value={method}
             onChange={(e) =>
               setMethod(e.target.value as typeof method)
@@ -151,9 +154,9 @@ export function ConfirmEnrollmentForm({
           />
         </div>
         <div className="space-y-1.5 sm:col-span-2">
-          <Label htmlFor={`ref-${row.student_id}`}>{t("colReference")}</Label>
+          <Label htmlFor={`ref-${fieldKey}`}>{t("colReference")}</Label>
           <Input
-            id={`ref-${row.student_id}`}
+            id={`ref-${fieldKey}`}
             value={reference}
             onChange={(e) => setReference(e.target.value)}
             placeholder={t("paperReceiptRefPlaceholder")}

@@ -203,5 +203,8 @@
   "feeStructureRequired": "Enrollment fee package is required",
   "feeStructureAmbiguous": "Multiple fee packages match this class — specify fee_structure in the import row",
   "feeStructureRequiredForClass": "No fee package configured for this class — add one in Finance first",
-  "enrollmentProofRequired": "Paper receipt photo is required to activate the student"
+  "enrollmentProofRequired": "Paper receipt photo is required to activate the student",
+  "enrollmentFeeAlreadyPaid": "A payment is already on this enrollment invoice, so the package can no longer be changed.",
+  "enrollmentFeeNotFound": "No open enrollment invoice to update.",
+  "studentNotPending": "Only a pending student can change the enrollment fee."
 }

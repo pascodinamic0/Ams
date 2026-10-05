@@ -23,7 +23,7 @@ export const schoolFeeManagementSoftware: BlogPostContent = {
   date: "2026-08-12",
   readTime: "9 min read",
   metaDescription:
-    "School fee management software: invoices, CDF/USD, mobile money, WhatsApp reminders, and parent-visible balances for DRC and African private schools.",
+    "School fee management software: invoices, recorded payments, WhatsApp reminders when connected, and parent-visible balances for DRC private schools.",
   coverImage: coverImage("school-fee-management-software"),
   coverImageAlt:
     "A bursar counting cash at a school cashier window while parents wait with notes and phones.",
@@ -35,11 +35,11 @@ export const schoolFeeManagementSoftware: BlogPostContent = {
     {
       title: "What school fee management software includes",
       body: [
-        "Fee structures by class, term, boarding, or transport add-ons.",
+        "Fee structures by class or term.",
         "Invoices with payment history, partial payments, and discounts.",
-        "Multi-currency support where parents pay CDF and USD in the same week.",
+        "One currency per school in the product. Kinshasa parents may still pay cash, dollars, or mobile money in the city — staff record what arrived.",
         "Mobile-money-ready amounts and receipt trails.",
-        "WhatsApp or SMS reminders before due dates  logged, not ad-hoc chats.",
+        "WhatsApp reminders before due dates when connected — logged, not ad-hoc chats. SMS campaigns are not available.",
         "Expenses, payroll, and finance reports beside the same ledger.",
       ],
     },
@@ -72,7 +72,7 @@ export const schoolFeeManagementSoftware: BlogPostContent = {
     {
       question: "How do schools collect fees online in Africa?",
       answer:
-        "Through mobile money, bank transfer, and cash recorded in the same system. Parents need visible balances and receipts; schools need one ledger in CDF and USD.",
+        "Through cash, bank transfer, and mobile money recorded in the same system. Parents see the amount due and pay instructions; in-app card checkout is not enabled. Each school uses one currency in ShuleOS.",
     },
     {
       question: "Can fee reminders go out on WhatsApp?",
@@ -83,6 +83,6 @@ export const schoolFeeManagementSoftware: BlogPostContent = {
   ...blogCtaEn,
   closing: [
         "Every \"we'll check\" at the gate is fee management software you don't have yet.",
-        "Put invoices, mobile money, and parent-visible balances in one place before the next collection week.",
+        "Put invoices, recorded payments, and parent-visible balances in one place before the next collection week.",
   ],
 };

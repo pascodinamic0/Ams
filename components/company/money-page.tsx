@@ -74,8 +74,8 @@ export function MoneyPage({ content }: { content: MoneyPageContent }) {
           </p>
           <p className="mt-3 text-base leading-relaxed text-mkt-ink/70">
             {content.locale === "fr"
-              ? "Une après-midi pour mettre frais, notes et parents au même endroit  avant le prochain trimestre."
-              : "One afternoon to put fees, grades, and parents in one place  before the next term locks in the same leaks."}
+              ? "Demandez l'accès, confirmez l'e-mail, attendez l'approbation (souvent 1 à 2 jours ouvrables), puis la facturation — avant que le prochain trimestre fige les mêmes fuites."
+              : "Request access, confirm email, wait for approval (usually 1–2 business days), then billing — before the next term locks in the same leaks."}
           </p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Link

@@ -32,7 +32,7 @@
   "installFromBrowserMenu": "Install from browser menu",
   "installProduct": "Install {productName}",
   "iosInstallHint": "Add to your home screen for quick access. Tap Share, then Add to Home Screen.",
-  "androidInstallHint": "Install the app on this device for faster access, full-screen mode, and offline support.",
+  "androidInstallHint": "Install the app on this device for faster access, full-screen mode, and queued attendance when the signal drops.",
   "shareThenAddToHomeScreen": "Share, then Add to Home Screen",
   "dismissInstallPrompt": "Dismiss install prompt",
   "iosGuide": {

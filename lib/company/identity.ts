@@ -1,10 +1,10 @@
 /** Public company identity - sourced from digni-digital-llc.com (Kinshasa office). */
 export const companyIdentity = {
   productName: "ShuleOS",
-  productFullName: "ShuleOS — Your school's trusted digital director",
+  productFullName: "ShuleOS — one school record for DRC private schools",
   legalName: "Digni Digital LLC",
   tagline: "Protect your legacy. Secure your finances.",
-  origin: "Serving schools across the DRC",
+  origin: "Built for DRC private schools",
   website: "https://www.digni-digital-llc.com",
 
   office: {

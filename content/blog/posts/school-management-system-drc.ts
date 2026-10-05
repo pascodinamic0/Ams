@@ -20,17 +20,17 @@ export const schoolManagementSystemDrc: BlogPostContent = {
   relatedModules: ["finance", "academic", "parent-student-portals"],
   title: "School management system for DRC schools: built for Kinshasa, not translated",
   excerpt:
-    "CDF and USD fees, Programme National bulletins, WhatsApp parents, offline attendance  a school management system for the DRC must match how schools actually run.",
+    "CDF and USD fees in the city, printable bulletins, WhatsApp parents, queued offline attendance — a school management system for the DRC must match how schools actually run.",
   date: "2026-08-08",
   readTime: "10 min read",
   metaDescription:
-    "School management system DRC: Kinshasa private schools, Programme National, mobile money fees, French-first support, and offline attendance on ShuleOS.",
+    "School management system DRC: Kinshasa private schools, printable report cards, recorded fees, French-first support, and queued offline attendance on ShuleOS.",
   coverImage: coverImage("school-management-system-drc"),
   coverImageAlt:
     "Students in uniform in a Kinshasa private-school courtyard at midday, a parent speaking with the director.",
   intro: [
     "Kinshasa is a private-school city: most primary schools live on parent fees, not ministry payroll. That changes what a school management system must do  collections matter as much as curriculum.",
-    "Foreign school software translated into French still ignores CDF/USD habits, Programme National bulletins, WhatsApp-heavy parents, and classrooms where the signal drops.",
+    "Foreign school software translated into French still often ignores WhatsApp-heavy parents, classrooms where the signal drops, and bulletins that are not a US GPA export.",
     "A school management system for DRC schools should be built for that reality  ShuleOS is developed in Kinshasa on Batetela for exactly this.",
   ],
   sections: [
@@ -45,7 +45,7 @@ export const schoolManagementSystemDrc: BlogPostContent = {
     {
       title: "Programme National and French-first workflows",
       body: [
-        "Report cards follow national learning areas  not generic letter grades.",
+        "Schools here talk in Programme National language — ShuleOS prints term cards from the gradebook, not a certified ministry grid.",
         "Staff work in French; parents may prefer French or Lingala messaging but expect official documents in French.",
         "Software menus in English only push work back to paper.",
       ],
@@ -62,8 +62,8 @@ export const schoolManagementSystemDrc: BlogPostContent = {
       title: "Support from Kinshasa, not another timezone",
       body: [
         "Fee week and report-card season do not wait for tickets answered eight hours later.",
-        "Local support on WhatsApp during WAT business hours matches how schools already work.",
-        "Onboarding in an afternoon beats a semester of configuration documents.",
+        "Local support on WhatsApp during published WAT business hours matches how schools already work.",
+        "Register, then a 1–2 business day review, then billing — not a measured afternoon go-live.",
       ],
     },
   ],
@@ -71,12 +71,12 @@ export const schoolManagementSystemDrc: BlogPostContent = {
     {
       question: "What is the best school management system in Congo?",
       answer:
-        "One that handles Programme National, multi-currency fees, mobile money, offline attendance, and local support  without forcing staff to keep parallel notebooks.",
+        "One that handles French-first staff, printable bulletins from the gradebook, recorded fees, WhatsApp contact, queued offline attendance, and local support — without forcing staff to keep parallel notebooks.",
     },
     {
       question: "Does ShuleOS work outside Kinshasa?",
       answer:
-        "Yes. ShuleOS serves schools across the DRC and region with the same offline-capable, French-first platform.",
+        "ShuleOS is built for DRC private schools, with Kinshasa WhatsApp hours. Ask the office if you run outside Kinshasa — we do not publish a regional customer list.",
     },
   ],
   ...blogCtaEn,

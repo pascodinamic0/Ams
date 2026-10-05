@@ -11,31 +11,54 @@ export function filterFeeStructuresForClass(
   );
 }
 
-/** Resolve import row fee structure by UUID, name, or sole class match. */
-export function resolveImportFeeStructureId(
+/** "Frais scolaires — 1ère Primaire" → "Frais scolaires". */
+export function feePackageKind(
+  name: string,
+  className?: string | null
+): string {
+  const trimmed = name.trim();
+  if (className) {
+    const suffix = ` — ${className.trim()}`;
+    if (trimmed.endsWith(suffix)) {
+      return trimmed.slice(0, -suffix.length).trim();
+    }
+  }
+  const splitAt = trimmed.lastIndexOf(" — ");
+  if (splitAt > 0) return trimmed.slice(0, splitAt).trim();
+  return trimmed;
+}
+
+/**
+ * Every current-year offer for a class. A class-specific price replaces a
+ * school-wide offer of the same name. Highest amount first.
+ */
+export function feeStructuresForClass(
   structures: FeeStructureListItem[],
   classId: string,
-  input?: string | null
-): { id: string } | { error: string } {
-  const applicable = filterFeeStructuresForClass(structures, classId);
+  schoolYear: number
+): FeeStructureListItem[] {
+  const applicable = filterFeeStructuresForClass(
+    structures.filter((structure) => structure.school_year === schoolYear),
+    classId
+  );
+  const classSpecificKinds = new Set(
+    applicable
+      .filter((structure) => structure.class_id === classId)
+      .map((structure) =>
+        feePackageKind(structure.name, structure.class_name).toLowerCase()
+      )
+  );
 
-  const trimmed = input?.trim();
-  if (trimmed) {
-    const byId = applicable.find((s) => s.id === trimmed);
-    if (byId) return { id: byId.id };
-
-    const lower = trimmed.toLowerCase();
-    const byName = applicable.filter((s) => s.name.toLowerCase() === lower);
-    if (byName.length === 1) return { id: byName[0].id };
-    if (byName.length > 1) {
-      return { error: "feeStructureAmbiguous" };
-    }
-    return { error: "feeStructureNotFound" };
-  }
-
-  if (applicable.length === 1) return { id: applicable[0].id };
-  if (applicable.length === 0) return { error: "feeStructureRequiredForClass" };
-  return { error: "feeStructureAmbiguous" };
+  return applicable
+    .filter((structure) => {
+      if (structure.class_id === classId) return true;
+      return !classSpecificKinds.has(
+        feePackageKind(structure.name, structure.class_name).toLowerCase()
+      );
+    })
+    .sort(
+      (a, b) => b.amount - a.amount || a.name.localeCompare(b.name)
+    );
 }
 
 export async function createEnrollmentInvoiceRpc(

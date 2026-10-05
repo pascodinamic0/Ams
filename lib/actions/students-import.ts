@@ -8,8 +8,9 @@ import { canOnboardStudents } from "@/lib/auth/rbac";
 import { createStudent } from "@/lib/actions/students";
 import { studentImportRowSchema, type StudentImportRow } from "@/lib/validations/academic";
 import { getTranslations } from "next-intl/server";
+import { getCurrentSchoolYearStart } from "@/lib/academic/school-year";
 import { getFeeStructures } from "@/lib/db/fee-structures";
-import { resolveImportFeeStructureId } from "@/lib/services/enrollment-fees";
+import { feeStructuresForClass } from "@/lib/services/enrollment-fees";
 
 export type StudentImportResult = {
   created: number;
@@ -73,16 +74,17 @@ export async function importStudentsBatch(
       continue;
     }
 
-    const feeResolved = resolveImportFeeStructureId(
+    const classFees = feeStructuresForClass(
       feeStructures,
       parsed.data.class_id,
-      parsed.data.fee_structure_id ?? parsed.data.fee_structure
+      getCurrentSchoolYearStart()
     );
-    if ("error" in feeResolved) {
+    if (classFees.length === 0) {
       result.failed++;
-      const key = feeResolved.error;
-      const message = te.has(key) ? te(key) : key;
-      result.errors.push({ row: rowNumber, message });
+      result.errors.push({
+        row: rowNumber,
+        message: te("feeStructureRequiredForClass"),
+      });
       continue;
     }
 
@@ -103,7 +105,8 @@ export async function importStudentsBatch(
       tags: [],
       school_id: context.school_id,
       branch_id: context.branch_id,
-      fee_structure_id: feeResolved.id,
+      fee_structure_id: classFees[0].id,
+      fee_structure_ids: classFees.map((fee) => fee.id),
       enrollment_receipt_ref: parsed.data.enrollment_receipt_ref,
       overrideCapacity: context.overrideCapacity,
     });

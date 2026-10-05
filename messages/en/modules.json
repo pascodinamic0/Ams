@@ -6,20 +6,20 @@
   "allFeatures": "all features",
   "homepageCta": {
     "academic": "School life in order",
-    "finance": "Bulletproof finances",
+    "finance": "One bursar ledger",
     "portals": "Families at ease"
   },
   "academic": {
     "title": "School life",
     "tagline": "Report card season shouldn't shut down the office",
-    "summary": "When enrollments, attendance, and grades live in separate places, report cards take days and errors multiply. One academic cycle—from admission to Programme National report cards—without the end-of-term panic.",
+    "summary": "When enrollments, attendance, and grades live in separate places, report cards take days and errors multiply. One academic cycle—from admission to printable term cards—without rebuilding from chats.",
     "desc": "Every student tracked. Attendance, grades, and report cards — without you carrying it all.",
     "highlights": {
       "0": "Student profiles with guardians, medical notes, and enrollment history",
-      "1": "Classes aligned to DRC grade levels",
-      "2": "Timetable builder with teacher and room assignments",
-      "3": "Daily attendance with bulk marking and absence alerts",
-      "4": "Gradebooks, exams, and report cards mapped to national curriculum strands",
+      "1": "Classes with names you configure (including DRC grade labels you set)",
+      "2": "Timetable builder with teacher assignments",
+      "3": "Daily attendance with bulk marking",
+      "4": "Gradebooks, exams, and printable term report cards from the same file",
       "5": "Online admissions linked to your public school website"
     },
     "whoItsFor": {
@@ -27,18 +27,18 @@
       "1": "Teachers losing evenings to attendance lists and grade re-entry",
       "2": "Parents who only see progress when there's already a problem"
     },
-    "localContext": "Every term without a single academic system, DRC schools re-type the same Programme National data. ShuleOS tracks learning areas and term reports the way you actually work—not the way a foreign tool expects."
+    "localContext": "Every term without a single academic system, DRC schools re-type the same grades. ShuleOS keeps the gradebook and printable cards together—as you work, not as a foreign GPA export."
   },
   "finance": {
     "title": "Finance",
     "tagline": "Stop chasing the same balances every month",
-    "summary": "Unpaid balances hide in notebooks until parents dispute them at the gate. Bursars chase the same names every month—that's not a collections problem, it's a visibility problem. Invoices, mobile money, and WhatsApp reminders tied to every student account.",
-    "desc": "Every franc caught. No more leaks, no more guessing.",
+    "summary": "Unpaid balances hide in notebooks until parents dispute them at the gate. Bursars chase the same names every month—that's not a collections problem, it's a visibility problem. Invoices, recorded payments, and WhatsApp reminders (when connected) tied to every student account.",
+    "desc": "Recorded payments in one place. No more guessing which notebook is true.",
     "highlights": {
-      "0": "Flexible fee structures by class, term, or boarding status",
-      "1": "Automated invoices with balances and payment history per student",
-      "2": "Mobile-money-ready payment links with exact amounts pre-filled",
-      "3": "Fee reminders via WhatsApp before due dates",
+      "0": "Flexible fee structures by class or term",
+      "1": "Invoices issued from fee structures, with balances and payment history per student",
+      "2": "Record a mobile-money or cash payment against the amount due — parents also see pay instructions",
+      "3": "Fee reminders via WhatsApp before due dates, when WhatsApp is connected",
       "4": "Expense tracking and financial reports for bursars",
       "5": "Staff payroll records alongside school fee collections"
     },
@@ -47,7 +47,7 @@
       "1": "Directors who can't trust cash position until someone adds it up",
       "2": "Parents who pay late because balances weren't clear"
     },
-    "localContext": "Parents expect mobile money and clear fee statements. Every franc unaccounted for in CDF or USD is a dispute waiting at the gate. ShuleOS makes balances visible before collection day—not after."
+    "localContext": "Parents in Kinshasa already pay in cash, dollars, and mobile money. The leak is the school that cannot show the exact recorded balance. ShuleOS uses one currency per school in the app — ask Kinshasa if you need a different setup."
   },
   "operations": {
     "title": "Organisation",
@@ -59,7 +59,7 @@
       "1": "Transport routes, bus assignments, and student pickup lists",
       "2": "School events with registrations and campus visit scheduling",
       "3": "Staff directory with roles, departments, and HR records",
-      "4": "Inventory-friendly workflows for uniforms and materials",
+      "4": "Events and visit booking in the same school record",
       "5": "Operational reports for administrators and directors"
     },
     "whoItsFor": {
@@ -72,44 +72,42 @@
   "analytics": {
     "title": "Oversight",
     "tagline": "Stop deciding blind at term end",
-    "summary": "When attendance, fees, and performance live in separate notebooks, directors spend days preparing reports they should read in minutes. Dashboards for trends, collection rates, and branch comparisons—before problems become crises.",
-    "desc": "The results, not the details. You see whether the school is growing — without compiling it yourself.",
+    "summary": "When attendance, fees, and performance live in separate notebooks, directors learn the damage after the term. Dashboards for collection rates and attendance — so you can look mid-term.",
+    "desc": "The results, not the details. You see collections and attendance in the app — without compiling it yourself.",
     "highlights": {
       "0": "Executive dashboards for directors and school owners",
-      "1": "Attendance heatmaps and chronic absenteeism alerts",
+      "1": "Attendance charts from rolls teachers already marked",
       "2": "Fee collection rates and outstanding balance summaries",
       "3": "Academic performance trends by class, subject, or term",
-      "4": "Branch comparison for schools with multiple campuses",
-      "5": "Exportable reports for board meetings and ministry submissions"
+      "4": "School and finance dashboards (multi-campus data can live in one school record)",
+      "5": "Exportable reports for board meetings"
     },
     "whoItsFor": {
       "0": "Directors who find out about problems too late",
       "1": "Administrators spending days on reports spreadsheets could generate",
       "2": "Finance teams missing collection targets until term end"
     },
-    "localContext": "Term reports and fee collection targets shouldn't take a week to compile. ShuleOS dashboards show what leadership needs in minutes—not days of manual aggregation."
+    "localContext": "Term reports and fee collection targets shouldn't wait until July. ShuleOS dashboards show collections and attendance in the app—without claiming a timed study."
   },
   "schoolWebsites": {
     "title": "Your visibility",
     "tagline": "Stop losing families who never find you online",
-    "summary": "Parents search WhatsApp and Google before they visit. Without a site, they enroll elsewhere. Get a branded school website free with ShuleOS — homepage, admissions, events, hiring, and school visit booking into your admin queue.",
+    "summary": "Parents search WhatsApp and Google before they visit. Without a site, they enroll elsewhere. ShuleOS includes a branded school website with the plan after approval — homepage, admissions, events, and school visit booking into your admin queue.",
     "desc": "Families find you. Enrolments arrive. Your legacy is visible.",
     "highlights": {
-      "0": "Free branded homepage with your logo, colours, and cover image",
+      "0": "Branded homepage with your logo, colours, and cover image",
       "1": "About, programs, gallery, and contact sections",
       "2": "Online admissions form feeding straight into your admin queue",
       "3": "Public events managed from ShuleOS — open days and school activities",
-      "4": "Hiring / careers listings with applications into your staff queue",
-      "5": "Book a school visit directly from the site into your calendar",
-      "6": "Three templates: Modern, Classic, and Minimal",
-      "7": "Staff login link connecting visitors to the school portal"
+      "4": "Three templates: Modern, Classic, and Minimal",
+      "5": "Book a school visit directly from the site into your calendar"
     },
     "whoItsFor": {
       "0": "Schools losing intake to competitors with better online presence",
       "1": "Admissions teams drowning in paper applications",
       "2": "Directors who know first impressions happen on a phone screen"
     },
-    "localContext": "Every intake season without a website, families choose the school they found first. Launch yours free — and capture enquiries before they go elsewhere."
+    "localContext": "Every intake season without a website, families choose the school they found first. Launch yours with the school plan — and capture enquiries before they go elsewhere."
   },
   "messaging": {
     "title": "The link with families",
@@ -134,13 +132,13 @@
   "parentStudentPortals": {
     "title": "Parent & Student Portals",
     "tagline": "Stop the office queue",
-    "summary": "Every parent visit for a balance check or grade update costs staff time and erodes trust. Portals put fees, grades, timetables, and assignments on their phone—mobile money payment included.",
+    "summary": "Every parent visit for a balance check or grade update costs staff time and erodes trust. Portals put fees, grades, timetables, and assignments on their phone.",
     "desc": "Portals for parents and students",
     "highlights": {
       "0": "Parent dashboard with linked children, fees, and attendance at a glance",
-      "1": "Pay school fees via mobile money or payment links without visiting the office",
-      "2": "View report cards, timetables, assignments, and school events in real time",
-      "3": "Student portal for homework submission, grades, library, and messages",
+      "1": "See the amount due and follow the school's pay instructions (cash or mobile money outside the app)",
+      "2": "View report cards, timetables, assignments, and school events",
+      "3": "Student portal to view homework, grades, library, and messages — not homework upload",
       "4": "Secure login with role-based access - parents only see their own children",
       "5": "Works on mobile browsers and low-bandwidth connections common in the DRC"
     },

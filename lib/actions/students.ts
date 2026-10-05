@@ -5,7 +5,11 @@ import { actionError } from "@/lib/i18n/action-error";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { canManageStudentEnrollment } from "@/lib/auth/rbac";
+import {
+  canManageStudentEnrollment,
+  canOnboardStudents,
+} from "@/lib/auth/rbac";
+import { requireAdminClient } from "@/lib/supabase/admin";
 import { normalizeStudentTags } from "@/lib/students/tags";
 import {
   normalizeGender,
@@ -34,6 +38,7 @@ type StudentActionContext = {
 export async function createStudent(
   input: StudentFormData & StudentActionContext & {
     fee_structure_id: string;
+    fee_structure_ids?: string[];
     enrollment_receipt_ref?: string;
   }
 ) {
@@ -86,14 +91,26 @@ export async function createStudent(
     return { error: error.message };
   }
 
-  const invoiceResult = await createEnrollmentInvoiceRpc(
-    supabase,
-    data.id,
-    input.fee_structure_id
-  );
-  if ("error" in invoiceResult) {
-    await supabase.from("students").delete().eq("id", data.id);
-    return { error: invoiceResult.error };
+  const feeIds = [
+    ...new Set(
+      (input.fee_structure_ids?.length
+        ? input.fee_structure_ids
+        : [input.fee_structure_id]
+      ).filter((id) => id.trim())
+    ),
+  ];
+  if (feeIds.length === 0) return await actionError("feeStructureRequired");
+
+  for (const feeId of feeIds) {
+    const invoiceResult = await createEnrollmentInvoiceRpc(
+      supabase,
+      data.id,
+      feeId
+    );
+    if ("error" in invoiceResult) {
+      await supabase.from("students").delete().eq("id", data.id);
+      return { error: invoiceResult.error };
+    }
   }
 
   revalidatePath("/finance/enrollments");
@@ -232,6 +249,109 @@ export async function assignStudentClass(
     class_id: classId,
     overrideCapacity: options?.overrideCapacity,
   });
+}
+
+/** Change the unpaid enrollment invoice package while the student is still pending. */
+export async function updateEnrollmentFee(
+  studentId: string,
+  feeStructureId: string
+) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return await actionError("notAuthenticated");
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, school_id")
+    .eq("id", user.id)
+    .single();
+
+  if (!canOnboardStudents(profile?.role)) {
+    return await actionError("noPermissionOnboardStudents");
+  }
+
+  if (!z.string().uuid().safeParse(feeStructureId).success) {
+    return await actionError("feeStructureRequired");
+  }
+
+  const adminResult = requireAdminClient();
+  if ("error" in adminResult) return { error: adminResult.error };
+  const admin = adminResult.client;
+
+  const { data: student } = await admin
+    .from("students")
+    .select("id, school_id, branch_id, class_id, status")
+    .eq("id", studentId)
+    .maybeSingle();
+
+  if (!student) return await actionError("studentNotFound");
+  if (profile?.school_id && profile.school_id !== student.school_id) {
+    return await actionError("noPermissionOnboardStudents");
+  }
+  if (student.status !== "pending") {
+    return await actionError("studentNotPending");
+  }
+  if (!student.class_id) return await actionError("classRequired");
+
+  const { data: structure } = await admin
+    .from("fee_structures")
+    .select("id, name, amount, description, class_id, branch_id")
+    .eq("id", feeStructureId)
+    .maybeSingle();
+
+  if (!structure || structure.branch_id !== student.branch_id) {
+    return await actionError("feeStructureNotFound");
+  }
+  if (structure.class_id && structure.class_id !== student.class_id) {
+    return await actionError("feeStructureNotFound");
+  }
+
+  const { data: invoices } = await admin
+    .from("fee_invoices")
+    .select("id, amount_paid, source")
+    .eq("student_id", studentId)
+    .eq("source", "enrollment");
+
+  const rows = invoices ?? [];
+  const open = rows.filter((invoice) => Number(invoice.amount_paid ?? 0) === 0);
+  if (rows.some((invoice) => Number(invoice.amount_paid ?? 0) > 0) || open.length !== 1) {
+    if (rows.some((invoice) => Number(invoice.amount_paid ?? 0) > 0)) {
+      return await actionError("enrollmentFeeAlreadyPaid");
+    }
+    return await actionError("enrollmentFeeNotFound");
+  }
+
+  const invoice = open[0];
+  const { count } = await admin
+    .from("fee_payments")
+    .select("id", { count: "exact", head: true })
+    .eq("invoice_id", invoice.id);
+  if ((count ?? 0) > 0) return await actionError("enrollmentFeeAlreadyPaid");
+
+  const { error } = await admin
+    .from("fee_invoices")
+    .update({
+      fee_structure_id: structure.id,
+      amount: structure.amount,
+      description: structure.description?.trim() || structure.name,
+    })
+    .eq("id", invoice.id)
+    .eq("student_id", studentId);
+
+  if (error) {
+    console.error("updateEnrollmentFee error:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/academic");
+  revalidatePath("/academic/students");
+  revalidatePath(`/academic/students/${studentId}`);
+  revalidatePath("/finance");
+  revalidatePath("/finance/enrollments");
+  revalidatePath("/finance/invoices");
+  return {} as { error?: string };
 }
 
 export async function deleteStudent(id: string) {

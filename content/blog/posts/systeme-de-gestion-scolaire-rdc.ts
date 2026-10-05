@@ -19,7 +19,7 @@ export const systemeDeGestionScolaireRdc: BlogPostContent = {
   relatedModules: ["finance", "academic", "messaging"],
   title: "Système de gestion scolaire RDC : Kinshasa paie déjà  en fuites",
   excerpt:
-    "Frais CDF/USD, bulletins Programme National, parents WhatsApp, présences hors ligne : un système de gestion scolaire en RDC doit coller au terrain.",
+    "Frais cash, CDF ou USD en ville, cartes de notes imprimables, parents WhatsApp, appel hors ligne qui se synchronise : un système de gestion scolaire en RDC doit coller au terrain.",
   date: "2026-08-13",
   readTime: "10 min de lecture",
   metaDescription:
@@ -44,9 +44,9 @@ export const systemeDeGestionScolaireRdc: BlogPostContent = {
     {
       title: "Bulletins et pédagogie nationale",
       body: [
-        "Les bulletins suivent le Programme National  pas un GPA américain.",
+        "Les écoles congolaises parlent Programme National — le produit imprime des cartes de notes depuis le carnet, pas une grille ministérielle officielle.",
         "Reconstruire les notes depuis des cahiers la veille des impressions est la facture d'un trimestre sans système.",
-        "Le carnet de notes en ligne doit produire le bulletin officiel.",
+        "Le carnet de notes et les cartes imprimables vivent dans le même dossier.",
       ],
     },
     {
@@ -69,12 +69,12 @@ export const systemeDeGestionScolaireRdc: BlogPostContent = {
     {
       question: "ShuleOS convient-il aux écoles hors Kinshasa ?",
       answer:
-        "Oui. La plateforme sert des établissements dans toute la RDC avec les mêmes fonctions hors ligne et workflows locaux.",
+        "Demandez à Kinshasa. La plateforme est conçue pour les écoles privées en RDC ; nous ne publions pas une liste d'établissements par région.",
     },
     {
       question: "Y a-t-il des frais d'installation ?",
       answer:
-        "Non. L'objectif est une mise en route en une après-midi : site public, rôles, portails  sans matériel spécial.",
+        "L'accès logiciel n'exige pas d'acheter du matériel via l'inscription. Électricité, internet et ordinateur se devisent sur WhatsApp. Après approbation vient la facturation du plan.",
     },
   ],
   ...blogCtaFr,

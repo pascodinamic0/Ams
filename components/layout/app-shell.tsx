@@ -1,11 +1,11 @@
 import { getLocale, getMessages, getTimeZone } from "next-intl/server";
-import { AppIntlProvider } from "@/components/i18n/app-intl-provider";
 import {
   AppShellClient,
   type AppShellMobileMode,
   type AppShellProps,
 } from "@/components/layout/app-shell-client";
 import { pickClientMessages } from "@/lib/i18n/client-messages";
+import { getCurrentSchoolShellBranding } from "@/lib/schools/shell-branding";
 
 export type { AppShellMobileMode, AppShellProps };
 
@@ -20,10 +20,15 @@ export async function AppShell(props: AppShellProps) {
   const locale = await getLocale();
   const timeZone = await getTimeZone();
   const messages = pickClientMessages(await getMessages(), "/");
+  const schoolBranding = await getCurrentSchoolShellBranding();
 
   return (
-    <AppIntlProvider locale={locale} timeZone={timeZone} messages={messages}>
-      <AppShellClient {...props} />
-    </AppIntlProvider>
+    <AppShellClient
+      {...props}
+      locale={locale}
+      timeZone={timeZone}
+      messages={messages}
+      schoolBranding={schoolBranding}
+    />
   );
 }
