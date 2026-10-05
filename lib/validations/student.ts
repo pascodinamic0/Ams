@@ -12,26 +12,32 @@ export const STUDENT_STATUSES = [
 ] as const;
 export type StudentStatus = (typeof STUDENT_STATUSES)[number];
 
-/** Empty select placeholder is stored as null. */
-export const optionalGenderSchema = z.preprocess(
-  (val) => (val === "" || val == null ? undefined : val),
-  z.enum(GENDERS, { error: "invalidGender" }).optional()
-);
+/** Empty select placeholder is stored as null. Outer optional lets import omit the key. */
+export const optionalGenderSchema = z
+  .preprocess(
+    (val) => (val === "" || val == null ? undefined : val),
+    z.enum(GENDERS, { error: "invalidGender" }).optional()
+  )
+  .optional();
 
 /** Oui/Non selects submit as "true"/"false"/"". */
-export const optionalYesNoSchema = z.preprocess((val) => {
-  if (val === "" || val == null || val === undefined) return undefined;
-  if (val === true || val === "true" || val === "yes") return true;
-  if (val === false || val === "false" || val === "no") return false;
-  return val;
-}, z.boolean().optional());
+export const optionalYesNoSchema = z
+  .preprocess((val) => {
+    if (val === "" || val == null || val === undefined) return undefined;
+    if (val === true || val === "true" || val === "yes") return true;
+    if (val === false || val === "false" || val === "no") return false;
+    return val;
+  }, z.boolean().optional())
+  .optional();
 
 /** School-year start integer from <select> (empty → undefined). */
-export const optionalSchoolYearSchema = z.preprocess((val) => {
-  if (val === "" || val == null || val === undefined) return undefined;
-  const n = typeof val === "number" ? val : Number(val);
-  return Number.isFinite(n) ? n : undefined;
-}, z.number().int().min(2000).max(2100).optional());
+export const optionalSchoolYearSchema = z
+  .preprocess((val) => {
+    if (val === "" || val == null || val === undefined) return undefined;
+    const n = typeof val === "number" ? val : Number(val);
+    return Number.isFinite(n) ? n : undefined;
+  }, z.number().int().min(2000).max(2100).optional())
+  .optional();
 
 export function normalizeGender(
   value: string | null | undefined

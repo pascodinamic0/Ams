@@ -347,11 +347,15 @@ export function normalizeImportDate(value: unknown): string | null {
     return toIsoDate(Number(iso[1]), Number(iso[2]), Number(iso[3]));
   }
 
-  const slash = raw.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})$/);
+  const slash = raw.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2}|\d{4})$/);
   if (slash) {
     const a = Number(slash[1]);
     const b = Number(slash[2]);
-    const year = Number(slash[3]);
+    let year = Number(slash[3]);
+    if (year < 100) {
+      const pivot = new Date().getFullYear() % 100;
+      year = year <= pivot ? 2000 + year : 1900 + year;
+    }
     if (a > 12 && b <= 12) return toIsoDate(year, b, a);
     if (b > 12 && a <= 12) return toIsoDate(year, a, b);
     return toIsoDate(year, b, a);
@@ -412,6 +416,26 @@ export async function readImportRowsFromFile(file: File): Promise<string[][]> {
 
 export type ClassOption = { id: string; name: string };
 
+/** Used when the paper list has a name and class but no birth date. */
+export const IMPORT_DOB_PLACEHOLDER = "2000-01-01";
+export const IMPORT_DOB_NOTE = "Date de naissance à compléter";
+
+function foldClassLabel(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/\p{M}/gu, "")
+    .toLowerCase()
+    .replace(/scientifique/g, "sciences")
+    .replace(/\beb\b/g, "primaire")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/** Drop a standalone "h" so "3ème Littéraire" matches "3ème H littéraire". */
+function classMatchKey(value: string): string {
+  return foldClassLabel(value).replace(/\bh\b/g, " ").replace(/\s+/g, " ").trim();
+}
+
 export function resolveImportClassId(
   value: string,
   classes: ClassOption[]
@@ -424,7 +448,15 @@ export function resolveImportClassId(
 
   const lower = trimmed.toLowerCase();
   const byName = classes.find((c) => c.name.toLowerCase() === lower);
-  return byName?.id;
+  if (byName) return byName.id;
+
+  const folded = foldClassLabel(trimmed);
+  const byFold = classes.find((c) => foldClassLabel(c.name) === folded);
+  if (byFold) return byFold.id;
+
+  const key = classMatchKey(trimmed);
+  const matches = classes.filter((c) => classMatchKey(c.name) === key);
+  return matches.length === 1 ? matches[0].id : undefined;
 }
 
 function exampleValues(

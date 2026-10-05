@@ -10,6 +10,8 @@ import { importStudentsBatch } from "@/lib/actions/students-import";
 import {
   displayImportHeader,
   downloadStudentImportExcelTemplate,
+  IMPORT_DOB_NOTE,
+  IMPORT_DOB_PLACEHOLDER,
   mapImportHeaders,
   normalizeImportDate,
   parseImportGender,
@@ -59,6 +61,7 @@ export function StudentImportForm({
   const [importResult, setImportResult] = useState<{
     created: number;
     failed: number;
+    skipped: number;
     errors: { row: number; message: string }[];
   } | null>(null);
 
@@ -105,8 +108,9 @@ export function StudentImportForm({
         const cells = rows[i];
         const rowNumber = i + 1;
         const lastName = cellAt(cells, index, "last_name");
-        const middleName = cellAt(cells, index, "middle_name");
-        const firstName = cellAt(cells, index, "first_name");
+        let middleName = cellAt(cells, index, "middle_name");
+        let firstName = cellAt(cells, index, "first_name");
+        if (!firstName && middleName) firstName = middleName;
         const genderRaw = cellAt(cells, index, "gender");
         const placeOfBirth = cellAt(cells, index, "place_of_birth");
         const dobRaw = cellAt(cells, index, "date_of_birth");
@@ -123,12 +127,15 @@ export function StudentImportForm({
 
         if (!firstName && !lastName && !dobRaw) continue;
 
-        if (!firstName || !lastName || !dobRaw) {
+        if (!firstName || !lastName) {
           errors.push(t("csvRowRequiredFields", { row: rowNumber }));
           continue;
         }
 
-        const dob = normalizeImportDate(dobRaw);
+        const dobMissing = !dobRaw;
+        const dob = dobMissing
+          ? IMPORT_DOB_PLACEHOLDER
+          : normalizeImportDate(dobRaw);
         if (!dob) {
           errors.push(t("csvInvalidDate", { row: rowNumber }));
           continue;
@@ -180,6 +187,7 @@ export function StudentImportForm({
           status: (statusRaw || "pending") as StudentImportRow["status"],
           fee_structure: feeStructureRaw || undefined,
           enrollment_receipt_ref: receiptRef || undefined,
+          notes: dobMissing ? IMPORT_DOB_NOTE : undefined,
         });
       }
 
@@ -218,7 +226,7 @@ export function StudentImportForm({
       toast.error(t("importFailedRows", { count: result.failed }));
     }
 
-    if (result.failed === 0 && result.created > 0) {
+    if (result.failed === 0 && (result.created > 0 || result.skipped > 0)) {
       router.push("/academic/students");
       router.refresh();
     }
@@ -251,7 +259,11 @@ export function StudentImportForm({
       key: "place_of_birth",
       render: (row) => row.place_of_birth || tc("emptyDash"),
     },
-    { key: "date_of_birth", render: (row) => row.date_of_birth },
+    {
+      key: "date_of_birth",
+      render: (row) =>
+        row.notes === IMPORT_DOB_NOTE ? t("dobToComplete") : row.date_of_birth,
+    },
     {
       key: "class",
       render: (row) =>
@@ -365,6 +377,7 @@ export function StudentImportForm({
           <p>
             {t("importResult", {
               created: importResult.created,
+              skipped: importResult.skipped,
               failed: importResult.failed,
             })}
           </p>

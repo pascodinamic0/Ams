@@ -17,7 +17,7 @@ import {
 import { getFeeStructures } from "@/lib/db/fee-structures";
 import { filterFeeStructuresForClass } from "@/lib/services/enrollment-fees";
 import { StudentEnrollmentFeeEditor } from "@/components/students/student-enrollment-fee-editor";
-import { formatPersonName } from "@/lib/utils";
+import { formatStudentName } from "@/lib/utils";
 import { DeleteStudentButton } from "../delete-button";
 import { StudentClassAssign } from "@/components/students/student-class-assign";
 import { StudentEnrollmentEditor } from "@/components/students/student-enrollment-editor";
@@ -28,6 +28,10 @@ import {
   composeInscriptionAddress,
   formatYesNo,
 } from "@/lib/students/inscription";
+import {
+  IMPORT_DOB_NOTE,
+  IMPORT_DOB_PLACEHOLDER,
+} from "@/lib/students/import-file";
 import { formatSchoolYear } from "@/lib/academic/school-year";
 
 type GuardianLink = {
@@ -129,7 +133,7 @@ export default async function StudentDetailPage({
   const pickupPersons =
     (student.student_pickup_persons as PickupPerson[] | null) ?? [];
   const authorizedGuardians = guardians.filter((g) => g.can_pickup && g.guardians);
-  const fullName = formatPersonName(student);
+  const fullName = formatStudentName(student);
   const className =
     (student.classes as { name?: string } | null)?.name ?? tc("emptyDash");
   const termOrder = Object.keys(gradesByTerm).sort();
@@ -297,7 +301,10 @@ export default async function StudentDetailPage({
             </p>
             <p>
               <span className="text-stone-500">{t("dob")}:</span>{" "}
-              {student.date_of_birth ?? tc("emptyDash")}
+              {student.date_of_birth === IMPORT_DOB_PLACEHOLDER &&
+              student.notes === IMPORT_DOB_NOTE
+                ? t("dobToComplete")
+                : (student.date_of_birth ?? tc("emptyDash"))}
             </p>
             {student.place_of_birth ? (
               <p>

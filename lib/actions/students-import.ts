@@ -15,6 +15,7 @@ import { feeStructuresForClass } from "@/lib/services/enrollment-fees";
 export type StudentImportResult = {
   created: number;
   failed: number;
+  skipped: number;
   errors: { row: number; message: string }[];
   studentIds: string[];
 };
@@ -55,6 +56,7 @@ export async function importStudentsBatch(
   const result: StudentImportResult = {
     created: 0,
     failed: 0,
+    skipped: 0,
     errors: [],
     studentIds: [],
   };
@@ -71,6 +73,20 @@ export async function importStudentsBatch(
       const key = parsed.error.issues[0]?.message ?? "invalidRow";
       const firstError = tv.has(key) ? tv(key) : tv("invalidRow");
       result.errors.push({ row: rowNumber, message: firstError });
+      continue;
+    }
+
+    const { data: existing } = await supabase
+      .from("students")
+      .select("id")
+      .eq("branch_id", context.branch_id)
+      .eq("class_id", parsed.data.class_id)
+      .eq("first_name", parsed.data.first_name)
+      .eq("last_name", parsed.data.last_name)
+      .eq("date_of_birth", parsed.data.date_of_birth)
+      .limit(1);
+    if (existing && existing.length > 0) {
+      result.skipped++;
       continue;
     }
 
@@ -100,6 +116,7 @@ export async function importStudentsBatch(
       contact_phone: parsed.data.parent_phone,
       home_address: parsed.data.address,
       responsible_profession: parsed.data.parent_profession,
+      notes: parsed.data.notes,
       class_id: parsed.data.class_id,
       status: "pending",
       tags: [],

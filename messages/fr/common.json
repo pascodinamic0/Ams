@@ -30,6 +30,7 @@
   "actions": "Actions",
   "status": "Statut",
   "name": "Nom",
+  "rowNumber": "N°",
   "email": "E-mail",
   "phone": "Téléphone",
   "date": "Date",

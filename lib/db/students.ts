@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatPersonName } from "@/lib/utils";
+import { formatStudentName } from "@/lib/utils";
 
 export type StudentPortalProfile = {
   id: string;
@@ -47,7 +47,7 @@ export async function getStudentByAuthUserId(
     first_name: data.first_name,
     middle_name: data.middle_name ?? null,
     last_name: data.last_name,
-    name: formatPersonName(data),
+    name: formatStudentName(data),
     class_id: data.class_id,
     class_name: (data.classes as { name?: string } | null)?.name ?? null,
     branch_id: data.branch_id,
@@ -92,6 +92,7 @@ export async function getStudents(options?: {
       status,
       tags,
       class_id,
+      father_name,
       classes(name),
       guardian_students(guardians(name))
     `)
@@ -128,14 +129,16 @@ export async function getStudents(options?: {
 
   return (data ?? []).map((s) => {
     const links = (s.guardian_students as Array<{ guardians: { name?: string } | null }> | null) ?? [];
-    const guardianName = links[0]?.guardians?.name ?? null;
+    const linkedGuardian = links[0]?.guardians?.name?.trim();
+    const fatherName = (s.father_name as string | null)?.trim();
+    const guardianName = linkedGuardian || fatherName || null;
     return {
       id: s.id,
       student_id: s.student_id,
       first_name: s.first_name,
       middle_name: s.middle_name ?? null,
       last_name: s.last_name,
-      name: formatPersonName(s),
+      name: formatStudentName(s),
       photo_url: s.photo_url ?? null,
       class_id: s.class_id,
       class_name: (s.classes as { name?: string } | null)?.name ?? null,
@@ -197,7 +200,7 @@ export async function getStudentsForBilling(options?: {
   return (data ?? []).map((s) => ({
     id: s.id,
     student_id: s.student_id,
-    name: formatPersonName(s),
+    name: formatStudentName(s),
     class_id: s.class_id,
     class_name: (s.classes as { name?: string } | null)?.name ?? null,
     status: s.status ?? "active",

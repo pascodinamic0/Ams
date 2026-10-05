@@ -24,6 +24,8 @@ interface DataTableProps<T extends Record<string, unknown>> {
   onRowClick?: (row: T) => void;
   emptyMessage?: string;
   pageSize?: number;
+  /** 1-based index of the full list, shown before the other columns. */
+  numbered?: boolean;
 }
 
 function getCellValue<T>(row: T, col: ColumnDef<T>): ReactNode {
@@ -60,6 +62,7 @@ export function DataTable<T extends Record<string, unknown>>({
   onRowClick,
   emptyMessage,
   pageSize = 10,
+  numbered = false,
 }: DataTableProps<T>) {
   const t = useTranslations("common");
   const resolvedEmptyMessage = emptyMessage ?? t("noData");
@@ -93,7 +96,12 @@ export function DataTable<T extends Record<string, unknown>>({
   };
 
   if (isLoading) {
-    return <TableSkeleton rows={pageSize} columns={columns.length} />;
+    return (
+      <TableSkeleton
+        rows={pageSize}
+        columns={columns.length + (numbered ? 1 : 0)}
+      />
+    );
   }
 
   return (
@@ -101,6 +109,11 @@ export function DataTable<T extends Record<string, unknown>>({
       <table className="w-full border-collapse text-left text-sm">
         <thead>
           <tr className="border-b border-border bg-surface-raised">
+            {numbered ? (
+              <th className="w-16 px-6 py-4 font-medium text-muted">
+                {t("rowNumber")}
+              </th>
+            ) : null}
             {columns.map((col) => (
               <th
                 key={col.id}
@@ -123,7 +136,7 @@ export function DataTable<T extends Record<string, unknown>>({
           {paginatedData.length === 0 ? (
             <tr>
               <td
-                colSpan={columns.length}
+                colSpan={columns.length + (numbered ? 1 : 0)}
                 className="px-6 py-12 text-center text-muted"
               >
                 {resolvedEmptyMessage}
@@ -147,6 +160,11 @@ export function DataTable<T extends Record<string, unknown>>({
                 }`}
                 onClick={() => onRowClick?.(row)}
               >
+                {numbered ? (
+                  <td className="px-6 py-4 tabular-nums text-muted">
+                    {currentPage * pageSize + index + 1}
+                  </td>
+                ) : null}
                 {columns.map((col) => (
                   <td
                     key={col.id}

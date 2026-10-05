@@ -21,6 +21,15 @@ export function formatPersonName(parts: PersonNameParts | string | null | undefi
     .join(" ");
 }
 
+/** Nom, prénom, post-nom — the order on the school contact list. */
+export function formatStudentName(parts: PersonNameParts | null | undefined): string {
+  if (!parts) return "";
+  return [parts.last_name, parts.first_name, parts.middle_name]
+    .map((part) => part?.trim())
+    .filter((part): part is string => Boolean(part))
+    .join(" ");
+}
+
 /** Best-effort split of a full name into first / middle / last. */
 export function splitPersonName(fullName: string): {
   first_name: string;

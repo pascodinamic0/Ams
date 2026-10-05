@@ -118,6 +118,7 @@ export const studentImportRowSchema = z.object({
   fee_structure_id: z.string().uuid("feeStructureRequired").optional(),
   fee_structure: z.string().optional(),
   enrollment_receipt_ref: z.string().optional(),
+  notes: z.string().optional(),
 });
 
 export type ClassFormData = z.infer<typeof classSchema>;
