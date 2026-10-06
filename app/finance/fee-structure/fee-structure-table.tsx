@@ -1,12 +1,19 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/ui/data-table";
 import { formatSchoolYear } from "@/lib/academic/school-year";
 import type { FeeStructureListItem } from "@/lib/db/fee-structures";
 import { DeleteFeeStructureButton } from "./delete-button";
 
-export function FeeStructureTable({ rows }: { rows: FeeStructureListItem[] }) {
+export function FeeStructureTable({
+  rows,
+  onEdit,
+}: {
+  rows: FeeStructureListItem[];
+  onEdit: (id: string) => void;
+}) {
   const t = useTranslations("finance");
   const tc = useTranslations("common");
 
@@ -37,7 +44,19 @@ export function FeeStructureTable({ rows }: { rows: FeeStructureListItem[] }) {
           id: "actions",
           header: "",
           accessorKey: "id",
-          cell: (row) => <DeleteFeeStructureButton id={row.id} />,
+          cell: (row) => (
+            <div className="flex flex-wrap gap-1">
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(String(row.id))}
+              >
+                {tc("edit")}
+              </Button>
+              <DeleteFeeStructureButton id={String(row.id)} />
+            </div>
+          ),
         },
       ]}
     />

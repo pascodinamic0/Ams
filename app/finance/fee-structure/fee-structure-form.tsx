@@ -8,51 +8,86 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormWrapper } from "@/components/forms/form-wrapper";
 import { SchoolYearSelect } from "@/components/academic/school-year-select";
-import { createFeeStructure } from "@/lib/actions/fee-structures";
+import { createFeeStructure, updateFeeStructure } from "@/lib/actions/fee-structures";
 import { getCurrentSchoolYearStart } from "@/lib/academic/school-year";
+import type { FeeStructureListItem } from "@/lib/db/fee-structures";
 import { feeStructureSchema, type FeeStructureFormData } from "@/lib/validations/finance";
 import { toast } from "@/lib/toast";
 
 interface Props {
   branchId: string;
   classes: { id: string; name: string }[];
+  structure?: FeeStructureListItem;
   onClassChange?: (classId: string) => void;
+  onSaved?: () => void;
 }
 
-export function FeeStructureForm({ branchId, classes, onClassChange }: Props) {
+export function FeeStructureForm({
+  branchId,
+  classes,
+  structure,
+  onClassChange,
+  onSaved,
+}: Props) {
   const router = useRouter();
   const t = useTranslations("finance");
   const tc = useTranslations("common");
   const defaultYear = getCurrentSchoolYearStart();
+  const isEdit = Boolean(structure);
+  const schoolYear = structure?.school_year ?? defaultYear;
 
   async function onSubmit(data: FeeStructureFormData) {
-    const result = await createFeeStructure({ ...data, branch_id: branchId });
+    const payload = {
+      ...data,
+      branch_id: structure?.branch_id ?? branchId,
+    };
+    const result = isEdit
+      ? await updateFeeStructure(structure!.id, payload)
+      : await createFeeStructure(payload);
     if ("error" in result && result.error) {
       toast.error(
         typeof result.error === "string"
           ? result.error
-          : t("feeStructureCreateFailed")
+          : t(isEdit ? "feeStructureUpdateFailed" : "feeStructureCreateFailed")
       );
       return;
     }
-    toast.success(t("feeStructureCreated"));
+    toast.success(t(isEdit ? "feeStructureUpdated" : "feeStructureCreated"));
+    onSaved?.();
     router.refresh();
+  }
+
+  const classOptions = [...classes];
+  if (
+    structure?.class_id &&
+    !classOptions.some((item) => item.id === structure.class_id)
+  ) {
+    classOptions.unshift({
+      id: structure.class_id,
+      name: structure.class_name ?? structure.class_id,
+    });
   }
 
   return (
     <FormWrapper
+      key={structure?.id ?? "new"}
       schema={feeStructureSchema}
       defaultValues={{
-        branch_id: branchId,
-        amount: 0,
-        school_year: defaultYear,
+        branch_id: structure?.branch_id ?? branchId,
+        name: structure?.name ?? "",
+        amount: structure?.amount ?? 0,
+        school_year: schoolYear,
+        class_id: structure?.class_id ?? "",
+        description: structure?.description ?? "",
       }}
       onSubmit={onSubmit}
       className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-6"
     >
       <FeeStructureFields
-        classes={classes}
+        classes={classOptions}
         schoolYearLabel={tc("schoolYear")}
+        schoolYear={schoolYear}
+        isEdit={isEdit}
         onClassChange={onClassChange}
       />
     </FormWrapper>
@@ -62,10 +97,14 @@ export function FeeStructureForm({ branchId, classes, onClassChange }: Props) {
 function FeeStructureFields({
   classes,
   schoolYearLabel,
+  schoolYear,
+  isEdit,
   onClassChange,
 }: {
   classes: { id: string; name: string }[];
   schoolYearLabel: string;
+  schoolYear: number;
+  isEdit: boolean;
   onClassChange?: (classId: string) => void;
 }) {
   const t = useTranslations("finance");
@@ -74,6 +113,9 @@ function FeeStructureFields({
     register,
     formState: { errors, isSubmitting },
   } = useFormContext<FeeStructureFormData>();
+  const currentYear = getCurrentSchoolYearStart();
+  const yearSpanBefore = Math.max(3, currentYear - schoolYear);
+  const yearSpanAfter = Math.max(4, schoolYear - currentYear);
 
   return (
     <>
@@ -105,6 +147,9 @@ function FeeStructureFields({
         label={schoolYearLabel}
         required
         error={!!errors.school_year}
+        before={yearSpanBefore}
+        after={yearSpanAfter}
+        defaultValue={schoolYear}
         {...register("school_year", { valueAsNumber: true })}
       />
       <div>
@@ -136,7 +181,7 @@ function FeeStructureFields({
           className="h-auto w-full whitespace-normal text-center leading-tight"
           disabled={isSubmitting}
         >
-          {t("addFeeStructure")}
+          {isEdit ? t("updateFeeStructure") : t("addFeeStructure")}
         </Button>
       </div>
     </>

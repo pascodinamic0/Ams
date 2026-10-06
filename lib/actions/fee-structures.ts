@@ -43,11 +43,22 @@ export async function updateFeeStructure(
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
   const supabase = await createClient();
-  const payload = {
-    ...parsed.data,
-    class_id: parsed.data.class_id === "" ? null : parsed.data.class_id,
-    updated_at: new Date().toISOString(),
-  };
+  const payload = Object.fromEntries(
+    Object.entries({
+      ...parsed.data,
+      class_id:
+        parsed.data.class_id === undefined
+          ? undefined
+          : parsed.data.class_id === ""
+            ? null
+            : parsed.data.class_id,
+      description:
+        parsed.data.description === undefined
+          ? undefined
+          : parsed.data.description || null,
+      updated_at: new Date().toISOString(),
+    }).filter(([, value]) => value !== undefined)
+  );
 
   const { error } = await supabase
     .from("fee_structures")
