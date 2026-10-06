@@ -76,7 +76,8 @@ function mapInvoiceRow(inv: {
     status: inv.status ?? "pending",
     description: inv.description,
     fee_structure_id: inv.fee_structure_id ?? null,
-    fee_structure_name: inv.fee_structures?.name ?? null,
+    fee_structure_name:
+      inv.fee_structures?.name ?? (inv.description?.trim() || null),
     source: inv.source ?? null,
     school_id: s?.school_id,
     branch_id: s?.branch_id,

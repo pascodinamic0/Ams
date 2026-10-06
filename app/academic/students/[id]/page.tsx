@@ -1,6 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import {
+  BookOpen,
+  CalendarCheck,
+  CircleAlert,
+  GraduationCap,
+  Wallet,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyableBadge } from "@/components/ui/copyable-badge";
@@ -17,7 +25,7 @@ import {
 import { getFeeStructures } from "@/lib/db/fee-structures";
 import { filterFeeStructuresForClass } from "@/lib/services/enrollment-fees";
 import { StudentEnrollmentFeeEditor } from "@/components/students/student-enrollment-fee-editor";
-import { formatStudentName } from "@/lib/utils";
+import { cn, formatStudentName } from "@/lib/utils";
 import { DeleteStudentButton } from "../delete-button";
 import { StudentClassAssign } from "@/components/students/student-class-assign";
 import { StudentEnrollmentEditor } from "@/components/students/student-enrollment-editor";
@@ -55,25 +63,56 @@ type PickupPerson = {
   notes?: string | null;
 };
 
-function StatCard({
+function MetricTile({
+  icon: Icon,
   label,
   value,
   hint,
+  tone = "neutral",
+  progress,
 }: {
+  icon: LucideIcon;
   label: string;
   value: string | number;
   hint?: string;
+  tone?: "neutral" | "teal" | "amber";
+  progress?: number;
 }) {
+  const iconTone = {
+    neutral: "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300",
+    teal: "bg-primary-light text-primary",
+    amber: "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
+  }[tone];
+
   return (
-    <Card>
-      <CardContent className="pt-5">
-        <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
-          {label}
+    <div className="flex min-w-0 gap-3 px-4 py-4 sm:px-5">
+      <div
+        className={cn(
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+          iconTone
+        )}
+      >
+        <Icon className="h-5 w-5" aria-hidden />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-xs font-medium text-muted">{label}</p>
+        <p className="mt-0.5 text-2xl font-semibold tracking-tight tabular-nums text-foreground">
+          {value}
         </p>
-        <p className="mt-1 text-2xl font-semibold tabular-nums">{value}</p>
+        {typeof progress === "number" ? (
+          <div className="mt-2 h-1 overflow-hidden rounded-full bg-stone-100 dark:bg-stone-800">
+            <div
+              className={cn(
+                "h-full rounded-full",
+                progress > 0 ? "bg-primary" : "bg-stone-300 dark:bg-stone-600"
+              )}
+              style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+            />
+          </div>
+        ) : null}
         {hint ? <p className="mt-1 text-xs text-stone-400">{hint}</p> : null}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
@@ -158,95 +197,132 @@ export default async function StudentDetailPage({
     return tag;
   }
 
+  const feesDue = stats.outstandingFees > 0;
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex min-w-0 items-center gap-4">
-          <UserAvatar name={fullName} avatarUrl={student.photo_url} size="lg" />
-          <div className="min-w-0">
-            <h1 className="text-2xl font-bold">{fullName}</h1>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
-              {student.student_id ? (
-                <CopyableBadge
-                  value={student.student_id}
-                  label={`${t("studentId")}: ${student.student_id}`}
-                />
-              ) : (
-                <p className="text-sm text-stone-500">
-                  {t("studentId")}: {tc("emptyDash")}
-                </p>
-              )}
-              <StudentStatusBadge
-                status={student.status ?? "active"}
-                label={statusLabel}
+      <section className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+        <div className="relative">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary-light to-transparent"
+          />
+          <div className="relative flex flex-wrap items-start justify-between gap-4 px-4 pb-5 pt-5 sm:px-6 sm:pt-6">
+            <div className="flex min-w-0 items-center gap-4">
+              <UserAvatar
+                name={fullName}
+                avatarUrl={student.photo_url}
+                size="lg"
+                className="h-20 w-20 text-2xl ring-4 ring-surface"
               />
-              {enrollmentTags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-900/40 dark:text-amber-100"
-                >
-                  {tagLabel(tag)}
-                </span>
-              ))}
-              <span className="text-sm text-stone-500">{className}</span>
+              <div className="min-w-0">
+                <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+                  {fullName}
+                </h1>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  {student.student_id ? (
+                    <CopyableBadge
+                      value={student.student_id}
+                      label={`${t("studentId")}: ${student.student_id}`}
+                    />
+                  ) : (
+                    <p className="text-sm text-muted">
+                      {t("studentId")}: {tc("emptyDash")}
+                    </p>
+                  )}
+                  <StudentStatusBadge
+                    status={student.status ?? "active"}
+                    label={statusLabel}
+                  />
+                  {enrollmentTags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-900/40 dark:text-amber-100"
+                    >
+                      {tagLabel(tag)}
+                    </span>
+                  ))}
+                  <span className="rounded-full border border-border bg-surface-raised px-2.5 py-0.5 text-xs font-medium text-foreground">
+                    {className}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              <Link href="/academic/students">
+                <Button variant="ghost" size="sm">
+                  {tc("back")}
+                </Button>
+              </Link>
+              <Link href={`/academic/students/${id}/inscription`}>
+                <Button variant="outline" size="sm">
+                  {t("exportInscriptionFiche")}
+                </Button>
+              </Link>
+              <Link href={`/academic/students/${id}/report-card`}>
+                <Button size="sm">{t("exportReportCard")}</Button>
+              </Link>
+              {canDelete ? <DeleteStudentButton id={id} name={fullName} /> : null}
             </div>
           </div>
         </div>
-        <div className="flex shrink-0 flex-wrap gap-2">
-          <Link href="/academic/students">
-            <Button variant="ghost" size="sm">
-              {tc("back")}
-            </Button>
-          </Link>
-          <Link href={`/academic/students/${id}/inscription`}>
-            <Button variant="outline" size="sm">
-              {t("exportInscriptionFiche")}
-            </Button>
-          </Link>
-          <Link href={`/academic/students/${id}/report-card`}>
-            <Button size="sm">{t("exportReportCard")}</Button>
-          </Link>
-          {canDelete ? <DeleteStudentButton id={id} name={fullName} /> : null}
-        </div>
-      </div>
 
-      {student.status === "pending" ? (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-100">
-          {t("studentPendingNotice")}
-        </div>
-      ) : null}
-      {student.status === "inactive" ? (
-        <div className="rounded-lg border border-stone-200 bg-stone-100 px-4 py-3 text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-200">
-          {t("studentInactiveNotice")}
-        </div>
-      ) : null}
+        {student.status === "pending" ? (
+          <div className="flex gap-2.5 border-t border-amber-200/80 bg-amber-50 px-4 py-3 text-sm text-amber-950 sm:px-6 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-100">
+            <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+            <p>{t("studentPendingNotice")}</p>
+          </div>
+        ) : null}
+        {student.status === "inactive" ? (
+          <div className="border-t border-border bg-surface-raised px-4 py-3 text-sm text-muted sm:px-6">
+            {t("studentInactiveNotice")}
+          </div>
+        ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label={t("attendance")}
-          value={`${stats.attendancePercentage}%`}
-          hint={t("attendanceStats", {
-            percentage: attendanceStats.percentage,
-            present: attendanceStats.present,
-            total: attendanceStats.total,
-          })}
-        />
-        <StatCard
-          label={t("averageMarks")}
-          value={stats.averageMarks ?? tc("emptyDash")}
-          hint={t("gradesRecorded", { count: stats.gradeCount })}
-        />
-        <StatCard
-          label={t("subjects")}
-          value={stats.subjectCount}
-          hint={t("termsCount", { count: stats.terms.length })}
-        />
-        <StatCard
-          label={t("outstandingFees")}
-          value={stats.outstandingFees}
-          hint={t("invoicesCount", { count: invoices.length })}
-        />
-      </div>
+        <div className="grid gap-px border-t border-border bg-border sm:grid-cols-2 xl:grid-cols-4">
+          <div className="bg-surface">
+            <MetricTile
+              icon={CalendarCheck}
+              label={t("attendance")}
+              value={`${stats.attendancePercentage}%`}
+              hint={t("attendanceStats", {
+                percentage: attendanceStats.percentage,
+                present: attendanceStats.present,
+                total: attendanceStats.total,
+              })}
+              tone={stats.attendancePercentage > 0 ? "teal" : "neutral"}
+              progress={stats.attendancePercentage}
+            />
+          </div>
+          <div className="bg-surface">
+            <MetricTile
+              icon={GraduationCap}
+              label={t("averageMarks")}
+              value={stats.averageMarks ?? tc("emptyDash")}
+              hint={t("gradesRecorded", { count: stats.gradeCount })}
+              tone={stats.averageMarks == null ? "neutral" : "teal"}
+            />
+          </div>
+          <div className="bg-surface">
+            <MetricTile
+              icon={BookOpen}
+              label={t("subjects")}
+              value={stats.subjectCount}
+              hint={t("termsCount", { count: stats.terms.length })}
+              tone="teal"
+            />
+          </div>
+          <div className="bg-surface">
+            <MetricTile
+              icon={Wallet}
+              label={t("outstandingFees")}
+              value={stats.outstandingFees}
+              hint={t("invoicesCount", { count: invoices.length })}
+              tone={feesDue ? "amber" : "teal"}
+            />
+          </div>
+        </div>
+      </section>
 
       <div className="grid gap-4 md:grid-cols-2">
         <Card>

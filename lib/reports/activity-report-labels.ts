@@ -39,7 +39,7 @@ export async function getActivityReportViewLabels(mode: "monthly" | "daily") {
     colMethod: t("colMethod"),
     colPaidOn: t("colPaidOn"),
     colIncomeLine: t("colIncomeLine"),
-    incomeLineForStudent: t("incomeLineForStudent"),
+    incomeLineForStudent: t.raw("incomeLineForStudent") as string,
     newEnrollmentBadge: t("newEnrollmentBadge"),
     reportFooter: t(isDaily ? "dailyReportFooter" : "monthlyReportFooter"),
     authorizedSignature: t("authorizedSignature"),

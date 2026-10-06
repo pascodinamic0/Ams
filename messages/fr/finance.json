@@ -365,7 +365,7 @@
   "failedDeletePayroll": "Échec de la suppression de la paie",
   "searchStudentNameOrId": "Nom ou identifiant de l'élève",
   "activityReportTitle": "Rapport d'activité",
-  "activityReportDashboardValue": "Voir le rapport",
+  "activityReportDashboardValue": "Ouvrir le rapport",
   "activityReportDashboardHint": "Recettes, dépenses et paiements d'inscription",
   "pendingEnrollmentsTitle": "Inscriptions en attente",
   "pendingEnrollmentsSubtitle": "Élèves saisis par le secrétariat — confirmez la copie école du reçu papier pour activer.",

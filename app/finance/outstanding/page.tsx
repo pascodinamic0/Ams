@@ -52,6 +52,7 @@ export default async function OutstandingFeesPage() {
         downloadInvoice: t("downloadInvoice"),
         noOutstanding: t("noOutstanding"),
         noOutstandingDesc: t("noOutstandingDesc"),
+        rowNumber: tc("rowNumber"),
         colStudentId: t("colStudentId"),
         colStudent: t("colStudent"),
         colClass: t("colClass"),

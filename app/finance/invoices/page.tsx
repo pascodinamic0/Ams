@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
   getInvoices,
@@ -10,7 +9,7 @@ import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
 import { InvoiceForm } from "./invoice-form";
 import { InvoiceFilters } from "./invoice-filters";
-import { InvoiceActions } from "./invoice-actions";
+import { InvoicesTable } from "./invoices-table";
 
 export default async function InvoicesPage({
   searchParams,
@@ -18,7 +17,6 @@ export default async function InvoicesPage({
   searchParams: Promise<{ status?: string; search?: string; edit?: string }>;
 }) {
   const t = await getTranslations("finance");
-  const tc = await getTranslations("common");
   const params = await searchParams;
   const profile = await getCurrentProfile();
   const schoolId = profile?.school_id ?? undefined;
@@ -44,11 +42,6 @@ export default async function InvoicesPage({
   const editingInvoice = params.edit
     ? invoices.find((inv) => inv.id === params.edit) ?? null
     : null;
-
-  const tableData = invoices.map((row) => ({
-    ...row,
-    actions: <InvoiceActions id={row.id} status={row.status} />,
-  }));
 
   return (
     <div className="space-y-6">
@@ -97,53 +90,7 @@ export default async function InvoicesPage({
           description={t("noInvoicesDesc")}
         />
       ) : (
-        <DataTable
-          data={tableData}
-          columns={[
-            {
-              id: "student_id",
-              header: t("colStudentId"),
-              accessorKey: "student_id",
-              sortable: true,
-            },
-            {
-              id: "student_name",
-              header: t("colStudent"),
-              accessorKey: "student_name",
-              sortable: true,
-            },
-            {
-              id: "fee_structure_name",
-              header: t("colFeeType"),
-              accessorKey: "fee_structure_name",
-            },
-            {
-              id: "amount",
-              header: tc("amount"),
-              accessorKey: "amount",
-              sortable: true,
-            },
-            {
-              id: "amount_paid",
-              header: tc("paid"),
-              accessorKey: "amount_paid",
-            },
-            {
-              id: "balance",
-              header: tc("balance"),
-              accessorKey: "balance",
-              sortable: true,
-            },
-            {
-              id: "due_date",
-              header: t("colDueDate"),
-              accessorKey: "due_date",
-              sortable: true,
-            },
-            { id: "status", header: tc("status"), accessorKey: "status" },
-            { id: "actions", header: "", accessorKey: "actions" },
-          ]}
-        />
+        <InvoicesTable rows={invoices} />
       )}
     </div>
   );

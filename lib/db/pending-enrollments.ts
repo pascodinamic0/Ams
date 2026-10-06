@@ -1,6 +1,16 @@
 import { createClient } from "@/lib/supabase/server";
 import { formatStudentName } from "@/lib/utils";
 
+export type PendingEnrollmentInvoice = {
+  invoice_id: string;
+  amount: number;
+  paid: number;
+  balance: number;
+  fee_structure_name: string | null;
+  status: string | null;
+  due_date: string | null;
+};
+
 export type PendingEnrollmentRow = {
   student_id: string;
   student_number: string | null;
@@ -8,13 +18,10 @@ export type PendingEnrollmentRow = {
   class_name: string | null;
   enrollment_receipt_ref: string | null;
   onboarded_at: string;
-  invoice_id: string | null;
   invoice_amount: number;
   invoice_paid: number;
   invoice_balance: number;
-  fee_structure_name: string | null;
-  invoice_status: string | null;
-  due_date: string | null;
+  invoices: PendingEnrollmentInvoice[];
 };
 
 export async function getPendingEnrollments(options?: {
@@ -84,28 +91,42 @@ export async function getPendingEnrollments(options?: {
     invoicesByStudent.set(studentId, list);
   }
 
-  return students.flatMap((s) => {
-    const list = invoicesByStudent.get(s.id) ?? [null];
-    return list.map((inv) => {
-      const amount = inv ? Number(inv.amount) : 0;
-      const paid = inv ? Number(inv.amount_paid ?? 0) : 0;
-      return {
-        student_id: s.id,
-        student_number: s.student_id,
-        student_name: formatStudentName(s),
-        class_name: (s.classes as { name?: string } | null)?.name ?? null,
-        enrollment_receipt_ref: s.enrollment_receipt_ref,
-        onboarded_at: s.created_at ?? "",
-        invoice_id: inv?.id ?? null,
-        invoice_amount: amount,
-        invoice_paid: paid,
-        invoice_balance: Math.max(0, amount - paid),
-        fee_structure_name:
-          (inv?.fee_structures as { name?: string } | null)?.name ?? null,
-        invoice_status: inv?.status ?? null,
-        due_date: inv?.due_date ?? null,
-      };
-    });
+  return students.map((s) => {
+    const openInvoices = (invoicesByStudent.get(s.id) ?? [])
+      .map((inv) => {
+        const amount = Number(inv.amount);
+        const paid = Number(inv.amount_paid ?? 0);
+        const balance = Math.max(0, amount - paid);
+        return {
+          invoice_id: inv.id as string,
+          amount,
+          paid,
+          balance,
+          fee_structure_name:
+            (inv.fee_structures as { name?: string } | null)?.name ?? null,
+          status: (inv.status as string | null) ?? null,
+          due_date: (inv.due_date as string | null) ?? null,
+        };
+      })
+      .filter((inv) => inv.balance > 0 && inv.status !== "paid")
+      .sort((a, b) => {
+        const byDate = (a.due_date ?? "").localeCompare(b.due_date ?? "");
+        if (byDate !== 0) return byDate;
+        return (a.fee_structure_name ?? "").localeCompare(b.fee_structure_name ?? "");
+      });
+
+    return {
+      student_id: s.id,
+      student_number: s.student_id,
+      student_name: formatStudentName(s),
+      class_name: (s.classes as { name?: string } | null)?.name ?? null,
+      enrollment_receipt_ref: s.enrollment_receipt_ref,
+      onboarded_at: s.created_at ?? "",
+      invoice_amount: openInvoices.reduce((sum, inv) => sum + inv.amount, 0),
+      invoice_paid: openInvoices.reduce((sum, inv) => sum + inv.paid, 0),
+      invoice_balance: openInvoices.reduce((sum, inv) => sum + inv.balance, 0),
+      invoices: openInvoices,
+    };
   });
 }
 

@@ -39,7 +39,7 @@ export function ConfirmEnrollmentForm({
   const [cameraUploading, setCameraUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const fieldKey = row.invoice_id ?? row.student_id;
+  const fieldKey = row.student_id;
   const storagePath = schoolId ? `${schoolId}/payment-proofs` : null;
   const amountNum = Number(amount);
   const mismatch =
@@ -49,14 +49,13 @@ export function ConfirmEnrollmentForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!row.invoice_id) {
+    if (row.invoices.length === 0) {
       toast.error(t("enrollmentInvoiceMissing"));
       return;
     }
     setSubmitting(true);
     const result = await confirmPendingEnrollment({
       student_id: row.student_id,
-      invoice_id: row.invoice_id,
       amount: amountNum,
       method,
       reference: reference.trim() || undefined,
@@ -77,7 +76,7 @@ export function ConfirmEnrollmentForm({
     router.refresh();
   }
 
-  if (!row.invoice_id) {
+  if (row.invoices.length === 0) {
     return (
       <p className="text-sm text-amber-700 dark:text-amber-300">
         {t("enrollmentInvoiceMissing")}
@@ -97,16 +96,21 @@ export function ConfirmEnrollmentForm({
         </div>
         <div>
           <p className="text-xs text-stone-500">{t("enrollmentAmountDue")}</p>
-          <p className="font-medium">
-            {formatMoney(row.invoice_balance, currencyCode)}
-            {row.fee_structure_name || row.due_date ? (
-              <span className="ml-1 text-xs font-normal text-stone-500">
-                (
-                {[row.fee_structure_name, row.due_date].filter(Boolean).join(" · ")}
+          <p className="font-medium">{formatMoney(row.invoice_balance, currencyCode)}</p>
+          {row.invoices.length > 0 ? (
+            <p className="text-xs font-normal text-stone-500">
+              {row.invoices
+                .map((invoice) =>
+                  [
+                    invoice.fee_structure_name,
+                    formatMoney(invoice.balance, currencyCode),
+                  ]
+                    .filter(Boolean)
+                    .join(" ")
                 )
-              </span>
-            ) : null}
-          </p>
+                .join(" · ")}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -162,7 +166,7 @@ export function ConfirmEnrollmentForm({
       <div className="space-y-2">
         <Label>{t("enrollmentProofRequiredLabel")}</Label>
         <p className="text-xs text-stone-500">{t("enrollmentProofHint")}</p>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex w-full flex-col items-start gap-2">
           {storagePath ? (
             <>
               <FileUpload

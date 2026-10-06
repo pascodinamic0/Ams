@@ -2,11 +2,18 @@
 
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { deleteInvoice } from "@/lib/actions/invoices";
 import { toast } from "@/lib/toast";
 
-export function DeleteInvoiceButton({ id }: { id: string }) {
+export function DeleteInvoiceButton({
+  id,
+  compact = false,
+}: {
+  id: string;
+  compact?: boolean;
+}) {
   const router = useRouter();
   const t = useTranslations("finance");
 
@@ -24,8 +31,15 @@ export function DeleteInvoiceButton({ id }: { id: string }) {
   }
 
   return (
-    <Button variant="ghost" size="sm" className="text-red-600" onClick={handleDelete}>
-      {t("deleteInvoice")}
+    <Button
+      variant="ghost"
+      size="sm"
+      className={compact ? "h-8 w-8 px-0 text-red-600" : "text-red-600"}
+      aria-label={t("deleteInvoice")}
+      title={t("deleteInvoice")}
+      onClick={handleDelete}
+    >
+      {compact ? <Trash2 className="h-4 w-4" /> : t("deleteInvoice")}
     </Button>
   );
 }

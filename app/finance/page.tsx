@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BarChart3, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,48 @@ import {
   formatSchoolYear,
   getCurrentSchoolYearStart,
 } from "@/lib/academic/school-year";
+
+type FinanceMetric = {
+  label: string;
+  value: string;
+  hint: string;
+  href?: string;
+};
+
+function FinanceMetricCard({ metric }: { metric: FinanceMetric }) {
+  const card = (
+    <Card className="h-full transition-colors group-hover:border-primary/40 group-hover:bg-stone-50 dark:group-hover:bg-stone-900/40">
+      <CardHeader>
+        <CardTitle className="flex items-center justify-between gap-2">
+          <span>{metric.label}</span>
+          {metric.href ? (
+            <ChevronRight
+              className="h-4 w-4 shrink-0 text-stone-400 group-hover:text-primary"
+              aria-hidden
+            />
+          ) : null}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p className="text-3xl font-bold">{metric.value}</p>
+        <p className="text-sm text-stone-500">{metric.hint}</p>
+      </CardContent>
+    </Card>
+  );
+
+  if (!metric.href) {
+    return <div>{card}</div>;
+  }
+
+  return (
+    <Link
+      href={metric.href}
+      className="group rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400"
+    >
+      {card}
+    </Link>
+  );
+}
 
 export default async function FinanceDashboard() {
   const t = await getTranslations("finance");
@@ -71,13 +114,6 @@ export default async function FinanceDashboard() {
     href: "/finance/enrollments",
   };
 
-  const activityReportMetric = {
-    label: t("activityReportTitle"),
-    value: t("activityReportDashboardValue"),
-    hint: t("activityReportDashboardHint"),
-    href: "/finance/reports/activity/monthly",
-  };
-
   const metrics = isCashier
     ? [
         pendingEnrollmentMetric,
@@ -95,7 +131,6 @@ export default async function FinanceDashboard() {
       ]
     : [
         pendingEnrollmentMetric,
-        activityReportMetric,
         {
           label: t("schoolFeesCollected"),
           value: formatCurrency(kpis.collected),
@@ -142,31 +177,36 @@ export default async function FinanceDashboard() {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {metrics.map((metric) => {
-          const card = (
-            <Card>
-              <CardHeader>
-                <CardTitle>{metric.label}</CardTitle>
+        <FinanceMetricCard metric={metrics[0]} />
+
+        {!isCashier ? (
+          <Link
+            href="/finance/reports/activity/monthly"
+            className="group rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            <Card className="h-full border-primary/25 bg-primary/[0.04] transition-colors group-hover:border-primary/50 group-hover:bg-primary/[0.08]">
+              <CardHeader className="border-b-0 pb-0">
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4 shrink-0 text-primary" aria-hidden />
+                  {t("activityReportTitle")}
+                </CardTitle>
               </CardHeader>
-              <CardContent>
-                <p className="text-3xl font-bold">{metric.value}</p>
-                <p className="text-sm text-stone-500">{metric.hint}</p>
+              <CardContent className="flex flex-col gap-3 pt-3">
+                <p className="text-sm text-stone-600 dark:text-stone-400">
+                  {t("activityReportDashboardHint")}
+                </p>
+                <span className="inline-flex h-9 w-fit items-center gap-1 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground shadow-sm group-hover:bg-primary-hover">
+                  {t("activityReportDashboardValue")}
+                  <ChevronRight className="h-4 w-4" aria-hidden />
+                </span>
               </CardContent>
             </Card>
-          );
-          if ("href" in metric && metric.href) {
-            return (
-              <Link
-                key={metric.label}
-                href={metric.href}
-                className="rounded-xl transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-stone-400"
-              >
-                {card}
-              </Link>
-            );
-          }
-          return <div key={metric.label}>{card}</div>;
-        })}
+          </Link>
+        ) : null}
+
+        {metrics.slice(1).map((metric) => (
+          <FinanceMetricCard key={metric.label} metric={metric} />
+        ))}
       </div>
 
       {showBudget ? (

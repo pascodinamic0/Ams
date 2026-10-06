@@ -54,6 +54,7 @@ type Labels = {
   downloadInvoice: string;
   noOutstanding: string;
   noOutstandingDesc: string;
+  rowNumber: string;
   colStudentId: string;
   colStudent: string;
   colClass: string;
@@ -255,10 +256,12 @@ export function OutstandingBoard({
             <table className="min-w-full text-sm">
               <thead className="bg-stone-50 text-left dark:bg-stone-800/60">
                 <tr>
+                  <th className="w-14 px-3 py-2 font-medium tabular-nums">
+                    {labels.rowNumber}
+                  </th>
                   <th className="px-3 py-2 font-medium">{labels.colStudentId}</th>
                   <th className="px-3 py-2 font-medium">{labels.colStudent}</th>
                   <th className="px-3 py-2 font-medium">{labels.colClass}</th>
-                  <th className="px-3 py-2 font-medium">{labels.colFeeType}</th>
                   <th className="px-3 py-2 font-medium">{labels.amount}</th>
                   <th className="px-3 py-2 font-medium">{labels.paid}</th>
                   <th className="px-3 py-2 font-medium">{labels.balance}</th>
@@ -268,22 +271,20 @@ export function OutstandingBoard({
                 </tr>
               </thead>
               <tbody>
-                {filteredInvoices.map((inv) => (
+                {filteredInvoices.map((inv, index) => (
                   <tr
                     key={inv.id}
                     className="border-t border-stone-100 dark:border-stone-800"
                   >
+                    <td className="px-3 py-2 tabular-nums text-stone-500">
+                      {index + 1}
+                    </td>
                     <td className="px-3 py-2">
                       {inv.student_id || labels.emptyDash}
                     </td>
                     <td className="px-3 py-2 font-medium">{inv.student_name}</td>
                     <td className="px-3 py-2">
                       {inv.class_name || labels.emptyDash}
-                    </td>
-                    <td className="px-3 py-2">
-                      {inv.fee_structure_name ||
-                        inv.description ||
-                        labels.emptyDash}
                     </td>
                     <td className="px-3 py-2">{money(inv.amount)}</td>
                     <td className="px-3 py-2">{money(inv.amount_paid)}</td>

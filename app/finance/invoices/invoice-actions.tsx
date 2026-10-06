@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { DeleteInvoiceButton } from "./delete-button";
 
@@ -15,16 +16,18 @@ export function InvoiceActions({
   const locked = status === "paid";
 
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="flex items-center gap-1">
       {!locked ? (
         <Link
           href={`/finance/invoices?edit=${id}`}
-          className="inline-flex min-h-8 max-w-full items-center overflow-hidden whitespace-nowrap rounded-md px-3 text-xs hover:bg-stone-100 sm:text-sm dark:hover:bg-stone-800"
+          title={t("editInvoice")}
+          aria-label={t("editInvoice")}
+          className="inline-flex h-8 w-8 items-center justify-center rounded-md text-stone-600 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-stone-800"
         >
-          {t("editInvoice")}
+          <Pencil className="h-4 w-4" />
         </Link>
       ) : null}
-      <DeleteInvoiceButton id={id} />
+      <DeleteInvoiceButton id={id} compact />
     </div>
   );
 }
