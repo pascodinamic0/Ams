@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { expandStaffPin } from "@/lib/auth/staff-pin";
 import { createClient } from "@/lib/supabase/client";
 import { resolvePostAuthDestination } from "@/lib/actions/post-auth-redirect";
+import { readableErrorMessage } from "@/lib/errors/readable-message";
 import { toast } from "@/lib/toast";
 import { companyIdentity } from "@/lib/company/identity";
 
@@ -89,19 +90,22 @@ export default function LoginPage() {
 function LoginOAuthSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations("auth");
   const redirectParam = searchParams.get("redirect");
   const errorParam = searchParams.get("error");
 
   useEffect(() => {
     if (!errorParam) return;
 
-    toast.error(decodeURIComponent(errorParam));
+    toast.error(
+      readableErrorMessage(decodeURIComponent(errorParam), t("signInUnavailable"))
+    );
 
     const nextParams = new URLSearchParams(window.location.search);
     nextParams.delete("error");
     const query = nextParams.toString();
     router.replace(query ? `/login?${query}` : "/login", { scroll: false });
-  }, [errorParam, router]);
+  }, [errorParam, router, t]);
 
   return <GoogleAuthButton intent="login" redirect={redirectParam} />;
 }
@@ -165,7 +169,7 @@ function LoginFormContent() {
       toast.success(t("signInSuccess"));
       window.location.assign(destination);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("signInFailed"));
+      toast.error(readableErrorMessage(err, t("signInUnavailable")));
     } finally {
       setLoading(false);
     }

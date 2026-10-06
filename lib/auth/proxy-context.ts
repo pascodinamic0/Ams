@@ -9,7 +9,7 @@ import {
   readCachedAuth,
   writeCachedAuth,
 } from "@/lib/auth/auth-context-cache";
-import { supabaseFetch } from "@/lib/supabase/fetch";
+import { supabaseMiddlewareFetch } from "@/lib/supabase/fetch";
 import { normalizeRole, type UserRole } from "./rbac";
 import { shouldNeedStructureSetup } from "./structure-setup";
 
@@ -53,7 +53,7 @@ async function loadProxyAuthContext(
   if (!supabaseUrl || !supabaseKey) return null;
 
   const supabase = createServerClient(supabaseUrl, supabaseKey, {
-    global: { fetch: supabaseFetch },
+    global: { fetch: supabaseMiddlewareFetch },
     cookies: {
       getAll() {
         return cookies;

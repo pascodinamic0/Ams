@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatPersonName } from "@/lib/utils";
+import { formatStudentName } from "@/lib/utils";
 
 export type PendingEnrollmentRow = {
   student_id: string;
@@ -92,7 +92,7 @@ export async function getPendingEnrollments(options?: {
       return {
         student_id: s.id,
         student_number: s.student_id,
-        student_name: formatPersonName(s),
+        student_name: formatStudentName(s),
         class_name: (s.classes as { name?: string } | null)?.name ?? null,
         enrollment_receipt_ref: s.enrollment_receipt_ref,
         onboarded_at: s.created_at ?? "",

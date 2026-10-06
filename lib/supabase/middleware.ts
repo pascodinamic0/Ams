@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { type User } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 import { clearAuthHeaders } from "@/lib/auth/request-auth";
-import { supabaseFetch } from "@/lib/supabase/fetch";
+import { supabaseMiddlewareFetch } from "@/lib/supabase/fetch";
 import { readCookieSession } from "@/lib/supabase/session-cookie";
 
 export async function updateSession(request: NextRequest): Promise<{
@@ -37,7 +37,7 @@ export async function updateSession(request: NextRequest): Promise<{
     supabaseUrl,
     supabaseKey,
     {
-      global: { fetch: supabaseFetch },
+      global: { fetch: supabaseMiddlewareFetch },
       cookies: {
         getAll() {
           return request.cookies.getAll();

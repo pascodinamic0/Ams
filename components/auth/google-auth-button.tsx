@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { buildAuthCallbackUrl } from "@/lib/auth/app-url";
 import type { GoogleOAuthIntent } from "@/lib/auth/google-oauth";
 import { createClient } from "@/lib/supabase/client";
+import { readableErrorMessage } from "@/lib/errors/readable-message";
 import { toast } from "@/lib/toast";
 
 function GoogleIcon() {
@@ -69,7 +70,7 @@ export function GoogleAuthButton({
 
       window.location.assign(data.url);
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("signInFailed"));
+      toast.error(readableErrorMessage(err, t("signInUnavailable")));
       setLoading(false);
     }
   }

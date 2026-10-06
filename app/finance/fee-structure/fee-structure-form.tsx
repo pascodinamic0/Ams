@@ -16,9 +16,10 @@ import { toast } from "@/lib/toast";
 interface Props {
   branchId: string;
   classes: { id: string; name: string }[];
+  onClassChange?: (classId: string) => void;
 }
 
-export function FeeStructureForm({ branchId, classes }: Props) {
+export function FeeStructureForm({ branchId, classes, onClassChange }: Props) {
   const router = useRouter();
   const t = useTranslations("finance");
   const tc = useTranslations("common");
@@ -49,7 +50,11 @@ export function FeeStructureForm({ branchId, classes }: Props) {
       onSubmit={onSubmit}
       className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-6"
     >
-      <FeeStructureFields classes={classes} schoolYearLabel={tc("schoolYear")} />
+      <FeeStructureFields
+        classes={classes}
+        schoolYearLabel={tc("schoolYear")}
+        onClassChange={onClassChange}
+      />
     </FormWrapper>
   );
 }
@@ -57,9 +62,11 @@ export function FeeStructureForm({ branchId, classes }: Props) {
 function FeeStructureFields({
   classes,
   schoolYearLabel,
+  onClassChange,
 }: {
   classes: { id: string; name: string }[];
   schoolYearLabel: string;
+  onClassChange?: (classId: string) => void;
 }) {
   const t = useTranslations("finance");
   const tc = useTranslations("common");
@@ -104,7 +111,11 @@ function FeeStructureFields({
         <Label htmlFor="class_id">{t("classOptional")}</Label>
         <select
           id="class_id"
-          {...register("class_id")}
+          {...register("class_id", {
+            onChange: (event) => {
+              onClassChange?.(event.target.value);
+            },
+          })}
           className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
         >
           <option value="">{t("allClasses")}</option>
@@ -119,8 +130,12 @@ function FeeStructureFields({
         <Label htmlFor="description">{tc("description")}</Label>
         <Input id="description" {...register("description")} />
       </div>
-      <div className="flex items-end">
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <div className="flex items-end sm:col-span-2">
+        <Button
+          type="submit"
+          className="h-auto w-full whitespace-normal text-center leading-tight"
+          disabled={isSubmitting}
+        >
           {t("addFeeStructure")}
         </Button>
       </div>
