@@ -22,6 +22,37 @@ interface FormWrapperProps<T extends FieldValues> {
   className?: string;
 }
 
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  if (!value || typeof value !== "object") return false;
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+/**
+ * Zod messages are translation keys. React Hook Form also stores the input
+ * element on `ref`; walking that node overflows the stack.
+ */
+function translateFieldMessages(
+  node: unknown,
+  translate: (message: string) => string | null
+) {
+  if (Array.isArray(node)) {
+    for (const item of node) translateFieldMessages(item, translate);
+    return;
+  }
+  if (!isPlainRecord(node)) return;
+
+  if (typeof node.message === "string") {
+    const translated = translate(node.message);
+    if (translated) node.message = translated;
+  }
+
+  for (const [key, value] of Object.entries(node)) {
+    if (key === "ref") continue;
+    translateFieldMessages(value, translate);
+  }
+}
+
 /** Stable JSON for comparing two form payloads (key order independent). */
 function stableStringify(value: unknown): string {
   if (value === null || typeof value !== "object") {
@@ -53,15 +84,9 @@ export function FormWrapper<T extends FieldValues>({
     return async (values: T, context: unknown, options: unknown) => {
       // @ts-expect-error - Zod 4 / RHF resolver type mismatch
       const result = await base(values, context, options);
-      const walk = (obj: unknown) => {
-        if (!obj || typeof obj !== "object") return;
-        const rec = obj as Record<string, unknown>;
-        if (typeof rec.message === "string" && tv.has(rec.message)) {
-          rec.message = tv(rec.message);
-        }
-        for (const value of Object.values(rec)) walk(value);
-      };
-      walk(result.errors);
+      translateFieldMessages(result.errors, (message) =>
+        tv.has(message) ? tv(message) : null
+      );
       return result;
     };
   }, [schema, tv]);
