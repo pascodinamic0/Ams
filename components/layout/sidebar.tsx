@@ -38,6 +38,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useShellBadges } from "@/components/layout/shell-badges-provider";
 import { isNavItemActive } from "@/lib/layout/nav-active";
+import { useHiddenNavHrefs } from "@/components/layout/feature-nav";
 
 const iconClass = "h-4 w-4";
 
@@ -55,6 +56,7 @@ type NavLabels = {
   roles: string;
   auditLogs: string;
   features: string;
+  releases: string;
   outreach: string;
   messages: string;
   publicWebsite: string;
@@ -146,6 +148,7 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/admin/roles", labelKey: "roles", icon: icon.roles },
     { href: "/admin/audit", labelKey: "auditLogs", icon: icon.audit },
     { href: "/admin/features", labelKey: "features", icon: icon.features },
+    { href: "/admin/releases", labelKey: "releases", icon: icon.events },
     { href: "/outreach", labelKey: "outreach", icon: icon.outreach },
     { href: "/messages", labelKey: "messages", icon: icon.chat },
   ],
@@ -340,7 +343,10 @@ interface SidebarProps {
 
 export function Sidebar({ role = "student" }: SidebarProps) {
   const pathname = usePathname();
-  const navItems = getNavForRole(role);
+  const hiddenHrefs = useHiddenNavHrefs();
+  const navItems = getNavForRole(role).filter(
+    (item) => !hiddenHrefs.includes(item.href)
+  );
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const tMessages = useTranslations("messages");
@@ -354,9 +360,10 @@ export function Sidebar({ role = "student" }: SidebarProps) {
         const isActive = isNavItemActive(pathname, item.href, navHrefs);
         const showUnreadBadge = item.href === "/messages" && unreadMessages > 0;
         return (
-          <Link
+            <Link
             key={item.href}
             href={item.href}
+            prefetch={false}
             className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
               isActive
                 ? "bg-primary-light text-primary-hover dark:bg-primary-light/60 dark:text-primary"

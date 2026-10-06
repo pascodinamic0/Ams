@@ -1,6 +1,8 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { getSchoolFeatureMatrix } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
+import { isPlatformOwner } from "@/lib/features/owner";
 import { getTranslations } from "next-intl/server";
 import { FeatureToggleGrid } from "./feature-toggle-grid";
 
@@ -12,6 +14,7 @@ export default async function FeaturesPage() {
   ]);
 
   const isSuperAdmin = profile?.role === "super_admin";
+  const canManage = isPlatformOwner(profile?.email, profile?.role);
 
   return (
     <div className="space-y-6">
@@ -27,11 +30,21 @@ export default async function FeaturesPage() {
           <p className="text-sm text-stone-500 dark:text-stone-400">{t("loadingFeatures")}</p>
         }
       >
-        <FeatureToggleGrid
-          schools={schools}
-          isSuperAdmin={isSuperAdmin}
-          defaultSchoolId={profile?.school_id}
-        />
+        <>
+          <FeatureToggleGrid
+            schools={schools}
+            isSuperAdmin={isSuperAdmin}
+            canManage={canManage}
+            defaultSchoolId={profile?.school_id}
+          />
+          {canManage ? (
+            <p className="text-sm text-stone-500">
+              <Link href="/admin/releases" className="font-medium text-primary hover:underline">
+                {t("openReleases")}
+              </Link>
+            </p>
+          ) : null}
+        </>
       </Suspense>
     </div>
   );

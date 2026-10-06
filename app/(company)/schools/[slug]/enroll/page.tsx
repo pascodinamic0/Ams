@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { OnlineEnrollmentForm } from "@/components/schools/online-enrollment-form";
 import { SchoolInnerPage } from "@/components/schools/school-inner-page";
 import { getSchoolBySlug, getPublicClassesForSchool } from "@/lib/db";
+import { isSchoolFeatureEnabled } from "@/lib/features/access";
 import { getCampusVisitSlots } from "@/lib/db/public-events";
 
 export default async function SchoolEnrollPage({
@@ -14,8 +15,24 @@ export default async function SchoolEnrollPage({
   const school = await getSchoolBySlug(slug);
   if (!school) notFound();
 
+  const admissionsOpen = await isSchoolFeatureEnabled(school.id, "online_admissions");
   const t = await getTranslations("schools.enrollment");
   const tChrome = await getTranslations("schools.chrome");
+
+  if (!admissionsOpen) {
+    return (
+      <SchoolInnerPage
+        school={school}
+        title={t("onlineEnrollment")}
+        description={t("admissionsClosed")}
+        backHref={`/schools/${slug}`}
+        backLabel={tChrome("backToSchoolName", { schoolName: school.name })}
+      >
+        <p className="text-sm text-stone-600">{t("admissionsClosed")}</p>
+      </SchoolInnerPage>
+    );
+  }
+
   const campusVisitSlots = await getCampusVisitSlots(school.id);
   const publicClasses = await getPublicClassesForSchool(school.id);
   const hasVisitSlots = campusVisitSlots.length > 0;

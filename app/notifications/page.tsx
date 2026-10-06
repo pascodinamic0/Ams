@@ -1,4 +1,5 @@
 import { format, formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { getNotifications } from "@/lib/db/notifications";
@@ -7,6 +8,11 @@ import {
   markNotificationRead,
 } from "./actions";
 import { getTranslations } from "next-intl/server";
+
+function appPath(url: string | null | undefined): string | null {
+  if (!url || !url.startsWith("/") || url.startsWith("//")) return null;
+  return url;
+}
 
 function formatNotificationTime(dateStr: string) {
   const date = new Date(dateStr);
@@ -69,7 +75,9 @@ export default async function NotificationsPage() {
         />
       ) : (
         <ul className="divide-y divide-stone-200 overflow-hidden rounded-xl border border-stone-200 bg-white dark:divide-stone-800 dark:border-stone-700 dark:bg-stone-900">
-          {notifications.map((notification) => (
+          {notifications.map((notification) => {
+            const href = appPath(notification.url);
+            return (
             <li
               key={notification.id}
               className={`px-4 py-4 sm:px-5 ${
@@ -88,7 +96,13 @@ export default async function NotificationsPage() {
                       />
                     )}
                     <p className="font-medium text-stone-900 dark:text-white">
-                      {notification.title}
+                      {href ? (
+                        <Link href={href} className="hover:underline">
+                          {notification.title}
+                        </Link>
+                      ) : (
+                        notification.title
+                      )}
                     </p>
                   </div>
                   {notification.body && (
@@ -110,7 +124,8 @@ export default async function NotificationsPage() {
                 )}
               </div>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </div>

@@ -14,6 +14,7 @@ interface PayrollMonthActionsProps {
   schoolId?: string;
   branchId?: string;
   label: string;
+  compact?: boolean;
 }
 
 export function PayrollMonthActions({
@@ -22,6 +23,7 @@ export function PayrollMonthActions({
   schoolId,
   branchId,
   label,
+  compact = false,
 }: PayrollMonthActionsProps) {
   const t = useTranslations("finance");
   const router = useRouter();
@@ -39,8 +41,13 @@ export function PayrollMonthActions({
 
   return (
     <>
-      <Button variant="ghost" className="text-red-600" onClick={() => setConfirmOpen(true)}>
-        {t("deletePayrollMonth", { label })}
+      <Button
+        variant="ghost"
+        size={compact ? "sm" : "md"}
+        className="text-red-600"
+        onClick={() => setConfirmOpen(true)}
+      >
+        {compact ? t("deletePayrollMonthButton") : t("deletePayrollMonth", { label })}
       </Button>
       <Dialog
         isOpen={confirmOpen}

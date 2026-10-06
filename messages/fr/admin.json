@@ -10,9 +10,9 @@
   "rolesSubtitle": "Rôles RBAC et permissions associées aux ressources",
   "auditTitle": "Journaux d'audit",
   "auditSubtitle": "Piste d'audit système pour les entités clés",
-  "featuresTitle": "Fonctionnalités",
-  "featuresSubtitleSuperAdmin": "Choisissez une école, puis activez ou désactivez les modules pour cette école.",
-  "featuresSubtitleSchool": "Activez ou désactivez les modules pour votre école.",
+  "featuresTitle": "Modules de l'école",
+  "featuresSubtitleSuperAdmin": "Activez ou désactivez les modules pour chaque école. Seul le propriétaire de la plateforme peut changer un interrupteur. Les écoles voient la même liste dans Facturation.",
+  "featuresSubtitleSchool": "Ces modules sont réglés par le propriétaire de la plateforme.",
   "loadingFeatures": "Chargement des fonctionnalités…",
   "websitesTitle": "Modèles de site web",
   "websitesPageTitle": "Modèles de site web",
@@ -188,25 +188,123 @@
   "filterStudents": "Élèves",
   "filterParents": "Parents",
   "filterAnalytics": "Analytique",
-  "selectSchoolModules": "Choisissez l'école dont vous activez ou désactivez les modules.",
+  "selectSchoolModules": "Choisissez une école, puis activez ou désactivez ses modules. Un module désactivé disparaît de la barre latérale de cette école.",
+  "featuresReadOnly": "Vous pouvez consulter cette liste. Seul le propriétaire de la plateforme peut changer un interrupteur.",
+  "openReleases": "Voir les fonctionnalités en attente d'approbation",
+  "releasesTitle": "Fonctionnalités prêtes",
+  "releasesSubtitle": "Chaque carte est une fonctionnalité déjà construite et parcourue. Approuver la met dans l'application en ligne. Ensuite, activez-la par école dans Fonctionnalités.",
+  "awaitingReleasesTitle": "En attente de vous",
+  "awaitingReleasesSubtitle": "Approuvez une fonctionnalité ici pour la fusionner dans l'application en ligne. Tant qu'elle attend, les écoles continuent sans elle.",
+  "noReleasesWaiting": "Rien n'attend. La prochaine fonctionnalité terminée arrivera ici et dans vos notifications.",
+  "approveRelease": "Approuver et mettre en ligne",
+  "dismissRelease": "Écarter",
+  "approveReleaseHint": "Approuver fusionne la pull request en production. Écarter la ferme et laisse la fonctionnalité de côté.",
+  "releaseApproved": "Approuvée. Elle est en cours de fusion dans l'application en ligne.",
+  "releaseDismissed": "Écartée. La pull request est fermée.",
+  "releaseDismissedPrOpen": "Écartée ici. La pull request est restée ouverte car GitHub n'est pas connecté.",
+  "openPreview": "Ouvrir l'aperçu",
+  "openPullRequest": "Ouvrir la pull request",
+  "watchWalkthrough": "Voir le parcours",
+  "releaseFeatureKey": "Clé du module : {key}. Une fois en ligne, activez-le par école dans Fonctionnalités.",
+  "releaseStatus": {
+    "awaiting": "Prête à approuver",
+    "approved": "En ligne",
+    "dismissed": "Écartée"
+  },
+  "featureGroups": {
+    "academic": "Académique",
+    "finance": "Finance",
+    "operations": "Opérations",
+    "portals": "Portails",
+    "communication": "Communication",
+    "website": "Site web"
+  },
   "managingFeaturesFor": "Gestion des fonctionnalités pour",
   "selectSchoolToManage": "Sélectionnez une école pour gérer ses fonctionnalités.",
   "features": {
+    "students": {
+      "label": "Élèves",
+      "description": "Dossiers élèves, inscriptions et analytique élèves"
+    },
     "online_admissions": {
       "label": "Inscriptions en ligne",
-      "description": "Formulaire d'admission public sur le site de l'école"
+      "description": "Formulaire d'admission public et bureau des admissions"
     },
-    "parent_portal": {
-      "label": "Portail parents",
-      "description": "Tableau de bord et messagerie des parents"
+    "classes": {
+      "label": "Classes",
+      "description": "Classes, sections et listes des enseignants"
     },
-    "student_portal": {
-      "label": "Portail élèves",
-      "description": "Devoirs et notes des élèves"
+    "subjects": {
+      "label": "Matières",
+      "description": "Catalogue des matières de l'école"
     },
-    "messaging": {
-      "label": "Messagerie",
-      "description": "Messagerie interne entre utilisateurs"
+    "timetable": {
+      "label": "Emploi du temps",
+      "description": "Emploi du temps pour le personnel, les parents et les élèves"
+    },
+    "attendance": {
+      "label": "Présence",
+      "description": "Présence quotidienne et rapports de présence"
+    },
+    "gradebook": {
+      "label": "Carnet de notes",
+      "description": "Notes pour les enseignants, les élèves et les parents"
+    },
+    "assignments": {
+      "label": "Devoirs",
+      "description": "Devoirs et contenus des cours manqués"
+    },
+    "exams": {
+      "label": "Examens",
+      "description": "Sessions d'examen pour les enseignants"
+    },
+    "report_cards": {
+      "label": "Bulletins",
+      "description": "Bulletins pour les enseignants et les élèves"
+    },
+    "discipline": {
+      "label": "Discipline",
+      "description": "Incidents de discipline et suivi"
+    },
+    "tasks": {
+      "label": "Tâches",
+      "description": "Tableau de tâches interne du personnel"
+    },
+    "fee_structure": {
+      "label": "Structure des frais",
+      "description": "Montants des frais par classe et par trimestre"
+    },
+    "invoices": {
+      "label": "Factures",
+      "description": "Factures, soldes impayés et remise des paiements d'inscription"
+    },
+    "payments": {
+      "label": "Paiements",
+      "description": "Paiements de frais enregistrés"
+    },
+    "payroll": {
+      "label": "Paie",
+      "description": "Cycles de paie du personnel"
+    },
+    "expenses": {
+      "label": "Dépenses",
+      "description": "Dépenses de l'école et reçus"
+    },
+    "budget": {
+      "label": "Budget",
+      "description": "Plans budgétaires face aux dépenses réelles"
+    },
+    "fee_reminders": {
+      "label": "Rappels de frais",
+      "description": "Rappels pour les frais impayés"
+    },
+    "finance_reports": {
+      "label": "Rapports financiers",
+      "description": "Rapports financiers et analytique finance"
+    },
+    "online_payments": {
+      "label": "Paiements en ligne",
+      "description": "Portail de paiement des frais pour les parents"
     },
     "library": {
       "label": "Bibliothèque",
@@ -216,9 +314,33 @@
       "label": "Transport",
       "description": "Itinéraires de bus et transport des élèves"
     },
-    "online_payments": {
-      "label": "Paiements en ligne",
-      "description": "Portail de paiement des frais pour les parents"
+    "events": {
+      "label": "Événements",
+      "description": "Événements pour le personnel, les parents et les élèves"
+    },
+    "staff_directory": {
+      "label": "Annuaire du personnel",
+      "description": "Liste du personnel des opérations"
+    },
+    "parent_portal": {
+      "label": "Portail parents",
+      "description": "Tout l'espace parents"
+    },
+    "student_portal": {
+      "label": "Portail élèves",
+      "description": "Tout l'espace élèves"
+    },
+    "messaging": {
+      "label": "Messagerie",
+      "description": "Messagerie interne entre utilisateurs"
+    },
+    "outreach": {
+      "label": "Annonces",
+      "description": "Annonces et campagnes"
+    },
+    "public_website": {
+      "label": "Site public",
+      "description": "Éditeur du site public de l'école"
     }
   }
 }

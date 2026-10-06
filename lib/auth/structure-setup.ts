@@ -4,6 +4,7 @@ export const STRUCTURE_SETUP_EXEMPT_PREFIXES = [
   "/settings",
   "/pending",
   "/billing",
+  "/module-off",
   "/auth",
   "/login",
 ];

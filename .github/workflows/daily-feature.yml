@@ -1,4 +1,4 @@
-name: Daily feature tour and brief
+name: Daily feature tour and in-app release
 
 on:
   pull_request:
@@ -55,13 +55,13 @@ jobs:
           TOUR_UPLOAD_PREFIX: pr-${{ github.event.pull_request.number }}-run-${{ github.run_id }}
         run: node scripts/upload-daily-feature-tours.mjs
 
-      - name: Send founder brief email
+      - name: Publish in-app release for the platform owner
         env:
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-          RESEND_FROM: ${{ secrets.RESEND_FROM }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           OWNER_EMAIL: ${{ secrets.OWNER_EMAIL }}
           PREVIEW_URL: ${{ steps.vercel.outputs.url }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           RUN_DATE: pr-${{ github.event.pull_request.number }}-run-${{ github.run_id }}
-        run: node scripts/send-daily-feature-brief.mjs
+        run: node scripts/publish-daily-feature-release.mjs

@@ -1,6 +1,7 @@
 {
   "featureName": "Example � overdue fees at a glance",
   "gapClosed": "Principals reconcile fees in spreadsheets until term end; this surfaces overdue counts on login.",
+  "featureKey": "invoices",
   "steps": [
     {
       "letter": "A",

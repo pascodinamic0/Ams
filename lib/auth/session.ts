@@ -1,5 +1,7 @@
 import { cache } from "react";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { AUTH_HEADERS, readEncodedHeader } from "@/lib/auth/request-auth";
 
 export type CurrentProfile = {
   id: string;
@@ -11,6 +13,19 @@ export type CurrentProfile = {
 };
 
 export const getCurrentProfile = cache(async (): Promise<CurrentProfile | null> => {
+  const headerStore = await headers();
+  const headerUserId = headerStore.get(AUTH_HEADERS.userId);
+  if (headerUserId) {
+    return {
+      id: headerUserId,
+      name: readEncodedHeader(headerStore.get(AUTH_HEADERS.name)),
+      role: headerStore.get(AUTH_HEADERS.role) ?? "student",
+      school_id: headerStore.get(AUTH_HEADERS.schoolId),
+      branch_id: headerStore.get(AUTH_HEADERS.branchId),
+      email: headerStore.get(AUTH_HEADERS.email),
+    };
+  }
+
   const supabase = await createClient();
   const {
     data: { user },

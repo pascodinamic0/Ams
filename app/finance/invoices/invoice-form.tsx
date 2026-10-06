@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -12,6 +12,7 @@ import { FormWrapper } from "@/components/forms/form-wrapper";
 import {
   createInvoice,
   generateInvoicesFromFeeStructure,
+  searchInvoiceStudents,
   updateInvoice,
 } from "@/lib/actions/invoices";
 import { invoiceSchema, type InvoiceFormData } from "@/lib/validations/finance";
@@ -23,7 +24,34 @@ type StudentOption = {
   name: string;
   student_id: string | null;
   class_name: string | null;
+  status?: string;
 };
+
+const SUGGESTION_LIMIT = 8;
+
+function studentSearchRank(student: StudentOption, term: string) {
+  const name = student.name.toLowerCase();
+  if (name.startsWith(term)) return 0;
+  if (name.split(/\s+/).some((part) => part.startsWith(term))) return 1;
+  if (name.includes(term)) return 2;
+  return 3;
+}
+
+function HighlightMatch({ text, term }: { text: string; term: string }) {
+  const needle = term.trim();
+  if (!needle) return text;
+  const index = text.toLowerCase().indexOf(needle.toLowerCase());
+  if (index < 0) return text;
+  return (
+    <>
+      {text.slice(0, index)}
+      <span className="font-semibold text-foreground">
+        {text.slice(index, index + needle.length)}
+      </span>
+      {text.slice(index + needle.length)}
+    </>
+  );
+}
 
 type FeeStructureOption = {
   id: string;
@@ -167,22 +195,148 @@ function InvoiceFormFields({
   bulkLoading: boolean;
 }) {
   const t = useTranslations("finance");
+  const tc = useTranslations("common");
   const {
     register,
     formState: { errors, isSubmitting },
     setValue,
+    getValues,
   } = useFormContext<InvoiceFormData>();
   const selectedStructureId = useWatch({ name: "fee_structure_id" });
-  const [studentQuery, setStudentQuery] = useState("");
+  const selectedStudentId = useWatch({ name: "student_id" });
+  const [studentQuery, setStudentQuery] = useState(() => {
+    const id = getValues("student_id");
+    return students.find((student) => student.id === id)?.name ?? "";
+  });
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [remoteStudents, setRemoteStudents] = useState<StudentOption[]>([]);
+  const [remoteReady, setRemoteReady] = useState(false);
+  const suggestRootRef = useRef<HTMLDivElement>(null);
+  const activeOptionRef = useRef<HTMLButtonElement>(null);
 
-  const filteredStudents = useMemo(() => {
-    const term = studentQuery.trim().toLowerCase();
-    if (!term) return students;
-    return students.filter((s) => {
-      const haystack = `${s.name} ${s.student_id ?? ""} ${s.class_name ?? ""}`.toLowerCase();
-      return haystack.includes(term);
-    });
-  }, [students, studentQuery]);
+  const studentTerm = studentQuery.trim().toLowerCase();
+  const localMatches = useMemo(() => {
+    if (!studentTerm) return [];
+    return students
+      .filter((student) => {
+        const haystack = `${student.name} ${student.student_id ?? ""} ${student.class_name ?? ""}`.toLowerCase();
+        return haystack.includes(studentTerm);
+      })
+      .sort((a, b) => {
+        const rank = studentSearchRank(a, studentTerm) - studentSearchRank(b, studentTerm);
+        if (rank !== 0) return rank;
+        return a.name.localeCompare(b.name);
+      });
+  }, [students, studentTerm]);
+  const pendingRemote = remoteStudents.filter((student) => {
+    const haystack = `${student.name} ${student.student_id ?? ""} ${student.class_name ?? ""}`.toLowerCase();
+    return haystack.includes(studentTerm);
+  });
+  const matchedStudents = remoteReady
+    ? remoteStudents
+    : pendingRemote.length > 0
+      ? pendingRemote
+      : localMatches;
+
+  useEffect(() => {
+    if (!studentTerm) {
+      setRemoteStudents([]);
+      setRemoteReady(false);
+      return;
+    }
+
+    let cancelled = false;
+    setRemoteReady(false);
+    const handle = setTimeout(() => {
+      void searchInvoiceStudents(studentQuery.trim()).then((rows) => {
+        if (cancelled) return;
+        setRemoteStudents(rows);
+        setRemoteReady(true);
+        setActiveIndex(0);
+      });
+    }, 200);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(handle);
+    };
+  }, [studentQuery, studentTerm]);
+  const visibleStudents = matchedStudents.slice(0, SUGGESTION_LIMIT);
+  const hiddenStudentCount = Math.max(0, matchedStudents.length - visibleStudents.length);
+  const selectedStudent =
+    students.find((student) => student.id === selectedStudentId) ??
+    remoteStudents.find((student) => student.id === selectedStudentId) ??
+    null;
+
+  useEffect(() => {
+    if (!suggestionsOpen) return;
+    function handlePointer(event: MouseEvent) {
+      if (!suggestRootRef.current?.contains(event.target as Node)) {
+        setSuggestionsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handlePointer);
+    return () => document.removeEventListener("mousedown", handlePointer);
+  }, [suggestionsOpen]);
+
+  useEffect(() => {
+    activeOptionRef.current?.scrollIntoView({ block: "nearest" });
+  }, [activeIndex, suggestionsOpen, studentTerm]);
+
+  const wasBillingAllRef = useRef(billingAll);
+  useEffect(() => {
+    if (wasBillingAllRef.current && !billingAll) {
+      const id = getValues("student_id");
+      const match = students.find((student) => student.id === id);
+      if (match) setStudentQuery(match.name);
+    }
+    wasBillingAllRef.current = billingAll;
+  }, [billingAll, getValues, students]);
+
+  function selectStudent(student: StudentOption) {
+    setValue("student_id", student.id, { shouldValidate: true, shouldDirty: true });
+    setStudentQuery(student.name);
+    setSuggestionsOpen(false);
+  }
+
+  function onStudentQueryChange(value: string) {
+    setStudentQuery(value);
+    setActiveIndex(0);
+    const term = value.trim().toLowerCase();
+    setSuggestionsOpen(term.length > 0);
+    const exact = [...remoteStudents, ...students].filter(
+      (student, index, pool) =>
+        student.name.toLowerCase() === term &&
+        pool.findIndex((item) => item.id === student.id) === index
+    );
+    if (exact.length === 1) {
+      setValue("student_id", exact[0].id, { shouldValidate: true, shouldDirty: true });
+      return;
+    }
+    const current = students.find((student) => student.id === getValues("student_id"));
+    if (!current || current.name !== value) {
+      setValue("student_id", "", { shouldValidate: false, shouldDirty: true });
+    }
+  }
+
+  function onStudentQueryKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Escape") {
+      setSuggestionsOpen(false);
+      return;
+    }
+    if (!suggestionsOpen || visibleStudents.length === 0) return;
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setActiveIndex((index) => Math.min(index + 1, visibleStudents.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      setActiveIndex((index) => Math.max(index - 1, 0));
+    } else if (event.key === "Enter" && visibleStudents[activeIndex]) {
+      event.preventDefault();
+      selectStudent(visibleStudents[activeIndex]);
+    }
+  }
 
   function onStructureChange(e: React.ChangeEvent<HTMLSelectElement>) {
     const id = e.target.value;
@@ -217,34 +371,104 @@ function InvoiceFormFields({
       ) : null}
 
       {!billingAll ? (
-        <div className="sm:col-span-2 lg:col-span-1">
-          <Label htmlFor="student_search">{t("colStudent")}</Label>
-          <Input
-            id="student_search"
-            value={studentQuery}
-            onChange={(e) => setStudentQuery(e.target.value)}
-            placeholder={t("searchStudentsPlaceholder")}
-            className="mb-2"
-          />
-          <Label htmlFor="student_id" required>
-            {t("selectStudent")}
+        <div ref={suggestRootRef} className="relative sm:col-span-2 lg:col-span-1">
+          <Label htmlFor="student_search" required>
+            {t("colStudent")}
           </Label>
-          <select
-            id="student_id"
-            {...register("student_id")}
-            className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
-          >
-            <option value="">{t("selectStudent")}</option>
-            {filteredStudents.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-                {s.student_id ? ` (${s.student_id})` : ""}
-                {s.class_name ? ` · ${s.class_name}` : ""}
-              </option>
-            ))}
-          </select>
-          {filteredStudents.length === 0 ? (
-            <p className="mt-1 text-sm text-stone-500">{t("noStudentsMatchSearch")}</p>
+          <input type="hidden" {...register("student_id")} />
+          <div className="relative mt-1">
+            <Input
+              id="student_search"
+              role="combobox"
+              aria-autocomplete="list"
+              aria-expanded={suggestionsOpen}
+              aria-controls="student_search_list"
+              aria-activedescendant={
+                suggestionsOpen && visibleStudents[activeIndex]
+                  ? `student_opt_${visibleStudents[activeIndex].id}`
+                  : undefined
+              }
+              value={studentQuery}
+              autoComplete="off"
+              onChange={(e) => onStudentQueryChange(e.target.value)}
+              onFocus={() => {
+                if (studentQuery.trim()) setSuggestionsOpen(true);
+              }}
+              onKeyDown={onStudentQueryKeyDown}
+              placeholder={t("searchStudentsPlaceholder")}
+              className={studentQuery ? "pr-9" : undefined}
+            />
+            {studentQuery ? (
+              <button
+                type="button"
+                aria-label={t("clearStudentSearch")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground hover:text-foreground"
+                onClick={() => onStudentQueryChange("")}
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            ) : null}
+            {suggestionsOpen ? (
+            <ul
+              id="student_search_list"
+              role="listbox"
+              aria-label={t("searchStudentsPlaceholder")}
+              className="absolute left-0 right-0 top-full z-30 mt-1 max-h-64 overflow-auto rounded-lg border border-border bg-surface py-1 shadow-lg"
+            >
+              {visibleStudents.length === 0 ? (
+                <li className="px-3 py-2 text-sm text-stone-500">
+                  {remoteReady ? t("noStudentsMatchSearch") : tc("loading")}
+                </li>
+              ) : (
+                visibleStudents.map((student, index) => {
+                  const statusLabel =
+                    student.status === "inactive"
+                      ? tc("inactive")
+                      : student.status === "pending"
+                        ? tc("pending")
+                        : null;
+                  const meta = [student.student_id, student.class_name, statusLabel]
+                    .filter(Boolean)
+                    .join(" · ");
+                  const active = index === activeIndex;
+                  return (
+                    <li key={student.id} role="presentation">
+                      <button
+                        id={`student_opt_${student.id}`}
+                        ref={active ? activeOptionRef : undefined}
+                        type="button"
+                        role="option"
+                        aria-selected={selectedStudentId === student.id}
+                        className={`flex w-full flex-col px-3 py-2 text-left text-sm ${
+                          active ? "bg-stone-100 dark:bg-stone-800" : "hover:bg-stone-50 dark:hover:bg-stone-900"
+                        }`}
+                        onMouseDown={(event) => event.preventDefault()}
+                        onMouseEnter={() => setActiveIndex(index)}
+                        onClick={() => selectStudent(student)}
+                      >
+                        <span>
+                          <HighlightMatch text={student.name} term={studentTerm} />
+                        </span>
+                        {meta ? <span className="text-xs text-stone-500">{meta}</span> : null}
+                      </button>
+                    </li>
+                  );
+                })
+              )}
+              {hiddenStudentCount > 0 ? (
+                <li className="px-3 py-2 text-xs text-stone-500">
+                  {t("moreStudentMatches", { count: hiddenStudentCount })}
+                </li>
+              ) : null}
+            </ul>
+            ) : null}
+          </div>
+          {selectedStudent && !suggestionsOpen ? (
+            <p className="mt-1 text-xs text-stone-500">
+              {[selectedStudent.student_id, selectedStudent.class_name].filter(Boolean).join(" · ")}
+            </p>
           ) : null}
           {errors.student_id && !billingAll ? (
             <p className="mt-1 text-sm text-red-500">{errors.student_id.message}</p>

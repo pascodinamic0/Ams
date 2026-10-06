@@ -9,16 +9,23 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { toggleSchoolFeature } from "@/lib/actions/features";
+import { FEATURE_GROUPS } from "@/lib/features/catalog";
 import { toast } from "@/lib/toast";
 import type { SchoolFeatureRow } from "@/lib/db";
 
 type Props = {
   schools: SchoolFeatureRow[];
   isSuperAdmin: boolean;
+  canManage: boolean;
   defaultSchoolId?: string | null;
 };
 
-export function FeatureToggleGrid({ schools, isSuperAdmin, defaultSchoolId }: Props) {
+export function FeatureToggleGrid({
+  schools,
+  isSuperAdmin,
+  canManage,
+  defaultSchoolId,
+}: Props) {
   const t = useTranslations("admin");
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -86,7 +93,7 @@ export function FeatureToggleGrid({ schools, isSuperAdmin, defaultSchoolId }: Pr
             onChange={(e) => handleSchoolChange(e.target.value)}
           />
           <p className="text-sm text-stone-500 dark:text-stone-400">
-            {t("selectSchoolModules")}
+            {canManage ? t("selectSchoolModules") : t("featuresReadOnly")}
           </p>
         </div>
       ) : selectedSchool ? (
@@ -105,35 +112,49 @@ export function FeatureToggleGrid({ schools, isSuperAdmin, defaultSchoolId }: Pr
               {selectedSchool.school_name}
             </h2>
           ) : null}
-          <div
-            className={`grid gap-3 sm:grid-cols-2 lg:grid-cols-3 ${isSuperAdmin ? "mt-4" : ""}`}
-          >
-            {selectedSchool.features.map((feature) => (
-              <label
-                key={feature.key}
-                className="flex cursor-pointer items-start gap-3 rounded-md border border-zinc-100 p-3 dark:border-stone-800"
-              >
-                <Checkbox
-                  checked={feature.enabled}
-                  onChange={(e) =>
-                    handleToggle(selectedSchool.school_id, feature.key, e.target.checked)
-                  }
-                  className="mt-0.5"
-                />
-                <span>
-                  <span className="block text-sm font-medium text-stone-900 dark:text-white">
-                    {t.has(`features.${feature.key}.label`)
-                      ? t(`features.${feature.key}.label`)
-                      : feature.label}
-                  </span>
-                  <span className="mt-0.5 block text-xs text-stone-500">
-                    {t.has(`features.${feature.key}.description`)
-                      ? t(`features.${feature.key}.description`)
-                      : feature.description}
-                  </span>
-                </span>
-              </label>
-            ))}
+          <div className={`space-y-6 ${isSuperAdmin ? "mt-4" : ""}`}>
+            {FEATURE_GROUPS.map((group) => {
+              const features = selectedSchool.features.filter((feature) => feature.group === group);
+              if (features.length === 0) return null;
+              return (
+                <section key={group}>
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+                    {t(`featureGroups.${group}`)}
+                  </h3>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {features.map((feature) => (
+                      <label
+                        key={feature.key}
+                        className={`flex items-start gap-3 rounded-md border border-zinc-100 p-3 dark:border-stone-800 ${
+                          canManage ? "cursor-pointer" : "cursor-default opacity-90"
+                        }`}
+                      >
+                        <Checkbox
+                          checked={feature.enabled}
+                          disabled={!canManage}
+                          onChange={(e) =>
+                            handleToggle(selectedSchool.school_id, feature.key, e.target.checked)
+                          }
+                          className="mt-0.5"
+                        />
+                        <span>
+                          <span className="block text-sm font-medium text-stone-900 dark:text-white">
+                            {t.has(`features.${feature.key}.label`)
+                              ? t(`features.${feature.key}.label`)
+                              : feature.label}
+                          </span>
+                          <span className="mt-0.5 block text-xs text-stone-500">
+                            {t.has(`features.${feature.key}.description`)
+                              ? t(`features.${feature.key}.description`)
+                              : feature.description}
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         </div>
       ) : (

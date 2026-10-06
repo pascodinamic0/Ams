@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { StudentListFilters } from "@/components/students/student-list-filters";
 import { StudentsTable } from "@/components/students/students-table";
 import { StudentsInscriptionExportButton } from "@/components/students/students-inscription-export-button";
-import { getStudents, getStudentsForInscriptionExport } from "@/lib/db";
+import { getStudents } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { canDeleteStudents, canOnboardStudents } from "@/lib/auth/rbac";
 import { getTranslations } from "next-intl/server";
@@ -35,11 +35,6 @@ export default async function StudentsPage({
     status: statusFilter,
     tag: tagFilter,
   });
-  const exportRows = await getStudentsForInscriptionExport({
-    schoolId: profile?.school_id ?? undefined,
-    branchId: profile?.branch_id ?? undefined,
-    status: statusFilter,
-  });
 
   const hasFilters = Boolean(statusFilter || tagFilter);
 
@@ -50,7 +45,7 @@ export default async function StudentsPage({
         <div className="flex gap-2">
           {students.length > 0 ? (
             <StudentsInscriptionExportButton
-              rows={exportRows}
+              status={statusFilter}
               buttonLabel={t("exportInscriptionCsv")}
               yesNo={{
                 yes: tc("yes"),

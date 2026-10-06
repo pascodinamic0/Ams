@@ -16,6 +16,8 @@ import {
   type SubscriptionStatus,
 } from "@/lib/billing/types";
 import { isStripeConfigured } from "@/lib/billing/stripe";
+import { FEATURE_GROUPS } from "@/lib/features/catalog";
+import { getSchoolModuleStates } from "@/lib/features/access";
 import { createClient } from "@/lib/supabase/server";
 
 const BILLING_MANAGER_ROLES = new Set([
@@ -32,6 +34,7 @@ export default async function BillingPage({
   searchParams: Promise<{ success?: string; canceled?: string }>;
 }) {
   const t = await getTranslations("billing");
+  const tAdmin = await getTranslations("admin");
   const profile = await getCurrentProfile();
   if (!profile) redirect("/login");
   if (profile.role === "super_admin") redirect("/admin");
@@ -61,6 +64,7 @@ export default async function BillingPage({
     BILLING_MANAGER_ROLES.has(profile.role) || school.owner_id === user?.id;
   const stripeReady = isStripeConfigured();
   const dashboardHref = getDashboardForRole(profile.role);
+  const modules = await getSchoolModuleStates(school.id);
 
   const title = school.billing_exempt
     ? t("exemptTitle")
@@ -78,18 +82,18 @@ export default async function BillingPage({
     : (subscriptionStatus as string);
 
   return (
-    <div className="marketing-surface flex min-h-screen flex-col items-center justify-center px-4 py-12">
+    <div className="marketing-surface min-h-screen px-4 py-12">
       <BillingStatusToasts
         success={params.success === "1"}
         canceled={params.canceled === "1"}
       />
-      <div className="w-full max-w-lg space-y-6 border border-mkt-ink/10 p-8">
+      <div className="mx-auto w-full max-w-lg space-y-6 border border-mkt-ink/10 p-8">
         <div>
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-mkt-ink/50">
-            {t("schoolLabel")}
+            {school.name}
           </p>
           <h1 className="mt-2 font-display text-3xl font-extrabold tracking-tight text-mkt-ink">
-            {school.name}
+            {title}
           </h1>
           <p className="mt-3 text-sm text-mkt-ink/60">{subtitle}</p>
         </div>
@@ -121,6 +125,41 @@ export default async function BillingPage({
               })}
             </p>
           )}
+        </div>
+
+        <div className="space-y-4 border-t border-mkt-ink/10 pt-4">
+          <div>
+            <h2 className="text-sm font-semibold text-mkt-ink">{t("modulesTitle")}</h2>
+            <p className="mt-1 text-sm text-mkt-ink/60">{t("modulesHint")}</p>
+          </div>
+          {FEATURE_GROUPS.map((group) => {
+            const groupModules = modules.filter((module) => module.group === group);
+            if (groupModules.length === 0) return null;
+            return (
+              <div key={group}>
+                <p className="text-xs font-semibold uppercase tracking-wide text-mkt-ink/50">
+                  {tAdmin(`featureGroups.${group}`)}
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {groupModules.map((module) => (
+                    <li
+                      key={module.key}
+                      className="flex items-center justify-between gap-4 text-sm"
+                    >
+                      <span className="text-mkt-ink">
+                        {tAdmin.has(`features.${module.key}.label`)
+                          ? tAdmin(`features.${module.key}.label`)
+                          : module.label}
+                      </span>
+                      <span className={module.enabled ? "text-mkt-ink" : "text-mkt-ink/40"}>
+                        {module.enabled ? t("moduleOn") : t("moduleOff")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            );
+          })}
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">

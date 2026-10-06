@@ -1,11 +1,20 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Chart } from "@/components/ui/chart-lazy";
+import { ReleaseQueue } from "@/components/admin/release-queue";
 import { getAdminDashboardData } from "@/lib/db";
+import { getAwaitingReleases } from "@/lib/db/releases";
+import { getCurrentProfile } from "@/lib/auth/session";
+import { isPlatformOwner } from "@/lib/features/owner";
 import { getTranslations } from "next-intl/server";
 
 export default async function AdminDashboard() {
   const t = await getTranslations("admin");
-  const data = await getAdminDashboardData();
+  const [data, awaiting, profile] = await Promise.all([
+    getAdminDashboardData(),
+    getAwaitingReleases(),
+    getCurrentProfile(),
+  ]);
+  const canManage = isPlatformOwner(profile?.email, profile?.role);
 
   const cards = [
     {
@@ -76,6 +85,18 @@ export default async function AdminDashboard() {
           </Card>
         ))}
       </div>
+
+      <section className="space-y-3">
+        <div>
+          <h2 className="text-lg font-semibold text-stone-900 dark:text-white">
+            {t("awaitingReleasesTitle")}
+          </h2>
+          <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+            {t("awaitingReleasesSubtitle")}
+          </p>
+        </div>
+        <ReleaseQueue releases={awaiting} canManage={canManage} />
+      </section>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <Chart

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { formatStudentName } from "@/lib/utils";
+import { formatPersonName, formatStudentName } from "@/lib/utils";
 
 export type StudentPortalProfile = {
   id: string;
@@ -200,11 +200,94 @@ export async function getStudentsForBilling(options?: {
   return (data ?? []).map((s) => ({
     id: s.id,
     student_id: s.student_id,
-    name: formatStudentName(s),
+    name: formatPersonName(s),
     class_id: s.class_id,
     class_name: (s.classes as { name?: string } | null)?.name ?? null,
     status: s.status ?? "active",
   }));
+}
+
+type BillingStudentRow = {
+  id: string;
+  student_id: string | null;
+  first_name: string;
+  middle_name: string | null;
+  last_name: string;
+  status: string | null;
+  class_id: string | null;
+  classes: { name?: string } | { name?: string }[] | null;
+};
+
+function mapBillingStudent(s: BillingStudentRow): BillingStudentOption {
+  const classes = Array.isArray(s.classes) ? s.classes[0] : s.classes;
+  return {
+    id: s.id,
+    student_id: s.student_id,
+    name: formatPersonName(s),
+    class_id: s.class_id,
+    class_name: classes?.name ?? null,
+    status: s.status ?? "active",
+  };
+}
+
+/** Name, ID, or class lookup for the invoice student field. Not limited to active students. */
+export async function searchStudentsForBilling(options: {
+  schoolId?: string;
+  search: string;
+  limit?: number;
+}): Promise<BillingStudentOption[]> {
+  const cleaned = options.search.trim().replace(/[%_,]/g, "");
+  const tokens = cleaned.split(/\s+/).filter(Boolean).slice(0, 4);
+  const primary = tokens[0];
+  if (!primary) return [];
+
+  const supabase = await createClient();
+  const limit = options.limit ?? 8;
+  const fields =
+    "id, student_id, first_name, middle_name, last_name, status, class_id, classes(name)";
+  const pattern = `%${primary}%`;
+
+  let byName = supabase
+    .from("students")
+    .select(fields)
+    .or(
+      `first_name.ilike.${pattern},middle_name.ilike.${pattern},last_name.ilike.${pattern},student_id.ilike.${pattern}`
+    )
+    .limit(40);
+  let byClass = supabase
+    .from("students")
+    .select(
+      "id, student_id, first_name, middle_name, last_name, status, class_id, classes!inner(name)"
+    )
+    .ilike("classes.name", `%${cleaned}%`)
+    .limit(20);
+
+  if (options.schoolId) {
+    byName = byName.eq("school_id", options.schoolId);
+    byClass = byClass.eq("school_id", options.schoolId);
+  }
+
+  const [nameResult, classResult] = await Promise.all([byName, byClass]);
+  if (nameResult.error) console.error("searchStudentsForBilling name error:", nameResult.error);
+  if (classResult.error) console.error("searchStudentsForBilling class error:", classResult.error);
+
+  const rows = [
+    ...((nameResult.data ?? []) as BillingStudentRow[]),
+    ...((classResult.data ?? []) as BillingStudentRow[]),
+  ];
+  const seen = new Set<string>();
+  const matches: BillingStudentOption[] = [];
+  for (const row of rows) {
+    if (seen.has(row.id)) continue;
+    seen.add(row.id);
+    const student = mapBillingStudent(row);
+    const haystack = `${student.name} ${student.student_id ?? ""} ${student.class_name ?? ""}`.toLowerCase();
+    if (!tokens.every((token) => haystack.includes(token.toLowerCase()))) continue;
+    matches.push(student);
+  }
+
+  matches.sort((a, b) => a.name.localeCompare(b.name));
+  return matches.slice(0, limit);
 }
 
 export async function getStudentById(id: string) {

@@ -463,6 +463,116 @@ export async function setStaffPayrollMonthInclusion(input: {
   return { data: { included: true } };
 }
 
+const ensureLineSchema = z.object({
+  staffId: z.string().uuid(),
+  schoolId: z.string().uuid(),
+  month: z.coerce.number().int().min(1).max(12),
+  year: z.coerce.number().int().min(2000).max(2100),
+  amount: z.coerce.number().min(0, "amountZeroOrPositive"),
+});
+
+/** Create this person's pending payroll line for the month when Pay is used before Generate. */
+export async function ensurePendingPayrollLine(input: {
+  staffId: string;
+  schoolId: string;
+  month: number;
+  year: number;
+  amount: number;
+}) {
+  const parsed = ensureLineSchema.safeParse(input);
+  if (!parsed.success) {
+    return await zodIssueError(parsed.error.issues[0]?.message);
+  }
+
+  const auth = await requireFinanceManager();
+  if ("error" in auth) return { error: auth.error };
+
+  if (
+    auth.role !== "super_admin" &&
+    auth.profile.school_id &&
+    auth.profile.school_id !== parsed.data.schoolId
+  ) {
+    return await actionError("onlyOwnSchoolPayroll");
+  }
+
+  const { data: staff, error: staffError } = await auth.supabase
+    .from("staff")
+    .select("id, school_id, name, role, department, monthly_salary, employment_status, photo_url")
+    .eq("id", parsed.data.staffId)
+    .single();
+
+  if (staffError || !staff) return await actionError("staffNotFound");
+  if (staff.school_id !== parsed.data.schoolId) {
+    return await actionError("staffNotInThisSchool");
+  }
+
+  const { data: existing } = await auth.supabase
+    .from("payroll")
+    .select("id, status")
+    .eq("staff_id", parsed.data.staffId)
+    .eq("payroll_month", parsed.data.month)
+    .eq("payroll_year", parsed.data.year)
+    .maybeSingle();
+
+  if (existing?.status === "paid") {
+    return await actionError("payrollAlreadyPaid");
+  }
+  if (existing?.id) {
+    if (Number(parsed.data.amount) >= 0) {
+      await auth.supabase
+        .from("payroll")
+        .update({
+          amount: parsed.data.amount,
+          staff_monthly_salary: parsed.data.amount,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", existing.id)
+        .eq("status", "pending");
+    }
+    return { data: { id: existing.id as string } };
+  }
+
+  await auth.supabase
+    .from("payroll_exclusions")
+    .delete()
+    .eq("staff_id", parsed.data.staffId)
+    .eq("payroll_month", parsed.data.month)
+    .eq("payroll_year", parsed.data.year);
+
+  const periodStart = new Date(Date.UTC(parsed.data.year, parsed.data.month - 1, 1));
+  const periodEnd = new Date(Date.UTC(parsed.data.year, parsed.data.month, 0));
+  const { data: created, error: insertError } = await auth.supabase
+    .from("payroll")
+    .insert({
+      staff_id: staff.id,
+      payroll_month: parsed.data.month,
+      payroll_year: parsed.data.year,
+      period_start: periodStart.toISOString().slice(0, 10),
+      period_end: periodEnd.toISOString().slice(0, 10),
+      amount: parsed.data.amount,
+      status: "pending" as const,
+      payment_date: null,
+      payment_method: null,
+      reference_number: null,
+      notes: null,
+      staff_full_name: staff.name,
+      staff_position: staff.role,
+      staff_department: staff.department,
+      staff_monthly_salary: parsed.data.amount,
+      staff_employment_status: staff.employment_status,
+      staff_photo_url: staff.photo_url,
+    })
+    .select("id")
+    .single();
+
+  if (insertError || !created) {
+    return insertError ? { error: insertError.message } : await actionError("payrollNotFound");
+  }
+
+  revalidatePayrollPaths();
+  return { data: { id: created.id as string } };
+}
+
 export async function generatePayroll(
   input: PayrollGenerateFormData & { schoolId?: string; branchId?: string }
 ) {

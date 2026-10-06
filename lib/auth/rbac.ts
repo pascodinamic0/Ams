@@ -247,6 +247,7 @@ export const SHARED_AUTH_ROUTES = [
   "/onboarding",
   "/pending",
   "/billing",
+  "/module-off",
   "/reset-password",
 ];
 

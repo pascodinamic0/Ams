@@ -1,7 +1,10 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { getApexCanonicalRedirectUrl } from "@/lib/auth/app-url";
-import { getProxyAuthContext } from "@/lib/auth/proxy-context";
+import {
+  getProxyAuthContext,
+  type ProxyAuthContext,
+} from "@/lib/auth/proxy-context";
 import {
   schoolHasProductAccess,
   schoolPortalBlockDestination,
@@ -15,39 +18,18 @@ import {
 } from "@/lib/auth/password-setup";
 import { isStructureSetupExempt } from "@/lib/auth/structure-setup";
 import { canAccessPath, getDashboardForRole } from "@/lib/auth/rbac";
-
-const PUBLIC_ROUTES = [
-  "/",
-  "/features",
-  "/offre",
-  "/get-access",
-  "/login",
-  "/register",
-  "/register/complete",
-  "/register/success",
-  "/auth/callback",
-  "/auth/confirm",
-  "/auth/hash",
-  "/forgot-password",
-  "/reset-password",
-  "/schools",
-  "/contact",
-  "/docs",
-  "/blog",
-  "/school-management-system",
-  "/logiciel-de-gestion-scolaire",
-  "/privacy",
-  "/terms",
-  "/cookies",
-];
-
-function isPublicRoute(pathname: string): boolean {
-  if (PUBLIC_ROUTES.includes(pathname)) return true;
-  if (pathname.startsWith("/schools/")) return true;
-  if (pathname.startsWith("/modules/")) return true;
-  if (pathname.startsWith("/blog/")) return true;
-  return false;
-}
+import { isPublicRoute } from "@/lib/auth/public-routes";
+import {
+  disabledFeatureForPath,
+  featureBlockDestination,
+} from "@/lib/features/access";
+import { requiredFeatureKeys } from "@/lib/features/catalog";
+import { attachAuthCookie } from "@/lib/auth/auth-context-cache";
+import {
+  clearAuthHeaders,
+  writeAuthHeaders,
+} from "@/lib/auth/request-auth";
+import type { User } from "@supabase/supabase-js";
 
 /** Server Actions POST with this header; redirects break the RSC action response. */
 function isServerAction(request: NextRequest): boolean {
@@ -80,6 +62,34 @@ function redirectWithCookies(
   return redirectResponse;
 }
 
+/** Forward the request with proxy auth attached, and drop any client-supplied copy. */
+function passThrough(
+  request: NextRequest,
+  sessionResponse: NextResponse,
+  user: User | null,
+  access: ProxyAuthContext | null
+) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  clearAuthHeaders(requestHeaders);
+  if (user && access) {
+    writeAuthHeaders(requestHeaders, {
+      userId: user.id,
+      email: user.email ?? access.email,
+      role: access.role,
+      name: access.name,
+      schoolId: access.schoolId,
+      branchId: access.branchId,
+      schoolName: access.schoolName,
+      schoolLogoUrl: access.schoolLogoUrl,
+    });
+  }
+  const next = NextResponse.next({ request: { headers: requestHeaders } });
+  copyCookies(sessionResponse, next);
+  if (user && access) attachAuthCookie(next, user.id, access);
+  return next;
+}
+
 export async function proxy(request: NextRequest) {
   const canonicalRedirect = getApexCanonicalRedirectUrl(request);
   if (canonicalRedirect) {
@@ -97,6 +107,7 @@ export async function proxy(request: NextRequest) {
       const destination = await getPostAuthRedirect({
         userId: user.id,
         redirect: redirectParam,
+        user,
       });
       return redirectWithCookies(request, supabaseResponse, destination);
     }
@@ -136,21 +147,21 @@ export async function proxy(request: NextRequest) {
     !isPasswordSetupPath(pathname)
   ) {
     if (serverAction) {
-      return supabaseResponse;
+      return passThrough(request, supabaseResponse, user, access);
     }
     return redirectWithCookies(request, supabaseResponse, "/reset-password");
   }
 
   if (!isProfileOnboardingExempt(pathname) && access?.needsOnboarding) {
     if (serverAction) {
-      return supabaseResponse;
+      return passThrough(request, supabaseResponse, user, access);
     }
     return redirectWithCookies(request, supabaseResponse, "/onboarding");
   }
 
   if (access && schoolPortalBlocked(access, pathname)) {
     if (serverAction) {
-      return supabaseResponse;
+      return passThrough(request, supabaseResponse, user, access);
     }
     return redirectWithCookies(
       request,
@@ -161,7 +172,7 @@ export async function proxy(request: NextRequest) {
 
   if (pathname === "/onboarding" && access && !access.needsOnboarding) {
     if (serverAction) {
-      return supabaseResponse;
+      return passThrough(request, supabaseResponse, user, access);
     }
     if (!schoolHasProductAccess(access) && access.schoolStatus === "approved") {
       return redirectWithCookies(request, supabaseResponse, "/billing");
@@ -182,14 +193,14 @@ export async function proxy(request: NextRequest) {
     !isStructureSetupExempt(pathname)
   ) {
     if (serverAction) {
-      return supabaseResponse;
+      return passThrough(request, supabaseResponse, user, access);
     }
     return redirectWithCookies(request, supabaseResponse, "/onboarding/school");
   }
 
   if (role && !canAccessPath(role, pathname)) {
     if (serverAction) {
-      return supabaseResponse;
+      return passThrough(request, supabaseResponse, user, access);
     }
     return redirectWithCookies(
       request,
@@ -198,9 +209,31 @@ export async function proxy(request: NextRequest) {
     );
   }
 
+  if (
+    access?.schoolId &&
+    access.role !== "super_admin" &&
+    requiredFeatureKeys(pathname).length > 0
+  ) {
+    const blocked = await Promise.race([
+      disabledFeatureForPath(access.schoolId, pathname),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 800)),
+    ]);
+    if (blocked) {
+      if (serverAction) {
+        return new NextResponse("Feature disabled", { status: 403 });
+      }
+      const destination = featureBlockDestination(access.role, blocked);
+      if (destination !== pathname) {
+        return redirectWithCookies(request, supabaseResponse, destination, {
+          module: blocked,
+        });
+      }
+    }
+  }
+
   if (access?.schoolStatus === "approved" && pathname === "/pending") {
     if (serverAction) {
-      return supabaseResponse;
+      return passThrough(request, supabaseResponse, user, access);
     }
     if (!schoolHasProductAccess(access)) {
       return redirectWithCookies(request, supabaseResponse, "/billing");
@@ -214,7 +247,7 @@ export async function proxy(request: NextRequest) {
     );
   }
 
-  return supabaseResponse;
+  return passThrough(request, supabaseResponse, user, access);
 }
 
 export const config = {

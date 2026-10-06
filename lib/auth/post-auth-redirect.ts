@@ -1,3 +1,4 @@
+import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
 import { resolveLoginDestination } from "@/lib/auth/login-redirect";
 import { userMustSetPassword } from "@/lib/auth/password-setup";
@@ -16,6 +17,7 @@ export async function getPostAuthRedirect(options: {
   userId: string;
   redirect?: string | null;
   intent?: string | null;
+  user?: User | null;
 }): Promise<string> {
   // Invited users and password-recovery links must set a password first.
   // Previously onboarding ran first and skipped /reset-password entirely.
@@ -26,13 +28,28 @@ export async function getPostAuthRedirect(options: {
   }
 
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user =
+    options.user ??
+    (
+      await supabase.auth.getUser()
+    ).data.user;
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("role, school_id, onboarding_completed_at, password_setup_required")
+    .select(
+      `
+      role,
+      school_id,
+      onboarding_completed_at,
+      password_setup_required,
+      schools(
+        status,
+        structure_setup_completed_at,
+        billing_exempt,
+        subscription_status
+      )
+    `
+    )
     .eq("id", options.userId)
     .single();
 
@@ -60,24 +77,20 @@ export async function getPostAuthRedirect(options: {
     return "/onboarding";
   }
 
-  let schoolStatus: SchoolStatus = null;
-  let billingExempt = false;
-  let subscriptionStatus: SubscriptionStatus | null = null;
-  let structureSetupCompletedAt: string | null = null;
-  if (profile?.school_id) {
-    const { data: school } = await supabase
-      .from("schools")
-      .select(
-        "status, structure_setup_completed_at, billing_exempt, subscription_status"
-      )
-      .eq("id", profile.school_id)
-      .single();
-    schoolStatus = (school?.status as SchoolStatus) ?? null;
-    structureSetupCompletedAt = school?.structure_setup_completed_at ?? null;
-    billingExempt = Boolean(school?.billing_exempt);
-    subscriptionStatus =
-      (school?.subscription_status as SubscriptionStatus | null) ?? "none";
-  }
+  const school = (Array.isArray(profile?.schools)
+    ? profile.schools[0]
+    : profile?.schools) as {
+    status?: SchoolStatus;
+    structure_setup_completed_at?: string | null;
+    billing_exempt?: boolean | null;
+    subscription_status?: SubscriptionStatus | null;
+  } | null;
+  const schoolStatus = school?.status ?? null;
+  const structureSetupCompletedAt = school?.structure_setup_completed_at ?? null;
+  const billingExempt = Boolean(school?.billing_exempt);
+  const subscriptionStatus = school
+    ? (school.subscription_status ?? "none")
+    : null;
 
   const paid = hasPaidAccess({
     billing_exempt: billingExempt,

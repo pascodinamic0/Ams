@@ -113,6 +113,19 @@ export async function getPendingEnrollmentCount(options?: {
   schoolId?: string;
   branchId?: string;
 }): Promise<number> {
-  const rows = await getPendingEnrollments(options);
-  return rows.length;
+  const supabase = await createClient();
+  let query = supabase
+    .from("students")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "pending");
+
+  if (options?.schoolId) query = query.eq("school_id", options.schoolId);
+  if (options?.branchId) query = query.eq("branch_id", options.branchId);
+
+  const { count, error } = await query;
+  if (error) {
+    console.error("getPendingEnrollmentCount error:", error);
+    return 0;
+  }
+  return count ?? 0;
 }

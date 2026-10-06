@@ -12,6 +12,7 @@ type NotificationRow = {
   user_id: string;
   title: string;
   body: string | null;
+  url?: string | null;
   is_read: boolean;
   created_at: string;
 };
@@ -82,7 +83,13 @@ export function NotificationToasts() {
               duration: 7000,
               action: {
                 label: viewLabelRef.current,
-                onClick: () => router.push("/notifications"),
+                onClick: () => {
+                  const target =
+                    row.url && row.url.startsWith("/") && !row.url.startsWith("//")
+                      ? row.url
+                      : "/notifications";
+                  router.push(target);
+                },
               },
             });
           }

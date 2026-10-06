@@ -1,6 +1,6 @@
 # Daily feature factory � setup
 
-Once-a-day cloud agent invents one complete ShuleOS feature, opens a **draft PR**, CI records a video walkthrough and emails you the A?Z brief. **Merge the PR to go live.**
+Once-a-day cloud agent invents one complete ShuleOS feature, opens a **draft PR**, CI records a video walkthrough and posts it to the platform owner's super-admin inbox. **Approve on /admin to go live.**
 
 ## 1. Apply the storage migration
 
@@ -16,11 +16,9 @@ In **GitHub ? Settings ? Secrets and variables ? Actions**, add:
 
 | Secret | Purpose |
 |--------|---------|
-| `RESEND_API_KEY` | Send founder brief |
-| `RESEND_FROM` | e.g. `ShuleOS <noreply@shuleos.app>` |
-| `OWNER_EMAIL` | Your inbox |
-| `NEXT_PUBLIC_SUPABASE_URL` | Tour upload |
-| `SUPABASE_SERVICE_ROLE_KEY` | Tour upload |
+| `OWNER_EMAIL` | Platform owner inbox account (pascodinamic00@gmail.com) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Tour upload and in-app release |
+| `SUPABASE_SERVICE_ROLE_KEY` | Tour upload and in-app release |
 | `DAILY_TOUR_LOGIN_EMAIL` | Optional � demo user for logged-in tours |
 | `DAILY_TOUR_LOGIN_PASSWORD` | Optional � demo password |
 
@@ -58,14 +56,15 @@ The agent playbook lives at [`.cursor/rules/daily-feature-agent.mdc`](../.cursor
 
 ## 4. What you receive
 
-Email subject: `ShuleOS � feature ready to go live: [name]`
+A notification for the platform owner, plus a card on `/admin` and `/admin/releases`.
 
 - Cover: gap closed
 - Video walkthrough (Playwright recording)
-- Numbered A?Z screenshots
+- Numbered screenshots
 - **Open preview** and **Open the PR** links
+- **Approve and go live** merges the pull request. Dismiss closes it.
 
-Merge the PR when ready. Close it to drop the feature.
+Also apply migration `00069_product_releases.sql`. Set `GITHUB_MERGE_TOKEN` on the app server so Approve can merge. `OWNER_EMAIL` must match `platform_settings.owner_email`.
 
 ## 5. Local testing (optional)
 
@@ -74,8 +73,8 @@ export PREVIEW_URL=https://your-preview.vercel.app
 node scripts/record-feature-tour.mjs   # requires feature-tour.json on branch
 export TOUR_UPLOAD_PREFIX=test-local
 node scripts/upload-daily-feature-tours.mjs
-export OWNER_EMAIL=you@example.com PR_URL=... PR_NUMBER=1 RUN_DATE=test
-node scripts/send-daily-feature-brief.mjs
+export OWNER_EMAIL=pascodinamic00@gmail.com PR_URL=... PR_NUMBER=1 RUN_DATE=test
+node scripts/publish-daily-feature-release.mjs
 ```
 
 ## Flow
@@ -83,5 +82,5 @@ node scripts/send-daily-feature-brief.mjs
 ```
 Daily cron ? Cloud agent ? draft PR (daily-feature label)
          ? Vercel preview ? GitHub Action ? Playwright tour
-         ? Supabase upload ? Resend email ? you merge PR
+         ? Supabase upload ? in-app notification ? owner approves on /admin
 ```

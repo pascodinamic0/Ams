@@ -1,7 +1,10 @@
 "use client";
 
-import { ExportButton } from "@/components/ui/export-button";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { loadInscriptionExport } from "@/lib/actions/students-export";
 import { formatSchoolYear } from "@/lib/academic/school-year";
+import { exportToCSV } from "@/lib/export-csv";
 import { formatYesNo } from "@/lib/students/inscription";
 import type { StudentInscriptionExportRow } from "@/lib/db/students";
 
@@ -14,7 +17,7 @@ type Labels = {
 };
 
 type Props = {
-  rows: StudentInscriptionExportRow[];
+  status?: string;
   buttonLabel: string;
   columnLabels: Record<string, string>;
   yesNo: Labels;
@@ -26,13 +29,8 @@ function genderLabel(value: string | null, labels: Labels) {
   return labels.empty;
 }
 
-export function StudentsInscriptionExportButton({
-  rows,
-  buttonLabel,
-  columnLabels,
-  yesNo,
-}: Props) {
-  const data = rows.map((row) => ({
+function toCsvRows(rows: StudentInscriptionExportRow[], yesNo: Labels) {
+  return rows.map((row) => ({
     student_id: row.student_id ?? "",
     school_year: row.school_year != null ? formatSchoolYear(row.school_year) : "",
     last_name: row.last_name,
@@ -60,6 +58,15 @@ export function StudentsInscriptionExportButton({
     notes: row.notes ?? "",
     status: row.status,
   }));
+}
+
+export function StudentsInscriptionExportButton({
+  status,
+  buttonLabel,
+  columnLabels,
+  yesNo,
+}: Props) {
+  const [pending, setPending] = useState(false);
 
   const columns = (
     [
@@ -95,12 +102,19 @@ export function StudentsInscriptionExportButton({
     label: columnLabels[key] ?? key,
   }));
 
+  async function onExport() {
+    setPending(true);
+    try {
+      const rows = await loadInscriptionExport(status);
+      exportToCSV(toCsvRows(rows, yesNo), columns, "fiche-inscription-eleves");
+    } finally {
+      setPending(false);
+    }
+  }
+
   return (
-    <ExportButton
-      data={data}
-      columns={columns}
-      filename="fiche-inscription-eleves"
-      label={buttonLabel}
-    />
+    <Button variant="outline" size="sm" disabled={pending} onClick={() => void onExport()}>
+      {buttonLabel}
+    </Button>
   );
 }

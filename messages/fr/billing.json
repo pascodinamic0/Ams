@@ -33,5 +33,13 @@
   "checkoutFailed": "Impossible de démarrer le paiement",
   "portalFailed": "Impossible d'ouvrir le portail de facturation",
   "goToDashboard": "Ouvrir le tableau de bord",
-  "schoolLabel": "École"
+  "schoolLabel": "École",
+  "modulesTitle": "Modules inclus",
+  "modulesHint": "Votre abonnement ouvre l'école. Le propriétaire de la plateforme active ou désactive chaque module. Un module désactivé est masqué pour votre équipe.",
+  "moduleOn": "Activé",
+  "moduleOff": "Désactivé",
+  "moduleOffTitle": "Ce module est désactivé",
+  "moduleOffGeneric": "Ce module",
+  "moduleOffBody": "{module} est désactivé pour votre école. Les frais et le reste du travail continuent dans les modules encore activés. Facturation montre la liste complète.",
+  "moduleOffBilling": "Voir les modules dans Facturation"
 }

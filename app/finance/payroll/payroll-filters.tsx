@@ -24,7 +24,7 @@ export function PayrollFilters({ positions, departments }: PayrollFiltersProps) 
   }
 
   return (
-    <div className="grid gap-3 rounded-lg border p-4 md:grid-cols-2 lg:grid-cols-6">
+    <div className="grid gap-3 rounded-lg border p-3 sm:grid-cols-2 lg:grid-cols-4">
       <div>
         <Label htmlFor="payroll-search">{tc("search")}</Label>
         <Input
@@ -65,34 +65,6 @@ export function PayrollFilters({ positions, departments }: PayrollFiltersProps) 
             </option>
           ))}
         </select>
-      </div>
-      <div>
-        <Label htmlFor="payroll-month">{t("month")}</Label>
-        <Input
-          id="payroll-month"
-          type="number"
-          min="1"
-          max="12"
-          defaultValue={searchParams.get("month") ?? ""}
-          onBlur={(e) => updateParam("month", e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") updateParam("month", e.currentTarget.value);
-          }}
-        />
-      </div>
-      <div>
-        <Label htmlFor="payroll-year">{t("year")}</Label>
-        <Input
-          id="payroll-year"
-          type="number"
-          min="2000"
-          max="2100"
-          defaultValue={searchParams.get("year") ?? ""}
-          onBlur={(e) => updateParam("year", e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") updateParam("year", e.currentTarget.value);
-          }}
-        />
       </div>
       <div>
         <Label htmlFor="payroll-department">{t("department")}</Label>

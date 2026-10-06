@@ -1,7 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { type User } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
+import { clearAuthHeaders } from "@/lib/auth/request-auth";
 import { supabaseFetch } from "@/lib/supabase/fetch";
+import { readCookieSession } from "@/lib/supabase/session-cookie";
 
 export async function updateSession(request: NextRequest): Promise<{
   response: NextResponse;
@@ -9,12 +11,21 @@ export async function updateSession(request: NextRequest): Promise<{
 }> {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", request.nextUrl.pathname);
+  clearAuthHeaders(requestHeaders);
 
   let supabaseResponse = NextResponse.next({
     request: {
       headers: requestHeaders,
     },
   });
+
+  const cookieSession = readCookieSession(request.cookies.getAll());
+  if (cookieSession.status === "anonymous") {
+    return { response: supabaseResponse, user: null };
+  }
+  if (cookieSession.status === "fresh") {
+    return { response: supabaseResponse, user: cookieSession.user };
+  }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;

@@ -1,12 +1,25 @@
 "use server";
 
-import { actionError, zodIssueError } from "@/lib/i18n/action-error";
-
 import { revalidatePath } from "next/cache";
+import { actionError } from "@/lib/i18n/action-error";
 import { createClient } from "@/lib/supabase/server";
-import { SCHOOL_FEATURE_KEYS, schoolFeatureKey } from "@/lib/db/features";
+import { getCurrentProfile } from "@/lib/auth/session";
+import { isKnownFeatureKey, schoolFeatureStorageKey } from "@/lib/features/catalog";
+import { invalidateSchoolFeatureCache } from "@/lib/features/access";
+import { isPlatformOwner } from "@/lib/features/owner";
+
+async function requirePlatformOwner() {
+  const profile = await getCurrentProfile();
+  if (!profile || !isPlatformOwner(profile.email, profile.role)) {
+    return { profile: null, error: await actionError("notAuthorizedManageFeatures") };
+  }
+  return { profile, error: null };
+}
 
 export async function toggleFeature(key: string, enabled: boolean) {
+  const gate = await requirePlatformOwner();
+  if (gate.error) return gate.error;
+
   const supabase = await createClient();
 
   const { data: existing } = await supabase
@@ -31,6 +44,7 @@ export async function toggleFeature(key: string, enabled: boolean) {
   }
 
   revalidatePath("/admin/features");
+  revalidatePath("/billing");
   return {} as { error?: string };
 }
 
@@ -43,31 +57,15 @@ export async function toggleSchoolFeature(
     return await actionError("schoolRequired");
   }
 
-  const validKey = SCHOOL_FEATURE_KEYS.some((f) => f.key === featureKey);
-  if (!validKey) {
+  if (!isKnownFeatureKey(featureKey)) {
     return await actionError("unknownFeature");
   }
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
-    return await actionError("notAuthenticated");
-  }
+  const gate = await requirePlatformOwner();
+  if (gate.error) return gate.error;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, school_id")
-    .eq("id", user.id)
-    .single();
-
-  if (profile?.role !== "super_admin") {
-    if (profile?.role !== "academic_admin" || profile.school_id !== schoolId) {
-      return await actionError("notAuthorizedManageFeatures");
-    }
-  }
-
-  const key = schoolFeatureKey(schoolId, featureKey);
-  return toggleFeature(key, enabled);
+  const key = schoolFeatureStorageKey(schoolId, featureKey);
+  const result = await toggleFeature(key, enabled);
+  if (!result.error) invalidateSchoolFeatureCache(schoolId);
+  return result;
 }

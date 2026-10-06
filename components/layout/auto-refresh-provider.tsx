@@ -1,40 +1,35 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { isPublicRoute } from "@/lib/auth/public-routes";
 import { notifyLiveRefresh } from "@/lib/live-sync";
 import { createClient } from "@/lib/supabase/client";
 
-/** Minimum gap between refreshes to avoid double-firing on focus+visibility+realtime. */
+/** Minimum gap between refreshes so a burst of writes becomes one render. */
 const MIN_REFRESH_GAP_MS = 2_000;
-/**
- * RSC renders on heavy pages take longer than the poll interval.
- * A second refresh aborts the first, and React then retries the shell
- * on the client without the translation provider.
- */
-const REFRESH_SETTLE_MS = 12_000;
+/** Ignore a second realtime tick until a slow render has had time to finish. */
+const REFRESH_SETTLE_MS = 20_000;
 /** Collapse bursts of DB writes (attendance grid, bulk invoices) into one refresh. */
 const REALTIME_DEBOUNCE_MS = 400;
-/**
- * Safety-net poll while the tab is visible.
- * Realtime covers most cross-account writes; this catches anything the tick missed.
- * ~8s is typical for operational dashboards (Jira/ServiceNow-class list freshness).
- */
-const POLL_INTERVAL_MS = 8_000;
 /** Topic suffix so Strict Mode remounts never reuse a subscribed Realtime channel. */
 let liveChannelSeq = 0;
 
 /**
- * Keeps App Router server data fresh without a manual browser reload.
- * Mount once near the root so every authenticated (and public) screen benefits.
+ * Refreshes the open screen when this school writes a sync tick or a notification.
+ * Public pages (login, marketing) do not subscribe. There is no interval poll:
+ * a full RSC refresh on a timer blocked the next click.
  */
 export function AutoRefreshProvider() {
   const router = useRouter();
+  const pathname = usePathname();
   const lastRefreshAt = useRef(0);
   const inFlightUntil = useRef(0);
   const debounceTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
+    if (isPublicRoute(pathname)) return;
+
     let liveNotifyTimer: number | undefined;
 
     const refreshNow = () => {
@@ -59,27 +54,14 @@ export function AutoRefreshProvider() {
       debounceTimer.current = window.setTimeout(refreshNow, REALTIME_DEBOUNCE_MS);
     };
 
-    const onVisibility = () => {
-      if (document.visibilityState === "visible") refreshNow();
-    };
-
-    document.addEventListener("visibilitychange", onVisibility);
-    window.addEventListener("focus", refreshNow);
-    window.addEventListener("online", refreshNow);
-
     const supabase = createClient();
     let channel: ReturnType<typeof supabase.channel> | null = null;
-    let interval: number | undefined;
     let cancelled = false;
     // Invalidates in-flight startLive() after unmount, sign-out, or a newer start.
     let liveGeneration = 0;
 
     function stopLive() {
       liveGeneration += 1;
-      if (interval !== undefined) {
-        window.clearInterval(interval);
-        interval = undefined;
-      }
       if (channel) {
         void supabase.removeChannel(channel);
         channel = null;
@@ -90,10 +72,6 @@ export function AutoRefreshProvider() {
       stopLive();
       const generation = liveGeneration;
       if (cancelled) return;
-
-      interval = window.setInterval(() => {
-        if (document.visibilityState === "visible") refreshNow();
-      }, POLL_INTERVAL_MS);
 
       const { data: profile } = await supabase
         .from("profiles")
@@ -165,9 +143,6 @@ export function AutoRefreshProvider() {
 
     return () => {
       cancelled = true;
-      document.removeEventListener("visibilitychange", onVisibility);
-      window.removeEventListener("focus", refreshNow);
-      window.removeEventListener("online", refreshNow);
       if (liveNotifyTimer !== undefined) {
         window.clearTimeout(liveNotifyTimer);
       }
@@ -177,7 +152,7 @@ export function AutoRefreshProvider() {
       stopLive();
       subscription.unsubscribe();
     };
-  }, [router]);
+  }, [pathname, router]);
 
   return null;
 }

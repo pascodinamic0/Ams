@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Modal } from "@/components/ui/modal";
 import {
+  ensurePendingPayrollLine,
   markPayrollPaid,
   setPendingPayrollAmount,
   setStaffPayrollMonthInclusion,
@@ -16,6 +17,7 @@ import { toast } from "@/lib/toast";
 import { UserAvatar } from "@/components/layout/user-avatar";
 
 interface PayrollRowActionsProps {
+  compact?: boolean;
   row: {
     id: string;
     staff_id: string;
@@ -35,7 +37,7 @@ interface PayrollRowActionsProps {
   schoolId?: string;
 }
 
-export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
+export function PayrollRowActions({ row, schoolId, compact = false }: PayrollRowActionsProps) {
   const router = useRouter();
   const t = useTranslations("finance");
   const tc = useTranslations("common");
@@ -54,6 +56,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
   );
   const [referenceNumber, setReferenceNumber] = useState("");
   const [notes, setNotes] = useState("");
+  const fieldId = row.id || row.staff_id;
 
   const paymentMethodLabel =
     row.payment_method === "cash"
@@ -66,7 +69,34 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
 
   async function handlePay() {
     setLoading(true);
-    const result = await markPayrollPaid(row.id, {
+    let payrollId = row.id;
+    if (!payrollId) {
+      if (!schoolId) {
+        setLoading(false);
+        toast.error(te("schoolRequiredExcludePayroll"));
+        return;
+      }
+      const created = await ensurePendingPayrollLine({
+        staffId: row.staff_id,
+        schoolId,
+        month: row.payroll_month,
+        year: row.payroll_year,
+        amount: Number(amount),
+      });
+      if ("error" in created && created.error) {
+        setLoading(false);
+        toast.error(created.error);
+        return;
+      }
+      payrollId = "data" in created ? created.data?.id ?? "" : "";
+      if (!payrollId) {
+        setLoading(false);
+        toast.error(t("payrollMarkPaidFailed"));
+        return;
+      }
+    }
+
+    const result = await markPayrollPaid(payrollId, {
       amount: Number(amount),
       payment_date: paymentDate,
       payment_method: paymentMethod,
@@ -131,36 +161,42 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
 
   return (
     <>
-      <div className="flex flex-wrap gap-2">
+      <div className={compact ? "flex flex-nowrap gap-1" : "flex flex-wrap gap-2"}>
         <Button size="sm" variant="ghost" onClick={() => setViewOpen(true)}>
           {tc("view")}
         </Button>
-        {row.status === "pending" ? (
-          <>
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={() => {
-                setEditAmount(String(row.amount));
-                setAmountOpen(true);
-              }}
-            >
-              {t("setAmount")}
-            </Button>
-            <Button size="sm" variant="ghost" onClick={() => setPayOpen(true)}>
-              {t("pay")}
-            </Button>
-            {schoolId ? (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleExclude}
-                disabled={loading}
-              >
-                {t("dontPay")}
-              </Button>
-            ) : null}
-          </>
+        {row.status === "pending" && !compact ? (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setEditAmount(String(row.amount));
+              setAmountOpen(true);
+            }}
+          >
+            {t("setAmount")}
+          </Button>
+        ) : null}
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={row.status === "paid" || loading}
+          onClick={() => {
+            setAmount(String(row.amount));
+            setPayOpen(true);
+          }}
+        >
+          {t("pay")}
+        </Button>
+        {row.status === "pending" && schoolId && !compact ? (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={handleExclude}
+            disabled={loading}
+          >
+            {t("dontPay")}
+          </Button>
         ) : null}
       </div>
 
@@ -175,7 +211,7 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
           </div>
           <p><span className="font-medium">{t("department")}:</span> {row.staff_department ?? "-"}</p>
           <p><span className="font-medium">{t("monthlySalary")}:</span> {row.amount.toLocaleString()}</p>
-          <p><span className="font-medium">{tc("status")}:</span> {row.status === "paid" ? t("statusPaid") : t("statusPending")}</p>
+          <p><span className="font-medium">{tc("status")}:</span> {!row.id ? t("notGenerated") : row.status === "paid" ? t("statusPaid") : t("statusPending")}</p>
           <p><span className="font-medium">{t("paymentDate")}:</span> {row.payment_date ?? "-"}</p>
           <p><span className="font-medium">{t("paymentMethod")}:</span> {paymentMethodLabel}</p>
           <p><span className="font-medium">{t("referenceNumber")}:</span> {row.reference_number ?? "-"}</p>
@@ -190,9 +226,9 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
       >
         <div className="space-y-3">
           <div>
-            <Label htmlFor={`edit-amount-${row.id}`}>{t("amountToPay")}</Label>
+            <Label htmlFor={`edit-amount-${fieldId}`}>{t("amountToPay")}</Label>
             <Input
-              id={`edit-amount-${row.id}`}
+              id={`edit-amount-${fieldId}`}
               type="number"
               min="0"
               step="0.01"
@@ -214,9 +250,9 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
       <Modal isOpen={payOpen} onClose={() => setPayOpen(false)} title={t("payStaff", { name: row.staff_name })}>
         <div className="space-y-3">
           <div>
-            <Label htmlFor={`amount-${row.id}`}>{tc("amount")}</Label>
+            <Label htmlFor={`amount-${fieldId}`}>{tc("amount")}</Label>
             <Input
-              id={`amount-${row.id}`}
+              id={`amount-${fieldId}`}
               type="number"
               min="0"
               step="0.01"
@@ -225,18 +261,18 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
             />
           </div>
           <div>
-            <Label htmlFor={`date-${row.id}`}>{t("paymentDate")}</Label>
+            <Label htmlFor={`date-${fieldId}`}>{t("paymentDate")}</Label>
             <Input
-              id={`date-${row.id}`}
+              id={`date-${fieldId}`}
               type="date"
               value={paymentDate}
               onChange={(e) => setPaymentDate(e.target.value)}
             />
           </div>
           <div>
-            <Label htmlFor={`method-${row.id}`}>{t("paymentMethod")}</Label>
+            <Label htmlFor={`method-${fieldId}`}>{t("paymentMethod")}</Label>
             <select
-              id={`method-${row.id}`}
+              id={`method-${fieldId}`}
               value={paymentMethod}
               onChange={(e) =>
                 setPaymentMethod(e.target.value as "cash" | "bank" | "mobile_money")
@@ -249,18 +285,18 @@ export function PayrollRowActions({ row, schoolId }: PayrollRowActionsProps) {
             </select>
           </div>
           <div>
-            <Label htmlFor={`reference-${row.id}`}>{t("referenceNumber")}</Label>
+            <Label htmlFor={`reference-${fieldId}`}>{t("referenceNumber")}</Label>
             <Input
-              id={`reference-${row.id}`}
+              id={`reference-${fieldId}`}
               value={referenceNumber}
               onChange={(e) => setReferenceNumber(e.target.value)}
               placeholder={tc("optional")}
             />
           </div>
           <div>
-            <Label htmlFor={`notes-${row.id}`}>{tc("notes")}</Label>
+            <Label htmlFor={`notes-${fieldId}`}>{tc("notes")}</Label>
             <textarea
-              id={`notes-${row.id}`}
+              id={`notes-${fieldId}`}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={tc("optional")}

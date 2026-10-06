@@ -10,9 +10,9 @@
   "rolesSubtitle": "RBAC roles and their resource permissions",
   "auditTitle": "Audit Logs",
   "auditSubtitle": "System audit trail for key entities",
-  "featuresTitle": "Feature Toggles",
-  "featuresSubtitleSuperAdmin": "Choose a school, then enable or disable modules for that school.",
-  "featuresSubtitleSchool": "Enable or disable modules for your school.",
+  "featuresTitle": "School modules",
+  "featuresSubtitleSuperAdmin": "Turn modules on or off for each school. Only the platform owner can change a switch. Schools see the same list on Billing.",
+  "featuresSubtitleSchool": "These modules are set by the platform owner.",
   "loadingFeatures": "Loading features…",
   "websitesTitle": "Website Templates",
   "websitesPageTitle": "Website templates",
@@ -188,25 +188,123 @@
   "filterStudents": "Students",
   "filterParents": "Parents",
   "filterAnalytics": "Analytics",
-  "selectSchoolModules": "Select which school's modules to enable or disable.",
+  "selectSchoolModules": "Choose a school, then turn modules on or off. A module that is off disappears from that school's sidebar.",
+  "featuresReadOnly": "You can review this list. Only the platform owner can change a switch.",
+  "openReleases": "Review features waiting for approval",
+  "releasesTitle": "Ready features",
+  "releasesSubtitle": "Each card is a feature already built and walked through. Approve puts it into the live app. Then turn it on per school under Features.",
+  "awaitingReleasesTitle": "Waiting on you",
+  "awaitingReleasesSubtitle": "Approve a feature here to merge it into the live app. Leave it and schools keep working without it.",
+  "noReleasesWaiting": "Nothing is waiting. The next finished feature will land here and in your notifications.",
+  "approveRelease": "Approve and go live",
+  "dismissRelease": "Dismiss",
+  "approveReleaseHint": "Approve merges the pull request into production. Dismiss closes it and leaves the feature off.",
+  "releaseApproved": "Approved. It is merging into the live app.",
+  "releaseDismissed": "Dismissed. The pull request is closed.",
+  "releaseDismissedPrOpen": "Dismissed here. The pull request stayed open because GitHub is not connected.",
+  "openPreview": "Open preview",
+  "openPullRequest": "Open the pull request",
+  "watchWalkthrough": "Watch the walkthrough",
+  "releaseFeatureKey": "Module key: {key}. After it is live, turn it on per school under Features.",
+  "releaseStatus": {
+    "awaiting": "Ready to approve",
+    "approved": "Live",
+    "dismissed": "Dismissed"
+  },
+  "featureGroups": {
+    "academic": "Academic",
+    "finance": "Finance",
+    "operations": "Operations",
+    "portals": "Portals",
+    "communication": "Communication",
+    "website": "Website"
+  },
   "managingFeaturesFor": "Managing features for",
   "selectSchoolToManage": "Select a school to manage its features.",
   "features": {
+    "students": {
+      "label": "Students",
+      "description": "Student records, enrollment, and student analytics"
+    },
     "online_admissions": {
       "label": "Online admissions",
-      "description": "Public admission form on school website"
+      "description": "Public admission form and the admissions desk"
     },
-    "parent_portal": {
-      "label": "Parent portal",
-      "description": "Parent dashboard and messaging"
+    "classes": {
+      "label": "Classes",
+      "description": "Classes, sections, and teacher class lists"
     },
-    "student_portal": {
-      "label": "Student portal",
-      "description": "Student assignments and grades"
+    "subjects": {
+      "label": "Subjects",
+      "description": "Subject catalog for the school"
     },
-    "messaging": {
-      "label": "Messaging",
-      "description": "In-app messaging between users"
+    "timetable": {
+      "label": "Timetable",
+      "description": "Class timetable for staff, parents, and students"
+    },
+    "attendance": {
+      "label": "Attendance",
+      "description": "Daily attendance and attendance reports"
+    },
+    "gradebook": {
+      "label": "Gradebook",
+      "description": "Grades for teachers, students, and parents"
+    },
+    "assignments": {
+      "label": "Assignments",
+      "description": "Assignments and missed-lesson materials"
+    },
+    "exams": {
+      "label": "Exams",
+      "description": "Exam sessions for teachers"
+    },
+    "report_cards": {
+      "label": "Report cards",
+      "description": "Report cards for teachers and students"
+    },
+    "discipline": {
+      "label": "Discipline",
+      "description": "Discipline incidents and follow-up"
+    },
+    "tasks": {
+      "label": "Tasks",
+      "description": "Internal task board for school staff"
+    },
+    "fee_structure": {
+      "label": "Fee structure",
+      "description": "Fee amounts by class and term"
+    },
+    "invoices": {
+      "label": "Invoices",
+      "description": "Invoices, outstanding balances, and enrollment payment handoff"
+    },
+    "payments": {
+      "label": "Payments",
+      "description": "Recorded fee payments"
+    },
+    "payroll": {
+      "label": "Payroll",
+      "description": "Staff payroll runs"
+    },
+    "expenses": {
+      "label": "Expenses",
+      "description": "School expenses and receipts"
+    },
+    "budget": {
+      "label": "Budget",
+      "description": "Budget plans against actual spending"
+    },
+    "fee_reminders": {
+      "label": "Fee reminders",
+      "description": "Reminders for unpaid fees"
+    },
+    "finance_reports": {
+      "label": "Finance reports",
+      "description": "Finance reports and finance analytics"
+    },
+    "online_payments": {
+      "label": "Online payments",
+      "description": "Parent fee payment portal"
     },
     "library": {
       "label": "Library",
@@ -216,9 +314,33 @@
       "label": "Transport",
       "description": "Bus routes and student transport"
     },
-    "online_payments": {
-      "label": "Online payments",
-      "description": "Parent fee payment portal"
+    "events": {
+      "label": "Events",
+      "description": "School events for staff, parents, and students"
+    },
+    "staff_directory": {
+      "label": "Staff directory",
+      "description": "Operations staff list"
+    },
+    "parent_portal": {
+      "label": "Parent portal",
+      "description": "The whole parent workspace"
+    },
+    "student_portal": {
+      "label": "Student portal",
+      "description": "The whole student workspace"
+    },
+    "messaging": {
+      "label": "Messaging",
+      "description": "In-app messaging between users"
+    },
+    "outreach": {
+      "label": "Outreach",
+      "description": "Announcements and outreach campaigns"
+    },
+    "public_website": {
+      "label": "Public website",
+      "description": "The school's public website editor"
     }
   }
 }

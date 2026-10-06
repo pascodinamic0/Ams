@@ -9,7 +9,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { usePathname } from "next/navigation";
 import { fetchUnreadNotificationCount } from "@/app/notifications/actions";
 import { NotificationToasts } from "@/components/layout/notification-toasts";
 import { fetchUnreadConversationCount } from "@/lib/actions/conversations";
@@ -76,7 +75,6 @@ export function ShellBadgesProvider({
   role: string;
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [unreadMessages, setUnreadMessages] = useState(0);
 
@@ -106,7 +104,6 @@ export function ShellBadgesProvider({
     const active = { current: true };
 
     void applyCounts(active);
-    const interval = window.setInterval(() => void applyCounts(active), 15_000);
 
     const onLiveRefresh = () => {
       void applyCounts(active);
@@ -115,10 +112,9 @@ export function ShellBadgesProvider({
 
     return () => {
       active.current = false;
-      window.clearInterval(interval);
       window.removeEventListener(LIVE_REFRESH_EVENT, onLiveRefresh);
     };
-  }, [applyCounts, pathname]);
+  }, [applyCounts]);
 
   const refresh = useCallback(() => {
     void load();

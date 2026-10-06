@@ -5,6 +5,7 @@ import { getLocale, getMessages, getTimeZone, getTranslations } from "next-intl/
 import { AppIntlProvider } from "@/components/i18n/app-intl-provider";
 import { AppToaster } from "@/components/ui/app-toaster";
 import { PwaRoot } from "@/components/pwa/pwa-root";
+import { NavigationProgress } from "@/components/layout/navigation-progress";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { companyIdentity } from "@/lib/company/identity";
 import { absoluteUrl } from "@/lib/company/site-url";
@@ -107,6 +108,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body className="bg-background antialiased text-foreground">
+        <NavigationProgress />
         <AppIntlProvider
           key={locale}
           locale={locale}

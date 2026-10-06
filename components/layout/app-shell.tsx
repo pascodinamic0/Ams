@@ -6,6 +6,9 @@ import {
 } from "@/components/layout/app-shell-client";
 import { pickClientMessages } from "@/lib/i18n/client-messages";
 import { getCurrentSchoolShellBranding } from "@/lib/schools/shell-branding";
+import { getCurrentProfile } from "@/lib/auth/session";
+import { getHiddenNavHrefs } from "@/lib/features/access";
+import { FeatureNavProvider } from "@/components/layout/feature-nav";
 
 export type { AppShellMobileMode, AppShellProps };
 
@@ -21,14 +24,21 @@ export async function AppShell(props: AppShellProps) {
   const timeZone = await getTimeZone();
   const messages = pickClientMessages(await getMessages(), "/");
   const schoolBranding = await getCurrentSchoolShellBranding();
+  const profile = await getCurrentProfile();
+  const hiddenHrefs =
+    profile?.school_id && profile.role !== "super_admin"
+      ? await getHiddenNavHrefs(profile.school_id)
+      : [];
 
   return (
-    <AppShellClient
-      {...props}
-      locale={locale}
-      timeZone={timeZone}
-      messages={messages}
-      schoolBranding={schoolBranding}
-    />
+    <FeatureNavProvider hiddenHrefs={hiddenHrefs}>
+      <AppShellClient
+        {...props}
+        locale={locale}
+        timeZone={timeZone}
+        messages={messages}
+        schoolBranding={schoolBranding}
+      />
+    </FeatureNavProvider>
   );
 }

@@ -179,8 +179,21 @@ export async function getExpenseTotal(options?: {
   schoolId?: string;
   branchId?: string;
 }): Promise<number> {
-  const expenses = await getExpenses({ ...options, status: "approved" });
-  return expenses.reduce((sum, e) => sum + e.amount, 0);
+  const supabase = await createClient();
+  let query = supabase
+    .from("expenses")
+    .select("amount, branches!inner(school_id)")
+    .eq("status", "approved");
+
+  if (options?.branchId) query = query.eq("branch_id", options.branchId);
+  if (options?.schoolId) query = query.eq("branches.school_id", options.schoolId);
+
+  const { data, error } = await query;
+  if (error) {
+    console.error("getExpenseTotal error:", error);
+    return 0;
+  }
+  return (data ?? []).reduce((sum, row) => sum + Number(row.amount), 0);
 }
 
 export async function getMonthlyExpenseTotals(options?: {

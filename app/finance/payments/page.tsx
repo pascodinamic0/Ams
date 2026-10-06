@@ -22,6 +22,9 @@ export default async function PaymentsPage() {
   const invoiceOptions = openInvoices.map((inv) => ({
     id: inv.id,
     balance: inv.balance,
+    studentName: inv.student_name,
+    studentId: inv.student_id,
+    dueDate: inv.due_date,
     label: `${inv.student_name} (${inv.student_id}) - due ${inv.due_date}`,
   }));
 

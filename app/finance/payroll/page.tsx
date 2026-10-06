@@ -1,24 +1,18 @@
-import { EmptyState } from "@/components/ui/empty-state";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Link from "next/link";
-import { UserAvatar } from "@/components/layout/user-avatar";
 import {
-  getExpenseTotal,
-  getFinanceKPIs,
   getPayroll,
   getPayrollExcludedStaffIds,
-  getPayrollMonths,
   getSchoolCurrencyForSchool,
   getStaff,
 } from "@/lib/db";
 import { getCurrentProfile } from "@/lib/auth/session";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { formatMoney } from "@/lib/currency";
+import type { PayrollListItem } from "@/lib/db/payroll";
+import type { StaffListItem } from "@/lib/db/staff";
 import { PayrollGenerateForm } from "./payroll-form";
 import { PayrollFilters } from "./payroll-filters";
-import { PayrollRowActions } from "./payroll-row-actions";
 import { PayrollMonthActions } from "./payroll-month-actions";
-import { StaffPayAmountsPanel } from "./staff-pay-amounts-panel";
+import { PayrollSheet, type PayrollSheetPerson } from "./payroll-sheet";
 
 type PageProps = {
   searchParams: Promise<{
@@ -31,9 +25,27 @@ type PageProps = {
   }>;
 };
 
+function toSheetPerson(
+  member: StaffListItem,
+  payroll: PayrollListItem | null,
+  excluded: boolean
+): PayrollSheetPerson {
+  return {
+    staffId: member.id,
+    name: member.name,
+    email: member.email,
+    role: member.role,
+    department: member.department,
+    photoUrl: member.photo_url,
+    monthlySalary: member.monthly_salary,
+    excluded,
+    payroll,
+  };
+}
+
 export default async function PayrollPage({ searchParams }: PageProps) {
   const t = await getTranslations("finance");
-  const tc = await getTranslations("common");
+  const locale = await getLocale();
   const profile = await getCurrentProfile();
   const params = await searchParams;
   const scope = {
@@ -41,259 +53,138 @@ export default async function PayrollPage({ searchParams }: PageProps) {
     branchId: profile?.branch_id ?? undefined,
   };
 
-  const [months, financeKpis, operatingExpenses, currency, staffRoster] =
-    await Promise.all([
-      getPayrollMonths(scope),
-      getFinanceKPIs(scope),
-      getExpenseTotal(scope),
+  const now = new Date();
+  const activeMonth = Number(params.month ?? now.getMonth() + 1);
+  const activeYear = Number(params.year ?? now.getFullYear());
+  const activeLabel = new Date(Date.UTC(activeYear, activeMonth - 1, 1)).toLocaleDateString(
+    locale,
+    { month: "long", year: "numeric" }
+  );
+
+  const [currency, staffRoster, payroll, excludedStaffIds] = await Promise.all([
       getSchoolCurrencyForSchool(profile?.school_id),
       scope.schoolId
         ? getStaff({
             schoolId: scope.schoolId,
             activeOnly: true,
           })
-        : Promise.resolve([]),
+        : Promise.resolve([] as StaffListItem[]),
+      getPayroll({
+        ...scope,
+        month: activeMonth,
+        year: activeYear,
+      }),
+      scope.schoolId
+        ? getPayrollExcludedStaffIds({
+            schoolId: scope.schoolId,
+            month: activeMonth,
+            year: activeYear,
+          })
+        : Promise.resolve([] as string[]),
     ]);
+
   const formatCurrency = (value: number) => formatMoney(value, currency.code);
-  const activeMonth = Number(params.month ?? months[0]?.month ?? new Date().getMonth() + 1);
-  const activeYear = Number(params.year ?? months[0]?.year ?? new Date().getFullYear());
-  const activeLabel = new Date(Date.UTC(activeYear, activeMonth - 1, 1)).toLocaleDateString(
-    undefined,
-    { month: "long", year: "numeric" }
-  );
+  const excluded = new Set(excludedStaffIds);
+  const payrollByStaff = new Map(payroll.map((row) => [row.staff_id, row]));
+  const seen = new Set<string>();
 
-  const [payroll, excludedStaffIds] = await Promise.all([
-    getPayroll({
-      ...scope,
-      month: activeMonth,
-      year: activeYear,
-      status: params.status || undefined,
-      search: params.search || undefined,
-      position: params.position || undefined,
-      department: params.department || undefined,
-    }),
-    scope.schoolId
-      ? getPayrollExcludedStaffIds({
-          schoolId: scope.schoolId,
-          month: activeMonth,
-          year: activeYear,
-        })
-      : Promise.resolve([] as string[]),
-  ]);
+  const people: PayrollSheetPerson[] = staffRoster.map((member) => {
+    seen.add(member.id);
+    return toSheetPerson(member, payrollByStaff.get(member.id) ?? null, excluded.has(member.id));
+  });
 
-  const totalEmployees = payroll.length;
-  const paidEmployees = payroll.filter((row) => row.status === "paid").length;
-  const pendingEmployees = totalEmployees - paidEmployees;
-  const payrollRequired = payroll.reduce((sum, row) => sum + row.amount, 0);
-  const payrollPaid = payroll
-    .filter((row) => row.status === "paid")
+  for (const row of payroll) {
+    if (seen.has(row.staff_id)) continue;
+    people.push({
+      staffId: row.staff_id,
+      name: row.staff_name,
+      email: null,
+      role: row.staff_position,
+      department: row.staff_department,
+      photoUrl: row.staff_photo_url,
+      monthlySalary: row.amount,
+      excluded: false,
+      payroll: row,
+    });
+  }
+
+  const includedPeople = people.filter((person) => !person.excluded);
+  const totalEmployees = includedPeople.length;
+  const paidEmployees = includedPeople.filter((person) => person.payroll?.status === "paid").length;
+  const remainingPayroll = payroll
+    .filter((row) => row.status !== "paid")
     .reduce((sum, row) => sum + row.amount, 0);
-  const remainingPayroll = payrollRequired - payrollPaid;
-  const cashAvailable = financeKpis.collected - payrollPaid - operatingExpenses;
-  const positions = [...new Set(payroll.map((row) => row.staff_position).filter(Boolean))] as string[];
+  const positions = [...new Set(people.map((person) => person.role).filter(Boolean))] as string[];
   const departments = [
-    ...new Set(payroll.map((row) => row.staff_department).filter(Boolean)),
+    ...new Set(people.map((person) => person.department).filter(Boolean)),
   ] as string[];
-  const monthsByYear = months.reduce<Record<number, { month: number; label: string }[]>>(
-    (acc, item) => {
-      if (!acc[item.year]) acc[item.year] = [];
-      acc[item.year].push({ month: item.month, label: item.label });
-      return acc;
+
+  const stats = [
+    {
+      label: t("totalEmployees"),
+      value: String(totalEmployees),
+      detail: t("payrollPaidCount", { count: paidEmployees }),
     },
-    {}
-  );
+    {
+      label: t("remainingPayroll"),
+      value: formatCurrency(remainingPayroll),
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">{t("payrollTitle")}</h1>
-
-      <PayrollGenerateForm
-        schoolId={scope.schoolId}
-        branchId={scope.branchId}
-        defaultMonth={activeMonth}
-        defaultYear={activeYear}
-      />
-
-      {scope.schoolId ? (
-        <StaffPayAmountsPanel
-          schoolId={scope.schoolId}
-          branchId={scope.branchId}
-          staff={staffRoster}
-          currencyCode={currency.code}
-          month={activeMonth}
-          year={activeYear}
-          excludedStaffIds={excludedStaffIds}
-        />
-      ) : null}
-
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader><CardTitle>{t("totalEmployees")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{totalEmployees}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("paidEmployees")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-green-600">{paidEmployees}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("pendingEmployees")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{pendingEmployees}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("totalPayrollAmount")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(payrollRequired)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("totalAmountPaid")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold text-green-600">{formatCurrency(payrollPaid)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("remainingPayroll")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(remainingPayroll)}</p>
-          </CardContent>
-        </Card>
+    <div className="space-y-4">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-xl font-semibold tracking-tight">{t("payrollTitle")}</h1>
+          <p className="text-sm capitalize text-stone-500">{activeLabel}</p>
+          <p className="mt-1 max-w-xl text-xs leading-relaxed text-stone-500">
+            {t("generatePayrollHint")}
+          </p>
+        </div>
+        <div className="flex flex-col items-start gap-1 sm:items-end">
+          <PayrollGenerateForm
+            key={`${activeYear}-${activeMonth}`}
+            schoolId={scope.schoolId}
+            branchId={scope.branchId}
+            defaultMonth={activeMonth}
+            defaultYear={activeYear}
+          />
+          <PayrollMonthActions
+            compact
+            month={activeMonth}
+            year={activeYear}
+            schoolId={scope.schoolId}
+            branchId={scope.branchId}
+            label={activeLabel}
+          />
+        </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader><CardTitle>{t("schoolFeesCollected")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(financeKpis.collected)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("outstandingSchoolFees")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(financeKpis.outstanding)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("payrollRequired")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(payrollRequired)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("payrollPaid")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(payrollPaid)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("operatingExpenses")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(operatingExpenses)}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("cashAvailable")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-2xl font-bold">{formatCurrency(cashAvailable)}</p>
-          </CardContent>
-        </Card>
-      </div>
+      <dl className="grid grid-cols-2 overflow-hidden rounded-lg border border-stone-200 dark:border-stone-800">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="border-r border-stone-200 px-3 py-2 last:border-r-0 dark:border-stone-800"
+          >
+            <dt className="text-[11px] leading-tight text-stone-500">{stat.label}</dt>
+            <dd className="mt-0.5 text-sm font-semibold tabular-nums">{stat.value}</dd>
+            {stat.detail ? (
+              <p className="text-xs text-stone-500">{stat.detail}</p>
+            ) : null}
+          </div>
+        ))}
+      </dl>
 
       <PayrollFilters positions={positions} departments={departments} />
 
-      <div className="grid gap-4 lg:grid-cols-[240px,1fr]">
-        <Card>
-          <CardHeader><CardTitle>{t("payrollTitle")}</CardTitle></CardHeader>
-          <CardContent className="space-y-3">
-            {Object.entries(monthsByYear)
-              .sort(([a], [b]) => Number(b) - Number(a))
-              .map(([year, entries]) => (
-                <div key={year}>
-                  <p className="mb-1 text-sm font-semibold">{year}</p>
-                  <div className="space-y-1">
-                    {entries.map((item) => (
-                      <Link
-                        key={`${year}-${item.month}`}
-                        href={`/finance/payroll?year=${year}&month=${item.month}`}
-                        className={`block rounded px-2 py-1 text-sm ${
-                          Number(year) === activeYear && item.month === activeMonth
-                            ? "bg-stone-200 dark:bg-stone-800"
-                            : "hover:bg-stone-100 dark:hover:bg-stone-900"
-                        }`}
-                      >
-                        {item.label.split(" ")[0]}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))}
-          </CardContent>
-        </Card>
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">{activeLabel}</h2>
-            <PayrollMonthActions
-              month={activeMonth}
-              year={activeYear}
-              schoolId={scope.schoolId}
-              branchId={scope.branchId}
-              label={activeLabel}
-            />
-          </div>
-
-          {payroll.length === 0 ? (
-            <EmptyState
-              title={t("noPayroll")}
-              description={t("noPayrollThisMonth")}
-            />
-          ) : (
-            <div className="overflow-x-auto rounded-lg border">
-              <table className="min-w-full divide-y divide-stone-200 text-sm dark:divide-stone-800">
-                <thead className="bg-stone-50 dark:bg-stone-900/60">
-                  <tr>
-                    <th className="px-3 py-2 text-left">{t("photo")}</th>
-                    <th className="px-3 py-2 text-left">{t("fullName")}</th>
-                    <th className="px-3 py-2 text-left">{t("position")}</th>
-                    <th className="px-3 py-2 text-left">{t("monthlySalary")}</th>
-                    <th className="px-3 py-2 text-left">{tc("status")}</th>
-                    <th className="px-3 py-2 text-left">{t("paymentDate")}</th>
-                    <th className="px-3 py-2 text-left">{tc("actions")}</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
-                  {payroll.map((row) => (
-                    <tr key={row.id}>
-                      <td className="px-3 py-2">
-                        <UserAvatar name={row.staff_name} avatarUrl={row.staff_photo_url} size="sm" />
-                      </td>
-                      <td className="px-3 py-2">{row.staff_name}</td>
-                      <td className="px-3 py-2">{row.staff_position ?? t("colStaff")}</td>
-                      <td className="px-3 py-2">{formatCurrency(row.amount)}</td>
-                      <td className="px-3 py-2">
-                        {row.status === "paid" ? (
-                          <span className="rounded-full bg-green-100 px-2 py-1 text-xs text-green-700">{t("statusPaid")}</span>
-                        ) : (
-                          <span className="rounded-full bg-amber-100 px-2 py-1 text-xs text-amber-700">{t("statusPending")}</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-2">{row.payment_date ?? "—"}</td>
-                      <td className="px-3 py-2">
-                        <PayrollRowActions row={row} schoolId={scope.schoolId} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
+      <PayrollSheet
+        schoolId={scope.schoolId}
+        branchId={scope.branchId}
+        people={people}
+        currencyCode={currency.code}
+        month={activeMonth}
+        year={activeYear}
+      />
     </div>
   );
 }

@@ -45,16 +45,16 @@ Do **not** add markdown docs unless the plan explicitly asks. Do **not** commit 
 
 1. Branch: `daily/YYYY-MM-DD-short-slug` (today's date, kebab slug).
 2. Implement the feature fully on that branch.
-3. Add **`feature-tour.json`** at repo root (see `feature-tour.example.json`). The CI tour recorder reads this file.
+3. Add **`feature-tour.json`** at repo root (see `feature-tour.example.json`). The CI tour recorder reads this file. Optional `featureKey` names the school module this release controls.
 4. Open a **draft** PR to `main`:
    - Title: `daily: [Feature name]`
-   - Label: **`daily-feature`** (required for CI email)
+   - Label: **`daily-feature`** (required for the in-app release)
    - Body: gap closed, A?Z checklist, how to test, tour notes
 5. **Never** merge, push to `main`, force-push, or skip hooks.
 
 ## feature-tour.json
 
-Commit a tour the founder can watch in email:
+Commit a tour the owner can approve from the super-admin dashboard:
 
 ```json
 {
@@ -71,14 +71,14 @@ Commit a tour the founder can watch in email:
 }
 ```
 
-- Use `letter` A, B, C� for the email walkthrough.
+- Use `letter` A, B, C� for the in-app walkthrough.
 - `path` is relative to the Vercel preview base URL.
 - `actions`: `wait` (ms), `click` (selector), `fill` (selector, value), `press` (key).
 - Prefer routes reachable with demo data. If login is required, the tour uses GitHub secrets `DAILY_TOUR_LOGIN_EMAIL` / `DAILY_TOUR_LOGIN_PASSWORD` � use `/login` as first step with fill actions.
 
 ## After the PR
 
-Stop. CI will record the walkthrough and email the founder. Do not merge.
+Stop. CI will record the walkthrough and post a notification plus a release card on the platform owner's super-admin dashboard. Do not merge. The owner approves from `/admin`.
 
 ## Hard stops
 

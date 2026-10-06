@@ -13,10 +13,9 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["import-in-the-middle", "@sentry/nextjs"],
   experimental: {
     optimizePackageImports: ["lucide-react", "recharts", "date-fns", "framer-motion"],
-    // Never reuse soft-navigated RSC payloads — always refetch page data.
-    // static must be >= 30 in Next.js 16; only dynamic pages need 0.
+    // Reuse a recent navigation for half a minute. Mutations call router.refresh().
     staleTimes: {
-      dynamic: 0,
+      dynamic: 30,
     },
   },
 };

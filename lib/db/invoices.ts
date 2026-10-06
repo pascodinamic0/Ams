@@ -322,18 +322,36 @@ export async function getFinanceKPIs(options?: {
   schoolId?: string;
   branchId?: string;
 }): Promise<FinanceKPIs> {
-  const invoices = await getInvoices(options);
+  const supabase = await createClient();
+  let query = supabase
+    .from("fee_invoices")
+    .select("amount, amount_paid, due_date, status, students!inner(school_id, branch_id)");
+
+  if (options?.schoolId) {
+    query = query.eq("students.school_id", options.schoolId);
+  }
+  if (options?.branchId) {
+    query = query.eq("students.branch_id", options.branchId);
+  }
+
+  const { data, error } = await query;
+  if (error) {
+    console.error("getFinanceKPIs error:", error);
+    return { outstanding: 0, collected: 0, overdue: 0, invoiceCount: 0 };
+  }
 
   let outstanding = 0;
   let collected = 0;
   let overdue = 0;
 
-  for (const inv of invoices) {
-    collected += inv.amount_paid;
-    const balance = inv.balance;
+  for (const inv of data ?? []) {
+    const amount = Number(inv.amount);
+    const paid = Number(inv.amount_paid ?? 0);
+    collected += paid;
+    const balance = Math.max(0, amount - paid);
     if (balance > 0) {
       outstanding += balance;
-      if (isOverdue(inv.status, inv.due_date)) {
+      if (isOverdue(inv.status ?? "pending", inv.due_date)) {
         overdue += balance;
       }
     }
@@ -343,6 +361,6 @@ export async function getFinanceKPIs(options?: {
     outstanding,
     collected,
     overdue,
-    invoiceCount: invoices.length,
+    invoiceCount: data?.length ?? 0,
   };
 }

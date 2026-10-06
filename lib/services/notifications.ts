@@ -32,6 +32,7 @@ export async function createNotification(
       user_id: input.userId,
       title: input.title,
       body: input.body ?? null,
+      url: input.url ?? null,
       is_read: false,
     })
     .select("id")
@@ -74,6 +75,7 @@ export async function createNotifications(
         user_id: n.userId,
         title: n.title,
         body: n.body ?? null,
+        url: n.url ?? null,
         is_read: false,
       }))
     )

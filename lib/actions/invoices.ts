@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { invoiceSchema, type InvoiceFormData } from "@/lib/validations/finance";
-import { getStudentsForBilling } from "@/lib/db/students";
+import { getStudentsForBilling, searchStudentsForBilling } from "@/lib/db/students";
 
 function deriveInvoiceStatus(amount: number, amountPaid: number, dueDate: string) {
   if (amountPaid >= amount) return "paid";
@@ -34,6 +34,27 @@ async function resolveInvoiceAmount(
     .eq("id", feeStructureId)
     .single();
   return structure ? Number(structure.amount) : amount;
+}
+
+export async function searchInvoiceStudents(query: string) {
+  const profile = await getCurrentProfile();
+  if (!profile) return [];
+  const schoolId = profile.school_id ?? undefined;
+  if (!schoolId && profile.role !== "super_admin") return [];
+
+  const students = await searchStudentsForBilling({
+    schoolId,
+    search: query,
+    limit: 8,
+  });
+
+  return students.map((student) => ({
+    id: student.id,
+    name: student.name,
+    student_id: student.student_id,
+    class_name: student.class_name,
+    status: student.status,
+  }));
 }
 
 export async function createInvoice(input: InvoiceFormData) {

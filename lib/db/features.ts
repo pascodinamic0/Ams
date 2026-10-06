@@ -1,14 +1,18 @@
 import { createClient } from "@/lib/supabase/server";
+import {
+  FEATURE_CATALOG,
+  FEATURE_GROUPS,
+  schoolFeatureStorageKey,
+  type FeatureGroup,
+} from "@/lib/features/catalog";
+import { getDisabledFeatureKeys } from "@/lib/features/access";
 
-export const SCHOOL_FEATURE_KEYS = [
-  { key: "online_admissions", label: "Online admissions", description: "Public admission form on school website" },
-  { key: "parent_portal", label: "Parent portal", description: "Parent dashboard and messaging" },
-  { key: "student_portal", label: "Student portal", description: "Student assignments and grades" },
-  { key: "messaging", label: "Messaging", description: "In-app messaging between users" },
-  { key: "library", label: "Library", description: "Library catalog and book issues" },
-  { key: "transport", label: "Transport", description: "Bus routes and student transport" },
-  { key: "online_payments", label: "Online payments", description: "Parent fee payment portal" },
-] as const;
+export const SCHOOL_FEATURE_KEYS = FEATURE_CATALOG.map((feature) => ({
+  key: feature.key,
+  label: feature.label,
+  description: feature.description,
+  group: feature.group,
+}));
 
 export type FeatureToggleItem = {
   id: string;
@@ -17,21 +21,22 @@ export type FeatureToggleItem = {
   description: string | null;
 };
 
+export type SchoolFeatureState = {
+  key: string;
+  group: FeatureGroup;
+  label: string;
+  description: string;
+  enabled: boolean;
+  toggle_id: string | null;
+};
+
 export type SchoolFeatureRow = {
   school_id: string;
   school_name: string;
-  features: {
-    key: string;
-    label: string;
-    description: string;
-    enabled: boolean;
-    toggle_id: string | null;
-  }[];
+  features: SchoolFeatureState[];
 };
 
-function schoolFeatureKey(schoolId: string, featureKey: string) {
-  return `school:${schoolId}:${featureKey}`;
-}
+export const FEATURE_GROUP_ORDER = FEATURE_GROUPS;
 
 export async function getFeatureToggles(): Promise<FeatureToggleItem[]> {
   const supabase = await createClient();
@@ -66,26 +71,35 @@ export async function getSchoolFeatureMatrix(): Promise<SchoolFeatureRow[]> {
     return [];
   }
 
-  const toggleMap = new Map<string, { id: string; enabled: boolean }>();
-  for (const t of togglesResult.data ?? []) {
-    toggleMap.set(t.key, { id: t.id, enabled: t.enabled ?? false });
+  const togglesBySchool = new Map<string, Map<string, { id: string; enabled: boolean }>>();
+  for (const toggle of togglesResult.data ?? []) {
+    const parts = toggle.key.split(":");
+    if (parts.length < 3 || parts[0] !== "school") continue;
+    const schoolId = parts[1];
+    const featureKey = parts.slice(2).join(":");
+    const schoolToggles = togglesBySchool.get(schoolId) ?? new Map();
+    schoolToggles.set(featureKey, { id: toggle.id, enabled: toggle.enabled ?? false });
+    togglesBySchool.set(schoolId, schoolToggles);
   }
 
-  return (schoolsResult.data ?? []).map((school) => ({
-    school_id: school.id,
-    school_name: school.name,
-    features: SCHOOL_FEATURE_KEYS.map((f) => {
-      const fullKey = schoolFeatureKey(school.id, f.key);
-      const toggle = toggleMap.get(fullKey);
-      return {
-        key: f.key,
-        label: f.label,
-        description: f.description,
-        enabled: toggle?.enabled ?? false,
-        toggle_id: toggle?.id ?? null,
-      };
-    }),
-  }));
+  return (schoolsResult.data ?? []).map((school) => {
+    const schoolToggles = togglesBySchool.get(school.id);
+    return {
+      school_id: school.id,
+      school_name: school.name,
+      features: FEATURE_CATALOG.map((feature) => {
+        const toggle = schoolToggles?.get(feature.key);
+        return {
+          key: feature.key,
+          group: feature.group,
+          label: feature.label,
+          description: feature.description,
+          enabled: toggle ? toggle.enabled : feature.defaultEnabled,
+          toggle_id: toggle?.id ?? null,
+        };
+      }),
+    };
+  });
 }
 
-export { schoolFeatureKey };
+export { schoolFeatureStorageKey as schoolFeatureKey, getDisabledFeatureKeys };

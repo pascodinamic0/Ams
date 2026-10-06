@@ -1,5 +1,5 @@
 /** Cap hung DNS / offline fetches so middleware does not stall for tens of seconds. */
-const FETCH_TIMEOUT_MS = 8_000;
+const FETCH_TIMEOUT_MS = 4_000;
 
 function isCallerAbort(error: unknown, timeout: AbortSignal): boolean {
   if (timeout.aborted) return false;

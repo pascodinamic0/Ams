@@ -33,5 +33,13 @@
   "checkoutFailed": "Could not start checkout",
   "portalFailed": "Could not open billing portal",
   "goToDashboard": "Open dashboard",
-  "schoolLabel": "School"
+  "schoolLabel": "School",
+  "modulesTitle": "Modules included",
+  "modulesHint": "Your subscription unlocks the school. The platform owner turns each module on or off. An off module is hidden from your team.",
+  "moduleOn": "On",
+  "moduleOff": "Off",
+  "moduleOffTitle": "This module is off",
+  "moduleOffGeneric": "This module",
+  "moduleOffBody": "{module} is turned off for your school. Fees and the rest of the work keep moving in the modules that are still on. Billing shows the full list.",
+  "moduleOffBilling": "See modules on Billing"
 }

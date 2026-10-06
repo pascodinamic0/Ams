@@ -2,7 +2,7 @@
 # Full setup: Docs/daily-feature-automation.md
 
 name: Daily ShuleOS feature factory
-description: Invent one complete A→Z ShuleOS feature from product gaps; draft PR only. CI emails the founder walkthrough.
+description: Invent one complete A→Z ShuleOS feature from product gaps; draft PR only. CI posts an in-app release for the platform owner.
 
 workflow:
   triggers:
@@ -17,8 +17,9 @@ workflow:
       2. If an open PR labeled daily-feature exists, stop — do not build a new feature. Comment that you are waiting on merge.
       3. Pick the highest cost-of-inaction gap (fees leak, attendance holes, parent surprise, admin evenings). Prefer one-day slices from IMPLEMENTATION_PLAN.md FUTURE section.
       4. Branch daily/YYYY-MM-DD-slug and implement A→Z: schema/RLS if needed, UI, EN+FR strings, RBAC, empty/error states.
-      5. Commit feature-tour.json at repo root (see feature-tour.example.json).
+      5. Commit feature-tour.json at repo root (see feature-tour.example.json). Include featureKey when the feature maps to a school module.
       6. Open a DRAFT PR to main titled "daily: [Feature name]", label daily-feature, never merge.
+      CI records the tour and posts it to the platform owner's in-app Releases inbox. Do not email.
   gitConfig:
     repo: pascodinamic0/Ams
     branch: main

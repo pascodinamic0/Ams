@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useShellBadges } from "@/components/layout/shell-badges-provider";
+import { useHiddenNavHrefs } from "@/components/layout/feature-nav";
 import { getMobileTabs, isTabActive } from "@/lib/layout/mobile-nav";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +18,8 @@ export function MobileTabBar({ role, onMenuOpen }: MobileTabBarProps) {
   const pathname = usePathname();
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
-  const tabs = getMobileTabs(role);
+  const hiddenHrefs = useHiddenNavHrefs();
+  const tabs = getMobileTabs(role).filter((tab) => !hiddenHrefs.includes(tab.href));
   const tabHrefs = tabs.map((tab) => tab.href);
   const { unreadMessages } = useShellBadges();
 
@@ -36,6 +38,7 @@ export function MobileTabBar({ role, onMenuOpen }: MobileTabBarProps) {
             <Link
               key={tab.id}
               href={tab.href}
+              prefetch={false}
               className={cn(
                 "relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 px-1 py-2.5 text-[10px] font-medium transition-colors",
                 active

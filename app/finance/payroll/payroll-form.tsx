@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useFormContext, useWatch } from "react-hook-form";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { FormWrapper } from "@/components/forms/form-wrapper";
@@ -52,7 +52,7 @@ export function PayrollGenerateForm({
       schema={payrollGenerateSchema}
       defaultValues={{ month: defaultMonth, year: defaultYear }}
       onSubmit={onSubmit}
-      className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2 lg:grid-cols-4"
+      className="flex flex-nowrap items-end gap-2"
     >
       <GenerateFields />
     </FormWrapper>
@@ -61,6 +61,7 @@ export function PayrollGenerateForm({
 
 function GenerateFields() {
   const router = useRouter();
+  const locale = useLocale();
   const t = useTranslations("finance");
   const { register, formState: { errors, isSubmitting }, control } = useFormContext<PayrollGenerateFormData>();
   const month = useWatch({ control, name: "month" });
@@ -71,11 +72,14 @@ function GenerateFields() {
   useEffect(() => {
     if (!month || !year) return;
     const params = new URLSearchParams(window.location.search);
-    const currentMonth = params.get("month");
-    const currentYear = params.get("year");
-    if (currentMonth === String(month) && currentYear === String(year)) return;
-    router.replace(`/finance/payroll?month=${month}&year=${year}`);
+    if (params.get("month") === String(month) && params.get("year") === String(year)) return;
+    params.set("month", String(month));
+    params.set("year", String(year));
+    router.replace(`/finance/payroll?${params.toString()}`);
   }, [month, year, router]);
+
+  const selectClass =
+    "h-10 capitalize rounded-lg border border-border bg-surface px-3 text-sm dark:border-stone-700 dark:bg-stone-900";
 
   return (
     <>
@@ -84,11 +88,11 @@ function GenerateFields() {
         <select
           id="gen_month"
           {...register("month", { valueAsNumber: true })}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
+          className={`w-36 ${selectClass}`}
         >
           {months.map((m) => (
             <option key={m} value={m}>
-              {new Date(Date.UTC(2026, m - 1, 1)).toLocaleDateString(undefined, {
+              {new Date(Date.UTC(2026, m - 1, 1)).toLocaleDateString(locale, {
                 month: "long",
               })}
             </option>
@@ -101,7 +105,7 @@ function GenerateFields() {
         <select
           id="gen_year"
           {...register("year", { valueAsNumber: true })}
-          className="w-full rounded-lg border px-3 py-2 text-sm dark:border-stone-700 dark:bg-stone-900"
+          className={`w-24 ${selectClass}`}
         >
           {years.map((y) => (
             <option key={y} value={y}>
@@ -111,12 +115,7 @@ function GenerateFields() {
         </select>
         {errors.year && <p className="mt-1 text-sm text-red-500">{errors.year.message}</p>}
       </div>
-      <div className="flex items-end sm:col-span-2 lg:col-span-1">
-        <Button type="submit" className="w-full" disabled={isSubmitting}>{t("generatePayroll")}</Button>
-      </div>
-      <p className="text-xs text-stone-500 sm:col-span-2 lg:col-span-4">
-        {t("generatePayrollHint")}
-      </p>
+      <Button type="submit" disabled={isSubmitting}>{t("generatePayroll")}</Button>
     </>
   );
 }

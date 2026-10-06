@@ -206,15 +206,28 @@ export async function getPayrollTotals(options?: {
   month?: number;
   year?: number;
 }): Promise<{ pending: number; paid: number; total: number }> {
-  const records = await getPayroll(options);
+  const supabase = await createClient();
+  let query = supabase
+    .from("payroll")
+    .select("amount, status, staff!inner(school_id, branch_id)");
+
+  if (options?.month) query = query.eq("payroll_month", options.month);
+  if (options?.year) query = query.eq("payroll_year", options.year);
+  if (options?.schoolId) query = query.eq("staff.school_id", options.schoolId);
+  if (options?.branchId) query = query.eq("staff.branch_id", options.branchId);
+
+  const { data, error } = await query;
+  if (error) {
+    logQueryError("getPayrollTotals error:", error);
+    return { pending: 0, paid: 0, total: 0 };
+  }
+
   let pending = 0;
   let paid = 0;
-  for (const record of records) {
-    if (record.status === "paid") {
-      paid += record.amount;
-    } else {
-      pending += record.amount;
-    }
+  for (const record of data ?? []) {
+    const amount = Number(record.amount);
+    if (record.status === "paid") paid += amount;
+    else pending += amount;
   }
   return { pending, paid, total: pending + paid };
 }
