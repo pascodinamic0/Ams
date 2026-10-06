@@ -375,7 +375,7 @@
   "enrollmentAmountDue": "Amount due",
   "enrollmentAmountMismatch": "Paper receipt may differ — balance due is {expected}.",
   "enrollmentProofRequired": "Upload or photograph the paper receipt before activating.",
-  "enrollmentProofRequiredLabel": "Paper receipt photo (required)",
+  "enrollmentProofRequiredLabel": "Paper receipt photo (optional)",
   "enrollmentProofHint": "Use the school copy from the manual facture book — not the parent's copy.",
   "confirmEnrollmentPayment": "Confirm payment & activate",
   "enrollmentActivated": "Payment confirmed — student is now active.",

@@ -53,11 +53,6 @@ export function ConfirmEnrollmentForm({
       toast.error(t("enrollmentInvoiceMissing"));
       return;
     }
-    if (!proofUrl.trim()) {
-      toast.error(t("enrollmentProofRequired"));
-      return;
-    }
-
     setSubmitting(true);
     const result = await confirmPendingEnrollment({
       student_id: row.student_id,
@@ -65,7 +60,7 @@ export function ConfirmEnrollmentForm({
       amount: amountNum,
       method,
       reference: reference.trim() || undefined,
-      proof_url: proofUrl,
+      proof_url: proofUrl.trim() || undefined,
     });
     setSubmitting(false);
 
@@ -239,7 +234,7 @@ export function ConfirmEnrollmentForm({
         />
       </div>
 
-      <Button type="submit" disabled={submitting || !proofUrl.trim()}>
+      <Button type="submit" disabled={submitting}>
         {submitting ? tc("saving") : t("confirmEnrollmentPayment")}
       </Button>
     </form>

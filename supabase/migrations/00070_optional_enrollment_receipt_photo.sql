@@ -1,0 +1,120 @@
+-- Paper receipt photo is optional when finance confirms an enrollment payment.
+
+CREATE OR REPLACE FUNCTION public.confirm_pending_enrollment(
+  p_student_id uuid,
+  p_invoice_id uuid,
+  p_amount numeric,
+  p_method public.fee_payment_method,
+  p_reference text,
+  p_proof_url text,
+  p_paid_at timestamptz DEFAULT now()
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+SET row_security = off
+AS $$
+DECLARE
+  v_student public.students%ROWTYPE;
+  v_invoice public.fee_invoices%ROWTYPE;
+  v_current_paid numeric;
+  v_new_paid numeric;
+  v_new_status public.invoice_status;
+  v_activated boolean := false;
+BEGIN
+  IF NOT public.is_finance_payments_role() THEN
+    RAISE EXCEPTION 'not_authorized';
+  END IF;
+
+  IF p_amount IS NULL OR p_amount <= 0 THEN
+    RAISE EXCEPTION 'invalid_amount';
+  END IF;
+
+  SELECT * INTO v_student FROM public.students WHERE id = p_student_id FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'student_not_found';
+  END IF;
+
+  IF NOT public.is_super_admin()
+     AND v_student.school_id IS DISTINCT FROM public.get_my_school_id() THEN
+    RAISE EXCEPTION 'not_authorized';
+  END IF;
+
+  SELECT * INTO v_invoice FROM public.fee_invoices WHERE id = p_invoice_id FOR UPDATE;
+  IF NOT FOUND THEN
+    RAISE EXCEPTION 'invoice_not_found';
+  END IF;
+
+  IF v_invoice.student_id <> p_student_id THEN
+    RAISE EXCEPTION 'invoice_student_mismatch';
+  END IF;
+
+  IF v_invoice.source <> 'enrollment' THEN
+    RAISE EXCEPTION 'not_enrollment_invoice';
+  END IF;
+
+  v_current_paid := COALESCE(v_invoice.amount_paid, 0);
+
+  IF p_amount > (v_invoice.amount - v_current_paid) THEN
+    RAISE EXCEPTION 'payment_exceeds_balance';
+  END IF;
+
+  INSERT INTO public.fee_payments (
+    invoice_id,
+    amount,
+    method,
+    reference,
+    paid_at,
+    proof_url,
+    recorded_by
+  )
+  VALUES (
+    p_invoice_id,
+    p_amount,
+    p_method,
+    NULLIF(btrim(p_reference), ''),
+    COALESCE(p_paid_at, now()),
+    NULLIF(btrim(COALESCE(p_proof_url, '')), ''),
+    auth.uid()
+  );
+
+  v_new_paid := v_current_paid + p_amount;
+
+  IF v_new_paid >= v_invoice.amount THEN
+    v_new_status := 'paid';
+  ELSIF v_invoice.due_date < CURRENT_DATE THEN
+    v_new_status := 'overdue';
+  ELSE
+    v_new_status := 'pending';
+  END IF;
+
+  UPDATE public.fee_invoices
+  SET
+    amount_paid = v_new_paid,
+    status = v_new_status,
+    updated_at = now()
+  WHERE id = p_invoice_id;
+
+  IF v_new_status = 'paid' AND v_student.status = 'pending' THEN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM public.fee_invoices fi
+      WHERE fi.student_id = p_student_id
+        AND fi.source = 'enrollment'
+        AND fi.status IS DISTINCT FROM 'paid'
+    ) THEN
+      UPDATE public.students
+      SET status = 'active', updated_at = now()
+      WHERE id = p_student_id;
+      v_activated := true;
+    END IF;
+  END IF;
+
+  RETURN jsonb_build_object(
+    'invoice_status', v_new_status::text,
+    'amount_paid', v_new_paid,
+    'student_activated', v_activated
+  );
+END;
+$$;

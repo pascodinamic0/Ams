@@ -375,7 +375,7 @@
   "enrollmentAmountDue": "Montant dû",
   "enrollmentAmountMismatch": "Le reçu papier peut différer — solde dû : {expected}.",
   "enrollmentProofRequired": "Téléversez ou photographiez le reçu papier avant d'activer.",
-  "enrollmentProofRequiredLabel": "Photo du reçu papier (obligatoire)",
+  "enrollmentProofRequiredLabel": "Photo du reçu papier (facultatif)",
   "enrollmentProofHint": "Utilisez la copie école du cahier de factures — pas celle du parent.",
   "confirmEnrollmentPayment": "Confirmer le paiement et activer",
   "enrollmentActivated": "Paiement confirmé — l'élève est maintenant actif.",

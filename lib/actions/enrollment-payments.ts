@@ -19,7 +19,7 @@ const confirmEnrollmentSchema = z.object({
     "other",
   ]),
   reference: z.string().optional(),
-  proof_url: z.string().min(1, "proofRequired"),
+  proof_url: z.string().optional(),
   paid_at: z.string().optional(),
 });
 
@@ -55,7 +55,7 @@ export async function confirmPendingEnrollment(input: ConfirmEnrollmentFormData)
     p_amount: parsed.data.amount,
     p_method: parsed.data.method,
     p_reference: parsed.data.reference ?? null,
-    p_proof_url: parsed.data.proof_url,
+    p_proof_url: parsed.data.proof_url?.trim() || null,
     p_paid_at: parsed.data.paid_at ?? new Date().toISOString(),
   });
 
