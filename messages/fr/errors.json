@@ -41,7 +41,7 @@
   "inviteEmailFailed": "Échec de l'envoi de l'e-mail d'invitation",
   "inviteLinkFailed": "Échec de la création du lien d'invitation",
   "inviteExpired": "Ce lien d'invitation est invalide ou expiré. Demandez à votre admin d'envoyer une nouvelle invitation.",
-  "lastAcademicAdminChange": "Le rôle d'administrateur académique ne peut pas être changé",
+  "lastAcademicAdminChange": "Impossible de modifier le rôle du dernier administrateur académique de l'établissement",
   "lastAcademicAdminRemove": "Impossible de retirer le dernier administrateur académique de cet établissement",
   "payrollNotFound": "Fiche de paie introuvable",
   "onlyFinancePayroll": "Seuls les responsables financiers peuvent gérer les montants de paie",

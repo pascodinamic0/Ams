@@ -21,6 +21,15 @@ export const INVITABLE_ROLES = [
 
 export type InvitableRole = (typeof INVITABLE_ROLES)[number];
 
+/** Roles a school or platform admin can assign from the team or users list. */
+export const ASSIGNABLE_ROLES = [
+  ...INVITABLE_ROLES,
+  "parent",
+  "student",
+] as const;
+
+export type AssignableRole = (typeof ASSIGNABLE_ROLES)[number];
+
 export const inviteUserSchema = z.object({
   email: z.string().email("invalidEmail"),
   name: z.string().min(1, "nameRequired"),
@@ -48,7 +57,7 @@ export type InviteUserFormData = z.infer<typeof inviteUserSchema>;
 
 export const updateTeamMemberRoleSchema = z.object({
   userId: z.string().uuid("invalidUserId"),
-  role: inviteUserSchema.shape.role,
+  role: z.enum(ASSIGNABLE_ROLES),
 });
 
 export type UpdateTeamMemberRoleFormData = z.infer<

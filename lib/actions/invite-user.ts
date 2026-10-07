@@ -11,6 +11,7 @@ import {
   inviteUserSchema,
   removeTeamMemberSchema,
   updateTeamMemberRoleSchema,
+  type AssignableRole,
   type InvitableRole,
 } from "@/lib/validations/team";
 
@@ -74,21 +75,35 @@ async function applySchoolTeamMemberRoleUpdate(
   admin: SupabaseClient,
   input: {
     userId: string;
-    role: InvitableRole;
-    schoolId: string;
+    role: AssignableRole;
+    schoolId: string | null;
     currentRole: string;
     name?: string;
   }
 ): Promise<{ error?: string }> {
   if (
     input.currentRole === "academic_admin" &&
-    input.role !== "academic_admin"
+    input.role !== "academic_admin" &&
+    input.schoolId
   ) {
-    return await actionError("lastAcademicAdminChange");
+    const { count, error: countError } = await admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("school_id", input.schoolId)
+      .eq("role", "academic_admin");
+
+    if (countError) {
+      console.error("applySchoolTeamMemberRoleUpdate count error:", countError);
+      return { error: countError.message };
+    }
+
+    if ((count ?? 0) <= 1) {
+      return await actionError("lastAcademicAdminChange");
+    }
   }
 
   const updatePayload: {
-    role: InvitableRole;
+    role: AssignableRole;
     updated_at: string;
     name?: string;
   } = {
@@ -100,23 +115,104 @@ async function applySchoolTeamMemberRoleUpdate(
     updatePayload.name = input.name;
   }
 
-  const { error } = await admin
+  let updateQuery = admin
     .from("profiles")
     .update(updatePayload)
-    .eq("id", input.userId)
-    .eq("school_id", input.schoolId);
+    .eq("id", input.userId);
+
+  if (input.schoolId) {
+    updateQuery = updateQuery.eq("school_id", input.schoolId);
+  }
+
+  const { data: updated, error } = await updateQuery.select("id");
 
   if (error) {
     console.error("applySchoolTeamMemberRoleUpdate error:", error);
     return { error: error.message };
   }
 
+  if (!updated?.length) {
+    return await actionError("teamMemberNotFound");
+  }
+
+  const { data: authUser, error: authReadError } = await admin.auth.admin.getUserById(
+    input.userId
+  );
+  if (authReadError || !authUser.user) {
+    console.error("applySchoolTeamMemberRoleUpdate auth read:", authReadError);
+    return {} as { error?: string };
+  }
+
+  const { error: metaError } = await admin.auth.admin.updateUserById(input.userId, {
+    user_metadata: {
+      ...authUser.user.user_metadata,
+      role: input.role,
+      ...(input.name ? { name: input.name } : {}),
+    },
+  });
+  if (metaError) {
+    console.error("applySchoolTeamMemberRoleUpdate metadata:", metaError);
+  }
+
   return {} as { error?: string };
+}
+
+type RoleEditorAuth =
+  | { ok: false; error: string }
+  | {
+      ok: true;
+      userId: string;
+      schoolId: string;
+    };
+
+async function requireRoleEditor(): Promise<RoleEditorAuth> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { ok: false, ...(await actionError("notAuthenticated")) };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, school_id")
+    .eq("id", user.id)
+    .single();
+
+  const isAcademicAdmin = profile?.role === "academic_admin";
+  if (!isAcademicAdmin) {
+    return {
+      ok: false,
+      error: (await actionError("cannotManageTeam")).error,
+    };
+  }
+
+  if (!profile?.school_id) {
+    return { ok: false, ...(await actionError("noSchoolLinked")) };
+  }
+
+  const { data: school } = await supabase
+    .from("schools")
+    .select("status")
+    .eq("id", profile.school_id)
+    .single();
+
+  if (school?.status !== "approved") {
+    return {
+      ok: false,
+      error: (await actionError("schoolMustBeApprovedTeam")).error,
+    };
+  }
+
+  return {
+    ok: true,
+    userId: user.id,
+    schoolId: profile.school_id,
+  };
 }
 
 export async function updateSchoolTeamMemberRole(input: {
   userId: string;
-  role: InvitableRole;
+  role: AssignableRole;
 }) {
   const parsed = updateTeamMemberRoleSchema.safeParse(input);
   if (!parsed.success) {
@@ -124,7 +220,7 @@ export async function updateSchoolTeamMemberRole(input: {
     return await zodIssueError(first?.message);
   }
 
-  const auth = await requireSchoolAdmin();
+  const auth = await requireRoleEditor();
   if (!auth.ok) return { error: auth.error };
 
   const adminResult = requireAdminClient();
@@ -145,14 +241,6 @@ export async function updateSchoolTeamMemberRole(input: {
     return await actionError("platformAdminCannotChange");
   }
 
-  if (
-    targetProfile.role === "parent" ||
-    targetProfile.role === "student" ||
-    !targetProfile.school_id
-  ) {
-    return await actionError("notSchoolTeamMember");
-  }
-
   if (targetProfile.school_id !== auth.schoolId) {
     return await actionError("onlyOwnSchoolTeam");
   }
@@ -164,7 +252,7 @@ export async function updateSchoolTeamMemberRole(input: {
   const result = await applySchoolTeamMemberRoleUpdate(admin, {
     userId: parsed.data.userId,
     role: parsed.data.role,
-    schoolId: auth.schoolId,
+    schoolId: targetProfile.school_id,
     currentRole: targetProfile.role,
   });
 

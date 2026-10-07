@@ -41,7 +41,7 @@
   "inviteEmailFailed": "Failed to send invitation email",
   "inviteLinkFailed": "Failed to create the invitation link",
   "inviteExpired": "This invite link is invalid or expired. Ask your admin to send a new invitation.",
-  "lastAcademicAdminChange": "Academic admin role cannot be changed to a different role",
+  "lastAcademicAdminChange": "Cannot change the role of the last academic admin for this school",
   "lastAcademicAdminRemove": "Cannot remove the last academic admin for this school",
   "payrollNotFound": "Payroll record not found",
   "onlyFinancePayroll": "Only finance admins can manage payroll amounts",

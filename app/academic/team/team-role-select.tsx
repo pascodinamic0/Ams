@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Select } from "@/components/ui/select";
 import { updateSchoolTeamMemberRole } from "@/lib/actions/invite-user";
-import { INVITABLE_ROLES } from "@/lib/validations/team";
+import { ASSIGNABLE_ROLES } from "@/lib/validations/team";
 import { toast } from "@/lib/toast";
 
 interface TeamRoleSelectProps {
@@ -23,31 +23,16 @@ export function TeamRoleSelect({
   locked = false,
 }: TeamRoleSelectProps) {
   const t = useTranslations("academic");
+  const tRoles = useTranslations("roles");
   const router = useRouter();
   const [role, setRole] = useState(currentRole);
   const [loading, setLoading] = useState(false);
 
-  const roleLabels: Record<string, string> = {
-    super_admin: t("roleSuperAdmin"),
-    academic_admin: t("roleAcademicAdmin"),
-    admin_coordinator: t("roleAdminCoordinator"),
-    registrar: t("roleRegistrar"),
-    admissions_officer: t("roleAdmissionsOfficer"),
-    pedagogy_coordinator: t("rolePedagogyCoordinator"),
-    principal: t("rolePrincipal"),
-    teacher: t("roleTeacher"),
-    finance_officer: t("roleFinanceOfficer"),
-    cashier: t("roleCashier"),
-    accountant: t("roleAccountant"),
-    operations_manager: t("roleOperationsManager"),
-    operations_officer: t("roleOperationsOfficer"),
-    discipline_officer: t("roleDisciplineOfficer"),
-    supervisor: t("roleSupervisor"),
-    pedagogical_council_member: t("rolePedagogicalCouncilMember"),
-    analytics: t("roleAnalytics"),
-  };
+  function roleLabel(value: string) {
+    return tRoles.has(value) ? tRoles(value) : value.replace(/_/g, " ");
+  }
 
-  const label = roleLabels[currentRole] ?? currentRole.replace(/_/g, " ");
+  const label = roleLabel(currentRole);
 
   if (locked || currentRole === "super_admin") {
     const lockTitle =
@@ -74,7 +59,7 @@ export function TeamRoleSelect({
 
     const result = await updateSchoolTeamMemberRole({
       userId,
-      role: nextRole as (typeof INVITABLE_ROLES)[number],
+      role: nextRole as (typeof ASSIGNABLE_ROLES)[number],
     });
 
     setLoading(false);
@@ -91,9 +76,9 @@ export function TeamRoleSelect({
 
   return (
     <Select
-      options={INVITABLE_ROLES.map((r) => ({
+      options={ASSIGNABLE_ROLES.map((r) => ({
         value: r,
-        label: roleLabels[r] ?? r,
+        label: roleLabel(r),
       }))}
       value={role}
       onChange={(e) => handleChange(e.target.value)}

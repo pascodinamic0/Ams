@@ -13,11 +13,8 @@ export default async function AcademicTeamPage() {
   const t = await getTranslations("academic");
   const tc = await getTranslations("common");
   const profile = await getCurrentProfile();
-  if (!profile?.school_id) redirect("/academic");
-
-  const canManage =
-    profile.role === "academic_admin" || profile.role === "super_admin";
-  if (!canManage) redirect("/academic");
+  const canManage = profile?.role === "academic_admin";
+  if (!profile?.school_id || !canManage) redirect("/academic");
 
   const supabase = await createClient();
   const { data: school } = await supabase
@@ -55,13 +52,16 @@ export default async function AcademicTeamPage() {
         <DataTable
           data={members.map((m) => {
             const roleLocked =
-              m.role === "super_admin" || m.role === "academic_admin";
+              m.role === "super_admin" ||
+              (m.role === "academic_admin" && academicAdminCount <= 1);
             const isSelf = m.id === profile.id;
             const isLastAcademicAdmin =
               m.role === "academic_admin" && academicAdminCount <= 1;
             const removeDisabled =
               isSelf ||
               m.role === "super_admin" ||
+              m.role === "student" ||
+              m.role === "parent" ||
               isLastAcademicAdmin;
             const removeDisabledReason = isSelf
               ? t("cannotRemoveSelf")

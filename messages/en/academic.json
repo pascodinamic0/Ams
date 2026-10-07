@@ -131,7 +131,7 @@
   "teamMemberRemoved": "Team member removed from the school.",
   "removing": "Removing...",
   "teamMember": "this team member",
-  "roleLockedAcademicAdmin": "Academic admin role cannot be changed.",
+  "roleLockedAcademicAdmin": "The last academic admin for this school cannot be changed.",
   "roleLockedSuperAdmin": "Platform super admin role cannot be changed.",
   "roleSuperAdmin": "Super admin",
   "roleAcademicAdmin": "Academic admin",

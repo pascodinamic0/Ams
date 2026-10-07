@@ -6,6 +6,7 @@ export type UserListItem = {
   email: string;
   name: string | null;
   role: string;
+  school_id: string | null;
   school_name: string | null;
 };
 
@@ -44,6 +45,7 @@ export async function getUsers(options?: {
     email: emails.get(p.id) ?? "",
     name: p.name,
     role: p.role ?? "student",
+    school_id: p.school_id ?? null,
     school_name: (p.schools as { name?: string } | null)?.name ?? null,
   }));
 }
@@ -62,8 +64,6 @@ export async function getSchoolTeamMembers(
       schools(name)
     `)
     .eq("school_id", schoolId)
-    .neq("role", "student")
-    .neq("role", "parent")
     .order("name");
 
   if (error) {
@@ -79,6 +79,7 @@ export async function getSchoolTeamMembers(
     email: emails.get(p.id) ?? "",
     name: p.name,
     role: p.role ?? "student",
+    school_id: p.school_id ?? null,
     school_name: (p.schools as { name?: string } | null)?.name ?? null,
   }));
 }
