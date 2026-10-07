@@ -99,8 +99,9 @@ export async function confirmPendingEnrollment(input: ConfirmEnrollmentFormData)
   const allocation = allocateEnrollmentPayment(openInvoices, parsed.data.amount);
   if ("error" in allocation) {
     const te = await getTranslations("errors");
-    const mapped = mapRpcError(allocation.error);
-    return { error: te.has(mapped) ? te(mapped) : allocation.error };
+    const errorKey = allocation.error ?? "unknown_error";
+    const mapped = mapRpcError(errorKey);
+    return { error: te.has(mapped) ? te(mapped) : errorKey };
   }
 
   const paidAt = parsed.data.paid_at ?? new Date().toISOString();
@@ -108,7 +109,11 @@ export async function confirmPendingEnrollment(input: ConfirmEnrollmentFormData)
     invoice_status: string;
     amount_paid: number;
     student_activated: boolean;
-  } | null = null;
+  } = {
+    invoice_status: "pending",
+    amount_paid: 0,
+    student_activated: false,
+  };
 
   for (const part of allocation.parts) {
     const { data, error } = await supabase.rpc("confirm_pending_enrollment", {
@@ -136,20 +141,14 @@ export async function confirmPendingEnrollment(input: ConfirmEnrollmentFormData)
     };
     result = {
       invoice_status: payment.invoice_status,
-      amount_paid: (result?.amount_paid ?? 0) + part.amount,
-      student_activated: Boolean(result?.student_activated || payment.student_activated),
+      amount_paid: result.amount_paid + part.amount,
+      student_activated: Boolean(result.student_activated || payment.student_activated),
     };
   }
 
   revalidateEnrollmentPaths();
 
-  return {
-    data: result ?? {
-      invoice_status: "pending",
-      amount_paid: 0,
-      student_activated: false,
-    },
-  };
+  return { data: result };
 }
 
 function revalidateEnrollmentPaths() {
