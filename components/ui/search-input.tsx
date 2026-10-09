@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Input } from "./input";
 
 interface SearchInputProps {
+  id?: string;
   placeholder?: string;
   onSearch: (value: string) => void;
   value?: string;
@@ -11,6 +12,7 @@ interface SearchInputProps {
 }
 
 export function SearchInput({
+  id,
   placeholder = "Search...",
   onSearch,
   value: controlledValue,
@@ -37,6 +39,7 @@ export function SearchInput({
         </svg>
       </span>
       <Input
+        id={id}
         type="search"
         role="search"
         aria-label={placeholder}

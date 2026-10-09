@@ -1,4 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import {
+  deriveEnrollmentInvoiceStatus,
+  pendingEnrollmentInvoiceAmount,
+  roundMoney,
+} from "@/lib/services/enrollment-fees";
 import { formatStudentName } from "@/lib/utils";
 
 export type PendingEnrollmentInvoice = {
@@ -23,6 +28,83 @@ export type PendingEnrollmentRow = {
   invoice_balance: number;
   invoices: PendingEnrollmentInvoice[];
 };
+
+type PendingInvoiceRecord = {
+  id: string;
+  fee_structure_id: string | null;
+  amount: number | string;
+  amount_paid: number | string | null;
+  status: string | null;
+  due_date: string | null;
+  fee_structures: { name?: string; amount?: number | string } | null;
+};
+
+/** Rewrite stale enrollment invoice prices to the current fee catalog. Payments stay put. */
+async function alignPendingInvoicePrices(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  invoices: PendingInvoiceRecord[]
+) {
+  const updates: { id: string; amount: number; status: "pending" | "paid" | "overdue" }[] = [];
+
+  for (const invoice of invoices) {
+    const catalog = invoice.fee_structures?.amount;
+    if (catalog == null || !invoice.due_date) continue;
+    const paid = roundMoney(Number(invoice.amount_paid ?? 0));
+    const storedAmount = roundMoney(Number(invoice.amount));
+    const nextAmount = pendingEnrollmentInvoiceAmount(Number(catalog), paid);
+    const nextStatus = deriveEnrollmentInvoiceStatus(nextAmount, paid, invoice.due_date);
+    if (storedAmount !== nextAmount || invoice.status !== nextStatus) {
+      updates.push({ id: invoice.id, amount: nextAmount, status: nextStatus });
+    }
+    invoice.amount = nextAmount;
+    invoice.status = nextStatus;
+  }
+
+  const now = new Date().toISOString();
+  for (let offset = 0; offset < updates.length; offset += 20) {
+    const batch = updates.slice(offset, offset + 20);
+    const results = await Promise.all(
+      batch.map((row) =>
+        supabase
+          .from("fee_invoices")
+          .update({ amount: row.amount, status: row.status, updated_at: now })
+          .eq("id", row.id)
+      )
+    );
+    const failed = results.find((result) => result.error);
+    if (failed?.error) {
+      console.error("alignPendingInvoicePrices error:", failed.error);
+      return;
+    }
+  }
+}
+
+/** A fee removed from the catalog leaves an unpaid enrollment invoice behind. Drop it. */
+async function removeOrphanEnrollmentInvoices(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  invoices: PendingInvoiceRecord[]
+) {
+  const orphanIds = invoices
+    .filter(
+      (invoice) =>
+        !invoice.fee_structure_id && roundMoney(Number(invoice.amount_paid ?? 0)) === 0
+    )
+    .map((invoice) => invoice.id);
+  if (orphanIds.length === 0) return;
+
+  for (let offset = 0; offset < orphanIds.length; offset += 50) {
+    const slice = orphanIds.slice(offset, offset + 50);
+    const { error } = await supabase.from("fee_invoices").delete().in("id", slice);
+    if (error) {
+      console.error("removeOrphanEnrollmentInvoices error:", error);
+      return;
+    }
+  }
+
+  for (let index = invoices.length - 1; index >= 0; index -= 1) {
+    if (orphanIds.includes(invoices[index].id)) invoices.splice(index, 1);
+  }
+}
 
 export async function getPendingEnrollments(options?: {
   schoolId?: string;
@@ -69,11 +151,12 @@ export async function getPendingEnrollments(options?: {
       `
       id,
       student_id,
+      fee_structure_id,
       amount,
       amount_paid,
       status,
       due_date,
-      fee_structures(name)
+      fee_structures(name, amount)
     `
     )
     .in("student_id", studentIds)
@@ -82,6 +165,10 @@ export async function getPendingEnrollments(options?: {
   if (invoiceError) {
     console.error("getPendingEnrollments invoices error:", invoiceError);
   }
+
+  const invoiceRows = (invoices ?? []) as PendingInvoiceRecord[];
+  await alignPendingInvoicePrices(supabase, invoiceRows);
+  await removeOrphanEnrollmentInvoices(supabase, invoiceRows);
 
   const invoicesByStudent = new Map<string, NonNullable<typeof invoices>>();
   for (const invoice of invoices ?? []) {
@@ -103,7 +190,7 @@ export async function getPendingEnrollments(options?: {
           paid,
           balance,
           fee_structure_name:
-            (inv.fee_structures as { name?: string } | null)?.name ?? null,
+            (inv.fee_structures as { name?: string; amount?: number } | null)?.name ?? null,
           status: (inv.status as string | null) ?? null,
           due_date: (inv.due_date as string | null) ?? null,
         };

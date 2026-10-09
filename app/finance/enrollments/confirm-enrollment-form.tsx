@@ -103,7 +103,7 @@ export function ConfirmEnrollmentForm({
                 .map((invoice) =>
                   [
                     invoice.fee_structure_name,
-                    formatMoney(invoice.balance, currencyCode),
+                    formatMoney(invoice.amount, currencyCode),
                   ]
                     .filter(Boolean)
                     .join(" ")

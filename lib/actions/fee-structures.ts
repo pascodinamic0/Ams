@@ -6,19 +6,14 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
+  deriveEnrollmentInvoiceStatus,
+  pendingEnrollmentInvoiceAmount,
+  roundMoney,
+} from "@/lib/services/enrollment-fees";
+import {
   feeStructureSchema,
   type FeeStructureFormData,
 } from "@/lib/validations/finance";
-
-function roundMoney(value: number) {
-  return Math.round(value * 100) / 100;
-}
-
-function deriveInvoiceStatus(amount: number, amountPaid: number, dueDate: string) {
-  if (amountPaid >= amount) return "paid" as const;
-  if (new Date(dueDate) < new Date(new Date().toDateString())) return "overdue" as const;
-  return "pending" as const;
-}
 
 type EnrollmentInvoiceRow = {
   id: string;
@@ -66,8 +61,8 @@ async function syncPendingEnrollmentYearPrice(
   const updates: { id: string; amount: number; status: "pending" | "paid" | "overdue" }[] = [];
   for (const invoice of invoices) {
     const paid = roundMoney(Number(invoice.amount_paid ?? 0));
-    const nextAmount = Math.max(price, paid);
-    const nextStatus = deriveInvoiceStatus(nextAmount, paid, invoice.due_date);
+    const nextAmount = pendingEnrollmentInvoiceAmount(price, paid);
+    const nextStatus = deriveEnrollmentInvoiceStatus(nextAmount, paid, invoice.due_date);
     if (roundMoney(Number(invoice.amount)) === nextAmount && invoice.status === nextStatus) {
       continue;
     }

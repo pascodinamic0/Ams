@@ -1,6 +1,26 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { FeeStructureListItem } from "@/lib/db/fee-structures";
 
+export function roundMoney(value: number) {
+  return Math.round(value * 100) / 100;
+}
+
+/** Year price written on a pending invoice. Never drop below what was already paid. */
+export function pendingEnrollmentInvoiceAmount(catalogAmount: number, amountPaid: number) {
+  const paid = roundMoney(amountPaid);
+  return Math.max(roundMoney(catalogAmount), paid);
+}
+
+export function deriveEnrollmentInvoiceStatus(
+  amount: number,
+  amountPaid: number,
+  dueDate: string
+) {
+  if (amountPaid >= amount) return "paid" as const;
+  if (new Date(dueDate) < new Date(new Date().toDateString())) return "overdue" as const;
+  return "pending" as const;
+}
+
 /** Fee structures applicable to a class (class-specific + school-wide). */
 export function filterFeeStructuresForClass(
   structures: FeeStructureListItem[],
