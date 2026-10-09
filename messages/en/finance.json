@@ -373,6 +373,7 @@
   "noPendingEnrollments": "No pending enrollments",
   "noPendingEnrollmentsDesc": "When the secretary saves a new student, they appear here until you photo the paper receipt and mark paid.",
   "enrollmentAmountDue": "Amount due",
+  "enrollmentAmountReceived": "Amount received",
   "enrollmentAmountMismatch": "Paper receipt may differ — balance due is {expected}.",
   "enrollmentProofRequired": "Upload or photograph the paper receipt before activating.",
   "enrollmentProofRequiredLabel": "Paper receipt photo (optional)",

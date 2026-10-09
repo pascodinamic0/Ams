@@ -373,6 +373,7 @@
   "noPendingEnrollments": "Aucune inscription en attente",
   "noPendingEnrollmentsDesc": "Quand le secrétariat enregistre un élève, il apparaît ici jusqu'à ce que vous photographiiez le reçu papier et marquiez payé.",
   "enrollmentAmountDue": "Montant dû",
+  "enrollmentAmountReceived": "Montant perçu",
   "enrollmentAmountMismatch": "Le reçu papier peut différer — solde dû : {expected}.",
   "enrollmentProofRequired": "Téléversez ou photographiez le reçu papier avant d'activer.",
   "enrollmentProofRequiredLabel": "Photo du reçu papier (facultatif)",

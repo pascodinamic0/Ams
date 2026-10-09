@@ -116,7 +116,7 @@ export function ConfirmEnrollmentForm({
 
       <div className="grid gap-3 sm:grid-cols-2">
         <div className="space-y-1.5">
-          <Label htmlFor={`amount-${fieldKey}`}>{tc("amount")}</Label>
+          <Label htmlFor={`amount-${fieldKey}`}>{t("enrollmentAmountReceived")}</Label>
           <Input
             id={`amount-${fieldKey}`}
             type="number"
