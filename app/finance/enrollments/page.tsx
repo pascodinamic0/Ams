@@ -1,9 +1,8 @@
-import { EmptyState } from "@/components/ui/empty-state";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getSchoolCurrencyForSchool } from "@/lib/db";
 import { getPendingEnrollments } from "@/lib/db/pending-enrollments";
 import { getTranslations } from "next-intl/server";
-import { ConfirmEnrollmentForm } from "./confirm-enrollment-form";
+import { PendingEnrollmentsList } from "./pending-enrollments-list";
 
 export default async function PendingEnrollmentsPage() {
   const t = await getTranslations("finance");
@@ -28,23 +27,11 @@ export default async function PendingEnrollmentsPage() {
         </p>
       </div>
 
-      {rows.length === 0 ? (
-        <EmptyState
-          title={t("noPendingEnrollments")}
-          description={t("noPendingEnrollmentsDesc")}
-        />
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-2">
-          {rows.map((row) => (
-            <ConfirmEnrollmentForm
-              key={`${row.student_id}-${row.invoice_balance}`}
-              row={row}
-              schoolId={scope.schoolId}
-              currencyCode={currency.code}
-            />
-          ))}
-        </div>
-      )}
+      <PendingEnrollmentsList
+        rows={rows}
+        schoolId={scope.schoolId}
+        currencyCode={currency.code}
+      />
     </div>
   );
 }
