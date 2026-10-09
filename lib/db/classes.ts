@@ -1,3 +1,4 @@
+import { keepRecognizedStudents } from "@/lib/students/recognized";
 import { createClient } from "@/lib/supabase/server";
 import { logQueryError } from "@/lib/supabase/log-query-error";
 
@@ -31,14 +32,18 @@ async function attachStudentCounts<T extends { id: string }>(
     const supabase = await createClient();
     const { data: students, error: studentsError } = await supabase
       .from("students")
-      .select("id, class_id")
+      .select("id, class_id, status")
       .in("class_id", classIds)
-      .eq("status", "active");
+      .in("status", ["active", "pending"]);
 
     if (studentsError) {
       logQueryError("attachStudentCounts error:", studentsError);
     } else {
-      for (const s of students ?? []) {
+      const recognized = await keepRecognizedStudents(
+        supabase,
+        (students ?? []) as { id: string; class_id: string | null; status: string | null }[]
+      );
+      for (const s of recognized) {
         if (s.class_id) countByClass[s.class_id] = (countByClass[s.class_id] ?? 0) + 1;
       }
     }

@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
   // Find invoice by reference (store provider reference in payments or fee_invoices)
   const { data: invoice } = await supabase
     .from("fee_invoices")
-    .select("id, amount, amount_paid, status")
+    .select("id, amount, amount_paid, status, student_id")
     .eq("id", reference)
     .single();
 
@@ -141,6 +141,14 @@ export async function POST(request: NextRequest) {
       updated_at: new Date().toISOString(),
     })
     .eq("id", invoice.id);
+
+  if (invoice.student_id && newAmountPaid > 0) {
+    await supabase
+      .from("students")
+      .update({ status: "active", updated_at: new Date().toISOString() })
+      .eq("id", invoice.student_id)
+      .eq("status", "pending");
+  }
 
   return NextResponse.json({ received: true }, { status: 200 });
 }

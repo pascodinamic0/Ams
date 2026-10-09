@@ -126,7 +126,7 @@ export default async function FinanceDashboard() {
           label: t("outstandingBalances"),
           value: formatCurrency(kpis.outstanding),
           hint: t("outstandingSub"),
-          href: "/finance/outstanding",
+          href: "/finance/invoices",
         },
       ]
     : [
@@ -140,7 +140,7 @@ export default async function FinanceDashboard() {
           label: t("outstandingSchoolFees"),
           value: formatCurrency(kpis.outstanding),
           hint: t("unpaidBalance"),
-          href: "/finance/outstanding",
+          href: "/finance/invoices",
         },
         {
           label: t("payrollRequired"),

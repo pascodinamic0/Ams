@@ -1,3 +1,4 @@
+import { keepRecognizedStudents } from "@/lib/students/recognized";
 import { createClient } from "@/lib/supabase/server";
 import { formatPersonName } from "@/lib/utils";
 
@@ -177,9 +178,9 @@ export async function getAssignmentSubmissions(
 
   const { data: students, error: studentsError } = await supabase
     .from("students")
-    .select("id, first_name, middle_name, last_name")
+    .select("id, first_name, middle_name, last_name, status")
     .eq("class_id", assignment.class_id)
-    .eq("status", "active")
+    .in("status", ["active", "pending"])
     .order("last_name");
 
   if (studentsError) {
@@ -196,9 +197,10 @@ export async function getAssignmentSubmissions(
     console.error("getAssignmentSubmissions error:", subError);
   }
 
+  const recognized = await keepRecognizedStudents(supabase, students ?? []);
   const subMap = new Map((submissions ?? []).map((s) => [s.student_id, s]));
 
-  return (students ?? []).map((s) => {
+  return recognized.map((s) => {
     const sub = subMap.get(s.id);
     return {
       id: sub?.id ?? "",

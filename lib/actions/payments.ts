@@ -5,6 +5,7 @@ import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { activatePendingStudentWithPayment } from "@/lib/services/enrollment-fees";
 import { notifyStudentGuardians } from "@/lib/services/notifications";
 import { paymentSchema, type PaymentFormData } from "@/lib/validations/finance";
 
@@ -72,6 +73,10 @@ export async function recordPayment(input: PaymentFormData) {
 
   if (updateError) return { error: updateError.message };
 
+  if (newAmountPaid > 0) {
+    await activatePendingStudentWithPayment(invoice.student_id);
+  }
+
   const tn = await getTranslations("notifications");
   await notifyStudentGuardians(invoice.student_id, {
     title: tn("paymentReceived"),
@@ -87,5 +92,8 @@ export async function recordPayment(input: PaymentFormData) {
   revalidatePath("/finance/outstanding");
   revalidatePath("/finance");
   revalidatePath("/parent/fees");
+  revalidatePath("/academic");
+  revalidatePath("/academic/students");
+  revalidatePath("/finance/enrollments");
   return { data: { status: newStatus, amount_paid: newAmountPaid } };
 }

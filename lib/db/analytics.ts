@@ -1,6 +1,7 @@
 import { format, subDays, endOfWeek, eachWeekOfInterval, parseISO } from "date-fns";
 import { enUS, fr } from "date-fns/locale";
 import { getLocale, getTranslations } from "next-intl/server";
+import { isRecognizedStudent, keepRecognizedStudents, paidStudentIdSet } from "@/lib/students/recognized";
 import { createClient } from "@/lib/supabase/server";
 import { getFinanceKPIs } from "./invoices";
 import { formatPersonName } from "@/lib/utils";
@@ -98,7 +99,14 @@ export async function getAnalyticsOverview(scope?: Scope): Promise<AnalyticsOver
   ]);
 
   const students = studentsResult.data ?? [];
-  const activeStudents = students.filter((s) => s.status === "active").length;
+  const paidIds = await paidStudentIdSet(
+    supabase,
+    students.filter((s) => s.status === "pending").map((s) => s.id)
+  );
+  const recognizedStudents = students.filter((s) =>
+    isRecognizedStudent(s.status, paidIds.has(s.id))
+  );
+  const activeStudents = recognizedStudents.length;
 
   let attendanceRecords = attendanceResult.data ?? [];
   if (scope?.schoolId || scope?.branchId) {
@@ -115,7 +123,7 @@ export async function getAnalyticsOverview(scope?: Scope): Promise<AnalyticsOver
   const attendanceRate = totalAttendance > 0 ? Math.round((present / totalAttendance) * 100) : 0;
 
   const classCounts: Record<string, number> = {};
-  for (const s of students.filter((st) => st.status === "active")) {
+  for (const s of recognizedStudents) {
     const className = (s.classes as { name?: string } | null)?.name ?? t("unassigned");
     classCounts[className] = (classCounts[className] ?? 0) + 1;
   }
@@ -131,7 +139,7 @@ export async function getAnalyticsOverview(scope?: Scope): Promise<AnalyticsOver
   const genderDistribution = Object.entries(genderCounts).map(([name, value]) => ({ name, value }));
 
   const gradeCounts: Record<string, number> = {};
-  for (const s of students.filter((st) => st.status === "active")) {
+  for (const s of recognizedStudents) {
     const grade = (s.classes as { grade?: string } | null)?.grade ?? t("unassigned");
     gradeCounts[grade] = (gradeCounts[grade] ?? 0) + 1;
   }
@@ -191,10 +199,16 @@ export async function getBranchAnalytics(scope?: Scope): Promise<BranchPerforman
   const students = studentsResult.data ?? [];
   const attendance = attendanceResult.data ?? [];
   const invoices = invoicesResult.data ?? [];
+  const paidBranchIds = await paidStudentIdSet(
+    supabase,
+    students.filter((s) => s.status === "pending").map((s) => s.id)
+  );
 
   return branches.map((branch) => {
     const branchStudents = students.filter(
-      (s) => s.branch_id === branch.id && s.status === "active"
+      (s) =>
+        s.branch_id === branch.id &&
+        isRecognizedStudent(s.status, paidBranchIds.has(s.id))
     );
     const studentIds = new Set(branchStudents.map((s) => s.id));
 
@@ -233,7 +247,7 @@ export async function getStudentAnalytics(options?: Scope & { classId?: string }
   let studentsQuery = supabase
     .from("students")
     .select("id, first_name, middle_name, last_name, student_id, class_id, status, classes(name)")
-    .eq("status", "active");
+    .in("status", ["active", "pending"]);
   if (options?.schoolId) studentsQuery = studentsQuery.eq("school_id", options.schoolId);
   if (options?.branchId) studentsQuery = studentsQuery.eq("branch_id", options.branchId);
   if (options?.classId) studentsQuery = studentsQuery.eq("class_id", options.classId);
@@ -243,7 +257,7 @@ export async function getStudentAnalytics(options?: Scope & { classId?: string }
     supabase.from("grades").select("student_id, term, marks, grade, subject_id, class_id, subjects(name), students(school_id, branch_id)"),
   ]);
 
-  const students = studentsResult.data ?? [];
+  const students = await keepRecognizedStudents(supabase, studentsResult.data ?? []);
   let grades = gradesResult.data ?? [];
 
   if (options?.schoolId || options?.branchId || options?.classId) {
@@ -351,8 +365,8 @@ export async function getAttendanceAnalytics(options?: Scope & {
 
   let activeStudentsQuery = supabase
     .from("students")
-    .select("id, first_name, middle_name, last_name, student_id, class_id, classes(name)")
-    .eq("status", "active");
+    .select("id, first_name, middle_name, last_name, student_id, class_id, status, classes(name)")
+    .in("status", ["active", "pending"]);
   if (options?.schoolId) activeStudentsQuery = activeStudentsQuery.eq("school_id", options.schoolId);
   if (options?.branchId) activeStudentsQuery = activeStudentsQuery.eq("branch_id", options.branchId);
 
@@ -376,7 +390,7 @@ export async function getAttendanceAnalytics(options?: Scope & {
     });
   }
 
-  const students = studentsResult.data ?? [];
+  const students = await keepRecognizedStudents(supabase, studentsResult.data ?? []);
   const classMap = new Map((classesResult.data ?? []).map((c) => [c.id, c.name]));
 
   const daily: Record<string, { present: number; total: number }> = {};

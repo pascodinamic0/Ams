@@ -120,7 +120,6 @@ const SPECS: Record<string, WorkspaceSpec> = {
     actions: [
       { href: "/finance/enrollments", key: "pendingEnrollments" },
       { href: "/finance/payments", key: "recordPayment", variant: "ghost" },
-      { href: "/finance/outstanding", key: "unpaidList", variant: "ghost" },
       { href: "/finance/invoices", key: "findInvoice", variant: "ghost" },
     ],
   },
@@ -143,7 +142,6 @@ const SPECS: Record<string, WorkspaceSpec> = {
       { href: "/finance/enrollments", key: "pendingEnrollments" },
       { href: "/finance/reports/activity/monthly", key: "activityReport", variant: "ghost" },
       { href: "/finance/budget", key: "yearlyBudget", variant: "ghost" },
-      { href: "/finance/outstanding", key: "outstandingFees", variant: "ghost" },
       { href: "/finance/payments", key: "recordPayment", variant: "ghost" },
       { href: "/finance/invoices", key: "createInvoice", variant: "ghost" },
       { href: "/finance/reports", key: "reports", variant: "outline" },

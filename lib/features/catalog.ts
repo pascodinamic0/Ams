@@ -171,7 +171,7 @@ export const FEATURE_CATALOG: FeatureDefinition[] = [
     description: "Invoices, outstanding balances, and enrollment payment handoff",
     defaultEnabled: true,
     paths: ["/finance/invoices", "/finance/outstanding", "/finance/enrollments"],
-    navHrefs: ["/finance/invoices", "/finance/outstanding", "/finance/enrollments"],
+    navHrefs: ["/finance/invoices", "/finance/enrollments"],
   },
   {
     key: "payments",

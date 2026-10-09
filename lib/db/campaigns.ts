@@ -37,6 +37,8 @@ export type FeeReminderSettings = {
   final_warning_template: string;
   currency_symbol: string;
   enabled: boolean;
+  /** monthly: remind again each month while unpaid. trimester: every three months. */
+  collection_cycle?: "monthly" | "trimester" | null;
 };
 
 export async function getCampaigns(): Promise<CampaignListItem[]> {

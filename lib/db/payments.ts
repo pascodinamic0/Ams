@@ -1,3 +1,4 @@
+import { factureAmount, fullYearFee } from "@/lib/services/enrollment-fees";
 import { createClient } from "@/lib/supabase/server";
 
 export type PaymentListItem = {
@@ -11,6 +12,8 @@ export type PaymentListItem = {
   student_name: string;
   student_code: string;
   invoice_amount: number;
+  amount_paid: number;
+  facture: number;
 };
 
 export async function getPayments(options?: {
@@ -31,6 +34,8 @@ export async function getPayments(options?: {
       paid_at,
       fee_invoices(
         amount,
+        amount_paid,
+        fee_structures(amount),
         students(
           first_name,
           last_name,
@@ -52,6 +57,8 @@ export async function getPayments(options?: {
     .map((row) => {
       const invoice = row.fee_invoices as {
         amount?: number;
+        amount_paid?: number | null;
+        fee_structures?: { amount?: number | string | null } | null;
         students?: {
           first_name?: string;
           last_name?: string;
@@ -61,6 +68,13 @@ export async function getPayments(options?: {
         } | null;
       } | null;
       const student = invoice?.students;
+      const yearFee = fullYearFee(
+        Number(invoice?.amount ?? 0),
+        invoice?.fee_structures?.amount != null
+          ? Number(invoice.fee_structures.amount)
+          : null
+      );
+      const paidOnInvoice = Number(invoice?.amount_paid ?? 0);
       return {
         id: row.id,
         invoice_id: row.invoice_id,
@@ -73,7 +87,9 @@ export async function getPayments(options?: {
           ? `${student.first_name ?? ""} ${student.last_name ?? ""}`.trim()
           : "—",
         student_code: student?.student_id ?? "—",
-        invoice_amount: Number(invoice?.amount ?? 0),
+        invoice_amount: yearFee,
+        amount_paid: paidOnInvoice,
+        facture: factureAmount(yearFee, paidOnInvoice),
         _school_id: student?.school_id,
         _branch_id: student?.branch_id,
       };

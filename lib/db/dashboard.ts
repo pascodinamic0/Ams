@@ -1,3 +1,4 @@
+import { isRecognizedStudent, paidStudentIdSet } from "@/lib/students/recognized";
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 
@@ -77,7 +78,13 @@ export async function getAcademicDashboardData(schoolId?: string) {
   ]);
 
   const students = studentsResult.data ?? [];
-  const activeStudents = students.filter((s) => s.status === "active").length;
+  const paidIds = await paidStudentIdSet(
+    supabase,
+    students.filter((s) => s.status === "pending").map((s) => s.id)
+  );
+  const activeStudents = students.filter((s) =>
+    isRecognizedStudent(s.status, paidIds.has(s.id))
+  ).length;
 
   return {
     totalStudents: studentsResult.count ?? students.length,

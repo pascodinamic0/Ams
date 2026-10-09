@@ -1,3 +1,4 @@
+import { keepRecognizedStudents } from "@/lib/students/recognized";
 import { actionError } from "@/lib/i18n/action-error";
 import { createClient } from "@/lib/supabase/server";
 import { createNotification } from "@/lib/services/notifications";
@@ -35,22 +36,23 @@ export async function getClassCapacityInfo(
 
   let query = supabase
     .from("students")
-    .select("id", { count: "exact", head: true })
+    .select("id, status")
     .eq("class_id", classId)
-    .eq("status", "active");
+    .in("status", ["active", "pending"]);
 
   if (excludeStudentId) {
     query = query.neq("id", excludeStudentId);
   }
 
-  const { count, error: countError } = await query;
+  const { data: students, error: countError } = await query;
 
   if (countError) {
     console.error("getClassCapacityInfo count error:", countError);
     return null;
   }
 
-  const studentCount = count ?? 0;
+  const recognized = await keepRecognizedStudents(supabase, students ?? []);
+  const studentCount = recognized.length;
   const capacity = cls.capacity;
   const isFull = capacity != null && studentCount >= capacity;
 

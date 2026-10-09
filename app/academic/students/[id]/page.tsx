@@ -25,6 +25,7 @@ import {
 import { getFeeStructures } from "@/lib/db/fee-structures";
 import { filterFeeStructuresForClass } from "@/lib/services/enrollment-fees";
 import { StudentEnrollmentFeeEditor } from "@/components/students/student-enrollment-fee-editor";
+import { formatMoney } from "@/lib/currency";
 import { cn, formatStudentName } from "@/lib/utils";
 import { DeleteStudentButton } from "../delete-button";
 import { StudentClassAssign } from "@/components/students/student-class-assign";
@@ -316,7 +317,7 @@ export default async function StudentDetailPage({
             <MetricTile
               icon={Wallet}
               label={t("outstandingFees")}
-              value={stats.outstandingFees}
+              value={formatMoney(stats.outstandingFees, bundle.school?.currency_code ?? "USD")}
               hint={t("invoicesCount", { count: invoices.length })}
               tone={feesDue ? "amber" : "teal"}
             />
@@ -689,8 +690,9 @@ export default async function StudentDetailPage({
                   <thead className="sticky top-0 bg-white dark:bg-stone-950">
                     <tr className="border-b text-left text-stone-500">
                       <th className="py-2 font-medium">{t("fee")}</th>
-                      <th className="py-2 font-medium">{t("amount")}</th>
-                      <th className="py-2 font-medium">{t("balance")}</th>
+                      <th className="py-2 font-medium">{t("fullYearFee")}</th>
+                      <th className="py-2 font-medium">{t("amountPaid")}</th>
+                      <th className="py-2 font-medium">{t("facture")}</th>
                       <th className="py-2 font-medium">{t("due")}</th>
                       <th className="py-2 font-medium">{tc("status")}</th>
                     </tr>
@@ -706,8 +708,15 @@ export default async function StudentDetailPage({
                             inv.description ??
                             tc("emptyDash")}
                         </td>
-                        <td className="py-2">{inv.amount}</td>
-                        <td className="py-2">{inv.balance}</td>
+                        <td className="py-2">
+                          {formatMoney(inv.amount, bundle.school?.currency_code ?? "USD")}
+                        </td>
+                        <td className="py-2">
+                          {formatMoney(inv.amount_paid, bundle.school?.currency_code ?? "USD")}
+                        </td>
+                        <td className="py-2">
+                          {formatMoney(inv.balance, bundle.school?.currency_code ?? "USD")}
+                        </td>
                         <td className="py-2">{inv.due_date}</td>
                         <td className="py-2 capitalize">{inv.status}</td>
                       </tr>

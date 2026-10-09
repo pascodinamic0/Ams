@@ -63,8 +63,8 @@ const TAB_PRESETS: Record<string, MobileTabDef[]> = {
   ],
   finance_officer: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },
-    { id: "tab2", href: "/finance/budget", labelKey: "budget", icon: ClipboardList },
-    { id: "tab3", href: "/finance/invoices", labelKey: "invoices", icon: FileText },
+    { id: "tab2", href: "/finance/invoices", labelKey: "invoices", icon: FileText },
+    { id: "tab3", href: "/finance/budget", labelKey: "budget", icon: ClipboardList },
   ],
   cashier: [
     { id: "home", href: "/finance", labelKey: "dashboard", icon: Home },

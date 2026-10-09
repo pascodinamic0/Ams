@@ -13,6 +13,7 @@ import {
   sendLessonMaterialSchema,
   type SendLessonMaterialInput,
 } from "@/lib/validations/lesson-materials";
+import { keepRecognizedStudents } from "@/lib/students/recognized";
 import { sanitizeLessonHtml } from "@/lib/rich-text/sanitize";
 
 export async function sendLessonMaterial(input: SendLessonMaterialInput) {
@@ -38,13 +39,14 @@ export async function sendLessonMaterial(input: SendLessonMaterialInput) {
 
   const { data: students, error: studentsError } = await supabase
     .from("students")
-    .select("id")
+    .select("id, status")
     .eq("class_id", parsed.data.class_id)
-    .eq("status", "active")
+    .in("status", ["active", "pending"])
     .in("id", parsed.data.student_ids);
 
   if (studentsError) return { error: studentsError.message };
-  if ((students ?? []).length !== parsed.data.student_ids.length) {
+  const recognized = await keepRecognizedStudents(supabase, students ?? []);
+  if (recognized.length !== parsed.data.student_ids.length) {
     return await actionError("invalidRecipients");
   }
 

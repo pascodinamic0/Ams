@@ -1,22 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { Pencil } from "lucide-react";
+import { Download, Pencil } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
 import { DeleteInvoiceButton } from "./delete-button";
 
 export function InvoiceActions({
   id,
   status,
+  canDownload = false,
+  onDownload,
 }: {
   id: string;
   status: string;
+  canDownload?: boolean;
+  onDownload?: () => void;
 }) {
   const t = useTranslations("finance");
   const locked = status === "paid";
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex flex-wrap items-center gap-1">
+      {canDownload && onDownload ? (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={onDownload}
+          title={t("downloadInvoice")}
+        >
+          <Download className="mr-1 h-3.5 w-3.5" />
+          {t("downloadInvoice")}
+        </Button>
+      ) : null}
       {!locked ? (
         <Link
           href={`/finance/invoices?edit=${id}`}

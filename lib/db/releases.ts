@@ -65,34 +65,46 @@ function mapRelease(row: Record<string, unknown>): ProductRelease {
 const RELEASE_COLUMNS =
   "id, pr_number, feature_name, gap_closed, feature_key, pr_url, preview_url, video_url, steps, status, created_at, decided_at";
 
-export async function getProductReleases(): Promise<ProductRelease[]> {
+export type ReleasesLoadResult = {
+  releases: ProductRelease[];
+  loadError: string | null;
+};
+
+async function loadReleases(
+  build: (
+    supabase: Awaited<ReturnType<typeof createClient>>
+  ) => ReturnType<Awaited<ReturnType<typeof createClient>>["from"]>
+): Promise<ReleasesLoadResult> {
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("product_releases")
-    .select(RELEASE_COLUMNS)
-    .order("created_at", { ascending: false })
-    .limit(40);
+  const { data, error } = await build(supabase);
 
   if (error) {
-    console.error("getProductReleases error:", error.message);
-    return [];
+    console.error("product_releases query error:", error.message);
+    return { releases: [], loadError: error.message };
   }
 
-  return (data ?? []).map((row) => mapRelease(row as Record<string, unknown>));
+  return {
+    releases: (data ?? []).map((row) => mapRelease(row as Record<string, unknown>)),
+    loadError: null,
+  };
 }
 
-export async function getAwaitingReleases(): Promise<ProductRelease[]> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("product_releases")
-    .select(RELEASE_COLUMNS)
-    .eq("status", "awaiting")
-    .order("created_at", { ascending: false });
+export async function getProductReleases(): Promise<ReleasesLoadResult> {
+  return loadReleases((supabase) =>
+    supabase
+      .from("product_releases")
+      .select(RELEASE_COLUMNS)
+      .order("created_at", { ascending: false })
+      .limit(40)
+  );
+}
 
-  if (error) {
-    console.error("getAwaitingReleases error:", error.message);
-    return [];
-  }
-
-  return (data ?? []).map((row) => mapRelease(row as Record<string, unknown>));
+export async function getAwaitingReleases(): Promise<ReleasesLoadResult> {
+  return loadReleases((supabase) =>
+    supabase
+      .from("product_releases")
+      .select(RELEASE_COLUMNS)
+      .eq("status", "awaiting")
+      .order("created_at", { ascending: false })
+  );
 }

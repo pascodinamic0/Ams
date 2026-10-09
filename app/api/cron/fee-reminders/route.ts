@@ -22,6 +22,10 @@ import { isEmailConfigured, sendPlainTextEmail } from "@/lib/services/email";
 import { getSchoolCurrency } from "@/lib/currency";
 import { format, addDays, differenceInDays } from "date-fns";
 import { formatPersonName } from "@/lib/utils";
+import {
+  isRepeatReminderDay,
+  type CollectionCycle,
+} from "@/lib/services/fee-reminder-cycle";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -77,8 +81,6 @@ export async function POST(req: NextRequest) {
       .single();
 
     const currencySymbol = getSchoolCurrency(school?.currency_code).symbol;
-
-    const graceExpiry = addDays(today, -setting.grace_period_days);
 
     // 2. Fetch overdue/pending invoices for this school with student + guardian info
     const { data: invoices, error: invErr } = await supabase
@@ -153,14 +155,22 @@ export async function POST(req: NextRequest) {
           shouldSend = true;
         }
 
-        // Final warning: grace period has expired
+        const cycle: CollectionCycle =
+          setting.collection_cycle === "monthly" ? "monthly" : "trimester";
+
+        // One final warning on the day the grace period ends.
         if (
           setting.remind_on_grace_expiry &&
-          daysOverdue > 0 &&
-          dueDate <= graceExpiry
+          setting.grace_period_days > 0 &&
+          daysOverdue === setting.grace_period_days
         ) {
           shouldSend = true;
           isFinalWarning = true;
+        }
+
+        // While the balance remains, remind again on the school's payment rhythm.
+        if (!isFinalWarning && isRepeatReminderDay(dueDate, today, cycle)) {
+          shouldSend = true;
         }
 
         if (!shouldSend) continue;

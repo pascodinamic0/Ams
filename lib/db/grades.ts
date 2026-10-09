@@ -1,3 +1,4 @@
+import { keepRecognizedStudents } from "@/lib/students/recognized";
 import { createClient } from "@/lib/supabase/server";
 import { formatPersonName } from "@/lib/utils";
 
@@ -69,9 +70,9 @@ export async function getGradesForClass(options: {
 
   const { data: students, error: studentsError } = await supabase
     .from("students")
-    .select("id, first_name, middle_name, last_name, student_id, class_id")
+    .select("id, first_name, middle_name, last_name, student_id, class_id, status")
     .eq("class_id", options.classId)
-    .eq("status", "active")
+    .in("status", ["active", "pending"])
     .order("last_name");
 
   if (studentsError) {
@@ -79,7 +80,8 @@ export async function getGradesForClass(options: {
     return [];
   }
 
-  if (!students?.length) return [];
+  const recognizedStudents = await keepRecognizedStudents(supabase, students ?? []);
+  if (!recognizedStudents.length) return [];
 
   if (!options.subjectId || !options.term || options.schoolYear == null) {
     let query = supabase
@@ -100,8 +102,10 @@ export async function getGradesForClass(options: {
       return [];
     }
 
-    return (grades ?? []).map((g) => {
-      const student = students.find((s) => s.id === g.student_id);
+    return (grades ?? [])
+      .filter((g) => recognizedStudents.some((s) => s.id === g.student_id))
+      .map((g) => {
+      const student = recognizedStudents.find((s) => s.id === g.student_id);
       return {
         id: g.id,
         student_id: g.student_id,
@@ -144,7 +148,7 @@ export async function getGradesForClass(options: {
     ])
   );
 
-  return students.map((s) => {
+  return recognizedStudents.map((s) => {
     const existing = gradeMap.get(s.id);
     return {
       id: existing?.id ?? null,

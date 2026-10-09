@@ -1,14 +1,27 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { FeeStructureListItem } from "@/lib/db/fee-structures";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export function roundMoney(value: number) {
   return Math.round(value * 100) / 100;
 }
 
-/** Year price written on a pending invoice. Never drop below what was already paid. */
+/** Year price written on an invoice. Never drop below what was already paid. */
 export function pendingEnrollmentInvoiceAmount(catalogAmount: number, amountPaid: number) {
   const paid = roundMoney(amountPaid);
   return Math.max(roundMoney(catalogAmount), paid);
+}
+
+/** Full year fee for a facture: the higher of the stored invoice and the fee catalog. */
+export function fullYearFee(storedAmount: number, catalogAmount?: number | null) {
+  const stored = roundMoney(storedAmount);
+  if (catalogAmount == null || Number.isNaN(Number(catalogAmount))) return stored;
+  return Math.max(stored, roundMoney(Number(catalogAmount)));
+}
+
+/** Facture the family still owes: full year fee minus the exact amount paid. */
+export function factureAmount(fullYearAmount: number, amountPaid: number) {
+  return Math.max(0, roundMoney(roundMoney(fullYearAmount) - roundMoney(amountPaid)));
 }
 
 export function deriveEnrollmentInvoiceStatus(
@@ -99,4 +112,40 @@ export async function createEnrollmentInvoiceRpc(
   }
 
   return { invoiceId: data as string };
+}
+
+/**
+ * A pending student joins the academic roll as soon as any fee payment is
+ * recorded. The invoice keeps the remaining balance.
+ */
+export async function activatePendingStudentWithPayment(
+  studentId: string
+): Promise<boolean> {
+  const admin = createAdminClient();
+  if (!admin) return false;
+
+  const { count, error: paidError } = await admin
+    .from("fee_invoices")
+    .select("id", { count: "exact", head: true })
+    .eq("student_id", studentId)
+    .gt("amount_paid", 0);
+
+  if (paidError || !count) {
+    if (paidError) console.error("activatePendingStudentWithPayment lookup:", paidError);
+    return false;
+  }
+
+  const { data, error } = await admin
+    .from("students")
+    .update({ status: "active", updated_at: new Date().toISOString() })
+    .eq("id", studentId)
+    .eq("status", "pending")
+    .select("id");
+
+  if (error) {
+    console.error("activatePendingStudentWithPayment:", error);
+    return false;
+  }
+
+  return (data?.length ?? 0) > 0;
 }

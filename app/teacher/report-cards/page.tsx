@@ -53,7 +53,7 @@ export default async function ReportCardsPage({
     ? parsedYear
     : getCurrentSchoolYearStart();
 
-  const students = await getStudents({ classId, status: "active" });
+  const students = await getStudents({ classId, recognized: true });
   const selectedStudentId =
     params.student && students.some((s) => s.id === params.student)
       ? params.student

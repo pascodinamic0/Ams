@@ -135,8 +135,20 @@ export async function proxy(request: NextRequest) {
       return supabaseResponse;
     }
     return redirectWithCookies(request, supabaseResponse, "/login", {
-      redirect: pathname,
+      redirect:
+        pathname === "/finance/outstanding" ||
+        pathname.startsWith("/finance/outstanding/")
+          ? "/finance/invoices"
+          : pathname,
     });
+  }
+
+  if (
+    !serverAction &&
+    (pathname === "/finance/outstanding" ||
+      pathname.startsWith("/finance/outstanding/"))
+  ) {
+    return redirectWithCookies(request, supabaseResponse, "/finance/invoices");
   }
 
   const access = await getProxyAuthContext(request, user);

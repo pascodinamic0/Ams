@@ -4,6 +4,7 @@ import { actionError } from "@/lib/i18n/action-error";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { activatePendingStudentWithPayment } from "@/lib/services/enrollment-fees";
 import { getTranslations } from "next-intl/server";
 
 const confirmEnrollmentSchema = z.object({
@@ -144,6 +145,12 @@ export async function confirmPendingEnrollment(input: ConfirmEnrollmentFormData)
       amount_paid: result.amount_paid + part.amount,
       student_activated: Boolean(result.student_activated || payment.student_activated),
     };
+  }
+
+  if (!result.student_activated && allocation.parts.length > 0) {
+    result.student_activated = await activatePendingStudentWithPayment(
+      parsed.data.student_id
+    );
   }
 
   revalidateEnrollmentPaths();

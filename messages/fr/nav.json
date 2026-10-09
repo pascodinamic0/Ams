@@ -60,5 +60,17 @@
   "monthlyActivity": "Activité mensuelle",
   "activityReport": "Rapport d'activité",
   "budget": "Plan budgétaire",
-  "billing": "Facturation"
+  "billing": "Facturation",
+  "sections": {
+    "overview": "Aperçu",
+    "people": "Personnes",
+    "academics": "Scolarité",
+    "fees": "Frais",
+    "spending": "Décaissements",
+    "operations": "Opérations",
+    "platform": "Plateforme",
+    "reports": "Rapports",
+    "school": "École",
+    "communication": "Communication"
+  }
 }

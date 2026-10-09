@@ -20,7 +20,7 @@ export default async function TeacherClassesPage() {
   const studentsByClass = await Promise.all(
     classes.map(async (cls) => ({
       classId: cls.id,
-      students: await getStudents({ classId: cls.id, status: "active" }),
+      students: await getStudents({ classId: cls.id, recognized: true }),
     }))
   );
 

@@ -1,3 +1,4 @@
+import { keepRecognizedStudents } from "@/lib/students/recognized";
 import { createClient } from "@/lib/supabase/server";
 import { formatPersonName, formatStudentName } from "@/lib/utils";
 
@@ -71,18 +72,7 @@ export type StudentListItem = {
   tags: string[];
 };
 
-export async function getStudents(options?: {
-  search?: string;
-  classId?: string;
-  status?: string;
-  tag?: string;
-  branchId?: string;
-  schoolId?: string;
-}): Promise<StudentListItem[]> {
-  const supabase = await createClient();
-  let query = supabase
-    .from("students")
-    .select(`
+const STUDENT_LIST_COLUMNS = `
       id,
       student_id,
       first_name,
@@ -95,58 +85,203 @@ export async function getStudents(options?: {
       father_name,
       classes(name),
       guardian_students(guardians(name))
-    `)
-    .order("created_at", { ascending: false });
+    `;
 
-  if (options?.branchId) {
-    query = query.eq("branch_id", options.branchId);
-  }
-  if (options?.schoolId) {
-    query = query.eq("school_id", options.schoolId);
-  }
-  if (options?.classId) {
-    query = query.eq("class_id", options.classId);
-  }
-  if (options?.status) {
-    query = query.eq("status", options.status);
-  }
-  if (options?.tag) {
-    query = query.contains("tags", [options.tag]);
-  }
-  if (options?.search) {
-    const term = `%${options.search}%`;
-    query = query.or(
-      `first_name.ilike.${term},middle_name.ilike.${term},last_name.ilike.${term},student_id.ilike.${term}`
+type StudentListScope = {
+  classId?: string;
+  status?: string;
+  tag?: string;
+  branchId?: string;
+  schoolId?: string;
+  recognized?: boolean;
+};
+
+type StudentListRow = {
+  id: string;
+  student_id: string | null;
+  first_name: string;
+  middle_name: string | null;
+  last_name: string;
+  photo_url: string | null;
+  status: string | null;
+  tags: string[] | null;
+  class_id: string | null;
+  father_name: string | null;
+  classes: { name?: string } | { name?: string }[] | null;
+  guardian_students: Array<{ guardians: { name?: string } | null }> | null;
+};
+
+interface StudentListFilter {
+  eq(column: string, value: string): StudentListFilter;
+  in(column: string, values: string[]): StudentListFilter;
+  contains(column: string, value: string[]): StudentListFilter;
+}
+
+function withStudentListScope<T>(query: T, options?: StudentListScope): T {
+  let scoped = query as unknown as StudentListFilter;
+  if (options?.branchId) scoped = scoped.eq("branch_id", options.branchId);
+  if (options?.schoolId) scoped = scoped.eq("school_id", options.schoolId);
+  if (options?.classId) scoped = scoped.eq("class_id", options.classId);
+  if (options?.recognized) scoped = scoped.in("status", ["active", "pending"]);
+  else if (options?.status) scoped = scoped.eq("status", options.status);
+  if (options?.tag) scoped = scoped.contains("tags", [options.tag]);
+  return scoped as T;
+}
+
+function mapStudentListRow(s: StudentListRow): StudentListItem {
+  const linkedGuardian = s.guardian_students?.[0]?.guardians?.name?.trim();
+  const fatherName = s.father_name?.trim();
+  const classes = Array.isArray(s.classes) ? s.classes[0] : s.classes;
+  return {
+    id: s.id,
+    student_id: s.student_id,
+    first_name: s.first_name,
+    middle_name: s.middle_name ?? null,
+    last_name: s.last_name,
+    name: formatStudentName(s),
+    photo_url: s.photo_url ?? null,
+    class_id: s.class_id,
+    class_name: classes?.name ?? null,
+    guardian_name: linkedGuardian || fatherName || null,
+    status: s.status ?? "active",
+    tags: Array.isArray(s.tags) ? s.tags : [],
+  };
+}
+
+function sanitizeStudentSearch(raw: string | undefined): string {
+  return (raw ?? "")
+    .trim()
+    .replace(/[%_,.()"\\]/g, "")
+    .slice(0, 80);
+}
+
+export async function getStudents(options?: {
+  search?: string;
+  classId?: string;
+  status?: string;
+  tag?: string;
+  branchId?: string;
+  schoolId?: string;
+  /** Activated students, plus pending students who have paid. */
+  recognized?: boolean;
+}): Promise<StudentListItem[]> {
+  const supabase = await createClient();
+  const search = sanitizeStudentSearch(options?.search);
+
+  if (!search) {
+    const { data, error } = await withStudentListScope(
+      supabase
+        .from("students")
+        .select(STUDENT_LIST_COLUMNS)
+        .order("created_at", { ascending: false }),
+      options
     );
+
+    if (error) {
+      console.error("getStudents error:", error);
+      return [];
+    }
+
+    const rows = ((data ?? []) as unknown as StudentListRow[]).map(mapStudentListRow);
+    return options?.recognized ? keepRecognizedStudents(supabase, rows) : rows;
   }
 
-  const { data, error } = await query;
-
-  if (error) {
-    console.error("getStudents error:", error);
-    return [];
+  const primary = search.split(/\s+/).find(Boolean) ?? search;
+  const pattern = `%${primary}%`;
+  const identityFilters = [
+    `first_name.ilike.${pattern}`,
+    `middle_name.ilike.${pattern}`,
+    `last_name.ilike.${pattern}`,
+    `student_id.ilike.${pattern}`,
+  ];
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(search)) {
+    identityFilters.unshift(`id.eq.${search}`);
   }
 
-  return (data ?? []).map((s) => {
-    const links = (s.guardian_students as Array<{ guardians: { name?: string } | null }> | null) ?? [];
-    const linkedGuardian = links[0]?.guardians?.name?.trim();
-    const fatherName = (s.father_name as string | null)?.trim();
-    const guardianName = linkedGuardian || fatherName || null;
-    return {
-      id: s.id,
-      student_id: s.student_id,
-      first_name: s.first_name,
-      middle_name: s.middle_name ?? null,
-      last_name: s.last_name,
-      name: formatStudentName(s),
-      photo_url: s.photo_url ?? null,
-      class_id: s.class_id,
-      class_name: (s.classes as { name?: string } | null)?.name ?? null,
-      guardian_name: guardianName,
-      status: s.status ?? "active",
-      tags: Array.isArray(s.tags) ? (s.tags as string[]) : [],
-    };
-  });
+  const byIdentity = withStudentListScope(
+    supabase
+      .from("students")
+      .select(STUDENT_LIST_COLUMNS)
+      .or(identityFilters.join(","))
+      .order("created_at", { ascending: false }),
+    options
+  );
+  const byClass = withStudentListScope(
+    supabase
+      .from("students")
+      .select(`
+      id,
+      student_id,
+      first_name,
+      middle_name,
+      last_name,
+      photo_url,
+      status,
+      tags,
+      class_id,
+      father_name,
+      classes!inner(name),
+      guardian_students(guardians(name))
+    `)
+      .ilike("classes.name", `%${search}%`)
+      .order("created_at", { ascending: false }),
+    options
+  );
+
+  const [nameResult, classResult] = await Promise.all([byIdentity, byClass]);
+  if (nameResult.error) console.error("getStudents name search error:", nameResult.error);
+  if (classResult.error) console.error("getStudents class search error:", classResult.error);
+
+  const seen = new Set<string>();
+  const matches: StudentListItem[] = [];
+  for (const row of [
+    ...((nameResult.data ?? []) as unknown as StudentListRow[]),
+    ...((classResult.data ?? []) as unknown as StudentListRow[]),
+  ]) {
+    if (seen.has(row.id)) continue;
+    seen.add(row.id);
+    const student = mapStudentListRow(row);
+    if (!matchesStudentSearch(student, search)) continue;
+    matches.push(student);
+  }
+
+  return options?.recognized ? keepRecognizedStudents(supabase, matches) : matches;
+}
+
+function matchesStudentSearch(
+  student: Pick<
+    StudentListItem,
+    | "id"
+    | "student_id"
+    | "name"
+    | "first_name"
+    | "middle_name"
+    | "last_name"
+    | "class_name"
+  >,
+  raw: string | undefined
+): boolean {
+  const needle = (raw ?? "").trim().toLowerCase();
+  if (!needle) return true;
+
+  const fields = [
+    student.id,
+    student.student_id,
+    student.name,
+    student.first_name,
+    student.middle_name,
+    student.last_name,
+    student.class_name,
+  ]
+    .filter((part): part is string => Boolean(part))
+    .map((part) => part.toLowerCase());
+
+  if (fields.some((field) => field.includes(needle))) return true;
+
+  const tokens = needle.split(/\s+/).filter((token) => token.length >= 2);
+  if (tokens.length < 2) return false;
+  const haystack = fields.join(" ");
+  return tokens.every((token) => haystack.includes(token));
 }
 
 /** Lean student list for finance invoicing (school-wide, no guardian join). */
@@ -163,6 +298,7 @@ export async function getStudentsForBilling(options?: {
   schoolId?: string;
   classId?: string;
   status?: string;
+  recognized?: boolean;
 }): Promise<BillingStudentOption[]> {
   const supabase = await createClient();
   let query = supabase
@@ -186,7 +322,9 @@ export async function getStudentsForBilling(options?: {
   if (options?.classId) {
     query = query.eq("class_id", options.classId);
   }
-  if (options?.status) {
+  if (options?.recognized) {
+    query = query.in("status", ["active", "pending"]);
+  } else if (options?.status) {
     query = query.eq("status", options.status);
   }
 
@@ -197,7 +335,7 @@ export async function getStudentsForBilling(options?: {
     return [];
   }
 
-  return (data ?? []).map((s) => ({
+  const rows = (data ?? []).map((s) => ({
     id: s.id,
     student_id: s.student_id,
     name: formatPersonName(s),
@@ -205,6 +343,7 @@ export async function getStudentsForBilling(options?: {
     class_name: (s.classes as { name?: string } | null)?.name ?? null,
     status: s.status ?? "active",
   }));
+  return options?.recognized ? keepRecognizedStudents(supabase, rows) : rows;
 }
 
 type BillingStudentRow = {

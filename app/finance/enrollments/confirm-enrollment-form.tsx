@@ -95,15 +95,24 @@ export function ConfirmEnrollmentForm({
           ) : null}
         </div>
         <div>
-          <p className="text-xs text-stone-500">{t("enrollmentAmountDue")}</p>
+          <p className="text-xs text-stone-500">{t("colFacture")}</p>
           <p className="font-medium">{formatMoney(row.invoice_balance, currencyCode)}</p>
-          {row.invoices.length > 0 ? (
+          <p className="text-xs text-stone-500">
+            {t("factureEquals", {
+              year: formatMoney(row.invoice_amount, currencyCode),
+              paid: formatMoney(row.invoice_paid, currencyCode),
+            })}
+          </p>
+          {row.invoices.length > 1 ? (
             <p className="text-xs font-normal text-stone-500">
               {row.invoices
                 .map((invoice) =>
                   [
                     invoice.fee_structure_name,
-                    formatMoney(invoice.amount, currencyCode),
+                    t("factureEquals", {
+                      year: formatMoney(invoice.amount, currencyCode),
+                      paid: formatMoney(invoice.paid, currencyCode),
+                    }),
                   ]
                     .filter(Boolean)
                     .join(" ")

@@ -63,7 +63,9 @@ export default async function PaymentsPage() {
             { id: "method", header: t("colMethod"), accessorKey: "method" },
             { id: "reference", header: t("colReference"), accessorKey: "reference" },
             { id: "proof", header: t("colProof"), accessorKey: "proof" },
-            { id: "invoice_amount", header: t("colInvoiceTotal"), accessorKey: "invoice_amount" },
+            { id: "invoice_amount", header: t("colFullYear"), accessorKey: "invoice_amount" },
+            { id: "amount_paid", header: tc("paid"), accessorKey: "amount_paid" },
+            { id: "facture", header: t("colFacture"), accessorKey: "facture" },
           ]}
         />
       )}

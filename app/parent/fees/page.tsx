@@ -3,7 +3,8 @@ import { getCurrentProfile } from "@/lib/auth/session";
 import { DataTable } from "@/components/ui/data-table";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
-import { getGuardianByAuthUserId, getInvoicesForGuardian } from "@/lib/db";
+import { formatMoney } from "@/lib/currency";
+import { getGuardianByAuthUserId, getInvoicesForGuardian, getSchoolCurrencyForSchool } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 
 export default async function ParentFeesPage() {
@@ -30,9 +31,16 @@ export default async function ParentFeesPage() {
     );
   }
 
-  const invoices = await getInvoicesForGuardian(guardian.id);
+  const [invoices, currency] = await Promise.all([
+    getInvoicesForGuardian(guardian.id),
+    getSchoolCurrencyForSchool(guardian.school_id),
+  ]);
+  const money = (value: number) => formatMoney(value, currency.code);
   const tableData = invoices.map((row) => ({
     ...row,
+    amount: money(row.amount),
+    amount_paid: money(row.amount_paid),
+    balance: money(row.balance),
     pay_action:
       Number(row.balance) > 0 ? (
         <Link href={`/parent/pay?invoice=${row.id}`}>

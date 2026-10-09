@@ -1,3 +1,4 @@
+import { keepRecognizedStudents } from "@/lib/students/recognized";
 import { createClient } from "@/lib/supabase/server";
 import { formatPersonName } from "@/lib/utils";
 
@@ -65,16 +66,24 @@ export async function getTeacherClasses(teacherId: string): Promise<TeacherClass
 
   const { data: students, error: studentsError } = await supabase
     .from("students")
-    .select("id, class_id")
+    .select("id, class_id, status")
     .in("class_id", classIds)
-    .eq("status", "active");
+    .in("status", ["active", "pending"]);
 
   if (studentsError) {
     console.error("getTeacherClasses students error:", studentsError);
   }
 
+  const recognized = await keepRecognizedStudents(
+    supabase,
+    (students ?? []).map((student) => ({
+      id: student.id,
+      class_id: student.class_id,
+      status: student.status,
+    }))
+  );
   const countByClass: Record<string, number> = {};
-  for (const s of students ?? []) {
+  for (const s of recognized) {
     if (s.class_id) countByClass[s.class_id] = (countByClass[s.class_id] ?? 0) + 1;
   }
 
@@ -121,9 +130,9 @@ export async function getAttendanceForClass(
 
   const { data: students, error: studentsError } = await supabase
     .from("students")
-    .select("id, first_name, middle_name, last_name, student_id")
+    .select("id, first_name, middle_name, last_name, student_id, status")
     .eq("class_id", classId)
-    .eq("status", "active")
+    .in("status", ["active", "pending"])
     .order("last_name");
 
   if (studentsError) {
@@ -131,12 +140,15 @@ export async function getAttendanceForClass(
     return [];
   }
 
+  const recognized = await keepRecognizedStudents(supabase, students ?? []);
+  if (recognized.length === 0) return [];
+
   const { data: records, error: recordsError } = await supabase
     .from("attendance_records")
     .select("id, student_id, status")
     .eq("date", date)
     .eq("period", period)
-    .in("student_id", (students ?? []).map((s) => s.id));
+    .in("student_id", recognized.map((s) => s.id));
 
   if (recordsError) {
     console.error("getAttendanceForClass records error:", recordsError);
@@ -146,7 +158,7 @@ export async function getAttendanceForClass(
     (records ?? []).map((r) => [r.student_id, { id: r.id, status: r.status as "present" | "absent" }])
   );
 
-  return (students ?? []).map((s) => {
+  return recognized.map((s) => {
     const existing = recordMap.get(s.id);
     return {
       id: existing?.id ?? null,

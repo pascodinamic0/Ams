@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  AlertCircle,
   Banknote,
   BarChart3,
   Bell,
@@ -42,10 +41,33 @@ import { useHiddenNavHrefs } from "@/components/layout/feature-nav";
 
 const iconClass = "h-4 w-4";
 
+const NAV_SECTIONS = [
+  "overview",
+  "people",
+  "academics",
+  "fees",
+  "spending",
+  "operations",
+  "platform",
+  "reports",
+  "school",
+  "communication",
+] as const;
+
+type NavSection = (typeof NAV_SECTIONS)[number];
+
 interface NavItem {
   href: string;
   labelKey: keyof NavLabels;
   icon: React.ReactNode;
+  section: NavSection;
+}
+
+function groupNavItems(items: NavItem[]): { section: NavSection; items: NavItem[] }[] {
+  return NAV_SECTIONS.flatMap((section) => {
+    const sectionItems = items.filter((item) => item.section === section);
+    return sectionItems.length > 0 ? [{ section, items: sectionItems }] : [];
+  });
 }
 
 type NavLabels = {
@@ -77,7 +99,6 @@ type NavLabels = {
   feeStructure: string;
   pendingEnrollments: string;
   invoices: string;
-  outstandingFees: string;
   payments: string;
   payroll: string;
   expenses: string;
@@ -126,7 +147,6 @@ const icon = {
   fees: <CircleDollarSign className={iconClass} />,
   feeStructure: <Tags className={iconClass} />,
   invoices: <FileText className={iconClass} />,
-  outstandingFees: <AlertCircle className={iconClass} />,
   payments: <Banknote className={iconClass} />,
   expenses: <Wallet className={iconClass} />,
   budget: <PieChart className={iconClass} />,
@@ -141,194 +161,191 @@ const icon = {
 
 const ROLE_NAV: Record<string, NavItem[]> = {
   super_admin: [
-    { href: "/admin", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/admin/schools", labelKey: "schools", icon: icon.schools },
-    { href: "/admin/websites", labelKey: "websiteTemplates", icon: icon.website },
-    { href: "/admin/users", labelKey: "users", icon: icon.users },
-    { href: "/admin/roles", labelKey: "roles", icon: icon.roles },
-    { href: "/admin/audit", labelKey: "auditLogs", icon: icon.audit },
-    { href: "/admin/features", labelKey: "features", icon: icon.features },
-    { href: "/admin/releases", labelKey: "releases", icon: icon.events },
-    { href: "/outreach", labelKey: "outreach", icon: icon.outreach },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/admin", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/admin/schools", labelKey: "schools", icon: icon.schools, section: "platform" },
+    { href: "/admin/websites", labelKey: "websiteTemplates", icon: icon.website, section: "platform" },
+    { href: "/admin/users", labelKey: "users", icon: icon.users, section: "platform" },
+    { href: "/admin/roles", labelKey: "roles", icon: icon.roles, section: "platform" },
+    { href: "/admin/audit", labelKey: "auditLogs", icon: icon.audit, section: "platform" },
+    { href: "/admin/features", labelKey: "features", icon: icon.features, section: "platform" },
+    { href: "/admin/releases", labelKey: "releases", icon: icon.events, section: "platform" },
+    { href: "/outreach", labelKey: "outreach", icon: icon.outreach, section: "communication" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   academic_admin: [
-    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/academic/website", labelKey: "publicWebsite", icon: icon.website },
-    { href: "/academic/settings", labelKey: "schoolSettings", icon: icon.settings },
-    { href: "/billing", labelKey: "billing", icon: icon.billing },
-    { href: "/academic/team", labelKey: "team", icon: icon.users },
-    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/academic/reports/monthly", labelKey: "activityReport", icon: icon.reports },
-    { href: "/academic/students", labelKey: "students", icon: icon.students },
-    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
-    { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
-    { href: "/academic/subjects", labelKey: "subjects", icon: icon.subjects },
-    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
-    { href: "/outreach", labelKey: "outreach", icon: icon.outreach },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments, section: "overview" },
+    { href: "/academic/team", labelKey: "team", icon: icon.users, section: "people" },
+    { href: "/academic/students", labelKey: "students", icon: icon.students, section: "people" },
+    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions, section: "people" },
+    { href: "/academic/classes", labelKey: "classes", icon: icon.classes, section: "academics" },
+    { href: "/academic/subjects", labelKey: "subjects", icon: icon.subjects, section: "academics" },
+    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable, section: "academics" },
+    { href: "/academic/reports/monthly", labelKey: "activityReport", icon: icon.reports, section: "reports" },
+    { href: "/academic/website", labelKey: "publicWebsite", icon: icon.website, section: "school" },
+    { href: "/academic/settings", labelKey: "schoolSettings", icon: icon.settings, section: "school" },
+    { href: "/billing", labelKey: "billing", icon: icon.billing, section: "school" },
+    { href: "/outreach", labelKey: "outreach", icon: icon.outreach, section: "communication" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   admin_coordinator: [
-    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/academic/students", labelKey: "students", icon: icon.students },
-    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
-    { href: "/outreach", labelKey: "outreach", icon: icon.outreach },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments, section: "overview" },
+    { href: "/academic/students", labelKey: "students", icon: icon.students, section: "people" },
+    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions, section: "people" },
+    { href: "/outreach", labelKey: "outreach", icon: icon.outreach, section: "communication" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   registrar: [
-    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/academic/students", labelKey: "students", icon: icon.students },
-    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
-    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments, section: "overview" },
+    { href: "/academic/students", labelKey: "students", icon: icon.students, section: "people" },
+    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions, section: "people" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   admissions_officer: [
-    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
-    { href: "/academic/students", labelKey: "students", icon: icon.students },
-    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments, section: "overview" },
+    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions, section: "people" },
+    { href: "/academic/students", labelKey: "students", icon: icon.students, section: "people" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   pedagogy_coordinator: [
-    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/academic/students", labelKey: "students", icon: icon.students },
-    { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
-    { href: "/academic/subjects", labelKey: "subjects", icon: icon.subjects },
-    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
-    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/analytics", labelKey: "reports", icon: icon.reports },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments, section: "overview" },
+    { href: "/academic/students", labelKey: "students", icon: icon.students, section: "people" },
+    { href: "/academic/classes", labelKey: "classes", icon: icon.classes, section: "academics" },
+    { href: "/academic/subjects", labelKey: "subjects", icon: icon.subjects, section: "academics" },
+    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable, section: "academics" },
+    { href: "/analytics", labelKey: "reports", icon: icon.reports, section: "reports" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   principal: [
-    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/billing", labelKey: "billing", icon: icon.billing },
-    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments },
-    { href: "/academic/reports/monthly", labelKey: "activityReport", icon: icon.reports },
-    { href: "/academic/students", labelKey: "students", icon: icon.students },
-    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions },
-    { href: "/academic/classes", labelKey: "classes", icon: icon.classes },
-    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
-    { href: "/analytics", labelKey: "reports", icon: icon.reports },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/academic/tasks", labelKey: "tasks", icon: icon.assignments, section: "overview" },
+    { href: "/academic/students", labelKey: "students", icon: icon.students, section: "people" },
+    { href: "/academic/admissions", labelKey: "admissions", icon: icon.admissions, section: "people" },
+    { href: "/academic/classes", labelKey: "classes", icon: icon.classes, section: "academics" },
+    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable, section: "academics" },
+    { href: "/academic/reports/monthly", labelKey: "activityReport", icon: icon.reports, section: "reports" },
+    { href: "/analytics", labelKey: "reports", icon: icon.reports, section: "reports" },
+    { href: "/billing", labelKey: "billing", icon: icon.billing, section: "school" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   teacher: [
-    { href: "/teacher", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/teacher/classes", labelKey: "myClasses", icon: icon.classes },
-    { href: "/teacher/attendance", labelKey: "attendance", icon: icon.attendance },
-    { href: "/teacher/gradebook", labelKey: "gradebook", icon: icon.grades },
-    { href: "/teacher/assignments", labelKey: "assignments", icon: icon.assignments },
-    { href: "/teacher/exams", labelKey: "exams", icon: icon.timetable },
-    { href: "/teacher/report-cards", labelKey: "reportCards", icon: icon.reports },
-    { href: "/teacher/discipline", labelKey: "discipline", icon: icon.roles },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/teacher", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/teacher/classes", labelKey: "myClasses", icon: icon.classes, section: "academics" },
+    { href: "/teacher/attendance", labelKey: "attendance", icon: icon.attendance, section: "academics" },
+    { href: "/teacher/gradebook", labelKey: "gradebook", icon: icon.grades, section: "academics" },
+    { href: "/teacher/assignments", labelKey: "assignments", icon: icon.assignments, section: "academics" },
+    { href: "/teacher/exams", labelKey: "exams", icon: icon.timetable, section: "academics" },
+    { href: "/teacher/discipline", labelKey: "discipline", icon: icon.roles, section: "academics" },
+    { href: "/teacher/report-cards", labelKey: "reportCards", icon: icon.reports, section: "reports" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   finance_officer: [
-    { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/billing", labelKey: "billing", icon: icon.billing },
-    { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices },
-    { href: "/finance/reports/activity/monthly", labelKey: "activityReport", icon: icon.reports },
-    { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.feeStructure },
-    { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices },
-    { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.outstandingFees },
-    { href: "/finance/payments", labelKey: "payments", icon: icon.payments },
-    { href: "/finance/payroll", labelKey: "payroll", icon: icon.payroll },
-    { href: "/finance/expenses", labelKey: "expenses", icon: icon.expenses },
-    { href: "/finance/budget", labelKey: "budget", icon: icon.budget },
-    { href: "/finance/reports", labelKey: "reports", icon: icon.reports },
-    { href: "/finance/fee-reminders", labelKey: "feeReminders", icon: icon.reminders },
-    { href: "/finance/settings", labelKey: "schoolSettings", icon: icon.settings },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/finance", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices, section: "fees" },
+    { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.feeStructure, section: "fees" },
+    { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices, section: "fees" },
+    { href: "/finance/payments", labelKey: "payments", icon: icon.payments, section: "fees" },
+    { href: "/finance/fee-reminders", labelKey: "feeReminders", icon: icon.reminders, section: "fees" },
+    { href: "/finance/payroll", labelKey: "payroll", icon: icon.payroll, section: "spending" },
+    { href: "/finance/expenses", labelKey: "expenses", icon: icon.expenses, section: "spending" },
+    { href: "/finance/budget", labelKey: "budget", icon: icon.budget, section: "spending" },
+    { href: "/finance/reports/activity/monthly", labelKey: "activityReport", icon: icon.reports, section: "reports" },
+    { href: "/finance/reports", labelKey: "reports", icon: icon.reports, section: "reports" },
+    { href: "/billing", labelKey: "billing", icon: icon.billing, section: "school" },
+    { href: "/finance/settings", labelKey: "schoolSettings", icon: icon.settings, section: "school" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   cashier: [
-    { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices },
-    { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices },
-    { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.outstandingFees },
-    { href: "/finance/payments", labelKey: "payments", icon: icon.payments },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/finance", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices, section: "fees" },
+    { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices, section: "fees" },
+    { href: "/finance/payments", labelKey: "payments", icon: icon.payments, section: "fees" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   accountant: [
-    { href: "/finance", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/billing", labelKey: "billing", icon: icon.billing },
-    { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices },
-    { href: "/finance/reports/activity/monthly", labelKey: "activityReport", icon: icon.reports },
-    { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.feeStructure },
-    { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices },
-    { href: "/finance/outstanding", labelKey: "outstandingFees", icon: icon.outstandingFees },
-    { href: "/finance/payments", labelKey: "payments", icon: icon.payments },
-    { href: "/finance/payroll", labelKey: "payroll", icon: icon.payroll },
-    { href: "/finance/expenses", labelKey: "expenses", icon: icon.expenses },
-    { href: "/finance/budget", labelKey: "budget", icon: icon.budget },
-    { href: "/finance/reports", labelKey: "reports", icon: icon.reports },
-    { href: "/finance/fee-reminders", labelKey: "feeReminders", icon: icon.reminders },
-    { href: "/finance/settings", labelKey: "schoolSettings", icon: icon.settings },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/finance", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/finance/enrollments", labelKey: "pendingEnrollments", icon: icon.invoices, section: "fees" },
+    { href: "/finance/fee-structure", labelKey: "feeStructure", icon: icon.feeStructure, section: "fees" },
+    { href: "/finance/invoices", labelKey: "invoices", icon: icon.invoices, section: "fees" },
+    { href: "/finance/payments", labelKey: "payments", icon: icon.payments, section: "fees" },
+    { href: "/finance/fee-reminders", labelKey: "feeReminders", icon: icon.reminders, section: "fees" },
+    { href: "/finance/payroll", labelKey: "payroll", icon: icon.payroll, section: "spending" },
+    { href: "/finance/expenses", labelKey: "expenses", icon: icon.expenses, section: "spending" },
+    { href: "/finance/budget", labelKey: "budget", icon: icon.budget, section: "spending" },
+    { href: "/finance/reports/activity/monthly", labelKey: "activityReport", icon: icon.reports, section: "reports" },
+    { href: "/finance/reports", labelKey: "reports", icon: icon.reports, section: "reports" },
+    { href: "/billing", labelKey: "billing", icon: icon.billing, section: "school" },
+    { href: "/finance/settings", labelKey: "schoolSettings", icon: icon.settings, section: "school" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   operations_manager: [
-    { href: "/operations", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/operations/library", labelKey: "library", icon: icon.library },
-    { href: "/operations/transport", labelKey: "transport", icon: icon.transport },
-    { href: "/operations/events", labelKey: "events", icon: icon.events },
-    { href: "/operations/staff", labelKey: "staff", icon: icon.staff },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/operations", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/operations/library", labelKey: "library", icon: icon.library, section: "operations" },
+    { href: "/operations/transport", labelKey: "transport", icon: icon.transport, section: "operations" },
+    { href: "/operations/events", labelKey: "events", icon: icon.events, section: "operations" },
+    { href: "/operations/staff", labelKey: "staff", icon: icon.staff, section: "operations" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   operations_officer: [
-    { href: "/operations", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/operations/library", labelKey: "library", icon: icon.library },
-    { href: "/operations/transport", labelKey: "transport", icon: icon.transport },
-    { href: "/operations/events", labelKey: "events", icon: icon.events },
-    { href: "/operations/staff", labelKey: "staff", icon: icon.staff },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/operations", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/operations/library", labelKey: "library", icon: icon.library, section: "operations" },
+    { href: "/operations/transport", labelKey: "transport", icon: icon.transport, section: "operations" },
+    { href: "/operations/events", labelKey: "events", icon: icon.events, section: "operations" },
+    { href: "/operations/staff", labelKey: "staff", icon: icon.staff, section: "operations" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   discipline_officer: [
-    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
-    { href: "/academic/students", labelKey: "students", icon: icon.students },
-    { href: "/analytics/attendance", labelKey: "attendance", icon: icon.attendance },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/academic/students", labelKey: "students", icon: icon.students, section: "people" },
+    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles, section: "academics" },
+    { href: "/analytics/attendance", labelKey: "attendance", icon: icon.attendance, section: "reports" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   supervisor: [
-    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles },
-    { href: "/academic/students", labelKey: "students", icon: icon.students },
-    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
-    { href: "/analytics/attendance", labelKey: "attendance", icon: icon.attendance },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/academic/students", labelKey: "students", icon: icon.students, section: "people" },
+    { href: "/academic/discipline", labelKey: "discipline", icon: icon.roles, section: "academics" },
+    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable, section: "academics" },
+    { href: "/analytics/attendance", labelKey: "attendance", icon: icon.attendance, section: "reports" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   pedagogical_council_member: [
-    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable },
-    { href: "/analytics", labelKey: "reports", icon: icon.reports },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/academic", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/academic/timetable", labelKey: "timetable", icon: icon.timetable, section: "academics" },
+    { href: "/analytics", labelKey: "reports", icon: icon.reports, section: "reports" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   parent: [
-    { href: "/parent", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/parent/fees", labelKey: "fees", icon: icon.fees },
-    { href: "/parent/timetable", labelKey: "timetable", icon: icon.timetable },
-    { href: "/parent/assignments", labelKey: "assignments", icon: icon.assignments },
-    { href: "/parent/lessons", labelKey: "missedLessons", icon: icon.timetable },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
-    { href: "/parent/events", labelKey: "events", icon: icon.events },
-    { href: "/parent/transport", labelKey: "transport", icon: icon.transport },
-    { href: "/parent/performance", labelKey: "performance", icon: icon.performance },
+    { href: "/parent", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/parent/fees", labelKey: "fees", icon: icon.fees, section: "fees" },
+    { href: "/parent/timetable", labelKey: "timetable", icon: icon.timetable, section: "academics" },
+    { href: "/parent/assignments", labelKey: "assignments", icon: icon.assignments, section: "academics" },
+    { href: "/parent/lessons", labelKey: "missedLessons", icon: icon.timetable, section: "academics" },
+    { href: "/parent/events", labelKey: "events", icon: icon.events, section: "operations" },
+    { href: "/parent/transport", labelKey: "transport", icon: icon.transport, section: "operations" },
+    { href: "/parent/performance", labelKey: "performance", icon: icon.performance, section: "reports" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   student: [
-    { href: "/student", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/student/timetable", labelKey: "timetable", icon: icon.timetable },
-    { href: "/student/assignments", labelKey: "assignments", icon: icon.assignments },
-    { href: "/student/lessons", labelKey: "missedLessons", icon: icon.timetable },
-    { href: "/student/grades", labelKey: "grades", icon: icon.grades },
-    { href: "/student/report-card", labelKey: "reportCards", icon: icon.reports },
-    { href: "/student/library", labelKey: "library", icon: icon.library },
-    { href: "/student/events", labelKey: "events", icon: icon.events },
+    { href: "/student", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/student/timetable", labelKey: "timetable", icon: icon.timetable, section: "academics" },
+    { href: "/student/assignments", labelKey: "assignments", icon: icon.assignments, section: "academics" },
+    { href: "/student/lessons", labelKey: "missedLessons", icon: icon.timetable, section: "academics" },
+    { href: "/student/grades", labelKey: "grades", icon: icon.grades, section: "academics" },
+    { href: "/student/report-card", labelKey: "reportCards", icon: icon.reports, section: "reports" },
+    { href: "/student/library", labelKey: "library", icon: icon.library, section: "operations" },
+    { href: "/student/events", labelKey: "events", icon: icon.events, section: "operations" },
   ],
   analytics: [
-    { href: "/analytics", labelKey: "dashboard", icon: icon.dashboard },
-    { href: "/analytics/students", labelKey: "students", icon: icon.students },
-    { href: "/analytics/attendance", labelKey: "attendance", icon: icon.attendance },
-    { href: "/analytics/finance", labelKey: "finance", icon: icon.finance },
-    { href: "/messages", labelKey: "messages", icon: icon.chat },
+    { href: "/analytics", labelKey: "dashboard", icon: icon.dashboard, section: "overview" },
+    { href: "/analytics/students", labelKey: "students", icon: icon.students, section: "reports" },
+    { href: "/analytics/attendance", labelKey: "attendance", icon: icon.attendance, section: "reports" },
+    { href: "/analytics/finance", labelKey: "finance", icon: icon.finance, section: "reports" },
+    { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
 };
 
@@ -347,6 +364,7 @@ export function Sidebar({ role = "student" }: SidebarProps) {
   const navItems = getNavForRole(role).filter(
     (item) => !hiddenHrefs.includes(item.href)
   );
+  const groups = groupNavItems(navItems);
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const tMessages = useTranslations("messages");
@@ -355,42 +373,59 @@ export function Sidebar({ role = "student" }: SidebarProps) {
   const navHrefs = navItems.map((item) => item.href);
 
   return (
-    <nav className="flex flex-col gap-0.5 px-3" aria-label={tCommon("sidebar")}>
-      {navItems.map((item) => {
-        const isActive = isNavItemActive(pathname, item.href, navHrefs);
-        const showUnreadBadge = item.href === "/messages" && unreadMessages > 0;
-        return (
-            <Link
-            key={item.href}
-            href={item.href}
-            prefetch={false}
-            className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-              isActive
-                ? "bg-primary-light text-primary-hover dark:bg-primary-light/60 dark:text-primary"
-                : "text-stone-700 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white"
-            }`}
+    <nav className="flex flex-col px-3" aria-label={tCommon("sidebar")}>
+      {groups.map((group, index) => (
+        <div key={group.section} className={index === 0 ? undefined : "mt-3"}>
+          <h2
+            id={`nav-section-${group.section}`}
+            className="px-3 pb-1 text-[11px] font-medium uppercase tracking-wide text-stone-500 dark:text-stone-400"
           >
-            <span
-              className={`relative ${
-                isActive
-                  ? "text-primary dark:text-primary"
-                  : "text-stone-600 dark:text-stone-400"
-              }`}
-            >
-              {item.icon}
-              {showUnreadBadge && (
-                <span
-                  className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-white"
-                  aria-label={tMessages("unreadMessages", { count: unreadMessages })}
-                >
-                  {unreadMessages > 9 ? "9+" : unreadMessages}
-                </span>
-              )}
-            </span>
-            {t(item.labelKey)}
-          </Link>
-        );
-      })}
+            {t(`sections.${group.section}`)}
+          </h2>
+          <ul
+            aria-labelledby={`nav-section-${group.section}`}
+            className="flex flex-col gap-0.5"
+          >
+            {group.items.map((item) => {
+              const isActive = isNavItemActive(pathname, item.href, navHrefs);
+              const showUnreadBadge = item.href === "/messages" && unreadMessages > 0;
+              return (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    prefetch={false}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                      isActive
+                        ? "bg-primary-light text-primary-hover dark:bg-primary-light/60 dark:text-primary"
+                        : "text-stone-700 hover:bg-stone-100 hover:text-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 dark:hover:text-white"
+                    }`}
+                  >
+                    <span
+                      className={`relative ${
+                        isActive
+                          ? "text-primary dark:text-primary"
+                          : "text-stone-600 dark:text-stone-400"
+                      }`}
+                    >
+                      {item.icon}
+                      {showUnreadBadge && (
+                        <span
+                          className="absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-white"
+                          aria-label={tMessages("unreadMessages", { count: unreadMessages })}
+                        >
+                          {unreadMessages > 9 ? "9+" : unreadMessages}
+                        </span>
+                      )}
+                    </span>
+                    {t(item.labelKey)}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
     </nav>
   );
 }

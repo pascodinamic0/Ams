@@ -15,7 +15,7 @@ import { STUDENT_STATUSES } from "@/lib/validations/student";
 export default async function StudentsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; tag?: string }>;
+  searchParams: Promise<{ status?: string; tag?: string; q?: string }>;
 }) {
   const t = await getTranslations("academic");
   const tc = await getTranslations("common");
@@ -30,13 +30,15 @@ export default async function StudentsPage({
       : undefined;
   const tagFilter =
     params.tag && isStudentTag(params.tag) ? params.tag : undefined;
+  const searchQuery = params.q?.trim().slice(0, 80) || undefined;
 
   const students = await getStudents({
     status: statusFilter,
     tag: tagFilter,
+    search: searchQuery,
   });
 
-  const hasFilters = Boolean(statusFilter || tagFilter);
+  const hasFilters = Boolean(statusFilter || tagFilter || searchQuery);
 
   return (
     <div className="space-y-6">
@@ -101,6 +103,7 @@ export default async function StudentsPage({
         <StudentListFilters
           initialStatus={statusFilter ?? ""}
           initialTag={tagFilter ?? ""}
+          initialQuery={searchQuery ?? ""}
         />
       </Suspense>
 

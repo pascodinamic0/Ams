@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { saveReminderSettings } from "@/lib/actions/fee-reminders";
 import type { FeeReminderSettings } from "@/lib/db/campaigns";
+import type { CollectionCycle } from "@/lib/services/fee-reminder-cycle";
 
 interface Props {
   schoolId: string;
@@ -28,6 +29,9 @@ export function FeeReminderSettingsForm({
   const te = useTranslations("errors");
   const s = initialSettings;
   const [enabled, setEnabled] = useState(s?.enabled ?? true);
+  const [cycle, setCycle] = useState<CollectionCycle>(
+    s?.collection_cycle === "monthly" ? "monthly" : "trimester"
+  );
   const [gracePeriod, setGracePeriod] = useState(String(s?.grace_period_days ?? 7));
   const [remindDaysBefore, setRemindDaysBefore] = useState(
     (s?.remind_days_before ?? [3, 1]).join(", ")
@@ -56,6 +60,7 @@ export function FeeReminderSettingsForm({
     setSaving(true);
     try {
       const result = await saveReminderSettings(schoolId, {
+        collection_cycle: cycle,
         grace_period_days: graceDays,
         remind_days_before: daysBefore,
         remind_on_due_day: remindOnDue,
@@ -107,6 +112,55 @@ export function FeeReminderSettingsForm({
 
       {/* Timing section */}
       <div className="rounded-xl border border-stone-200 bg-white p-5 dark:border-stone-700 dark:bg-stone-900 space-y-4">
+        <div>
+          <h3 className="font-semibold text-stone-900 dark:text-white">
+            {t("collectionCycleTitle")}
+          </h3>
+          <p className="mt-1 text-sm text-stone-500">{t("collectionCycleHint")}</p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {(
+            [
+              {
+                value: "trimester" as const,
+                label: t("collectionCycleTrimester"),
+                hint: t("collectionCycleTrimesterHint"),
+              },
+              {
+                value: "monthly" as const,
+                label: t("collectionCycleMonthly"),
+                hint: t("collectionCycleMonthlyHint"),
+              },
+            ]
+          ).map((option) => (
+            <label
+              key={option.value}
+              className={`cursor-pointer rounded-lg border p-4 ${
+                cycle === option.value
+                  ? "border-primary bg-primary-light/40 dark:bg-primary-light/10"
+                  : "border-stone-200 dark:border-stone-700"
+              }`}
+            >
+              <span className="flex items-start gap-3">
+                <input
+                  type="radio"
+                  name="collection-cycle"
+                  value={option.value}
+                  checked={cycle === option.value}
+                  onChange={() => setCycle(option.value)}
+                  className="mt-1"
+                />
+                <span>
+                  <span className="block text-sm font-medium text-stone-900 dark:text-white">
+                    {option.label}
+                  </span>
+                  <span className="mt-1 block text-xs text-stone-500">{option.hint}</span>
+                </span>
+              </span>
+            </label>
+          ))}
+        </div>
+
         <h3 className="font-semibold text-stone-900 dark:text-white">{t("timingRules")}</h3>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

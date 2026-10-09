@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
 
 const reminderSettingsSchema = z.object({
+  collection_cycle: z.enum(["monthly", "trimester"]),
   grace_period_days: z.number().int().min(0).max(365),
   remind_days_before: z.array(z.number().int().min(1)).max(10),
   remind_on_due_day: z.boolean(),

@@ -1,5 +1,6 @@
 "use server";
 
+import { keepRecognizedStudents } from "@/lib/students/recognized";
 import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 
 import { revalidatePath } from "next/cache";
@@ -47,14 +48,15 @@ export async function markAllPresent(classId: string, date: string, period = 0) 
 
   const { data: students, error: studentsError } = await supabase
     .from("students")
-    .select("id")
+    .select("id, status")
     .eq("class_id", classId)
-    .eq("status", "active");
+    .in("status", ["active", "pending"]);
 
   if (studentsError) return { error: studentsError.message };
-  if (!students?.length) return await actionError("noStudentsInClass");
+  const recognized = await keepRecognizedStudents(supabase, students ?? []);
+  if (!recognized.length) return await actionError("noStudentsInClass");
 
-  const rows = students.map((s) => ({
+  const rows = recognized.map((s) => ({
     student_id: s.id,
     date,
     status: "present" as const,

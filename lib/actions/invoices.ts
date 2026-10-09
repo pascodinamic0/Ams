@@ -68,6 +68,18 @@ export async function createInvoice(input: InvoiceFormData) {
   if (!user) return await actionError("notAuthenticated");
 
   const feeStructureId = parsed.data.fee_structure_id || null;
+  if (feeStructureId) {
+    const { data: existingFeeInvoices, error: existingFeeError } = await supabase
+      .from("fee_invoices")
+      .select("id")
+      .eq("student_id", parsed.data.student_id)
+      .eq("fee_structure_id", feeStructureId)
+      .limit(1);
+    if (existingFeeError) return { error: existingFeeError.message };
+    if ((existingFeeInvoices ?? []).length > 0) {
+      return await actionError("feeInvoiceAlreadyExists");
+    }
+  }
   const amount = await resolveInvoiceAmount(
     supabase,
     parsed.data.amount,
@@ -194,11 +206,24 @@ export async function generateInvoicesFromFeeStructure(input: {
   const students = await getStudentsForBilling({
     schoolId,
     classId: structure.class_id ?? undefined,
-    status: "active",
+    recognized: true,
   });
 
   if (students.length === 0) {
     return await actionError("noActiveStudentsInvoice");
+  }
+
+  const studentIds = students.map((student) => student.id);
+  const alreadyInvoiced = new Set<string>();
+  for (let offset = 0; offset < studentIds.length; offset += 150) {
+    const slice = studentIds.slice(offset, offset + 150);
+    const { data: existing, error: existingError } = await supabase
+      .from("fee_invoices")
+      .select("student_id")
+      .eq("fee_structure_id", feeStructureId)
+      .in("student_id", slice);
+    if (existingError) return { error: existingError.message };
+    for (const row of existing ?? []) alreadyInvoiced.add(row.student_id as string);
   }
 
   const amount = Number(structure.amount);
@@ -209,7 +234,7 @@ export async function generateInvoicesFromFeeStructure(input: {
     structure.name ||
     null;
 
-  const rows = students.map((student) => ({
+  const rows = students.filter((student) => !alreadyInvoiced.has(student.id)).map((student) => ({
     student_id: student.id,
     fee_structure_id: feeStructureId,
     amount,
@@ -218,6 +243,11 @@ export async function generateInvoicesFromFeeStructure(input: {
     status,
     description,
   }));
+
+  if (rows.length === 0) {
+    revalidateInvoicePaths();
+    return { data: { created: 0 } };
+  }
 
   const { data, error } = await supabase
     .from("fee_invoices")

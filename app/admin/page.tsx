@@ -9,11 +9,12 @@ import { getTranslations } from "next-intl/server";
 
 export default async function AdminDashboard() {
   const t = await getTranslations("admin");
-  const [data, awaiting, profile] = await Promise.all([
+  const [data, awaitingResult, profile] = await Promise.all([
     getAdminDashboardData(),
     getAwaitingReleases(),
     getCurrentProfile(),
   ]);
+  const awaiting = awaitingResult.releases;
   const canManage = isPlatformOwner(profile?.email, profile?.role);
 
   const cards = [
@@ -95,7 +96,15 @@ export default async function AdminDashboard() {
             {t("awaitingReleasesSubtitle")}
           </p>
         </div>
-        <ReleaseQueue releases={awaiting} canManage={canManage} />
+        <ReleaseQueue
+          releases={awaiting}
+          canManage={canManage}
+          emptyHint={
+            awaitingResult.loadError
+              ? undefined
+              : t("noReleasesWaitingDetail")
+          }
+        />
       </section>
 
       <div className="grid gap-6 lg:grid-cols-2">

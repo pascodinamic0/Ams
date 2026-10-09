@@ -60,5 +60,17 @@
   "monthlyActivity": "Monthly activity",
   "activityReport": "Activity report",
   "budget": "Budget plan",
-  "billing": "Billing"
+  "billing": "Billing",
+  "sections": {
+    "overview": "Overview",
+    "people": "People",
+    "academics": "Academics",
+    "fees": "Fees",
+    "spending": "Spending",
+    "operations": "Operations",
+    "platform": "Platform",
+    "reports": "Reports",
+    "school": "School",
+    "communication": "Communication"
+  }
 }

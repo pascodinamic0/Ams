@@ -52,6 +52,11 @@ export default async function FeeRemindersPage() {
               ? t("remindersGracePeriod", { days: settings.grace_period_days })
               : t("remindersSaveToActivate")}
           </p>
+          <p className="text-xs text-stone-500">
+            {settings?.collection_cycle === "monthly"
+              ? t("remindersCycleMonthly")
+              : t("remindersCycleTrimester")}
+          </p>
         </div>
       </div>
 

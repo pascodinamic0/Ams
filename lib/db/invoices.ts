@@ -1,5 +1,15 @@
+import { factureAmount, fullYearFee } from "@/lib/services/enrollment-fees";
+import { ensureMissingEnrollmentInvoices } from "@/lib/services/missing-enrollment-invoices";
 import { createClient } from "@/lib/supabase/server";
 import { formatPersonName } from "@/lib/utils";
+
+export type InvoicePaymentLine = {
+  id: string;
+  amount: number;
+  method: string;
+  reference: string | null;
+  paid_at: string;
+};
 
 export type InvoiceListItem = {
   id: string;
@@ -16,6 +26,7 @@ export type InvoiceListItem = {
   fee_structure_id: string | null;
   fee_structure_name: string | null;
   source: string | null;
+  payments: InvoicePaymentLine[];
 };
 
 export type OutstandingStudentGroup = {
@@ -58,10 +69,13 @@ function mapInvoiceRow(inv: {
     branch_id?: string;
     classes?: { name?: string } | null;
   } | null;
-  fee_structures?: { name?: string } | null;
+  fee_structures?: { name?: string; amount?: number | string | null } | null;
 }): InvoiceListItem & { school_id?: string; branch_id?: string } {
   const s = inv.students;
-  const amount = Number(inv.amount);
+  const amount = fullYearFee(
+    Number(inv.amount),
+    inv.fee_structures?.amount != null ? Number(inv.fee_structures.amount) : null
+  );
   const amountPaid = Number(inv.amount_paid ?? 0);
   return {
     id: inv.id,
@@ -71,7 +85,7 @@ function mapInvoiceRow(inv: {
     class_name: s?.classes?.name ?? null,
     amount,
     amount_paid: amountPaid,
-    balance: Math.max(0, amount - amountPaid),
+    balance: factureAmount(amount, amountPaid),
     due_date: inv.due_date,
     status: inv.status ?? "pending",
     description: inv.description,
@@ -79,9 +93,48 @@ function mapInvoiceRow(inv: {
     fee_structure_name:
       inv.fee_structures?.name ?? (inv.description?.trim() || null),
     source: inv.source ?? null,
+    payments: [],
     school_id: s?.school_id,
     branch_id: s?.branch_id,
   };
+}
+
+async function attachInvoicePayments<T extends { id: string; payments: InvoicePaymentLine[] }>(
+  rows: T[]
+): Promise<T[]> {
+  if (rows.length === 0) return rows;
+  const supabase = await createClient();
+  const byInvoice = new Map<string, InvoicePaymentLine[]>();
+
+  for (let offset = 0; offset < rows.length; offset += 150) {
+    const slice = rows.slice(offset, offset + 150).map((row) => row.id);
+    const { data, error } = await supabase
+      .from("fee_payments")
+      .select("id, invoice_id, amount, method, reference, paid_at")
+      .in("invoice_id", slice)
+      .order("paid_at", { ascending: true });
+    if (error) {
+      console.error("attachInvoicePayments error:", error);
+      continue;
+    }
+    for (const payment of data ?? []) {
+      const line: InvoicePaymentLine = {
+        id: payment.id,
+        amount: Number(payment.amount),
+        method: payment.method ?? "other",
+        reference: payment.reference,
+        paid_at: payment.paid_at,
+      };
+      const list = byInvoice.get(payment.invoice_id) ?? [];
+      list.push(line);
+      byInvoice.set(payment.invoice_id, list);
+    }
+  }
+
+  return rows.map((row) => ({
+    ...row,
+    payments: byInvoice.get(row.id) ?? [],
+  }));
 }
 
 export async function getInvoices(options?: {
@@ -90,6 +143,11 @@ export async function getInvoices(options?: {
   schoolId?: string;
   branchId?: string;
 }): Promise<InvoiceListItem[]> {
+  await ensureMissingEnrollmentInvoices({
+    schoolId: options?.schoolId,
+    branchId: options?.branchId,
+  });
+
   const supabase = await createClient();
   let query = supabase
     .from("fee_invoices")
@@ -112,7 +170,7 @@ export async function getInvoices(options?: {
         branch_id,
         classes(name)
       ),
-      fee_structures(name)
+      fee_structures(name, amount)
     `)
     .order("due_date", { ascending: false });
 
@@ -148,7 +206,9 @@ export async function getInvoices(options?: {
     );
   }
 
-  return rows.map(({ school_id: _s, branch_id: _b, ...item }) => item);
+  return attachInvoicePayments(
+    rows.map(({ school_id: _s, branch_id: _b, ...item }) => item)
+  );
 }
 
 export async function getInvoiceById(id: string) {
@@ -158,7 +218,7 @@ export async function getInvoiceById(id: string) {
     .select(`
       *,
       students(id, student_id, first_name, middle_name, last_name, school_id, branch_id, classes(name)),
-      fee_structures(name)
+      fee_structures(name, amount)
     `)
     .eq("id", id)
     .single();
@@ -201,7 +261,7 @@ export async function getInvoicesForGuardian(
         branch_id,
         classes(name)
       ),
-      fee_structures(name)
+      fee_structures(name, amount)
     `)
     .in("student_id", studentIds)
     .order("due_date", { ascending: false });
@@ -245,7 +305,7 @@ export async function getInvoicesForStudent(
         branch_id,
         classes(name)
       ),
-      fee_structures(name)
+      fee_structures(name, amount)
     `)
     .eq("student_id", studentId)
     .order("due_date", { ascending: false });
@@ -323,6 +383,11 @@ export async function getFinanceKPIs(options?: {
   schoolId?: string;
   branchId?: string;
 }): Promise<FinanceKPIs> {
+  await ensureMissingEnrollmentInvoices({
+    schoolId: options?.schoolId,
+    branchId: options?.branchId,
+  });
+
   const supabase = await createClient();
   let query = supabase
     .from("fee_invoices")
