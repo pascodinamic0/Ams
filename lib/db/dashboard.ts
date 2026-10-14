@@ -64,18 +64,40 @@ export async function getAcademicDashboardData(schoolId?: string) {
     .from("admission_applications")
     .select("id", { count: "exact", head: true })
     .eq("status", "pending");
-  let classesQuery = supabase.from("classes").select("id", { count: "exact", head: true });
 
   if (schoolId) {
     studentsQuery = studentsQuery.eq("school_id", schoolId);
     admissionsQuery = admissionsQuery.eq("school_id", schoolId);
   }
 
-  const [studentsResult, admissionsResult, classesResult] = await Promise.all([
+  const branchIdsPromise = schoolId
+    ? supabase.from("branches").select("id").eq("school_id", schoolId)
+    : Promise.resolve({ data: null as { id: string }[] | null });
+
+  const [studentsResult, admissionsResult, branchesResult] = await Promise.all([
     studentsQuery,
     admissionsQuery,
-    classesQuery,
+    branchIdsPromise,
   ]);
+
+  // Classes belong to branches, not schools. Counting without this filter
+  // includes every school the current role is allowed to read.
+  let classesCount = 0;
+  if (!schoolId) {
+    const { count } = await supabase
+      .from("classes")
+      .select("id", { count: "exact", head: true });
+    classesCount = count ?? 0;
+  } else {
+    const branchIds = (branchesResult.data ?? []).map((branch) => branch.id);
+    if (branchIds.length > 0) {
+      const { count } = await supabase
+        .from("classes")
+        .select("id", { count: "exact", head: true })
+        .in("branch_id", branchIds);
+      classesCount = count ?? 0;
+    }
+  }
 
   const students = studentsResult.data ?? [];
   const paidIds = await paidStudentIdSet(
@@ -90,7 +112,7 @@ export async function getAcademicDashboardData(schoolId?: string) {
     totalStudents: studentsResult.count ?? students.length,
     activeStudents,
     pendingAdmissions: admissionsResult.count ?? 0,
-    classes: classesResult.count ?? 0,
+    classes: classesCount,
   };
 }
 

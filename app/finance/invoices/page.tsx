@@ -94,6 +94,26 @@ export default async function InvoicesPage({
   ).size;
   const totalOwed = filtered.reduce((sum, inv) => sum + inv.balance, 0);
   const money = (value: number) => formatMoney(value, currency.code);
+  const invoicesByStudent = new Map<string, InvoiceListItem[]>();
+  for (const inv of invoices) {
+    if (className && inv.class_name !== className) continue;
+    if (
+      search &&
+      !inv.student_name.toLowerCase().includes(search) &&
+      !inv.student_id.toLowerCase().includes(search) &&
+      !(inv.class_name?.toLowerCase().includes(search) ?? false)
+    ) {
+      continue;
+    }
+    const key = inv.student_uuid || inv.student_id;
+    if (!key) continue;
+    const rows = invoicesByStudent.get(key) ?? [];
+    rows.push(inv);
+    invoicesByStudent.set(key, rows);
+  }
+  const studentsPaidFullYear = [...invoicesByStudent.values()].filter(
+    (rows) => rows.length > 0 && rows.every((inv) => inv.balance <= 0)
+  ).length;
 
   const editingInvoice = params.edit
     ? invoices.find((inv) => inv.id === params.edit) ?? null
@@ -165,9 +185,9 @@ export default async function InvoicesPage({
           </div>
           <div className="rounded-xl border border-stone-200 bg-white p-4 dark:border-stone-700 dark:bg-stone-900">
             <p className="text-xs font-medium uppercase tracking-wide text-stone-500">
-              {t("openInvoicesCount")}
+              {t("studentsPaidFullYear")}
             </p>
-            <p className="mt-1 text-2xl font-bold">{filtered.length}</p>
+            <p className="mt-1 text-2xl font-bold">{studentsPaidFullYear}</p>
           </div>
           <div className="rounded-xl border border-stone-200 bg-white p-4 dark:border-stone-700 dark:bg-stone-900">
             <p className="text-xs font-medium uppercase tracking-wide text-stone-500">

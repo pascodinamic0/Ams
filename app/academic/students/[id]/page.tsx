@@ -781,7 +781,7 @@ export default async function StudentDetailPage({
                       {" · "}
                       <span className="capitalize">{guardian.relation}</span>
                       {" · "}
-                      {t("guardian")}
+                      {t("relationGuardian")}
                     </p>
                   </div>
                 );
