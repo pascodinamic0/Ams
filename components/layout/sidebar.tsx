@@ -287,7 +287,6 @@ const ROLE_NAV: Record<string, NavItem[]> = {
     { href: "/operations/library", labelKey: "library", icon: icon.library, section: "operations" },
     { href: "/operations/transport", labelKey: "transport", icon: icon.transport, section: "operations" },
     { href: "/operations/events", labelKey: "events", icon: icon.events, section: "operations" },
-    { href: "/operations/staff", labelKey: "staff", icon: icon.staff, section: "operations" },
     { href: "/messages", labelKey: "messages", icon: icon.chat, section: "communication" },
   ],
   operations_officer: [

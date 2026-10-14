@@ -330,6 +330,14 @@ export function canAccessPath(
     return DISCIPLINE_ROLES.includes(normalized);
   }
 
+  // Personnel is an operations-officer page. Managers stay on library, transport, and events.
+  if (
+    pathname === "/operations/staff" ||
+    pathname.startsWith("/operations/staff/")
+  ) {
+    return normalized === "operations_officer";
+  }
+
   const allowed = ROLE_ROUTE_SCOPES[normalized];
   return allowed.some((scope) =>
     scope.exact

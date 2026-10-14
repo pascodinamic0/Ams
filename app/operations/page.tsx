@@ -2,12 +2,14 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getOperationsDashboardData } from "@/lib/db";
+import { canAccessPath } from "@/lib/auth/rbac";
 import { getCurrentProfile } from "@/lib/auth/session";
 import { getTranslations } from "next-intl/server";
 
 export default async function OperationsDashboard() {
   const t = await getTranslations("operations");
   const profile = await getCurrentProfile();
+  const canOpenStaff = canAccessPath(profile?.role, "/operations/staff");
   const kpis = await getOperationsDashboardData({
     schoolId: profile?.school_id ?? undefined,
     branchId: profile?.branch_id ?? undefined,
@@ -31,13 +33,15 @@ export default async function OperationsDashboard() {
             <p className="text-sm text-stone-500">{t("pastDueDate")}</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader><CardTitle>{t("staffTitle")}</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">{kpis.staffCount}</p>
-            <p className="text-sm text-stone-500">{t("operationsStaff")}</p>
-          </CardContent>
-        </Card>
+        {canOpenStaff ? (
+          <Card>
+            <CardHeader><CardTitle>{t("staffTitle")}</CardTitle></CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{kpis.staffCount}</p>
+              <p className="text-sm text-stone-500">{t("operationsStaff")}</p>
+            </CardContent>
+          </Card>
+        ) : null}
         <Card>
           <CardHeader><CardTitle>{t("transportRoutes")}</CardTitle></CardHeader>
           <CardContent>
@@ -58,7 +62,9 @@ export default async function OperationsDashboard() {
             <Link href="/operations/library"><Button size="sm" className="w-full">{t("libraryTitle")}</Button></Link>
             <Link href="/operations/transport"><Button size="sm" variant="ghost" className="w-full">{t("transportTitle")}</Button></Link>
             <Link href="/operations/events"><Button size="sm" variant="ghost" className="w-full">{t("eventsTitle")}</Button></Link>
-            <Link href="/operations/staff"><Button size="sm" variant="ghost" className="w-full">{t("staffTitle")}</Button></Link>
+            {canOpenStaff ? (
+              <Link href="/operations/staff"><Button size="sm" variant="ghost" className="w-full">{t("staffTitle")}</Button></Link>
+            ) : null}
           </CardContent>
         </Card>
       </div>

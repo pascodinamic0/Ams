@@ -3,10 +3,22 @@
 import { actionError, zodIssueError } from "@/lib/i18n/action-error";
 
 import { revalidatePath } from "next/cache";
+import { canAccessPath } from "@/lib/auth/rbac";
+import { getCurrentProfile } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { staffSchema, type StaffFormData } from "@/lib/validations/operations";
 
+async function denyUnlessStaffAccess() {
+  const profile = await getCurrentProfile();
+  if (!canAccessPath(profile?.role, "/operations/staff")) {
+    return actionError("notAuthorized");
+  }
+  return null;
+}
+
 export async function createStaff(input: StaffFormData) {
+  const denied = await denyUnlessStaffAccess();
+  if (denied) return denied;
   const parsed = staffSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
@@ -34,6 +46,9 @@ export async function createStaff(input: StaffFormData) {
 }
 
 export async function updateStaff(id: string, input: StaffFormData) {
+  const denied = await denyUnlessStaffAccess();
+  if (denied) return denied;
+
   const parsed = staffSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.flatten().fieldErrors };
 
@@ -64,6 +79,9 @@ export async function updateStaff(id: string, input: StaffFormData) {
 }
 
 export async function deleteStaff(id: string) {
+  const denied = await denyUnlessStaffAccess();
+  if (denied) return denied;
+
   const supabase = await createClient();
   const { error } = await supabase.from("staff").delete().eq("id", id);
   if (error) return { error: error.message };
