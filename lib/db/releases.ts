@@ -70,10 +70,15 @@ export type ReleasesLoadResult = {
   loadError: string | null;
 };
 
+type ReleaseQueryResult = {
+  data: unknown[] | null;
+  error: { message: string } | null;
+};
+
 async function loadReleases(
   build: (
     supabase: Awaited<ReturnType<typeof createClient>>
-  ) => ReturnType<Awaited<ReturnType<typeof createClient>>["from"]>
+  ) => PromiseLike<ReleaseQueryResult>
 ): Promise<ReleasesLoadResult> {
   const supabase = await createClient();
   const { data, error } = await build(supabase);
